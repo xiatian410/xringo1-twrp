@@ -107,7 +107,7 @@
       "status": "PASS",
       "cases": 33,
       "failures": 0,
-      "local_report_sha256": "e4c3fc3ee2b041421ce4d0b346d366d2216710e3f59fed4c473c68ea5c9ee94f",
+      "local_report_sha256": "b1695bfff3dec6328e95e5e953e73429997c37655b58245b68f5663683b03f62",
       "scope": "Original sideload core + GUI backend with private native minadbd subprocesses.\n\nReal socketpair/fork/exec/epoll/send/kill/wait; USB properties, FUSE stat,\nTWinstall_zip, MTP/cache/DataManager/operation feedback are explicit doubles.\nSyscall wrappers inject errors and forbid signalling non-owned PIDs. No phone,\nUSB endpoint, ZIP updater, physical storage, reboot or GUI clicks execute.\n"
     },
     {

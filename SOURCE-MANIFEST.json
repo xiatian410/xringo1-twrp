@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "624dfdd298424cdbdfcb489fb460e7cf6856b08f61a3197b94bb11f3d8a590cf",
+    "sha256": "c94cf2989fea2b4f9ddc15a1ebd4c3f147a7a712c957de8b36384693344e1263",
     "mode": "0o644"
   },
   "docs/DELIVERY-EVIDENCE-STATUS.md": {
@@ -1460,7 +1460,7 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "31fece6d7179edf00c062d11339388de92d18a59b3b3b219c95821c265e65834",
+    "sha256": "70eb32ac664ca2cffeb7b10911529a35f8b0fceb4e0e1a352a16cb09dc8e5295",
     "mode": "0o644"
   },
   "simulation-report.md": {
