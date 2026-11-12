@@ -36,16 +36,32 @@ static gui2_backend::console_backend* console=&history;
 static bool shell_ready=true;
 static size_t page_sequence=1,rendered_page_sequence=0;
 static bool rendered_install_page=false,rendered_decrypt_page=false,rendered_tool_page=false;
-enum class page_kind { INSTALL_PROGRESS, DECRYPT_PROGRESS, TOOL_PROGRESS, BACKUP };
+static bool rendered_backup_page=false,rendered_restore_page=false,rendered_wipe_page=false,rendered_sideload_page=false,rendered_fastbootd_page=false;
+enum class page_kind { INSTALL_PROGRESS, DECRYPT_PROGRESS, TOOL_PROGRESS, BACKUP, BACKUP_PROGRESS, RESTORE_PROGRESS, WIPE_PROGRESS, SIDELOAD_PROGRESS, FASTBOOTD };
 static struct {page_kind id=page_kind::TOOL_PROGRESS;page_kind current(){return id;}} page_router;
 static struct {void process_after_present(){}} screen_actions;
 #include "console_callbacks.inc"
+#ifdef PROGRESS_PAGE_TEST
+#include "selected_console.inc"
+#endif
 
+#ifdef PROGRESS_PAGE_TEST
+static auto& tested_window=page_state.SELECTED_WINDOW;
+static auto& tested_armed=page_state.SELECTED_ARMED;
+#else
+static auto& tested_window=page_state.tool_console;
+static auto& tested_armed=page_state.tool_console_armed;
+#endif
 static void tick_console() {
   const auto prior=history.reads;
-  refresh_tool_progress();poll_tool_console();
+  refresh_tool_progress();
+#ifdef PROGRESS_PAGE_TEST
+  selected_poll();
+#else
+  poll_tool_console();
+#endif
   assert(history.reads-prior<=1 && history.unbounded==0);
-  assert(page_state.tool_console.rows.size()<=160);
+  assert(tested_window.rows.size()<=160);
   lv_tick_inc(100);lv_timer_handler();
 }
 int main(int argc,char**argv){
@@ -59,7 +75,11 @@ int main(int argc,char**argv){
   auto build=[&]{
     gui2_pages::progress_page_options o;o.content=content;o.metrics=&ui;o.strings=&strings();o.subtitle=sub;o.console_font=ui.text_font;o.initial_text=tool_job_request.running;
     page_state.tool_progress=gui2_pages::build_progress_page(o);
-    gui2_pages::console_window_reset(&page_state.tool_console);page_state.tool_console_armed=false;
+    gui2_pages::console_window_reset(&tested_window);tested_armed=false;
+#ifdef PROGRESS_PAGE_TEST
+    page_state.SELECTED_VIEW=page_state.tool_progress.SELECTED_SUFFIX;
+    page_router.id=page_kind::SELECTED_KIND;
+#endif
   };
   build();assert(tools->start(gui2_backend::tool_job::REFRESH_SIZES,"",""));PartitionManager.wait();
   if(scenario=="already-done"){PartitionManager.finish();await_done();}
@@ -69,38 +89,42 @@ int main(int argc,char**argv){
   assert(!gui2_pages::console_window_frame_arms(true,false,true));
   assert(!gui2_pages::console_window_frame_arms(true,true,false));
   gui2_loop_before_render(nullptr);
-  gui2_loop_after_present(nullptr,false);assert(!page_state.tool_console_armed);
-  ++page_sequence;gui2_loop_after_present(nullptr,true);assert(!page_state.tool_console_armed);
+  gui2_loop_after_present(nullptr,false);assert(!tested_armed);
+  ++page_sequence;gui2_loop_after_present(nullptr,true);assert(!tested_armed);
   gui2_loop_before_render(nullptr);gui2_loop_after_present(nullptr,true);
-  assert(page_state.tool_console_armed);
+  assert(tested_armed);
   if(scenario=="busy")history.busy=true;
   if(scenario!="already-done"){PartitionManager.finish();await_done();}
   tick_console();assert(std::string(lv_label_get_text(sub))==tool_job_request.done);
   assert(lv_obj_is_hidden(page_state.tool_progress.bar));
   history.busy=false;
   for(int i=0;i<16;++i)tick_console();
-  assert(!page_state.tool_console.rows.empty());
-  assert(page_state.tool_console.rows.front().line_index>=4840);
-  assert(page_state.tool_console.rows.back().line_index==4999);
+  assert(!tested_window.rows.empty());
+  assert(tested_window.rows.front().line_index>=4840);
+  assert(tested_window.rows.back().line_index==4999);
   if(scenario=="history"){
-    const auto old=page_state.tool_console.rows.front().line_index;
+    const auto old=tested_window.rows.front().line_index;
     lv_obj_scroll_to_y(page_state.tool_progress.console.body,0,LV_ANIM_OFF);
     for(int i=0;i<12;++i)tick_console();
-    assert(page_state.tool_console.rows.front().line_index<old);
+    assert(tested_window.rows.front().line_index<old);
   }
   if(scenario=="generation"){
     ++history.generation;history.total=20;
     for(int i=0;i<20;++i)tick_console();
-    assert(page_state.tool_console.generation==history.generation);
-    assert(page_state.tool_console.rows.back().line_index==19);
+    assert(tested_window.generation==history.generation);
+    assert(tested_window.rows.back().line_index==19);
   }
   if(scenario=="reentry"){
     lv_obj_delete(page_state.tool_progress.body);page_state.tool_progress={};
+#ifdef PROGRESS_PAGE_TEST
+    #include "selected_reset.inc"
+    const auto deleted_reads=history.reads;selected_poll();assert(history.reads==deleted_reads);
+#endif
     build();const auto before=history.reads;tick_console();assert(history.reads==before);
-    assert(page_state.tool_console.rows.empty());page_state.tool_console_armed=true;
-    for(int i=0;i<16;++i)tick_console();assert(page_state.tool_console.rows.back().line_index==4999);
+    assert(tested_window.rows.empty());tested_armed=true;
+    for(int i=0;i<16;++i)tick_console();assert(tested_window.rows.back().line_index==4999);
   }
   tools->acknowledge();
-  printf("PASS %s: unbounded=%zu bounded=%zu retained=%zu frames=%u\n",argv[1],history.unbounded,history.reads,page_state.tool_console.rows.size(),frames);
+  printf("PASS %s: unbounded=%zu bounded=%zu retained=%zu frames=%u\n",argv[1],history.unbounded,history.reads,tested_window.rows.size(),frames);
   lv_deinit();
 }

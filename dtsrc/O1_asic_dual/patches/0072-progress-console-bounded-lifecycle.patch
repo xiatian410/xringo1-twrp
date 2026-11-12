@@ -1,0 +1,337 @@
+diff --git a/gui2/gui2.cpp b/gui2/gui2.cpp
+--- a/gui2/gui2.cpp
++++ b/gui2/gui2.cpp
+@@ -288,6 +288,11 @@
+ static bool rendered_install_page = false;
+ static bool rendered_decrypt_page = false;
+ static bool rendered_tool_page = false;
++static bool rendered_fastbootd_page = false;
++static bool rendered_sideload_page = false;
++static bool rendered_wipe_page = false;
++static bool rendered_restore_page = false;
++static bool rendered_backup_page = false;
+ static void show_select_storage_page(page_transition transition);
+ static void show_restore_list_page(page_transition transition);
+ static void show_restore_page(page_transition transition);
+@@ -554,6 +559,8 @@
+ static void show_tool_confirm_page(page_transition transition);
+ static void show_tool_progress_page(page_transition transition);
+ static void show_tool_input_page(page_transition transition);
++static void poll_progress_console(gui2_pages::console_page_view& view,
++                                  gui2_pages::console_window& window, bool armed);
+ static void poll_tool_console(void);
+ static void refresh_tool_progress(void);
+ 
+@@ -1149,11 +1156,13 @@
+   page_state.console = {};
+   page_state.console_consumed = 0;
+   page_state.wipe_progress = {};
+-  page_state.wipe_console_consumed = 0;
++  gui2_pages::console_window_reset(&page_state.wipe_console_window);
++  page_state.wipe_console_armed = false;
+   // Every progress view has to be forgotten here: the loop keeps polling any
+   // whose body is still set, and that body belongs to the page just deleted.
+   page_state.backup_progress = {};
+-  page_state.backup_console_consumed = 0;
++  gui2_pages::console_window_reset(&page_state.backup_console_window);
++  page_state.backup_console_armed = false;
+   page_state.decrypt_progress = {};
+   gui2_pages::console_window_reset(&page_state.decrypt_console);
+   page_state.decrypt_console_armed = false;
+@@ -1190,12 +1199,17 @@
+   page_state.restore_confirm.detach();
+   page_state.restore_view = {};
+   page_state.restore_progress = {};
+-  page_state.restore_console_consumed = 0;
++  gui2_pages::console_window_reset(&page_state.restore_console_window);
++  page_state.restore_console_armed = false;
+   page_state.sideload_confirm.detach();
+   page_state.sideload_progress = {};
++  gui2_pages::console_window_reset(&page_state.sideload_console_window);
++  page_state.sideload_console_armed = false;
+   page_state.system_ro_confirm.detach();
+   page_state.fastbootd_tabs.detach();
+   page_state.fastbootd_console = {};
++  gui2_pages::console_window_reset(&page_state.fastbootd_console_window);
++  page_state.fastbootd_console_armed = false;
+   page_state.change_fs_confirm.detach();
+   page_state.tool_confirm.detach();
+   page_state.tool_progress = {};
+@@ -2182,13 +2196,8 @@
+ }
+ 
+ static void poll_sideload_console(void) {
+-  if (console == nullptr || page_state.sideload_progress.console.body == nullptr) return;
+-  std::vector<gui2_backend::console_line> lines;
+-  page_state.sideload_console_consumed =
+-      console->fetch(page_state.sideload_console_consumed, &lines);
+-  if (lines.empty()) return;
+-  gui2_pages::append_console_lines(&page_state.sideload_progress.console, ui, lines);
+-  gui2_pages::scroll_console_to_end(page_state.sideload_progress.console);
++  poll_progress_console(page_state.sideload_progress.console, page_state.sideload_console_window,
++                        page_state.sideload_console_armed);
+ }
+ 
+ // Waiting for the computer has no number to show; the zip's own progress
+@@ -2246,7 +2255,8 @@
+   options.press_guard_callback = press_cancel_guard_cb;
+   page_state.sideload_progress = gui2_pages::build_progress_page(options);
+   lv_obj_set_hidden(page_state.sideload_progress.elapsed, true);
+-  page_state.sideload_console_consumed = 0;
++  gui2_pages::console_window_reset(&page_state.sideload_console_window);
++  page_state.sideload_console_armed = false;
+   page_state.sideload_last_poll_ms = 0;
+   refresh_sideload_progress();
+ }
+@@ -2259,13 +2269,8 @@
+ }
+ 
+ static void poll_fastbootd_console(void) {
+-  if (console == nullptr || page_state.fastbootd_console.body == nullptr) return;
+-  std::vector<gui2_backend::console_line> lines;
+-  page_state.fastbootd_console_consumed =
+-      console->fetch(page_state.fastbootd_console_consumed, &lines);
+-  if (lines.empty()) return;
+-  gui2_pages::append_console_lines(&page_state.fastbootd_console, ui, lines);
+-  gui2_pages::scroll_console_to_end(page_state.fastbootd_console);
++  poll_progress_console(page_state.fastbootd_console, page_state.fastbootd_console_window,
++                        page_state.fastbootd_console_armed);
+ }
+ 
+ static void show_fastbootd_page(page_transition transition) {
+@@ -2283,7 +2288,8 @@
+   options.usb_fastboot = reboot == nullptr || reboot->usb_fastboot();
+   options.usb_callback = fastbootd_usb_changed;
+   page_state.fastbootd_console = gui2_pages::build_fastbootd_page(options).console;
+-  page_state.fastbootd_console_consumed = 0;
++  gui2_pages::console_window_reset(&page_state.fastbootd_console_window);
++  page_state.fastbootd_console_armed = false;
+   page_state.fastbootd_last_poll_ms = 0;
+   poll_fastbootd_console();
+ }
+@@ -3564,13 +3570,8 @@
+ }
+ 
+ static void poll_wipe_console(void) {
+-  if (console == nullptr || page_state.wipe_progress.console.body == nullptr) return;
+-  std::vector<gui2_backend::console_line> lines;
+-  const size_t total = console->fetch(page_state.wipe_console_consumed, &lines);
+-  page_state.wipe_console_consumed = total;
+-  if (lines.empty()) return;
+-  gui2_pages::append_console_lines(&page_state.wipe_progress.console, ui, lines);
+-  gui2_pages::scroll_console_to_end(page_state.wipe_progress.console);
++  poll_progress_console(page_state.wipe_progress.console, page_state.wipe_console_window,
++                        page_state.wipe_console_armed);
+ }
+ 
+ static void show_wipe_progress_page(page_transition transition) {
+@@ -3591,10 +3592,11 @@
+   options.subtitle = page_summary;
+   add_progress_actions(&options);
+   page_state.wipe_progress = gui2_pages::build_progress_page(options);
+-  page_state.wipe_console_consumed = 0;
++  gui2_pages::console_window_reset(&page_state.wipe_console_window);
++  page_state.wipe_console_armed = false;
+   page_state.wipe_last_poll_ms = 0;
++  refresh_wipe_progress();
+   poll_wipe_console();
+-  refresh_wipe_progress();
+ }
+ 
+ static void refresh_wipe_progress(void) {
+@@ -4373,13 +4375,8 @@
+ }
+ 
+ static void poll_backup_console(void) {
+-  if (console == nullptr || page_state.backup_progress.console.body == nullptr) return;
+-  std::vector<gui2_backend::console_line> lines;
+-  const size_t total = console->fetch(page_state.backup_console_consumed, &lines);
+-  page_state.backup_console_consumed = total;
+-  if (lines.empty()) return;
+-  gui2_pages::append_console_lines(&page_state.backup_progress.console, ui, lines);
+-  gui2_pages::scroll_console_to_end(page_state.backup_progress.console);
++  poll_progress_console(page_state.backup_progress.console, page_state.backup_console_window,
++                        page_state.backup_console_armed);
+ }
+ 
+ static void refresh_backup_progress(void) {
+@@ -4427,10 +4424,11 @@
+   add_progress_actions(&options);
+   options.running_action = { strings().cancel, backup_cancel_cb };
+   page_state.backup_progress = gui2_pages::build_progress_page(options);
+-  page_state.backup_console_consumed = 0;
++  gui2_pages::console_window_reset(&page_state.backup_console_window);
++  page_state.backup_console_armed = false;
+   page_state.backup_last_poll_ms = 0;
++  refresh_backup_progress();
+   poll_backup_console();
+-  refresh_backup_progress();
+ }
+ 
+ static void restore_select_event_cb(lv_event_t* event) {
+@@ -4600,13 +4598,8 @@
+ }
+ 
+ static void poll_restore_console(void) {
+-  if (console == nullptr || page_state.restore_progress.console.body == nullptr) return;
+-  std::vector<gui2_backend::console_line> lines;
+-  const size_t total = console->fetch(page_state.restore_console_consumed, &lines);
+-  page_state.restore_console_consumed = total;
+-  if (lines.empty()) return;
+-  gui2_pages::append_console_lines(&page_state.restore_progress.console, ui, lines);
+-  gui2_pages::scroll_console_to_end(page_state.restore_progress.console);
++  poll_progress_console(page_state.restore_progress.console, page_state.restore_console_window,
++                        page_state.restore_console_armed);
+ }
+ 
+ static void refresh_restore_progress(void) {
+@@ -4650,10 +4643,11 @@
+   options.subtitle = page_summary;
+   add_progress_actions(&options);
+   page_state.restore_progress = gui2_pages::build_progress_page(options);
+-  page_state.restore_console_consumed = 0;
++  gui2_pages::console_window_reset(&page_state.restore_console_window);
++  page_state.restore_console_armed = false;
+   page_state.restore_last_poll_ms = 0;
++  refresh_restore_progress();
+   poll_restore_console();
+-  refresh_restore_progress();
+ }
+ 
+ // ---- Legacy tools ------------------------------------------------------------
+@@ -6413,8 +6407,8 @@
+   if (page_state.sideload_progress.body != nullptr &&
+       now_ms - page_state.sideload_last_poll_ms >= 100) {
+     page_state.sideload_last_poll_ms = now_ms;
++    refresh_sideload_progress();
+     poll_sideload_console();
+-    refresh_sideload_progress();
+   }
+   if (page_state.terminal_view.output.body != nullptr &&
+       now_ms - page_state.terminal_last_poll_ms >= 100) {
+@@ -6423,8 +6417,8 @@
+   }
+   if (page_state.wipe_progress.body != nullptr && now_ms - page_state.wipe_last_poll_ms >= 100) {
+     page_state.wipe_last_poll_ms = now_ms;
++    refresh_wipe_progress();
+     poll_wipe_console();
+-    refresh_wipe_progress();
+   }
+   if (page_state.decrypt_prompt_ms != 0 &&
+       page_router.current() == page_kind::DECRYPT) {
+@@ -6442,14 +6436,14 @@
+   if (page_state.restore_progress.body != nullptr &&
+       now_ms - page_state.restore_last_poll_ms >= 100) {
+     page_state.restore_last_poll_ms = now_ms;
++    refresh_restore_progress();
+     poll_restore_console();
+-    refresh_restore_progress();
+   }
+   if (page_state.backup_progress.body != nullptr &&
+       now_ms - page_state.backup_last_poll_ms >= 100) {
+     page_state.backup_last_poll_ms = now_ms;
++    refresh_backup_progress();
+     poll_backup_console();
+-    refresh_backup_progress();
+   }
+ }
+ 
+@@ -6546,6 +6540,36 @@
+       page_router.current() == page_kind::TOOL_PROGRESS &&
+       page_state.tool_progress.console.body != nullptr)
+     page_state.tool_console_armed = true;
++  if (!page_state.fastbootd_console_armed &&
++      gui2_pages::console_window_frame_arms(presented, rendered_fastbootd_page,
++                                            rendered_page_sequence == page_sequence) &&
++      page_router.current() == page_kind::FASTBOOTD &&
++      page_state.fastbootd_console.body != nullptr)
++    page_state.fastbootd_console_armed = true;
++  if (!page_state.sideload_console_armed &&
++      gui2_pages::console_window_frame_arms(presented, rendered_sideload_page,
++                                            rendered_page_sequence == page_sequence) &&
++      page_router.current() == page_kind::SIDELOAD_PROGRESS &&
++      page_state.sideload_progress.console.body != nullptr)
++    page_state.sideload_console_armed = true;
++  if (!page_state.wipe_console_armed &&
++      gui2_pages::console_window_frame_arms(presented, rendered_wipe_page,
++                                            rendered_page_sequence == page_sequence) &&
++      page_router.current() == page_kind::WIPE_PROGRESS &&
++      page_state.wipe_progress.console.body != nullptr)
++    page_state.wipe_console_armed = true;
++  if (!page_state.restore_console_armed &&
++      gui2_pages::console_window_frame_arms(presented, rendered_restore_page,
++                                            rendered_page_sequence == page_sequence) &&
++      page_router.current() == page_kind::RESTORE_PROGRESS &&
++      page_state.restore_progress.console.body != nullptr)
++    page_state.restore_console_armed = true;
++  if (!page_state.backup_console_armed &&
++      gui2_pages::console_window_frame_arms(presented, rendered_backup_page,
++                                            rendered_page_sequence == page_sequence) &&
++      page_router.current() == page_kind::BACKUP_PROGRESS &&
++      page_state.backup_progress.console.body != nullptr)
++    page_state.backup_console_armed = true;
+ }
+ 
+ static void gui2_loop_before_render(void*) {
+@@ -6553,6 +6577,11 @@
+   rendered_install_page = page_router.current() == page_kind::INSTALL_PROGRESS;
+   rendered_decrypt_page = page_router.current() == page_kind::DECRYPT_PROGRESS;
+   rendered_tool_page = page_router.current() == page_kind::TOOL_PROGRESS;
++  rendered_fastbootd_page = page_router.current() == page_kind::FASTBOOTD;
++  rendered_sideload_page = page_router.current() == page_kind::SIDELOAD_PROGRESS;
++  rendered_wipe_page = page_router.current() == page_kind::WIPE_PROGRESS;
++  rendered_restore_page = page_router.current() == page_kind::RESTORE_PROGRESS;
++  rendered_backup_page = page_router.current() == page_kind::BACKUP_PROGRESS;
+   rendered_page_sequence = page_sequence;
+ }
+ 
+diff --git a/gui2/pages/page_state.h b/gui2/pages/page_state.h
+--- a/gui2/pages/page_state.h
++++ b/gui2/pages/page_state.h
+@@ -128,12 +128,14 @@
+   gui2_components::swipe_slider sideload_confirm;
+   gui2_components::tab_bar fastbootd_tabs;
+   console_page_view fastbootd_console;
+-  size_t fastbootd_console_consumed = 0;
++  console_window fastbootd_console_window;
++  bool fastbootd_console_armed = false;
+   uint64_t fastbootd_last_poll_ms = 0;
+   bool sideload_wipe_dalvik = false;
+   bool sideload_wipe_cache = false;
+   progress_page_view sideload_progress;
+-  size_t sideload_console_consumed = 0;
++  console_window sideload_console_window;
++  bool sideload_console_armed = false;
+   uint64_t sideload_last_poll_ms = 0;
+   progress_page_view install_progress;
+   // tw_install_reboot's countdown: when it started, and whether it is over or
+@@ -164,7 +166,8 @@
+   lv_obj_t* format_data_track = nullptr;
+   gui2_components::swipe_slider format_data_confirm;
+   lv_obj_t* format_data_keyboard = nullptr;
+-  size_t wipe_console_consumed = 0;
++  console_window wipe_console_window;
++  bool wipe_console_armed = false;
+   uint64_t wipe_last_poll_ms = 0;
+   bool wipe_selected[64] = {};
+   size_t wipe_target_count = 0;
+@@ -207,7 +210,8 @@
+   // The install list picking an image for repackimage (repackselect).
+   bool install_repack = false;
+   progress_page_view backup_progress;
+-  size_t backup_console_consumed = 0;
++  console_window backup_console_window;
++  bool backup_console_armed = false;
+   uint64_t backup_last_poll_ms = 0;
+   restore_page_view restore_view;
+   gui2_components::tab_bar restore_tabs;
+@@ -220,7 +224,8 @@
+   std::string restore_path;
+   std::string restore_name;
+   progress_page_view restore_progress;
+-  size_t restore_console_consumed = 0;
++  console_window restore_console_window;
++  bool restore_console_armed = false;
+   uint64_t restore_last_poll_ms = 0;
+   size_t mount_target_count = 0;
+   size_t console_consumed = 0;

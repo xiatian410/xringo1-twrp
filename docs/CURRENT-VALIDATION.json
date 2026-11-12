@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-format.img",
-  "image_sha256": "117d67ba178c1a66739571436287d7a01e975fea169fddb7e28706d55bada9fe",
-  "production_sources": 786,
+  "image_name": "recovery-dijun-unified-progress-console.img",
+  "image_sha256": "a29624a081b50c7b5c388c3d4f79695dfebd9791c83c48770fc267fe28721b9c",
+  "production_sources": 787,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -701,6 +701,30 @@
       "failures": 0,
       "local_report_sha256": "f7a03a8de5d83f400c61cda43330ffdbc5dc4436c89522a78e137aabb064a2c7",
       "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "progress-console-0072",
+      "status": "PASS",
+      "cases": 30,
+      "failures": 0,
+      "local_report_sha256": "2de18b15e17513417579d26b9008464aa500fbec8c00e7443e99fd7ec217ec82",
+      "scope": "Original five page console pollers, shared bounded window/deltas, before_render/after_present and scaffold deletion reset with actual LVGL. Completed tool worker supplies status only; target page builders, backend operations, full GUI tick/router, console producer/fonts/flush/DRM are not executed."
+    },
+    {
+      "name": "progress-console-before-0072",
+      "status": "FAIL",
+      "cases": 30,
+      "failures": 30,
+      "local_report_sha256": "41735b305997f3e48aa20e27d705d54a1bcb25208bac5d0f33fc6ecd20f330b4",
+      "scope": "Original five page console pollers, shared bounded window/deltas, before_render/after_present and scaffold deletion reset with actual LVGL. Completed tool worker supplies status only; target page builders, backend operations, full GUI tick/router, console producer/fonts/flush/DRM are not executed."
+    },
+    {
+      "name": "tool-console-0072",
+      "status": "PASS",
+      "cases": 6,
+      "failures": 0,
+      "local_report_sha256": "f66f1b517cc5d8d32f8aac173cb04b072f09a660d244f0be25f64a63a8d278d7",
+      "scope": "Bounded tool console + actual worker/progress LVGL, large history and reentry.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",

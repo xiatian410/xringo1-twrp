@@ -55,3 +55,23 @@
 当前候选 `recovery-dijun-unified-log-export.img`，SHA-256 `629f19792d41e1fbc4ec0ad0b7f38bed70ba9b51f234544de4f5cd53a551bf3c`。installclean 后 `make -j$(nproc)` 30 并发构建，781 份生产来源、六份 profile 和打包 Recovery 核对。与 backup-manage 候选仅主程序、构建属性与文件摘要不同；备份管理 / 刷新 worker 实际函数未变，直接复用原检查，不再次跑页面生命周期或震动测试。审计入口 `python3 scripts/audit_copylog_delivery.py`。
 
 本修正不使日志文件写入成为原子替换，写入中失败可能留下部分目标内容；不承诺断电持久性、对正在增长的源日志取得一致快照、内核 ring buffer 绝对不截断或真实 USB 存储行为。也没有修复容量刷新现场的展示故障。
+
+## 进度页日志生命周期补齐（0072）
+
+0070 只修正了工具进度页；本轮检查同类调用，确认备份、恢复、清除、侧载与 fastbootd 日志页仍从 0 整批读取并创建全部历史标签。0072 让这五个入口复用同一个有界 `console_window`，不复制日志实现，不改变 backend 任务或数据操作。
+
+每页分别持有窗口、读取许可和呈现标记。只有该页首帧成功提交、页面类型和实例序号均匹配后才允许读取；公共 scaffold 删除旧页时清空 view/window 并撤销许可。备份、恢复、清除和侧载先更新状态再读取日志。沿用最多 160 显示行、24 项/4096 字节/64 消息的读取上限、32 行应用批次及向上回看，不裁剪 backend 历史。
+
+复用已有测试入口 `tests/tool_console_test.py --pages`，执行五个原始 poller、共用窗口与 LVGL 行应用、原始 before_render/after_present 和从公共 scaffold 提取的对应删除清理语句。每入口六种调度：5000 项历史、任务已完成、console 忙、历史回看、代次变化、删除重入，共 30 项通过。旧五个入口的同组 30 项均在首次无界读取断言失败，属于同一类缺陷的多入口覆盖，不能计作 30 个独立缺陷。共享呈现回调改变后原工具页六项必要回归通过。
+
+```bash
+python3 tests/tool_console_test.py --pages
+# 需本地旧源码，预期失败：
+python3 tests/tool_console_test.py --pages --before
+python3 tests/tool_console_test.py
+python3 scripts/audit_progress_console_delivery.py
+```
+
+状态来源为已完成的真实工具 worker；五个业务 backend、目标页面的完整 builder/router/tick、console 生产端、字体、flush 和 DRM 不是本测试范围。fastbootd 场景的“已完成”仅是共用 fixture 的状态，不宣称 fastbootd 有该终态。没有执行备份、清除、恢复、实际侧载或 USB；本批也不声称闭环现场刷新停留根因。
+
+候选 `recovery-dijun-unified-progress-console.img`，SHA-256 `a29624a081b50c7b5c388c3d4f79695dfebd9791c83c48770fc267fe28721b9c`。按 `installclean` 后 `make -j$(nproc)`（30 并发）构建，787 项生产来源、六份 profile；对上一候选仅 GUI 库、构建属性与 ramdisk 摘要变化。触摸策略及 MTP/updater/profile 资源未改，不因本批重跑。

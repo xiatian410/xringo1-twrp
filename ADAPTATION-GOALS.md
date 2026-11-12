@@ -2,7 +2,7 @@
 
 设备：Xiaomi 15S Pro（dijun / XRING O1）。目标：OS3 / OS4 优先，同一镜像尽可能覆盖所列 OS2 样本。本文保留目标和验收要求，不再堆积逐轮进度；当前进度集中在 [工作队列](docs/WORK-QUEUE.md) 与 [验证报告](simulation-report.md)。
 
-本轮生产进展：0071 统一 MTP 对象格式、属性与筛选，清理构建 786 来源 / 六 profile。只做文件名分类，媒体标签和真实 USB 仍待完成；见[对象说明](docs/MTP-OBJECTS-ADAPTATION.md#文件格式与筛选一致性0071)。
+本轮生产进展：0072 为备份/恢复/清除/侧载/fastbootd 补齐有界日志与页面首帧/删除门控，清理构建 787 来源 / 六 profile。业务 backend 与触摸脚本未改，见[操作反馈](docs/OPERATION-FEEDBACK-ADAPTATION.md#进度页日志生命周期补齐0072)。
 
 ## 执行约定
 

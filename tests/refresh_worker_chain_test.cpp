@@ -62,7 +62,13 @@ bool twrp_tools_backend::users_locked(){assert(false);return false;}
 }
 static gui2_backend::twrp_tools_backend object;
 static gui2_backend::tools_backend*tools=&object;
-static struct {gui2_pages::progress_page_view tool_progress; gui2_pages::console_window tool_console; bool tool_console_armed=false; size_t tool_console_consumed=0; bool install_console_armed=false,decrypt_console_armed=false; gui2_pages::progress_page_view install_progress,decrypt_progress;}page_state;
+static struct {
+gui2_pages::progress_page_view backup_progress; gui2_pages::console_window backup_console_window; bool backup_console_armed=false; size_t backup_console_consumed=0;
+gui2_pages::progress_page_view restore_progress; gui2_pages::console_window restore_console_window; bool restore_console_armed=false; size_t restore_console_consumed=0;
+gui2_pages::progress_page_view wipe_progress; gui2_pages::console_window wipe_console_window; bool wipe_console_armed=false; size_t wipe_console_consumed=0;
+gui2_pages::progress_page_view sideload_progress; gui2_pages::console_window sideload_console_window; bool sideload_console_armed=false; size_t sideload_console_consumed=0;
+gui2_pages::console_page_view fastbootd_console; gui2_pages::console_window fastbootd_console_window; bool fastbootd_console_armed=false; size_t fastbootd_console_consumed=0;
+ gui2_pages::progress_page_view tool_progress; gui2_pages::console_window tool_console; bool tool_console_armed=false; size_t tool_console_consumed=0; bool install_console_armed=false,decrypt_console_armed=false; gui2_pages::progress_page_view install_progress,decrypt_progress;}page_state;
 static struct {const char*running="Refreshing partition info";const char*done="Refresh complete";}tool_job_request;
 namespace gui2_i18n {extern const language_pack kEnglish;}
 static const auto&strings(){return gui2_i18n::kEnglish;}

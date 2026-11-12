@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-format.img",
-  "image_sha256": "117d67ba178c1a66739571436287d7a01e975fea169fddb7e28706d55bada9fe",
-  "image_status": "Clean-built patch0071: filename-based MTP formats consistent across info/properties/list/filter/rename;786 sources/six profiles. Full adaptation remains in progress.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-progress-console.img",
+  "image_sha256": "a29624a081b50c7b5c388c3d4f79695dfebd9791c83c48770fc267fe28721b9c",
+  "image_status": "Clean-built patch0072: bounded backup/restore/wipe/sideload/fastbootd page logs and page-instance frame/reset lifecycle;787 sources/six profiles. Field refresh and full adaptation remain open.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -3027,6 +3027,30 @@
       "evidence": "logs/mtp-format-transfers.json",
       "evidence_sha256": "f7a03a8de5d83f400c61cda43330ffdbc5dc4436c89522a78e137aabb064a2c7",
       "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "progress-console-0072",
+      "result": "pass",
+      "count": 30,
+      "evidence": "logs/progress-console.json",
+      "evidence_sha256": "2de18b15e17513417579d26b9008464aa500fbec8c00e7443e99fd7ec217ec82",
+      "scope": "Original five page console pollers, shared bounded window/deltas, before_render/after_present and scaffold deletion reset with actual LVGL. Completed tool worker supplies status only; target page builders, backend operations, full GUI tick/router, console producer/fonts/flush/DRM are not executed."
+    },
+    {
+      "name": "progress-console-before-0072",
+      "result": "expected-failure",
+      "count": 30,
+      "evidence": "logs/progress-console-before.json",
+      "evidence_sha256": "41735b305997f3e48aa20e27d705d54a1bcb25208bac5d0f33fc6ecd20f330b4",
+      "scope": "Original five page console pollers, shared bounded window/deltas, before_render/after_present and scaffold deletion reset with actual LVGL. Completed tool worker supplies status only; target page builders, backend operations, full GUI tick/router, console producer/fonts/flush/DRM are not executed."
+    },
+    {
+      "name": "tool-console-0072",
+      "result": "pass",
+      "count": 6,
+      "evidence": "logs/tool-console.json",
+      "evidence_sha256": "f66f1b517cc5d8d32f8aac173cb04b072f09a660d244f0be25f64a63a8d278d7",
+      "scope": "Bounded tool console + actual worker/progress LVGL, large history and reentry.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
     }
   ],
   "source_review_followups": [
@@ -3342,8 +3366,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/mtp-format-delivery.json",
-    "scope": "Patch0071; clean build;786 sources;six profiles;objects114/transfers48;four old format scenario failures. Unchanged GUI/updater/profile bytes reused.",
+    "evidence": "logs/progress-console-delivery.json",
+    "scope": "Patch0072; clean build;787 sources;six profiles;five page poller/frame/reset paths30 cases, old30 failures, shared tool6 regression. Backend operations unchanged.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -3941,5 +3965,12 @@
     "evidence": "logs/mtp-format-objects.json",
     "content_validation": false,
     "scope": "Filename extension classification only; no EXIF/media tags/codecs/USB/Windows or full MTP validation."
+  },
+  "progress_console_lifecycle": {
+    "document": "docs/OPERATION-FEEDBACK-ADAPTATION.md",
+    "patch": "0072-progress-console-bounded-lifecycle.patch",
+    "evidence": "logs/progress-console.json",
+    "scope": "Original pollers/shared window and present/reset paths with host LVGL; no full business backend/page routing/DRM.",
+    "hardware_testing": false
   }
 }
