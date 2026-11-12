@@ -482,6 +482,17 @@
       "short_input_complete": false,
       "full_ota_install": false,
       "upper_completion_hash_executed": false
+    },
+    {
+      "name": "ota-vabc-session",
+      "status": "PASS",
+      "cases": 10,
+      "local_report_sha256": "9d5fde0a2482d2292460b2716d59ee1f0f8c1567325cedbcbdba10aebfff1c4c",
+      "scope": "Run real ARM64 VABC session, snapshot readback and asynchronous target verifier.\n\nFileControl replaces device mapping, and the snapshot view is materialized to a\nregular file for the original verifier. No SnapshotManager, snapuserd, signed\npayload ingestion, partition switch, merge, or full OTA. Archives test-time bound.\n",
+      "mapping_boundary": "Explicit FileControl: actual COW writer and snapshot reader, materialized snapshot view for real FilesystemVerifierAction; no dm-user or snapuserd.",
+      "short_input_verifier_code": 15,
+      "full_ota_install": false,
+      "archive_historically_bound_to_image": false
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",

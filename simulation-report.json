@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance. A/B command preparation now has21-case native coverage with real ZIP and harmless engine; not payload application."
+    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance. A/B command preparation now has21-case native coverage with real ZIP and harmless engine; not payload application. VABC Init/replace/ZERO/checkpoint/Finished/Close and original snapshot reader -> materialized-file -> original asynchronous target verifier now execute10 ARM64 cases. Short input is rejected with error15; full DeltaPerformer/signed payload/SnapshotManager/snapuserd/merge remain open."
   ],
   "hardware_unverified": [
     "motor output",
@@ -2829,6 +2829,15 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "ARM64-VABC-session-target-verifier",
+      "evidence": "logs/ota-vabc-session.json",
+      "evidence_sha256": "9d5fde0a2482d2292460b2716d59ee1f0f8c1567325cedbcbdba10aebfff1c4c",
+      "count": 10,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Run real ARM64 VABC session, snapshot readback and asynchronous target verifier.\n\nFileControl replaces device mapping, and the snapshot view is materialized to a\nregular file for the original verifier. No SnapshotManager, snapuserd, signed\npayload ingestion, partition switch, merge, or full OTA. Archives test-time bound.\n"
     }
   ],
   "source_review_followups": [
@@ -3354,6 +3363,19 @@
       "scope": "Run real ARM64 operation executor -> snapshot extent writer -> COW -> decompression.\n\nSynthetic payload operation data, real current build archives; no DeltaPerformer\nhash/signature validation, VABC Init/SnapshotManager, devices, merge or full OTA.\nDelivered linker/shared libraries are image-bound; archives are test-time bound,\nnot historically bound by the older image provenance manifest.\n",
       "short_input_observation": "Operation true with zero stored blocks; upper completion/hash stages source-reviewed, not executed. Not installation success.",
       "production_change": false,
+      "archive_historically_bound_to_image": false
+    },
+    "vabc_session_execution": {
+      "document": "docs/OTA-OPERATION-COW.md",
+      "report": "logs/ota-vabc-session.json",
+      "report_sha256": "9d5fde0a2482d2292460b2716d59ee1f0f8c1567325cedbcbdba10aebfff1c4c",
+      "status": "PASS",
+      "cases": 10,
+      "scope": "Run real ARM64 VABC session, snapshot readback and asynchronous target verifier.\n\nFileControl replaces device mapping, and the snapshot view is materialized to a\nregular file for the original verifier. No SnapshotManager, snapuserd, signed\npayload ingestion, partition switch, merge, or full OTA. Archives test-time bound.\n",
+      "mapping_boundary": "Explicit FileControl: actual COW writer and snapshot reader, materialized snapshot view for real FilesystemVerifierAction; no dm-user or snapuserd.",
+      "short_input_observation": "Operation and FinishedInstallOps true; original asynchronous FilesystemVerifierAction rejects incomplete view with kNewRootfsVerificationError(15).",
+      "production_change": false,
+      "full_ota_install": false,
       "archive_historically_bound_to_image": false
     }
   },

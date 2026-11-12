@@ -14,7 +14,7 @@
 ## 优先事项
 
 1. **容量刷新现场**：已有日志显示约 5.15 秒完成，界面未结束根因仍未定位。页面生命周期检查没有复现，不凭单次非原子 DRM 栈改驱动，不要求反复触发采集。见 [调查记录](REFRESH-STUCK-INVESTIGATION.md)。
-2. **OTA / A/B 安装链**：0062 / 0064 已修正命令和同步拒绝路径。当前构建 ARM64 COW v3 / LZ4 / 64 KiB 已完成普通文件写入、解析和解压往返，见 [范围](OTA-COW-ROUNDTRIP.md)。实际 ARM64 操作执行器 → 快照 extent → COW 接续已覆盖 REPLACE / BZ / XZ 及部分写入失败，见 [操作接续](OTA-OPERATION-COW.md)。短输入的操作返回可为true但内容不完整；上层最终哈希检查仅做源码复核，下一步需接入 DeltaPerformer / VABC 完成 / 最终哈希生命周期，不重复格式叶函数。当前 archive 不具有旧镜像来源清单的历史绑定。
+2. **OTA / A/B 安装链**：0062 / 0064 已修正命令和同步拒绝路径。当前构建 ARM64 COW v3 / LZ4 / 64 KiB 已完成普通文件写入、解析和解压往返，见 [范围](OTA-COW-ROUNDTRIP.md)。实际 ARM64 操作执行器 → 快照 extent → COW 接续已覆盖 REPLACE / BZ / XZ 及部分写入失败，见 [操作接续](OTA-OPERATION-COW.md)。VABC Init / 操作 / 完成 / 关闭、真实快照读取及最终异步校验器已通过普通文件接续十场景：短输入虽完成返回true，最终校验返回错误15。设备映射明确使用替身，下一步针对 DeltaPerformer 完整 payload 输入、SnapshotManager 和失败传播，不重复已通过的会话检查。当前 archive 不具有旧镜像来源清单的历史绑定。
 3. **文档与仓库入口**：已统一 README、目标、构建、状态和使用说明；后续按用途更新，避免把逐轮进度复制到多个入口。
 
 温度避让中央摄像头、扩容尺寸边界与 OTA 同步拒绝已进入 bounded-maintenance 候选，见 [交付记录](BOUNDED-MAINTENANCE.md)。刷入目标与 NV 限制、XRING O1 加载页、OTG 发现等既有修正不重新立项。
