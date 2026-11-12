@@ -1,4 +1,4 @@
-> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](WORK-QUEUE.md)。
+> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](../../WORK-QUEUE.md)。
 
 # GUI 震动后台执行与资源回收
 
@@ -8,7 +8,7 @@
 
 原先 GUI 按钮、键盘及硬件设置通过 `twrp_hardware_settings` 同步探测能力并调用 minui。FF 在新请求前擦除旧效果；原厂擦除 worker 可能等待“效果时长 + 500 ms”。即使只查询能力，也可能等待同一把 FF 锁。
 
-[0027 补丁](../dtsrc/O1_asic_dual/patches/0027-gui-haptics-worker.patch)新增 `haptics_controller`，由 recovery main 创建并显式交给 GUI 硬件 backend。设备探测、播放与 FF 描述符释放都由它的单一 worker 执行，GUI 提交请求时不等待设备 I/O。非 GUI 操作完成调用者已在业务 worker 中运行，继续保留同步返回路径；不会为每次操作创建额外线程。
+[0027 补丁](../../../dtsrc/O1_asic_dual/patches/0027-gui-haptics-worker.patch)新增 `haptics_controller`，由 recovery main 创建并显式交给 GUI 硬件 backend。设备探测、播放与 FF 描述符释放都由它的单一 worker 执行，GUI 提交请求时不等待设备 I/O。非 GUI 操作完成调用者已在业务 worker 中运行，继续保留同步返回路径；不会为每次操作创建额外线程。
 
 待办最多一条，后到的反馈替代尚未开始的旧反馈；等待超过 250 ms 的待办丢弃，避免阻塞解除后补播过时点击。已经开始的请求不会被强行中断。后台空闲时每 500 ms 刷新能力；正在执行的设备 I/O 会推迟刷新，界面读取缓存；初始化尚未探测完成或设备消失时入口可能暂时不可见，重新进入设置可读取最新状态。此缓存属于软件能力检测，不代表电机实际有输出。
 
@@ -20,7 +20,7 @@ GUI 退出在销毁图形资源之前调用 `stop_haptics()`：禁止新请求�
 
 ## 主机回归
 
-[16 项报告](../logs/haptics-worker.json)、[执行日志](../logs/haptics-worker.log)编译实际控制器、实际硬件 backend 与生产接口头，以真实线程运行。probe/play/release 是设备边界替身；测试保持设备回调门闩关闭，再要求 GUI 方法完成，证明它们不依赖该 I/O 返回。ASan/UBSan 启用。
+[16 项报告](../../../logs/haptics-worker.json)、[执行日志](../../../logs/haptics-worker.log)编译实际控制器、实际硬件 backend 与生产接口头，以真实线程运行。probe/play/release 是设备边界替身；测试保持设备回调门闩关闭，再要求 GUI 方法完成，证明它们不依赖该 I/O 返回。ASan/UBSan 启用。
 
 - 探测和播放阻塞时，能力查询、提交、设置与错误轮询仍返回。
 - 5000 次连续请求仅保留最新待办；过期请求丢弃。
@@ -30,15 +30,15 @@ GUI 退出在销毁图形资源之前调用 `stop_haptics()`：禁止新请求�
 
 这些场景没有执行真实 ioctl、内核调度或电机；原有实际 backend→minui router→FF 的 22 项 ioctl 替身测试、21 项实际 LVGL 控件回放、64 项完成反馈回归在当前源码上通过。原厂驱动 120 项与生命周期 90 项也更新了当前 FF 源码绑定；它们不能合并称为完整硬件验收。
 
-另有[4 项生产 FF 联调](../logs/haptics-worker-ff.json)：实际控制器→硬件 backend→minui 路由→FF 代码执行，`EVIOCRMFF` 被门闩阻塞时查询与 5000 次提交仍完成；stop 丢弃待办、等待已开始请求完成后关闭描述符。上传/播放错误进入后台错误状态且没有转投 LED；重复 stop 不重复关闭。ioctl/属性/设备文件仍是替身，不执行内核 input core。该套件与原有 22 项路由共用[夹具](../tests/haptics_route_test.cpp)。
+另有[4 项生产 FF 联调](../../../logs/haptics-worker-ff.json)：实际控制器→硬件 backend→minui 路由→FF 代码执行，`EVIOCRMFF` 被门闩阻塞时查询与 5000 次提交仍完成；stop 丢弃待办、等待已开始请求完成后关闭描述符。上传/播放错误进入后台错误状态且没有转投 LED；重复 stop 不重复关闭。ioctl/属性/设备文件仍是替身，不执行内核 input core。该套件与原有 22 项路由共用[夹具](../../../tests/haptics_route_test.cpp)。
 
 ## 构建与同镜像证据
 
-已按 `make -j$(nproc) installclean`、`make -j$(nproc) recoveryimage` 执行最终构建，30 并发。[构建日志](../logs/build-haptics-worker-final.log)、`镜像检查`（历史文件当前缺失）、`707 份来源指纹`（历史文件当前缺失）保留。
+已按 `make -j$(nproc) installclean`、`make -j$(nproc) recoveryimage` 执行最终构建，30 并发。[构建日志](../../../logs/build-haptics-worker-final.log)、`镜像检查`（历史文件当前缺失）、`707 份来源指纹`（历史文件当前缺失）保留。
 
 镜像 SHA-256：`d25a4b8a7324af6daa451c52417193a4a77ba7f3e3df5a62d00084b32ed90c30`。总大小 104,857,600 B，压缩 ramdisk 76,626,119 B，封装/填充预算 28,225,536 B，六套 profile 与 78 个去重 blob。
 
-同镜像[启动脚本回放](../logs/haptics-worker-profile-runtime.json)完成六包两槽位及失败场景 77 次阶段调用；[init 检查](../logs/haptics-worker-init-verification.json)、[12 项基础策略](../logs/haptics-worker-policy-regression.json)、[53 项 USB 策略](../logs/haptics-worker-helper-policy.json)通过。以上为离线检查，不替代内核启动、TEE、USB 或电机验证。
+同镜像[启动脚本回放](../../../logs/haptics-worker-profile-runtime.json)完成六包两槽位及失败场景 77 次阶段调用；[init 检查](../../../logs/haptics-worker-init-verification.json)、[12 项基础策略](../../../logs/haptics-worker-policy-regression.json)、[53 项 USB 策略](../../../logs/haptics-worker-helper-policy.json)通过。以上为离线检查，不替代内核启动、TEE、USB 或电机验证。
 
 ## 复现与后续
 
@@ -53,4 +53,4 @@ python3 scripts/audit_unified_delivery.py
 
 完整电源/复位/固件 probe、start/stop worker、IRQ、真实 input core/workqueue 与整页 GUI 业务仍待补齐。物理电机保持 U，继续仅使用固件与主机模拟推进。
 
-后续触摸顺序候选为 `recovery-dijun-unified-module-state.img`，详见[触摸排查](OS4-TOUCH-FAILURE.md)。本页 worker 构建与证据保留为历史，不代表触摸已经恢复。
+后续触摸顺序候选为 `recovery-dijun-unified-module-state.img`，详见[触摸排查](../../OS4-TOUCH-FAILURE.md)。本页 worker 构建与证据保留为历史，不代表触摸已经恢复。

@@ -1,10 +1,10 @@
-> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](WORK-QUEUE.md)。
+> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](../../WORK-QUEUE.md)。
 
 # OS4 原厂服务线程、XML 与首次 PCM 启动
 
 2026-11-12：原厂 PCM 构造本身没有控制写入，但它创建的动态效果线程首次运行会配置音频路径，即使当前没有动态效果。此前“普通 on 函数自身不调用 mixer”的证据不能排除这项后台初始化依赖；本轮将它列为下一步需要核对的差异，没有将它认定为现场无震动根因。
 
-证据为[执行程序](../tests/haptics_service_tail_review.py)、[14 场景结果](../logs/haptics-service-tail-review.json)和[来源核对](../scripts/audit_haptics_service_tail_review.py)。两份 OS4 服务及 AAC 库沿用[此前固定摘要](HAPTICS-PCM-INITIALIZATION.md)；原厂 `libtinyalsa.so` 两份同为 `c5008f3a3e1257e0f4042331ebc6279ca04347d2027ac5be4d8b0ddee2350c7b`，本组只执行其中的帧数转换叶函数。服务外部符号槽位来自 `llvm-readelf` 对原始 Android 压缩重定位的解码，输出也绑定摘要。
+证据为[执行程序](../../../tests/haptics_service_tail_review.py)、[14 场景结果](../../../logs/haptics-service-tail-review.json)和[来源核对](../../../scripts/audit_haptics_service_tail_review.py)。两份 OS4 服务及 AAC 库沿用[此前固定摘要](HAPTICS-PCM-INITIALIZATION.md)；原厂 `libtinyalsa.so` 两份同为 `c5008f3a3e1257e0f4042331ebc6279ca04347d2027ac5be4d8b0ddee2350c7b`，本组只执行其中的帧数转换叶函数。服务外部符号槽位来自 `llvm-readelf` 对原始 Android 压缩重定位的解码，输出也绑定摘要。
 
 ## 执行范围
 
@@ -24,7 +24,7 @@
 
 1. 打开 `/dev/socket/vibrator_audio_socket_0`，发送 72 字节报文，前三个 32 位字为 `[42,1,1]`，其余为零。回复 `{1,0}` 是显式 ACK 夹具，不能当成真实音频服务响应；本组没有擅自解释报文的电源语义。
 2. 设置 `XR_TDM7_RX` 数组 `[48000,24,4]`。
-3. 依次请求 `Haptics Source=1`、`ASP Mode=1`、`ASP PCM Slot=1`、`audio_tdm_fmtchs=8`、`XR_TDM7_RX Mixer XR_media7=1`。Source=1 的 PCM 含义见[原厂 DAPM 核查](HAPTICS-ADAPTATION.md)。
+3. 依次请求 `Haptics Source=1`、`ASP Mode=1`、`ASP PCM Slot=1`、`audio_tdm_fmtchs=8`、`XR_TDM7_RX Mixer XR_media7=1`。Source=1 的 PCM 含义见[原厂 DAPM 核查](../../HAPTICS-ADAPTATION.md)。
 4. 请求 `pcm_open(card=0, device=9, flags=0)`，config 前八字为 `[1,48000,480,4,3,120,2147483647,120]`。读到合成 ready/buffer 后，原始转换得 4096 字节，再进入首次等待；没有提交 PCM 音频样本。
 
 因此原厂后台线程确实有额外音频初始化，不能把“构造/on 范围未写控制”扩大为整个服务未写控制。相应硬件是否就绪、这些请求是否影响独立 FF 输出仍未证明；没有向 Recovery 直接复制这组写入。

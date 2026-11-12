@@ -35,7 +35,7 @@
 - **0064**：A/B 更新器使用有效 Error 对象；同步拒绝立即返回错误，不进入无完成回调的循环。
 - 继承此前 XRING O1 加载页、刷入目标、NV 普通界面限制、OTG 发现及安装 / MTP 收尾等修正。
 
-完整范围见 [有限维护交付记录](docs/BOUNDED-MAINTENANCE.md)。本批重新编译并核对共享 GUI 库；Recovery 主程序、MTP 库、更新器与 profile 字节不变。
+完整范围见 [有限维护交付记录](docs/archive/BOUNDED-MAINTENANCE.md)。本批重新编译并核对共享 GUI 库；Recovery 主程序、MTP 库、更新器与 profile 字节不变。
 
 ## 本批与继承证据
 

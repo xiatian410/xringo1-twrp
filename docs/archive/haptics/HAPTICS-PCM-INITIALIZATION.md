@@ -1,4 +1,4 @@
-> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](WORK-QUEUE.md)。
+> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](../../WORK-QUEUE.md)。
 
 # OS4 原厂 PCM 与波形库初始化核查
 
@@ -6,7 +6,7 @@
 
 2026-11-12：两份 OS4 原厂服务确实根据 `ro.odm.mm.vibrator.device_type=pcm` 选择 PCM 后端。这次执行了该选择、PCM 构造及 AAC 波形库初始化本体，补上此前单独 FF 后端检查的范围缺口。已执行范围没有额外供电或 mixer 控制写入，尚无依据把 PCM 初始化加入 Recovery 作为无震动修复。
 
-证据为 [执行程序](../tests/haptics_pcm_init_review.py)、[26 项结果](../logs/haptics-pcm-init-review.json)和[来源核对](../scripts/audit_haptics_pcm_init_review.py)。两份服务 SHA256 均为 `0eacb88e11a3402b1551b79cc85e3cfcbbd518c7da44684fc5354829e27be2e7`，两份 `libaachaptics.so` 均为 `3f8bb19b8a739fcd37ca557c83b808a48417bc7a1a10be95c7306530b62e1221`；属性、XML、反汇编、测试和模拟器文件也绑定摘要。
+证据为 [执行程序](../../../tests/haptics_pcm_init_review.py)、[26 项结果](../../../logs/haptics-pcm-init-review.json)和[来源核对](../../../scripts/audit_haptics_pcm_init_review.py)。两份服务 SHA256 均为 `0eacb88e11a3402b1551b79cc85e3cfcbbd518c7da44684fc5354829e27be2e7`，两份 `libaachaptics.so` 均为 `3f8bb19b8a739fcd37ca557c83b808a48417bc7a1a10be95c7306530b62e1221`；属性、XML、反汇编、测试和模拟器文件也绑定摘要。
 
 ## 实际执行范围
 

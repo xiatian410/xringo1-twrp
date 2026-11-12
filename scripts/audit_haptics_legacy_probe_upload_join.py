@@ -68,7 +68,7 @@ def main():
                   evidence_sha256=sha(path), audit_script_sha256=sha(Path(__file__)),
                   documents={name: sha(ROOT / name) for name in [
                       'ADAPTATION-GOALS.md', 'MAINTENANCE.md', 'simulation-report.md',
-                      'simulation-report.json', 'docs/HAPTICS-FIRMWARE-EMULATION.md']})
+                      'simulation-report.json', 'docs/archive/haptics/HAPTICS-FIRMWARE-EMULATION.md']})
     (ROOT / 'logs/haptics-legacy-probe-upload-join-audit.json').write_text(
         json.dumps(result, indent=2) + '\n')
     print('PASS: 20 original legacy probe/upload paths; source hashes bound, no motor claim')

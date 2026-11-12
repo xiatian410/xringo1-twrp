@@ -1122,9 +1122,9 @@ def main():
           'docs/OPERATION-FEEDBACK-ADAPTATION.md','docs/RESTORE-SESSION-ADAPTATION.md',
           'docs/BACKUP-SESSION-ADAPTATION.md','docs/ARCHIVE-PIPELINE-ADAPTATION.md',
           'docs/MTP-OBJECTS-ADAPTATION.md','docs/MTP-ADAPTATION.md','docs/MTP-TRANSFERS-ADAPTATION.md','docs/MTP-EVENTS-ADAPTATION.md',
-          'docs/USB-CONFIGFS-ADAPTATION.md','docs/MTP-CONTROL-ADAPTATION.md','docs/OS4-STABLE-ADAPTATION.md',
-          'docs/HAPTICS-DRIVER-EMULATION.md','docs/HAPTICS-LIFECYCLE-EMULATION.md','docs/HAPTICS-WORKER-ADAPTATION.md',
-          'docs/HAPTICS-PLAYBACK-EMULATION.md','docs/HAPTICS-FIRMWARE-EMULATION.md','docs/OS4-TOUCH-FAILURE.md','docs/MODULE-STATE-ADAPTATION.md']
+          'docs/USB-CONFIGFS-ADAPTATION.md','docs/MTP-CONTROL-ADAPTATION.md','docs/PROFILE-SELECTION.md',
+          'docs/archive/haptics/HAPTICS-DRIVER-EMULATION.md','docs/archive/haptics/HAPTICS-LIFECYCLE-EMULATION.md','docs/archive/haptics/HAPTICS-WORKER-ADAPTATION.md',
+          'docs/archive/haptics/HAPTICS-PLAYBACK-EMULATION.md','docs/archive/haptics/HAPTICS-FIRMWARE-EMULATION.md','docs/OS4-TOUCH-FAILURE.md','docs/MODULE-STATE-ADAPTATION.md']
     for name in docs:
         p=ROOT/name;body=p.read_text()
         for link in re.findall(r'\]\(([^)]+)\)',body):
@@ -1137,8 +1137,8 @@ def main():
                         'docs/OPERATION-FEEDBACK-ADAPTATION.md','docs/RESTORE-SESSION-ADAPTATION.md',
                         'docs/BACKUP-SESSION-ADAPTATION.md','docs/ARCHIVE-PIPELINE-ADAPTATION.md',
                         'docs/MTP-OBJECTS-ADAPTATION.md','docs/MTP-ADAPTATION.md','docs/MTP-TRANSFERS-ADAPTATION.md','docs/MTP-EVENTS-ADAPTATION.md',
-                        'docs/USB-CONFIGFS-ADAPTATION.md','docs/MTP-CONTROL-ADAPTATION.md','docs/OS4-STABLE-ADAPTATION.md',
-                        'docs/HAPTICS-DRIVER-EMULATION.md','docs/HAPTICS-LIFECYCLE-EMULATION.md']:
+                        'docs/USB-CONFIGFS-ADAPTATION.md','docs/MTP-CONTROL-ADAPTATION.md','docs/PROFILE-SELECTION.md',
+                        'docs/archive/haptics/HAPTICS-DRIVER-EMULATION.md','docs/archive/haptics/HAPTICS-LIFECYCLE-EMULATION.md']:
             assert image.name in body,name
     print('PASS: current document links and artifact pointers.')
     print('Recorded goal status:',report['status'],'; outstanding groups:',len(report['not_yet_completed']))

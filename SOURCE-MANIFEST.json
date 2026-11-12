@@ -32,7 +32,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "aeeac9d68b9279f15c8f08d57324211ae7d582be696190eb91e746e91bb85b3c",
+    "sha256": "5058aa3f37218b01e2d0a3d567bf4599475aba2e49a6521f4b0dcabd11ae2b34",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -44,7 +44,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "fa0e6b23fdf24d28d98ce521007c2cb461b6eec293e1ecf201272b9c29379219",
+    "sha256": "13849b6890b4bc16716d36ea042bc7d561e9f2d4b6711411f209accd64e2e2d3",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -63,10 +63,6 @@
     "sha256": "60d7a9de457d897c45ec04e1a9a6339251c968ecb1b5e16d4dbc7259bb88afe1",
     "mode": "0o644"
   },
-  "docs/BOUNDED-MAINTENANCE.md": {
-    "sha256": "de6583741e0cf87d6d04dfc9cf380134dac520dd8f4cd2e3c031abfb51c83849",
-    "mode": "0o644"
-  },
   "docs/CURRENT-VALIDATION.json": {
     "sha256": "cda4cf5114e83faa68349e53fd65a982ad5d19057ac4f7d6a2e951caff0f4c1e",
     "mode": "0o644"
@@ -80,63 +76,11 @@
     "mode": "0o644"
   },
   "docs/HAPTICS-ADAPTATION.md": {
-    "sha256": "b522edd0eb59dff4427c659076aab277325617f6aab5e974cae9f01586ac63b3",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-ASP-FF-STATE.md": {
-    "sha256": "c0d26107aa4a63fd6746bad0d7ab2fcb962dbf1b51a094a894f83ee0a0aa0b52",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-AUDIO-SOCKET-PEER.md": {
-    "sha256": "0042c12e0ae5b2ee91b147fb0f0f3fd1fa05157900f475bea783ed017e1ccbbd",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-DRIVER-EMULATION.md": {
-    "sha256": "b068108e69745ae7b7f2f9987b776f6729fdb9c0245218f96787a81f2791d2fa",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-FIRMWARE-EMULATION.md": {
-    "sha256": "74c00265984cecddc4077663bfe68eb89f04fb7818f010eda36736d0f24d1ab2",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-LIFECYCLE-EMULATION.md": {
-    "sha256": "a3909a7060c84b210656591899e13223e695ccc377162c17ff48df72ce69f113",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-PCM-FF-STATE.md": {
-    "sha256": "7190e6f5d834fcd39c7814690ec653990534645168e2cb42d2ca5d3a29b108d5",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-PCM-INITIALIZATION.md": {
-    "sha256": "f7d090283b21e3854a7a0cde38d1a03e6d5d723ae7b224f20e4211220b92c424",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-PLAYBACK-EMULATION.md": {
-    "sha256": "076d102c83c5bc60b41243e353d1d6fb5c178f1af7eb71448365d31e73ae5940",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-PROBE-ADAPTATION.md": {
-    "sha256": "8763dd03439e293b807b89e11c2bbb4ce10aca1a5cad410c9fe30c6a3ae05eec",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-REQUEST-TRACE.md": {
-    "sha256": "8e9a46e19c56a64b5731d057105394dbf4f08b3999a3a6c8abe717d768d48ad4",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-SERVICE-THREAD-XML.md": {
-    "sha256": "d5e4766266d5c5ee12cd0c319ae9d685112f35b8d544b4d87c7e6b1ed5a98c94",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-STATE-COLLECTION.md": {
-    "sha256": "f4e83cb7a187590ce4eff532f8b53b3503d2f4000e58da052256c967e66c82b3",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-WORKER-ADAPTATION.md": {
-    "sha256": "fcaab1f2aea437714850b6a100994a30dd732ee223307b343a10baccc0788d53",
+    "sha256": "5c7824e196d50ac5edd49741bc4a5f24c5690e575882a6fbef6be9fe242a9ec6",
     "mode": "0o644"
   },
   "docs/INSTALL-CHAIN-VALIDATION.md": {
-    "sha256": "5b7c7aabc1fa0e8c2f4f641990baa0f88a0e4920785af5cdacdf2d7a43ac091a",
+    "sha256": "a92e9ad36c183039e4cf5b0015df9ea11d604d87f556affcd91dcc2b4ae3cc15",
     "mode": "0o644"
   },
   "docs/MODULE-STATE-ADAPTATION.md": {
@@ -180,11 +124,7 @@
     "mode": "0o644"
   },
   "docs/OPERATION-FEEDBACK-ADAPTATION.md": {
-    "sha256": "6efd57b88938cf6af9e5d4fd12a81ee0f2176ed56f92660fec480fdff29fd410",
-    "mode": "0o644"
-  },
-  "docs/OS4-STABLE-ADAPTATION.md": {
-    "sha256": "dddd7b0da60b785373a1c0c98d49da3d6543e03b728d501376088cf110293794",
+    "sha256": "6a65c1a0d1f42a4377bd384bdd120ef2661d47c3488790adb79141795f88a41f",
     "mode": "0o644"
   },
   "docs/OS4-TOUCH-FAILURE.md": {
@@ -200,11 +140,11 @@
     "mode": "0o644"
   },
   "docs/PROFILE-LINKER-ARM64.md": {
-    "sha256": "30b1af7fbb74e3a5b7d4fe19fb3747ca66b9653e2c367ecfc506e047f5766305",
+    "sha256": "fd5c3e8971ff8531918898a5958924bd88a66a01b9036ae6a5e95c0cbf54ea11",
     "mode": "0o644"
   },
   "docs/PROFILE-SELECTION.md": {
-    "sha256": "5cb45811a3d342f890e532cf07d735cf9d7d547641dde7acdbd43164cdf85457",
+    "sha256": "c0f47438e99a02b6de82abb7066b554802e5c5dc89e8d5e1ae9b3559106ac92a",
     "mode": "0o644"
   },
   "docs/RAW-IMAGE-ADAPTATION.md": {
@@ -212,11 +152,11 @@
     "mode": "0o644"
   },
   "docs/README.md": {
-    "sha256": "62164982bd915d529969998923b5e3238f30a183dd4932fc8e92a88e51535d37",
+    "sha256": "5a5a206f085985521914ecefc2a9d02af6741d9d8979f0a157f58b98ddfe707e",
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
-    "sha256": "f1a8e82326e559045bc5feeb31125b7657451975de5e4f1fe5259895628818b5",
+    "sha256": "a7fa163588b21a9f4542142f59ac855aaddfd8b4325c5f220a988a739861581a",
     "mode": "0o644"
   },
   "docs/RESTORE-SESSION-ADAPTATION.md": {
@@ -232,11 +172,7 @@
     "mode": "0o644"
   },
   "docs/STATUS-ADAPTATION.md": {
-    "sha256": "9b4b794f47b0016d4e55c41eff842dbda4482b68439d3124a07d22d4d363c9f4",
-    "mode": "0o644"
-  },
-  "docs/UI-FEEDBACK-ADAPTATION.md": {
-    "sha256": "e16b5fa73fb6f152e80e4ed1ac746ecca62ee5c32a3cc7c3792828546fd3f0da",
+    "sha256": "95603d3ae44566f05906b52d7920d83c6e7c0c0710f8af0acd128e027b355c5e",
     "mode": "0o644"
   },
   "docs/USB-CONFIGFS-ADAPTATION.md": {
@@ -248,7 +184,67 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "d2712bb9220b07f28e52afc8b2dda3e0738a42c433a119e2aae16fa3d32752bc",
+    "sha256": "d22dbf38ef66430c6d0804cf255412c3645c349bef14aba47955d1d9594fe7c0",
+    "mode": "0o644"
+  },
+  "docs/archive/BOUNDED-MAINTENANCE.md": {
+    "sha256": "cd77112ac9a1cf163ce098271ff106f005c0c8008ca7c8e08a6af82a0b08f371",
+    "mode": "0o644"
+  },
+  "docs/archive/README.md": {
+    "sha256": "b19424c1ce6ad4bd08b5213512bb9078f4a2a77ce7a855add4a54ca22e3ce412",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-ASP-FF-STATE.md": {
+    "sha256": "490da94c04ebfae0b0951e1c5d041404dee47ee0ca3ec1b0e47e492a12f2b0c8",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-AUDIO-SOCKET-PEER.md": {
+    "sha256": "2381ad5959a27334bf554bd9299f61570ddfea9a58f2ad9fc593706984e118ba",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-DRIVER-EMULATION.md": {
+    "sha256": "0aea91efc08633ac939c87358d0bd9a97ff601b466cbcf99c4fa8d9c40f252eb",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-FIRMWARE-EMULATION.md": {
+    "sha256": "f0b67bdad503037328585e9657609a4eca57b704e24701c69d320f9fec4617c5",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-LIFECYCLE-EMULATION.md": {
+    "sha256": "8b45a044d1569c3d612257302d6d5d8583525f770712cbb3113124fa84cd6318",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-PCM-FF-STATE.md": {
+    "sha256": "3dcd0957e5f20efb9ec1ac1f0f4710fbfca0bc49d23570189acd3f099b4e374a",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-PCM-INITIALIZATION.md": {
+    "sha256": "4c2e646a1d8a913394a9b343fa7b58e2a09b6aa50868c7a24a4af01ef701678f",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-PLAYBACK-EMULATION.md": {
+    "sha256": "00aed0411571f4fd892980ec2dc5c5c3956b00ca687e510a76b58980a7ca1f33",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-PROBE-ADAPTATION.md": {
+    "sha256": "5fc1167bb567b91cc9387fba24c981ea25a941031c51c01fdccdbaafa99340fe",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-REQUEST-TRACE.md": {
+    "sha256": "55a36d7269227b2052a5f362f6b08b090d9d4a2a1ba48ed311a0c2bfec81f0e7",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-SERVICE-THREAD-XML.md": {
+    "sha256": "2080946b2902b89cdaee291298ca04ba9f3a41d545b2ce8af701e52448f1ed9a",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-STATE-COLLECTION.md": {
+    "sha256": "e0fd3f17bf6d38dca5f342ccbf65d28a47fc767735974d4b9b5ca9ff03081112",
+    "mode": "0o644"
+  },
+  "docs/archive/haptics/HAPTICS-WORKER-ADAPTATION.md": {
+    "sha256": "cde757f96f1180da37ff7273226833eeb85def3a0913abd1f8d6bbfea24d8f7f",
     "mode": "0o644"
   },
   "docs/crypto-compatibility.json": {
@@ -1000,11 +996,11 @@
     "mode": "0o644"
   },
   "scripts/audit_haptics_asp_ff_join_review.py": {
-    "sha256": "e55b13bf17d6b166ee3bc78cfa585d7d289247af0d69b9b59b8ebcd2fd54f5a8",
+    "sha256": "6b172db4b3856040c233bb78dfc32d30144445035efb70544d73265bb83bd03d",
     "mode": "0o644"
   },
   "scripts/audit_haptics_audio_peer_review.py": {
-    "sha256": "c23a918a8af612aca77b784e499a510ca55e71ebd8a078d2eccc1db81591bff7",
+    "sha256": "494265408bd5380afffd5bf67cacb7fdc5cde46a1d8a20f99a3a90b27d24d8ac",
     "mode": "0o644"
   },
   "scripts/audit_haptics_config_boundaries.py": {
@@ -1044,7 +1040,7 @@
     "mode": "0o644"
   },
   "scripts/audit_haptics_legacy_config_input_join.py": {
-    "sha256": "a78fa44c8100cde37906f1896a72dc2f265b97a5409f45386cc7711a2890f817",
+    "sha256": "fbf206c47c4b6e7b5a5380cfbf644bb98bcbb385ad7407112ae252b9942347cf",
     "mode": "0o644"
   },
   "scripts/audit_haptics_legacy_firmware_join.py": {
@@ -1060,7 +1056,7 @@
     "mode": "0o644"
   },
   "scripts/audit_haptics_legacy_probe_upload_join.py": {
-    "sha256": "ddd0fc2560b3cb7bb45e7843f7afadb4985cf629a25df33ac0e280e4c04b7d27",
+    "sha256": "44732f3b7a53a33f128a4cefc5c34c0c03faa407e4119e95e3574163a65aacb0",
     "mode": "0o644"
   },
   "scripts/audit_haptics_lifecycle_report.py": {
@@ -1072,11 +1068,11 @@
     "mode": "0o644"
   },
   "scripts/audit_haptics_pcm_ff_join_review.py": {
-    "sha256": "ecf5390ec8307ee931145e20b0b29ac49eaf0ecf0a50614164ab52dcd3ff7fe5",
+    "sha256": "539947bc5ec6a1cd610d483ab3046438ccef22b775f3217ce5b0914c4158c8a3",
     "mode": "0o644"
   },
   "scripts/audit_haptics_pcm_init_review.py": {
-    "sha256": "2cb7db61754aa30eb64c8fde395fc3a23a4199581a219d056b74c8c399ba86c8",
+    "sha256": "8d62f034780b84a1bfce7fd0c3b02363a4c09f440e39821ebfe11d87057eac76",
     "mode": "0o644"
   },
   "scripts/audit_haptics_playback_observation.py": {
@@ -1088,11 +1084,11 @@
     "mode": "0o644"
   },
   "scripts/audit_haptics_probe_callgraph.py": {
-    "sha256": "a86e60eaed9b118d1764f753e0082e1e4a898a1c826b5e2f829da1bf95804e10",
+    "sha256": "8d96a95010949fa5c45c0b280714a4061ccae337e2fe9f243b91055281363942",
     "mode": "0o644"
   },
   "scripts/audit_haptics_probe_delivery.py": {
-    "sha256": "d9472d135824cc8d6e81460dccf59e0f3cc50d3522b0887474365fe1b33c4775",
+    "sha256": "ad87b53d2e9895ee5475aeb552c959b696bdf8d7e6944c2fcff14dac7a90704e",
     "mode": "0o644"
   },
   "scripts/audit_haptics_profiles.py": {
@@ -1104,7 +1100,7 @@
     "mode": "0o644"
   },
   "scripts/audit_haptics_request_trace_delivery.py": {
-    "sha256": "e48056fa9df2f2f4f3aea0d23a7a127e82d0c47ffbca5fd3817596e0dd1cbdcb",
+    "sha256": "bb5e3d475cd16c23f3ca22eee8c1a015c652d16544f0d92b9700aa697e9f3086",
     "mode": "0o644"
   },
   "scripts/audit_haptics_restore_joined_review.py": {
@@ -1124,7 +1120,7 @@
     "mode": "0o644"
   },
   "scripts/audit_haptics_service_tail_review.py": {
-    "sha256": "0d46894da1c3e82fc03faf22007a7b43a67727abd2657a9b858027b8e8f87d7b",
+    "sha256": "2934c08a969499c255138f9749b600c8ccbd5708dd054f7de74642e3497f9707",
     "mode": "0o644"
   },
   "scripts/audit_haptics_sine_coefficients_review.py": {
@@ -1284,7 +1280,7 @@
     "mode": "0o644"
   },
   "scripts/audit_unified_delivery.py": {
-    "sha256": "a13a4ddc45276e5e3e6fb6b9e191d5438b0830d2157ba2c314be19767b7a470a",
+    "sha256": "0a2f565bac6ccd54ed7a4c19b867d412ec2e27fdf58dbf4db4ac77d69993b390",
     "mode": "0o644"
   },
   "scripts/audit_updater_protocol_delivery.py": {
@@ -1332,7 +1328,7 @@
     "mode": "0o644"
   },
   "scripts/check_documentation.py": {
-    "sha256": "5cd0651d6980d874a45744ad48c7328959ce9dcd36015d6e80acdbd24d53ca89",
+    "sha256": "4c1bc673bdab2fe0e2432f2b9c581c99691b1f77295ea6441f5c56f398320e1a",
     "mode": "0o644"
   },
   "scripts/check_public_tree.py": {
@@ -1592,11 +1588,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "95f399e4b8db3f26f90cf836d539fd52084d534bb576aa4abb43a0a225b2f363",
+    "sha256": "7f25c6a95acbcc0ece3806a81a4515d9847c0054ea41522fab9728130ff7cf15",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "b5fea653b3ca6d8ba7c9f040eac00eb98052ff6bc6bdf1247844e1f0aeb4be4f",
+    "sha256": "9ba00856d329eb34375e5a81f7405246ce5dddc34d7cb5e65f702b3a9a9f9ec0",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {

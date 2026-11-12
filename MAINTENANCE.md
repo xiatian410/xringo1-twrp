@@ -67,3 +67,5 @@ README 负责项目入口；目标文档负责需求；工作队列负责下一�
 安全服务的依赖查找、重定位与 namespace 说明统一维护在 `docs/PROFILE-LINKER-ARM64.md`；嵌套分区路由与普通 GUI 策略统一维护在 `docs/PARTITION-ACTIONS.md`。不再为这些主题创建独立重复入口。构建依赖使用的 JSON、历史证据索引和验证源码继续保留，不能仅按文件大小或当前任务是否使用判断删除。
 
 RTC 回调记录并入 `docs/STATUS-ADAPTATION.md`，MiTEE 静态组合比较并入 `docs/PROFILE-LINKER-ARM64.md`，MTP 启停与存储消息并入 `docs/MTP-ADAPTATION.md`。保留原有技术内容与复现命令，删除独立重复入口；脚本所需的资源 JSON 不随文档合并删除。
+
+已解决问题的独立调查和阶段性批次放入 `docs/archive/`，通过归档索引访问。GUI 点击反馈并入操作反馈主题，OS4 正式版增补并入固件选择主题，不再保留独立重复入口。移动时同步修改工具引用；历史证据哈希保留原值，不因此伪装为新验证。

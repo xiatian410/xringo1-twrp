@@ -105,4 +105,4 @@ DSO 依赖比较采用当前 recovery 配套的 libbinder/libbinder_ndk；其余
 
 六份 system/build.prop 的 release/SPL 现已从经过分区哈希检查的原文件取得，与 OTA 元数据一致；报告保留文件哈希和全部属性。只读选择组件的 77 场景结果见 [预检说明](PROFILE-SELECTION.md)，HAL 激活和服务启动顺序已接入，实际镜像的 77 次阶段调用通过模拟；后续真实硬件密钥操作仍未验证。
 
-正式版独立使用新 tee-supplicant 和一项 TA，26 个私有 DSO 与旧 OS4 相同。system/vendor SPL 分别为 2026-10-01/2026-09-01，保留原身份。完整差异见[正式版记录](OS4-STABLE-ADAPTATION.md)。
+正式版独立使用新 tee-supplicant 和一项 TA，26 个私有 DSO 与旧 OS4 相同。system/vendor SPL 分别为 2026-10-01/2026-09-01，保留原身份。完整差异见[正式版记录](PROFILE-SELECTION.md#os4-正式版增补记录)。

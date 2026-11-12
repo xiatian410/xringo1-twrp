@@ -42,6 +42,6 @@ def main():
  assert 'Pending: 0 source updates, device tree changed=False' in (ROOT/'logs/haptics-request-trace-final-source-recheck.log').read_text()
  evidence=names+[runtime_name,'logs/verify-haptics-request-trace.log','logs/haptics-request-trace-final-source-recheck.log']
  result=dict(status='PASS',scope=__doc__,image_sha256=digest,source_files=726,trace_ABI_cases=14,route_cases=24,worker_FF_cases=4,owner_cases=16,runtime_groups=9,runtime_calls=102,
-  evidence={n:sha(ROOT/n) for n in evidence},documents={n:sha(ROOT/n) for n in ['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.json','simulation-report.md','docs/HAPTICS-REQUEST-TRACE.md','docs/HAPTICS-ADAPTATION.md','FEATURE-USAGE.md']},audit_script_sha256=sha(Path(__file__)))
+  evidence={n:sha(ROOT/n) for n in evidence},documents={n:sha(ROOT/n) for n in ['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.json','simulation-report.md','docs/archive/haptics/HAPTICS-REQUEST-TRACE.md','docs/HAPTICS-ADAPTATION.md','FEATURE-USAGE.md']},audit_script_sha256=sha(Path(__file__)))
  (ROOT/'logs/haptics-request-trace-delivery.json').write_text(json.dumps(result,indent=2)+'\n');print('PASS: trace14/route24/workerFF4/owner16;726 sources;profile9/102;motor unresolved.')
 if __name__=='__main__':main()

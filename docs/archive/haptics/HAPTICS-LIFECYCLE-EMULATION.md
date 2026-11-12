@@ -1,12 +1,12 @@
-> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](WORK-QUEUE.md)。
+> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](../../WORK-QUEUE.md)。
 
 # 原厂震动注册、效果生命周期与 DTBO 离线复核
 
-2026-11-11，六份固件的原厂 ARM64 函数完成 **90 项模拟**，原始 DTBO 完成 **48 次合并检查**。报告分别为[生命周期 JSON](../logs/haptics-lifecycle-emulation.json)、[执行日志](../logs/haptics-lifecycle-emulation.log)、[DTBO JSON](../logs/haptics-devicetree-audit.json)、[合并日志](../logs/haptics-devicetree-audit.log)。六份模块的原始 `cs40l26_input_init` 均观测到相同 input 名称、PERIODIC/CUSTOM/SINE/GAIN 能力、96 个效果槽及四个非空回调地址。该契约已写入逐样本报告并由交付审计核验。本轮没有修改生产驱动源码、重编译 recovery 或访问手机；物理震动仍为 U。
+2026-11-11，六份固件的原厂 ARM64 函数完成 **90 项模拟**，原始 DTBO 完成 **48 次合并检查**。报告分别为[生命周期 JSON](../../../logs/haptics-lifecycle-emulation.json)、[执行日志](../../../logs/haptics-lifecycle-emulation.log)、[DTBO JSON](../../../logs/haptics-devicetree-audit.json)、[合并日志](../../../logs/haptics-devicetree-audit.log)。六份模块的原始 `cs40l26_input_init` 均观测到相同 input 名称、PERIODIC/CUSTOM/SINE/GAIN 能力、96 个效果槽及四个非空回调地址。该契约已写入逐样本报告并由交付审计核验。本轮没有修改生产驱动源码、重编译 recovery 或访问手机；物理震动仍为 U。
 
 ## 原始指令执行范围
 
-[生命周期模拟器](../tests/haptics_lifecycle_emulation.py)复用[原厂 ARM64 模拟器](../tests/haptics_driver_emulation.py)，绑定五份唯一模块哈希。执行原厂 `cs40l26_input_init`、`cs40l26_upload_effect`、`cs40l26_upload_worker`、`cs40l26_playback_effect`、`cs40l26_erase_effect` 和 `cs40l26_erase_worker`。输入来自当前生产 FF 捕获器的 80 ms 正弦请求，效果 ID 为 input core 夹具分配的 7。
+[生命周期模拟器](../../../tests/haptics_lifecycle_emulation.py)复用[原厂 ARM64 模拟器](../../../tests/haptics_driver_emulation.py)，绑定五份唯一模块哈希。执行原厂 `cs40l26_input_init`、`cs40l26_upload_effect`、`cs40l26_upload_worker`、`cs40l26_playback_effect`、`cs40l26_erase_effect` 和 `cs40l26_erase_worker`。输入来自当前生产 FF 捕获器的 80 ms 正弦请求，效果 ID 为 input core 夹具分配的 7。
 
 `flush_work` 边界暂停回调、保存 CPU 上下文，在独立栈执行对应原厂 worker，再恢复回调。因此覆盖回调读取 worker 结果的路径；并未运行真实内核调度器。输入核心、内存分配、PM、DSP 符号/寄存器、完成事件均有明确替身。start/stop worker 和 IRQ 未执行，播放状态由夹具注入；等待值被记录，不消耗对应墙钟时间。不能把本测试描述为完整 probe、真实并发队列或物理播放验证。
 
@@ -33,7 +33,7 @@ OS4 `init_module` 在本次测试的四个子初始化函数均返回 `-EIO` 时
 
 ## 六份原始 DTBO
 
-[合并检查器](../scripts/audit_haptics_devicetree.py)校验原始 `vendor_boot.img`、`dtbo.img` 的档案哈希，重新解析 vendor boot 组件并逐字节核对分析目录的基础 DTB；随后由主机编译的 AOSP libfdt 把每份 DTBO 的八个条目分别应用到匹配基础 DTB。报告记录源码、原始分区、基础树、每个 overlay 与合并结果的哈希。
+[合并检查器](../../../scripts/audit_haptics_devicetree.py)校验原始 `vendor_boot.img`、`dtbo.img` 的档案哈希，重新解析 vendor boot 组件并逐字节核对分析目录的基础 DTB；随后由主机编译的 AOSP libfdt 把每份 DTBO 的八个条目分别应用到匹配基础 DTB。报告记录源码、原始分区、基础树、每个 overlay 与合并结果的哈希。
 
 六份样本的第 5 条 overlay 均为 `board_id = 0x090f0000`，合并后模型为 `XiaoMi Xring_o1 O2S PHONE`，启用的 `/soc/i2c@EC100000/cs40l26@43` 明确具有 `bind-product = "dijun"`。其 `cirrus,f0-default` 为 `130 << 14`，没有 `cirrus,fw-defer` 或 `cirrus,rom-only`。这为 dijun 对应条目的固件初始化策略提供静态证据；没有模拟 bootloader 的条目选择。
 

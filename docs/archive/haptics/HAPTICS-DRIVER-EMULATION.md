@@ -1,16 +1,16 @@
-> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](WORK-QUEUE.md)。
+> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](../../WORK-QUEUE.md)。
 
 # 原厂震动驱动函数离线模拟
 
-2026-11-11，六份固件完成 120 项主机模拟，报告为 [JSON](../logs/haptics-driver-emulation.json)、[日志](../logs/haptics-driver-emulation.log)。本次没有改动 recovery 生产源码或重新构建镜像；当前镜像及其来源见[震动适配记录](HAPTICS-ADAPTATION.md)。
+2026-11-11，六份固件完成 120 项主机模拟，报告为 [JSON](../../../logs/haptics-driver-emulation.json)、[日志](../../../logs/haptics-driver-emulation.log)。本次没有改动 recovery 生产源码或重新构建镜像；当前镜像及其来源见[震动适配记录](../../HAPTICS-ADAPTATION.md)。
 
 这轮新增证据回答一个具体问题：当前生产 FF 请求的二进制结构、正弦周期、幅度和播放事件，能否被各版原厂驱动中已检查的函数正确解析。它不验证驱动 probe、DSP 固件实际加载、I2C、电源、内核调度或物理电机。
 
 ## 执行范围
 
-[捕获器](../tests/haptics_driver_capture.cpp)编译实际 `twrpminui/force_feedback.cpp`，仅替换 input 路径、能力 ioctl、属性读取和事件输出。捕获 48 字节 `ff_effect` 及 24 字节 `input_event`，原始十六进制保存在报告中。Linux input core 的 ID 分配使用夹具值 7；不模拟 core 的权限、ID 分配器或效果生命周期。主机与目标均为小端、64 位 ABI，效果结构长度被显式断言。
+[捕获器](../../../tests/haptics_driver_capture.cpp)编译实际 `twrpminui/force_feedback.cpp`，仅替换 input 路径、能力 ioctl、属性读取和事件输出。捕获 48 字节 `ff_effect` 及 24 字节 `input_event`，原始十六进制保存在报告中。Linux input core 的 ID 分配使用夹具值 7；不模拟 core 的权限、ID 分配器或效果生命周期。主机与目标均为小端、64 位 ABI，效果结构长度被显式断言。
 
-[模拟器](../tests/haptics_driver_emulation.py)读取原始 `.ko` 的 ELF alloc 节，应用模块中出现的 AArch64 重定位，并由 Unicorn 执行原始指令。未知重定位、未处理的导入、执行异常和指令预算耗尽均使测试失败。没有重写频率/幅度/时长计算模型，也没有把驱动替换为返回成功的上传函数。
+[模拟器](../../../tests/haptics_driver_emulation.py)读取原始 `.ko` 的 ELF alloc 节，应用模块中出现的 AArch64 重定位，并由 Unicorn 执行原始指令。未知重定位、未处理的导入、执行异常和指令预算耗尽均使测试失败。没有重写频率/幅度/时长计算模型，也没有把驱动替换为返回成功的上传函数。
 
 - OS2/OS3：执行原厂 `cs40l26_upload_worker` 的正弦分支；该代码在工作线程中内联，未单独导出正弦上传函数。
 - 两份 OS4：执行原厂 `cs40l26_sine_upload`；其外层上传工作线程没有在这项测试中执行。
@@ -37,7 +37,7 @@
 
 ## 复现
 
-依赖仅安装在主机 `tools/haptics-emulator-python`，不进入 ramdisk。固定的 Unicorn 2.1.4 与 pyelftools 0.32 wheel URL/SHA-256 见[依赖锁](../tests/haptics-emulator-dependencies.json)；安装器核验 wheel 摘要，交付审计还核对实际 Python/共享库文件摘要。
+依赖仅安装在主机 `tools/haptics-emulator-python`，不进入 ramdisk。固定的 Unicorn 2.1.4 与 pyelftools 0.32 wheel URL/SHA-256 见[依赖锁](../../../tests/haptics-emulator-dependencies.json)；安装器核验 wheel 摘要，交付审计还核对实际 Python/共享库文件摘要。
 
 ```bash
 python3 scripts/setup_haptics_emulator.py

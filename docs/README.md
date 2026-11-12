@@ -17,7 +17,6 @@
 
 - [固件组合选择与启动激活](PROFILE-SELECTION.md)
 - [模块初始化状态：依赖就绪判断修正](MODULE-STATE-ADAPTATION.md)
-- [OS4.0.4.0 正式版增补记录](OS4-STABLE-ADAPTATION.md)
 - [OS4 正式版无法触摸：反馈、离线排查与顺序修正候选](OS4-TOUCH-FAILURE.md)
 - [安全服务组合、依赖与 ARM64 运行时](PROFILE-LINKER-ARM64.md)
 - [多用户发现与解锁入口](MULTIUSER-ADAPTATION.md)
@@ -47,17 +46,15 @@
 
 - [设置保存、点击与时区失败回退](SETTINGS-ADAPTATION.md)
 - [电量、温度、时钟与 RTC 回调](STATUS-ADAPTATION.md)
-- [GUI2 反馈次数与取消操作的离线验证](UI-FEEDBACK-ADAPTATION.md)
-- [操作完成反馈的离线验证](OPERATION-FEEDBACK-ADAPTATION.md)
+- [操作反馈、点击取消与进度页生命周期](OPERATION-FEEDBACK-ADAPTATION.md)
 - [录屏帧与时间轴离线验证](VIDEO-FRAMES-VALIDATION.md)
 - [刷新容量页面不结束：现场分析](REFRESH-STUCK-INVESTIGATION.md)
 
 ## 维护与交付
 
 - [工作队列](WORK-QUEUE.md)
-- [第6、7、8、10、11、12组有限维护](BOUNDED-MAINTENANCE.md)
 - [公开仓库维护约定](../MAINTENANCE.md#github-同步)
 
-## 已解决项的历史参考
+## 历史参考
 
-[震动适配记录](HAPTICS-ADAPTATION.md) 汇总实现要点和独立技术文档。OS4 震动已由用户确认正常，不作为当前待办或例行检查。
+[历史归档](archive/README.md)收拢已解决震动问题的独立调查及旧阶段交付；[震动适配记录](HAPTICS-ADAPTATION.md)保留实现摘要。当前待办以工作队列为准。

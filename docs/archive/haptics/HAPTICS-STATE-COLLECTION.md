@@ -1,4 +1,4 @@
-> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](WORK-QUEUE.md)。
+> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](../../WORK-QUEUE.md)。
 
 # OS4 无震动状态采集
 
@@ -6,7 +6,7 @@
 
 ## Windows 使用
 
-将[PowerShell入口](../scripts/collect-haptics-state.ps1)和[设备侧脚本](../scripts/collect-haptics-state.sh)放在同一目录。已在Recovery且ADB可用时，在该目录运行：
+将[PowerShell入口](../../../scripts/collect-haptics-state.ps1)和[设备侧脚本](../../../scripts/collect-haptics-state.sh)放在同一目录。已在Recovery且ADB可用时，在该目录运行：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\collect-haptics-state.ps1
@@ -36,6 +36,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\collect-haptics-state.ps1
 
 ## 离线检查与下一判断
 
-运行`python3 tests/haptics_state_collector_test.py`。11项私有文件执行覆盖正常、节点缺失、读错误、阻塞FIFO超时、persist未挂载、未审核profile、无匹配input、已有目录/符号链接、非法输出及缺timeout；检查输入文件未改、敏感/校准触发节点未打开、初始dmesg早于状态读取。另从两份原始OS4 ELF重定位属性组，核对7项名称、分组、可读权限与show指针。结果为[主机报告](../logs/haptics-state-collector-test.json)。未执行Windows、Android、I2C、DSP或物理震动。
+运行`python3 tests/haptics_state_collector_test.py`。11项私有文件执行覆盖正常、节点缺失、读错误、阻塞FIFO超时、persist未挂载、未审核profile、无匹配input、已有目录/符号链接、非法输出及缺timeout；检查输入文件未改、敏感/校准触发节点未打开、初始dmesg早于状态读取。另从两份原始OS4 ELF重定位属性组，核对7项名称、分组、可读权限与show指针。结果为[主机报告](../../../logs/haptics-state-collector-test.json)。未执行Windows、Android、I2C、DSP或物理震动。
 
 若设备persist文件与stored值不同，先核对原厂格式、单位、芯片revision和恢复路径失败，再决定初始化适配；不能直接写回或启动校准。若相符，继续原厂播放参数、保护衰减与供电链。无论何种结果，mailbox完成和状态可读都不能证明电机正常。

@@ -43,7 +43,7 @@ def main():
  assert 'Pending: 0 source updates, device tree changed=False' in (ROOT/'logs/haptics-probe-final-source-recheck.log').read_text()
  assert index['status']=='in_progress' and len(index['not_yet_completed'])==12
  result=dict(status='PASS',scope=__doc__,image_sha256=digest,sources=732,route_cases=28,worker_FF_cases=6,trace_ABI_cases=14,old_query_failures=2,runtime_groups=9,runtime_calls=102,
- evidence={n:sha(ROOT/n) for n in names+[n,'logs/haptics-probe-before.json','logs/verify-haptics-probe.log','logs/haptics-probe-final-source-recheck.log']},documents={n:sha(ROOT/n) for n in ['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.json','simulation-report.md','docs/HAPTICS-PROBE-ADAPTATION.md','docs/HAPTICS-ADAPTATION.md']},audit_script_sha256=sha(Path(__file__)))
+ evidence={n:sha(ROOT/n) for n in names+[n,'logs/haptics-probe-before.json','logs/verify-haptics-probe.log','logs/haptics-probe-final-source-recheck.log']},documents={n:sha(ROOT/n) for n in ['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.json','simulation-report.md','docs/archive/haptics/HAPTICS-PROBE-ADAPTATION.md','docs/HAPTICS-ADAPTATION.md']},audit_script_sha256=sha(Path(__file__)))
  (ROOT/'logs/haptics-probe-delivery.json').write_text(json.dumps(result,indent=2)+'\n')
  print('PASS: probe route28/workerFF6/traceABI14,old2 fail,732 sources,profile9/102; physical vibration unresolved.')
 if __name__=='__main__':main()

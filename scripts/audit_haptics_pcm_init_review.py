@@ -87,7 +87,7 @@ def main():
                   image_sha256=index['image_sha256'], production_source_files=len(source['files']),
                   documents={n: sha(ROOT / n) for n in ['ADAPTATION-GOALS.md', 'MAINTENANCE.md',
                              'simulation-report.md', 'simulation-report.json', 'docs/HAPTICS-ADAPTATION.md',
-                             'docs/HAPTICS-PCM-INITIALIZATION.md']}, audit_script_sha256=sha(Path(__file__)))
+                             'docs/archive/haptics/HAPTICS-PCM-INITIALIZATION.md']}, audit_script_sha256=sha(Path(__file__)))
     (ROOT / 'logs/haptics-pcm-init-review-audit.json').write_text(json.dumps(result, indent=2) + '\n')
     print('PASS:26 bounded original PCM/AAC init + ordinary-on cases; current image/source binding; motor unresolved')
 

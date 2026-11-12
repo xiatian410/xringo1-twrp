@@ -15,18 +15,9 @@
 
 生产补丁、顺序与摘要由 [series.json](../dtsrc/O1_asic_dual/patches/series.json) 管理。上文说明实现约束，不是重新运行检查的要求。
 
-## 技术参考
+## 历史参考
 
-以下文档保留各自独立的调用链、失败路径和模拟边界；其中旧候选和未完成状态均属于历史。
-
-| 主题 | 文档 |
-| --- | --- |
-| 原厂驱动、DSP 固件与地址解析 | [驱动模拟](HAPTICS-DRIVER-EMULATION.md) · [固件解析](HAPTICS-FIRMWARE-EMULATION.md) |
-| 注册、效果与后台生命周期 | [生命周期](HAPTICS-LIFECYCLE-EMULATION.md) · [播放 worker](HAPTICS-PLAYBACK-EMULATION.md) |
-| GUI 请求、后台执行与能力查询 | [后台 owner](HAPTICS-WORKER-ADAPTATION.md) · [FF 查询中断](HAPTICS-PROBE-ADAPTATION.md) |
-| 参数和诊断 | [请求追踪](HAPTICS-REQUEST-TRACE.md) · [状态采集](HAPTICS-STATE-COLLECTION.md) · [工具源码](../tools/haptics-diagnostic) |
-| PCM 初始化与播放接续 | [初始化](HAPTICS-PCM-INITIALIZATION.md) · [PCM / FF](HAPTICS-PCM-FF-STATE.md) · [ASP / FF](HAPTICS-ASP-FF-STATE.md) |
-| 原厂服务与音频对端 | [线程与 XML](HAPTICS-SERVICE-THREAD-XML.md) · [socket 对端](HAPTICS-AUDIO-SOCKET-PEER.md) |
+独立的驱动、固件、服务、PCM 和生命周期说明统一收录在[历史归档](archive/README.md#已解决os4-震动)。复现源码继续保留；归档不触发例行重查。
 
 ## 证据边界
 

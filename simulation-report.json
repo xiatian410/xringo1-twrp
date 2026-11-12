@@ -3916,7 +3916,7 @@
       11,
       12
     ],
-    "document": "docs/BOUNDED-MAINTENANCE.md",
+    "document": "docs/archive/BOUNDED-MAINTENANCE.md",
     "status": "delivered-offline-with-explicit-limits",
     "patches": [
       "0063-status-temperature-resize-bounds.patch",

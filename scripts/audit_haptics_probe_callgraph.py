@@ -45,7 +45,7 @@ def main():
                   documents={name: sha(ROOT / name) for name in
                              ['ADAPTATION-GOALS.md', 'MAINTENANCE.md', 'simulation-report.json',
                               'simulation-report.md', 'docs/HAPTICS-ADAPTATION.md',
-                              'docs/HAPTICS-FIRMWARE-EMULATION.md']},
+                              'docs/archive/haptics/HAPTICS-FIRMWARE-EMULATION.md']},
                   audit_script_sha256=sha(Path(__file__)))
     (ROOT / 'logs/haptics-probe-callgraph-audit.json').write_text(json.dumps(result, indent=2) + '\n')
     print('PASS: six stock probe relocations bound; OS2/OS3 vs OS4 deltas verified; 12 goals remain')

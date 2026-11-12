@@ -21,6 +21,8 @@ ENTRY_POINTS = (
     'docs/MTP-ATOMIC-UPLOAD.md', 'docs/MTP-CONTROL-ADAPTATION.md',
     'docs/MTP-ADAPTATION.md',
     'docs/firmware-compatibility.md',
+    'docs/PROFILE-SELECTION.md', 'docs/HAPTICS-ADAPTATION.md',
+    'docs/OPERATION-FEEDBACK-ADAPTATION.md', 'docs/archive/README.md',
 )
 
 
@@ -33,12 +35,13 @@ def main():
     for name in ENTRY_POINTS:
         path = ROOT / name
         text = path.read_text()
+        # Shell comments in fenced examples are not Markdown headings.
+        prose = re.sub(r'^```.*?^```[^\n]*$', '', text, flags=re.M | re.S)
         assert text.startswith('# '), f'{name}: missing document title'
-        assert len(re.findall(r'^# ', text, re.M)) == 1, f'{name}: multiple H1 titles'
+        assert len(re.findall(r'^# ', prose, re.M)) == 1, f'{name}: multiple H1 titles'
         assert text.endswith('\n'), f'{name}: missing final newline'
         assert not any(line.rstrip() != line for line in text.splitlines()), name
         # Ignore code examples; only maintained navigation links are in scope.
-        prose = re.sub(r'^```.*?^```[^\n]*$', '', text, flags=re.M | re.S)
         for raw in re.findall(r'\]\(([^)\n]+)\)', prose):
             target = raw.strip().strip('<>')
             url = urlsplit(target)
