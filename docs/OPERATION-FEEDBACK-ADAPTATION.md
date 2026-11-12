@@ -43,3 +43,15 @@
 后续[恢复会话预检](RESTORE-SESSION-ADAPTATION.md)已独立修复并回放取消标志残留、子分区 digest 和分卷清单，共 54 项通过。本项完成反馈回放仍不覆盖底层分区工作；后续[备份会话 55 项](BACKUP-SESSION-ADAPTATION.md)另行执行了 start/acknowledge/destructor、取消与 `.info` 顺序。压缩/加密分卷内容另由[46 项管道回放](ARCHIVE-PIPELINE-ADAPTATION.md)覆盖；完整管理器、digest 原子发布和强杀/断电清理仍待完成。
 
 其他页面的完整业务流程、设备初始化时序、内核驱动队列、供电与实际电机效果仍未验证。硬件状态保持 U，不要求用户提供新的实机结果。
+
+## 日志导出的失败状态（0068）
+
+“高级 → 复制日志”原来忽略当前存储挂载和 recovery.log 复制结果；内核日志 / logcat 辅助函数返回 void，即使读取或写入失败也输出成功，并将整个工具任务发布为 DONE。这影响故障资料是否确实保存的判断。
+
+[0068 固定补丁](../dtsrc/O1_asic_dual/patches/0068-log-export-failure-propagation.patch) 在共用存储操作锁内读取当前路径并挂载，路径为空、非绝对路径或挂载失败立即结束为失败。Recovery 文件复制、勾选的内核日志和 logcat 都需成功，任务才为 DONE；任一失败为 FAILED，但继续尝试其他独立导出，保留已成功文件。成功消息只表示对应文件已写出，整体结果由任务状态表达。内核日志获取失败或 logcat 子进程非零退出时，不再用空/部分捕获内容覆盖旧文件。WriteToFile 继续检查写入和 close 失败。
+
+`python3 tests/copylog_test.py` 在私有 chroot 内执行生产工具 worker 的 start/run/status/acknowledge、实际线程、CopyFile 和 WriteToFile。13 场景覆盖全部成功、只复制 recovery.log、挂载失败、空存储、源缺失、各文件写入失败、内核 sizing/read 失败、logcat 捕获失败、两个捕获同时失败与成功/失败后复用；旧源码同组 11 失败。已核对逐文件内容、成功消息数和整体状态。挂载、选择、klogctl、logcat 捕获、metadata、sync 和操作展示是明确边界；未读取主机内核或 Android 日志，也未操作设备。
+
+当前候选 `recovery-dijun-unified-log-export.img`，SHA-256 `629f19792d41e1fbc4ec0ad0b7f38bed70ba9b51f234544de4f5cd53a551bf3c`。installclean 后 `make -j$(nproc)` 30 并发构建，781 份生产来源、六份 profile 和打包 Recovery 核对。与 backup-manage 候选仅主程序、构建属性与文件摘要不同；备份管理 / 刷新 worker 实际函数未变，直接复用原检查，不再次跑页面生命周期或震动测试。审计入口 `python3 scripts/audit_copylog_delivery.py`。
+
+本修正不使日志文件写入成为原子替换，写入中失败可能留下部分目标内容；不承诺断电持久性、对正在增长的源日志取得一致快照、内核 ring buffer 绝对不截断或真实 USB 存储行为。也没有修复容量刷新现场的展示故障。

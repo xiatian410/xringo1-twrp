@@ -254,6 +254,10 @@
         {
           "file": "0067-backup-folder-literal-operations.patch",
           "sha256": "290207a9c63f7451f46eb6045ed8d4c26824484020bc675f647596d54faac7fc"
+        },
+        {
+          "file": "0068-log-export-failure-propagation.patch",
+          "sha256": "2283f7d7299f8c20fef949319ef4d6d5131e9d8c7e0cb64ad9eaf22d396b6493"
         }
       ],
       "result_files": {
@@ -305,8 +309,8 @@
         "backup_process.hpp": "5d4a5d4973bba52d7a796dee1ed5e3d8258cebfb438dad33cfbcbb964b1ee225",
         "twrpRepacker.cpp": "4b95330ee0cff1df83da0231da203365121be14be2830fefbb4772b0b5c727c7",
         "tarWrite.cpp": "c7ae8b3f27403eb2df3b0ee697988b1542f44350c6f0adc7aa8a4bc86612130a",
-        "twrp_functions.cpp": "c7cfa9ac027981f2a4f1eca4a59210b1a05dc46cd12e2b86198f87116324d469",
-        "twrp_functions.hpp": "0ade98e9c0c6bcdc61ca273ed96163ac15baa8fe20777d3063114d293475475d",
+        "twrp_functions.cpp": "8f43500effe6634aa9328d116891080bacfcb7466272544ada26a3f97473d601",
+        "twrp_functions.hpp": "0dec08d05f3ca3cabce444f0b67cec6a981c7808c8b924ac24c04ac51ffeb84c",
         "oaes/oaes.cpp": "306acbfddd40512ba8c0ad0b7ad8afc86533425625e6a875f95d0a3ae4e1e356",
         "oaes/oaes.hpp": "256c988afbd924a12db4bdaa4c9c35475dda92b53676cf7693f64e36de0ed3c4",
         "mtp/IMtpDatabase.h": "bbe651b95e206c307ba4b9e9d6c57225697dcc6667bf508bf8d5ac3c59548086",
@@ -351,7 +355,7 @@
         "gui2/backend/twrp_reboot_backend.h": "4c6767ff062d6b0885d0b9c9bff626fdf29ddb73b1d47ce1eff135d2bb0d925a",
         "gui2/backend/twrp_reboot_backend.cpp": "60d2739b437fce369daca252c4eb7e12c5dae1a3198e2eee127b52ef548431d8",
         "gui2/backend/twrp_wipe_backend.cpp": "0cfc499ccf3e0296bbdc028eedb8e43c5f1b722edbd43a380a1106311c6c0e73",
-        "gui2/backend/twrp_tools_backend.cpp": "932fb061b1a06101a829851c44a109337793981b8dd693b6c20a8e5ff1b4adce",
+        "gui2/backend/twrp_tools_backend.cpp": "52dfe873375bf6fb9726337872b9b6b629fd6b81193638b26d683f79401ad3a8",
         "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a"
       }
     },

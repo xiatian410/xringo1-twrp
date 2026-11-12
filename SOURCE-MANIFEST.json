@@ -24,7 +24,7 @@
     "mode": "0o644"
   },
   "FEATURE-USAGE.md": {
-    "sha256": "4044d428f2a4a0ac327381dc1ffd22e32bcf9fc4f9a4e565855f664d261cd7c3",
+    "sha256": "555b8d0dd406ec75ce0a75efa0471155b706a5d50893b26ba7d89ee15c14fd49",
     "mode": "0o644"
   },
   "FIRMWARE-MAP.md": {
@@ -68,7 +68,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "09216eea27f6f98e008d3139cd9b2fc939d9d5030a1422bc7c213539e3b34101",
+    "sha256": "e38c07139cdf29d69634049c8452ec16c424363b50d24366e723a4d8e7638e0e",
     "mode": "0o644"
   },
   "docs/DIGEST-PUBLICATION.md": {
@@ -184,7 +184,7 @@
     "mode": "0o644"
   },
   "docs/OPERATION-FEEDBACK-ADAPTATION.md": {
-    "sha256": "6ef6f14cd243620cc0b8893e4e1c17bc85547f488f3d36b46fc298911b64a6de",
+    "sha256": "fb6e2c1e6e3612aa8b09cba20f0618d631ea7dcfcbc35b88deb799d11b69ba6f",
     "mode": "0o644"
   },
   "docs/OS4-STABLE-ADAPTATION.md": {
@@ -268,7 +268,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "c90a6cb87d24c2a65e6259938557ba2b99a55ecc4545d66ffa81bad608fbe71e",
+    "sha256": "a47b8240da87c874835eae8c82fd0fc243d39ffc2461395330033fab6bdcb28f",
     "mode": "0o644"
   },
   "docs/crypto-compatibility.json": {
@@ -595,8 +595,12 @@
     "sha256": "290207a9c63f7451f46eb6045ed8d4c26824484020bc675f647596d54faac7fc",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0068-log-export-failure-propagation.patch": {
+    "sha256": "2283f7d7299f8c20fef949319ef4d6d5131e9d8c7e0cb64ad9eaf22d396b6493",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "45cba17c41380fc64704fa8e8d73bfd8b1bc368a29323d945ba1414efb1583d3",
+    "sha256": "a6ff04bcbcb012fa8e85403ab9f0f1276ebe9207319bfd534c24bf2a57d09326",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -977,6 +981,10 @@
   },
   "scripts/audit_clock_failure_delivery.py": {
     "sha256": "d31423af25e580ab2ff421b87c747a9f26dee0caa33323466061120aa1507f66",
+    "mode": "0o644"
+  },
+  "scripts/audit_copylog_delivery.py": {
+    "sha256": "0c74c0fd7363be48c973d58f8211c7fed33dcea7a26ef6ea7af274c84eb799a9",
     "mode": "0o644"
   },
   "scripts/audit_current_offline_paths.py": {
@@ -1560,11 +1568,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "fb30501422ac91c75087334fcfc5dc54a837c042b4ab75ae61d5a3a29d60301e",
+    "sha256": "a909325c22a8e4531a03131cc9ef9df6199601ee0d7c8b07618d3ced272f3705",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "cfb7a87fb96c6234ee59b7b635e65f62bcd411bd15ad31445b86b8d6107d3d3f",
+    "sha256": "89831d09e13488dafffa6f89056c019305c255f3b655677a85c2e04d4fcc2b36",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -1625,6 +1633,14 @@
   },
   "tests/ce_lifecycle_test.py": {
     "sha256": "17528ac453ccc7862313d97cdde5328cda8e1eaaaf104e1f657acf30fb413780",
+    "mode": "0o644"
+  },
+  "tests/copylog_test.cpp": {
+    "sha256": "c962cd733be04b2b586d4eab2da9eb6a7f220e4491e9af24f7535fa8378c5f23",
+    "mode": "0o644"
+  },
+  "tests/copylog_test.py": {
+    "sha256": "c0637d0c43a392b53c5516cd6d3c77a81ef61ee6595509200f15ffe21096276e",
     "mode": "0o644"
   },
   "tests/devicefix_regression.py": {

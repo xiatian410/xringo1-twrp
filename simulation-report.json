@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-backup-manage.img",
-  "image_sha256": "ecdab5945ca529e3b20049e79ea8799f18292c9b4883f6210055719be6527fe4",
-  "image_status": "Clean-built patch0067 literal backup rename/delete; no shell interpolation, current-parent gate, no-replace rename. Full adaptation remains in progress.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-log-export.img",
+  "image_sha256": "629f19792d41e1fbc4ec0ad0b7f38bed70ba9b51f234544de4f5cd53a551bf3c",
+  "image_status": "Clean-built patch0068 log-export error propagation. Requested copy/capture/write failure reports FAILED; successful independent files retained. Full adaptation in progress.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -2937,6 +2937,15 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Original worker/progress adapter, LVGL page_host/scaffold/PUSH/POP/router/actions and bounded re-entry. Route composition, fonts, tick, scan, operation presentation and flush are explicit host fixtures; not full gui2_loop or Android/DRM."
+    },
+    {
+      "name": "log-export-failure-propagation",
+      "evidence": "logs/copylog.json",
+      "evidence_sha256": "ca3f1b6f5fc4c5f92c1f5fff48150d3729ac0521b4901607b399dca91474292e",
+      "count": 13,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Production copylog and file writers in private chroot, no devices.\n\nMount/selection, klogctl, logcat capture, metadata and operation presentation\nare explicit fixtures; actual CopyFile/WriteToFile, worker thread and terminal\nstate run. No real kernel buffer, Android log service, GUI or power-loss proof.\n"
     }
   ],
   "source_review_followups": [
@@ -3252,8 +3261,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/backup-manage-delivery.json",
-    "scope": "Patch0067; clean build;780 sources;six profiles;12 backup cases /8 old failures;3 shared-worker refresh lifecycle schedules. No phone or power-loss test.",
+    "evidence": "logs/copylog-delivery.json",
+    "scope": "Patch0068;clean build;781 sources;six profiles;13 log-export cases /11 old failures;unchanged backup/refresh methods reused.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -3716,6 +3725,18 @@
     "rename_no_replace": true,
     "parent_fd_anchored": true,
     "all_external_path_races_eliminated": false,
+    "power_loss_verified": false
+  },
+  "log_export": {
+    "document": "docs/OPERATION-FEEDBACK-ADAPTATION.md",
+    "patch": "0068",
+    "evidence": "logs/copylog.json",
+    "before": "logs/copylog-before.json",
+    "cases": 13,
+    "before_failed": 11,
+    "partial_success_retained": true,
+    "acquisition_failure_preserves_old_file": true,
+    "atomic_file_replacement": false,
     "power_loss_verified": false
   }
 }

@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-backup-manage.img",
-  "image_sha256": "ecdab5945ca529e3b20049e79ea8799f18292c9b4883f6210055719be6527fe4",
-  "production_sources": 780,
+  "image_name": "recovery-dijun-unified-log-export.img",
+  "image_sha256": "629f19792d41e1fbc4ec0ad0b7f38bed70ba9b51f234544de4f5cd53a551bf3c",
+  "production_sources": 781,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -602,12 +602,20 @@
       "failures": 0,
       "local_report_sha256": "8ac6eeb4d62e231562dc43e4f342e0a79a4592a9c8aede1823bd74a9a157ad51",
       "scope": "Original worker/progress adapter, LVGL page_host/scaffold/PUSH/POP/router/actions and bounded re-entry. Route composition, fonts, tick, scan, operation presentation and flush are explicit host fixtures; not full gui2_loop or Android/DRM."
+    },
+    {
+      "name": "log-export-failure-propagation",
+      "status": "PASS",
+      "cases": 13,
+      "failures": 0,
+      "local_report_sha256": "ca3f1b6f5fc4c5f92c1f5fff48150d3729ac0521b4901607b399dca91474292e",
+      "scope": "Production copylog and file writers in private chroot, no devices.\n\nMount/selection, klogctl, logcat capture, metadata and operation presentation\nare explicit fixtures; actual CopyFile/WriteToFile, worker thread and terminal\nstate run. No real kernel buffer, Android log service, GUI or power-loss proof.\n"
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
   "current_batch_groups": [
-    5
+    6
   ],
-  "current_batch_document": "docs/BACKUP-SESSION-ADAPTATION.md",
-  "current_batch_groups_scope": "Backup folder management only; does not restrict the broader goal or close refresh field issue."
+  "current_batch_document": "docs/OPERATION-FEEDBACK-ADAPTATION.md",
+  "current_batch_groups_scope": "Log export storage/capture/write error propagation only; does not restrict full goal. Unchanged backup/refresh methods reused."
 }

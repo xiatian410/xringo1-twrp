@@ -1,0 +1,139 @@
+--- a/gui2/backend/twrp_tools_backend.cpp
++++ b/gui2/backend/twrp_tools_backend.cpp
+@@ -137,26 +137,34 @@
+ 
+ // GUIAction::copylog
+ int copylog() {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
+   operation_start("Copy Log");
+-  {
+-    std::string dst, curr_storage;
+-    int copy_kernel_log = 0;
+-    int copy_logcat = 1;
+-
+-    DataManager::GetValue("tw_include_kernel_log", copy_kernel_log);
+-    DataManager::GetValue("tw_include_logcat", copy_logcat);
+-    PartitionManager.MountCurrentStorage(true);
+-    curr_storage = DataManager::GetCurrentStoragePath();
+-    dst = curr_storage + "/recovery.log";
+-    TWFunc::CopyFile("/tmp/recovery.log", dst.c_str(), 0755);
++  int copy_kernel_log = 0;
++  int copy_logcat = 1;
++  DataManager::GetValue("tw_include_kernel_log", copy_kernel_log);
++  DataManager::GetValue("tw_include_logcat", copy_logcat);
++  const std::string storage = DataManager::GetCurrentStoragePath();
++  if (storage.empty() || storage.front() != '/' ||
++      !PartitionManager.MountCurrentStorage(true)) {
++    LOGERR("Log export failed: current storage is unavailable\n");
++    operation_end(1);
++    return 1;
++  }
++
++  const std::string dst = storage + "/recovery.log";
++  bool success = TWFunc::CopyFile("/tmp/recovery.log", dst, 0755, false) == 0;
++  if (success) {
+     tw_set_default_metadata(dst.c_str());
+-    if (copy_kernel_log) TWFunc::CopyKernelLog(curr_storage);
+-    if (copy_logcat) TWFunc::CopyLogcat(curr_storage);
+-    sync();
+     gui2_console::info("copy_log", dst);
+-  }
+-  operation_end(0);
+-  return 0;
++  } else {
++    LOGERR("Log export failed: recovery log copy to '%s'\n", dst.c_str());
++  }
++  // Best effort: retain every independently successful requested export.
++  if (copy_kernel_log && !TWFunc::CopyKernelLog(storage)) success = false;
++  if (copy_logcat && !TWFunc::CopyLogcat(storage)) success = false;
++  sync();
++  operation_end(success ? 0 : 1);
++  return success ? 0 : 1;
+ }
+ 
+ // GUIAction::fixcontexts
+--- a/twrp_functions.cpp
++++ b/twrp_functions.cpp
+@@ -1071,34 +1071,42 @@
+   return 0;
+ }
+ 
+-void TWFunc::CopyKernelLog(const std::string& curr_storage) {
++bool TWFunc::CopyKernelLog(const std::string& curr_storage) {
+   const std::string dmesg_dst = fs::path(curr_storage) / "dmesg.log";
+-
+-  // klogctl(2) reads the kernel ring buffer directly, where the old "dmesg" exec was a
+-  // no-op whenever /system was not mounted yet. KLOG_SIZE_BUFFER sizes the buffer so
+-  // KLOG_READ_ALL is not truncated; the ring may still grow between the two calls, like dmesg
+-  // itself. Recovery runs as root, so dmesg_restrict does not apply.
++  const int buf_size = klogctl(KLOG_SIZE_BUFFER, nullptr, 0);
++  if (buf_size <= 0) {
++    LOGERR("Log export failed: cannot size kernel ring buffer\n");
++    return false;
++  }
++  std::vector<char> buf(buf_size);
++  const int n = klogctl(KLOG_READ_ALL, buf.data(), buf_size);
++  if (n < 0 || n > buf_size) {
++    LOGERR("Log export failed: cannot read kernel ring buffer\n");
++    return false;
++  }
++  if (!WriteToFile(dmesg_dst, std::string(buf.data(), n))) {
++    LOGERR("Log export failed: kernel log write to '%s'\n", dmesg_dst.c_str());
++    return false;
++  }
++  tw_set_default_metadata(dmesg_dst.c_str());
++  gui2_console::info("copy_kernel_log", dmesg_dst);
++  return true;
++}
++
++bool TWFunc::CopyLogcat(const std::string& curr_storage) {
++  const std::string logcat_dst = fs::path(curr_storage) / "logcat.txt";
+   std::string result;
+-  if (const int buf_size = klogctl(KLOG_SIZE_BUFFER, nullptr, 0); buf_size > 0) {
+-    std::vector<char> buf(buf_size);
+-    if (const int n = klogctl(KLOG_READ_ALL, buf.data(), buf_size); n > 0) {
+-      result.assign(buf.data(), n);
+-    }
+-  }
+-  WriteToFile(dmesg_dst, result);
+-  gui2_console::info("copy_kernel_log", dmesg_dst);
+-  tw_set_default_metadata(dmesg_dst.c_str());
+-}
+-
+-void TWFunc::CopyLogcat(const std::string& curr_storage) {
+-  const std::string logcat_dst = fs::path(curr_storage) / "logcat.txt";
+-  const std::string logcat_cmd = "logcat -d";
+-
+-  std::string result;
+-  ExecCmd(logcat_cmd, result, false);
+-  WriteToFile(logcat_dst, result);
++  if (ExecCmd("logcat -d", result, false) != 0) {
++    LOGERR("Log export failed: logcat capture\n");
++    return false;
++  }
++  if (!WriteToFile(logcat_dst, result)) {
++    LOGERR("Log export failed: logcat write to '%s'\n", logcat_dst.c_str());
++    return false;
++  }
++  tw_set_default_metadata(logcat_dst.c_str());
+   gui2_console::info("copy_logcat", logcat_dst);
+-  tw_set_default_metadata(logcat_dst.c_str());
++  return true;
+ }
+ 
+ bool TWFunc::IsNumber(const std::string& str_to_check) {
+--- a/twrp_functions.hpp
++++ b/twrp_functions.hpp
+@@ -219,10 +219,10 @@
+   static uint64_t GetBlockSizeByIoctl(const char* block_device);
+ 
+   // Copy Kernel Log to Current Storage (PSTORE/KMSG)
+-  static void CopyKernelLog(const std::string& curr_storage);
++  static bool CopyKernelLog(const std::string& curr_storage);
+ 
+   // Copy Logcat to Current Storage
+-  static void CopyLogcat(const std::string& curr_storage);
++  static bool CopyLogcat(const std::string& curr_storage);
+ 
+   // return true if number, false if not a number
+   static bool IsNumber(const std::string& str_to_check);
