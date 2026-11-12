@@ -301,6 +301,22 @@
       "failures": 0,
       "local_report_sha256": "1770ff5c958ab3587d95fbf1b3d1eafa0a57352247fa3a43310517edaa0867c0",
       "scope": "Run unmodified ARM64 security-service relocation, stopping before constructors.\n\nImage linker and original six-profile ELF bytes execute via QEMU in a private\nchroot. RSP sets one debugger breakpoint at the linker's pre-init call site;\nno relocation result is substituted, no service constructor/main/Binder/TEE runs.\nExact image ld.config and init LD_LIBRARY_PATH are staged. Missing /proc and\nAndroid properties remain boundaries; this is not a complete init boot.\n"
+    },
+    {
+      "name": "original-ARM64-rtc-callbacks",
+      "status": "PASS",
+      "cases": 56,
+      "failures": 0,
+      "local_report_sha256": "f3a0913c8390328524beb55415376275c3a054dff359e61eb204b986edb353f0",
+      "scope": "Execute original six-profile ARM64 RTC read/set callbacks and OS4 refresh.\n\nMMIO reads/writes, spinlocks, PMIC, reset, delays and calendar conversion are\nexplicit fixtures. No kernel boot, hctosys, hardware clock or host time change.\nOriginal instructions/relocations use the shared bounded module emulator;\nunknown imports and instruction-budget exhaustion fail closed.\n"
+    },
+    {
+      "name": "nv-mount-policy-current-review",
+      "status": "PASS",
+      "cases": 26,
+      "failures": 0,
+      "local_report_sha256": "012567aad4603da39323949bd5a0a5265c3b6769db6cd526ec651cdc900602af",
+      "scope": "Execute original GUI mount list/action methods with explicit core doubles.\n\nNo real mount, device or settings access. Confirms NV/protection rows are hidden\nand stale/manual toggle calls are rejected in both directions, including a\nresolved alias. Core mounting remains outside this UI policy.\n"
     }
   ]
 }

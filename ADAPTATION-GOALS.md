@@ -1,5 +1,9 @@
 # 小米 15S Pro（dijun）TWRP 多版本适配目标与离线验收规范
 
+2026-11-12 NV与公开同步复核：当前普通GUI隐藏NVData/NVCFG/protect等目标，后台双向拒绝手动挂载/卸载（含规范化路径及解析别名），26项当前源码复核通过；保留原厂fstab和内部核心访问，不是特权访问控制。公开仓库https://github.com/xiatian410/xringo1-twrp已确认PUBLIC；后续每个连贯源码/配置/测试/文档修改批次均执行scripts/sync_github.py --push并核对远端HEAD，镜像、编译文件、原厂blob、私钥和原始设备日志不上传。详见AGENTS.md和docs/GITHUB-PUBLICATION.md。
+
+2026-11-12 RTC原厂回调证据收尾：六份vendor_boot按OTA manifest核对镜像后重读原始模块，ARM64读/设与OS4刷新共56场景通过。PMIC设置失败返回-5但软件偏移已更新；OS4刷新PMIC失败使用计数回退，reset错误传播。MMIO/PMIC/日历转换为显式夹具，不是完整probe/hctosys或物理漂移验收；无新增校时偏移或生产修改。详见docs/RTC-DRIVER-EMULATION.md；候选仍mtp-directory（215914df…）/765来源，本轮无需构建。设置及OS4震动正常确认保持，完整12组继续进行中。
+
 2026-11-12 安全服务实际namespace检查：在原始ARM64 linker构造函数前直接读取默认namespace字段，六profile各三个服务确认环境私有库优先、默认bootstrap/system搜索路径和不隔离配置。每profile删除配置及加入存在的标记目录各一项，实际搜索路径按预期变化；共42项通过，默认重定位30项回归通过。成员偏移从同执行字节linker的DWARF提取，库/服务原始CAS绑定；bootstrap插入和不存在路径忽略均保留原始语义，不改生产。见docs/PROFILE-SERVICE-NAMESPACE.md与logs/profile-service-namespace-audit.json。仍不证明真实init/mount namespace/APEX/属性区/proc、服务初始化或密钥/合成加密卷完成；完整12组继续进行中。生产mtp-directory镜像215914df…/765来源未变，本轮无构建，OS4震动正常确认保持，源码文档同步GitHub，编译文件不上传。
 
 2026-11-12 安全服务本体ARM64重定位：六profile的原厂tee-supplicant/KeyMint/Gatekeeper共18个加载执行，通过当前镜像原始linker在call_pre_init_constructors调用前断点停止，核对PC、g_is_ldd=0及r_debug实际加载对象/来源。每profile额外缺库与等长缺符号私有副本对照各一项，共30项通过；正向服务与生产ELF均未修改。使用镜像ld.config及init绝对库路径，chroot无真实proc/属性区，仍不宣称精确init/APEX/namespace、服务构造函数/main/Binder/TEE/密钥操作或合成加密卷完成。详见docs/PROFILE-SERVICE-RELOCATION.md与logs/profile-service-relocation-audit.json。生产镜像仍为mtp-directory（215914df…）/765来源，本轮无生产修改或构建；完整12组继续进行中，OS4震动调用正常确认保留。测试审计文档按约定同步GitHub，编译文件不上传。

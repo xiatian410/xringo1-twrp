@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "85a0b73c6b1499cfadfb23969393d78f222efa3301b7ed0bb98bf9c277a04775",
+    "sha256": "b00a03b571c36a4df880d40ee69b6941367ec9dcc860f97d62c35b3632e80f87",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -28,7 +28,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "f7c6386ba048fa02712b9d2371eddf82478b48e5028425806b789ceea0a1f4d1",
+    "sha256": "c05142d504085f2581703d0113fef9613e07fd43fa2964906d6b699460028ada",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "8123738bc8e1c0868f393f7cd0d5217ce0f7481235d221b9e76459017b3cc6ab",
+    "sha256": "cb651bd4e559b1e66717d7d4cb5499bbf758c14dfd873f41d546cedc6ac6f837",
     "mode": "0o644"
   },
   "docs/DELIVERY-EVIDENCE-STATUS.md": {
@@ -249,6 +249,10 @@
   },
   "docs/RESTORE-SESSION-ADAPTATION.md": {
     "sha256": "1cad042ca46b858f45507d2e66b24ad605ad9bf0369600b811978c7eabbd2c3e",
+    "mode": "0o644"
+  },
+  "docs/RTC-DRIVER-EMULATION.md": {
+    "sha256": "a98433603c666c2cf15801e6b83e6c73918f6c474e04135918df9bb7278fa676",
     "mode": "0o644"
   },
   "docs/SETTINGS-ADAPTATION.md": {
@@ -1155,6 +1159,10 @@
     "sha256": "dee210066b3d3e97be001bd6812843e331903fabab97641b21c04b41eab89222",
     "mode": "0o644"
   },
+  "scripts/audit_rtc_driver_emulation.py": {
+    "sha256": "8e433474cd1f00c5b56d43cbb181f77d76abd3d9ce833e44d8b80f428ad0fec1",
+    "mode": "0o644"
+  },
   "scripts/audit_settings_joined.py": {
     "sha256": "f09d50ba1f9d613aa35bee36947537649a1ced6bdf4aac8e0100f279190326ca",
     "mode": "0o644"
@@ -1508,11 +1516,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "2a35a2a046dc43b6ead65be2520ad5e44e0c47fc95b3979dcd9980c943ed20f5",
+    "sha256": "8bf400c6595864e3cf40538d16ccf9696a292a905f705e112f4fe46c50e0175e",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "660b5ae29b86fea9b402b14d878a598ca4fad3bd41dee1ec176c753a046627c1",
+    "sha256": "9e197b3b396ab11f0c4e0e6d541adf662077c137f18836d7878ee1f559e99c7a",
     "mode": "0o644"
   },
   "tests/archive_pipeline_stubs.json": {
@@ -2025,6 +2033,10 @@
   },
   "tests/restore_session_test.py": {
     "sha256": "717cf6df0bfbc56c2f9f3d1d10a029f2973348e8b02bfe051f1279ba94b8236a",
+    "mode": "0o644"
+  },
+  "tests/rtc_driver_emulation.py": {
+    "sha256": "9534c7f699f44fb7602457e66fab4d6a99c0c07ccc4f0d2b695ceb75fa00a17b",
     "mode": "0o644"
   },
   "tests/run_dijun_touch.py": {

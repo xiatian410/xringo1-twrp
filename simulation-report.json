@@ -1937,7 +1937,7 @@
     "MTP remaining media metadata and final post-child directory date semantics (file epoch0/timestamp-error publication and directory SendObjectInfo time/completion16 cases covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
     "backup/restore real archive codec/GUI and sparse-hole/progress behavior, actual filesystem power-loss durability and content authenticity; new-backup completion manifests and restore rejection are covered by17 helper,55 RunBackup and56 RunRestore host cases but do not prove sudden power-loss behavior",
     "full GUI/PartitionManager write/format/repair lifecycle and I/O faults; current-image tools17 historical cases, e2fsck result146 assertions and current-image wrapper/lookup/Repair/ExecCmd/ARM64 checker7 joined cases covered with explicit unmount/device/presentation fixtures; real mounts/full GUI still pending",
-    "RTC cold-start read failures/drift fixtures",
+    "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
     "video target ARM64 codec/display-shadow sampling integration, real storage/codec fault behavior, hour-scale stability and seek/index performance (bounded12.5s multi-cluster/keyframe correctness covered), GUI player rendering and full-resolution performance; host frames/queue/failure recovery plus independent FFmpeg native decode and72 short input seeks covered",
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
@@ -2604,6 +2604,24 @@
       "result": "pass",
       "grade": "S2",
       "scope": "Run unmodified ARM64 security-service relocation, stopping before constructors.\n\nImage linker and original six-profile ELF bytes execute via QEMU in a private\nchroot. RSP sets one debugger breakpoint at the linker's pre-init call site;\nno relocation result is substituted, no service constructor/main/Binder/TEE runs.\nExact image ld.config and init LD_LIBRARY_PATH are staged. Missing /proc and\nAndroid properties remain boundaries; this is not a complete init boot.\n"
+    },
+    {
+      "name": "original-ARM64-rtc-callbacks",
+      "evidence": "logs/rtc-driver-emulation.json",
+      "evidence_sha256": "f3a0913c8390328524beb55415376275c3a054dff359e61eb204b986edb353f0",
+      "count": 56,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Execute original six-profile ARM64 RTC read/set callbacks and OS4 refresh.\n\nMMIO reads/writes, spinlocks, PMIC, reset, delays and calendar conversion are\nexplicit fixtures. No kernel boot, hctosys, hardware clock or host time change.\nOriginal instructions/relocations use the shared bounded module emulator;\nunknown imports and instruction-budget exhaustion fail closed.\n"
+    },
+    {
+      "name": "nv-mount-policy-current-review",
+      "evidence": "logs/nv-mount-policy-current-review.json",
+      "evidence_sha256": "012567aad4603da39323949bd5a0a5265c3b6769db6cd526ec651cdc900602af",
+      "count": 26,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Execute original GUI mount list/action methods with explicit core doubles.\n\nNo real mount, device or settings access. Confirms NV/protection rows are hidden\nand stale/manual toggle calls are rejected in both directions, including a\nresolved alias. Core mounting remains outside this UI policy.\n"
     }
   ],
   "source_review_followups": [
@@ -3173,5 +3191,14 @@
     "remaining": "Actual init/mount namespace/APEX/property/proc runtime, service constructors/main/Binder/TEE and synthetic encrypted volume/key operations remain unverified. Default namespace fields/search paths and configuration consumption verified inside explicit private chroots.",
     "namespace_evidence": "logs/profile-service-namespace.json",
     "namespace_audit": "logs/profile-service-namespace-audit.json"
+  },
+  "rtc_driver_callbacks": {
+    "evidence": "logs/rtc-driver-emulation.json",
+    "audit": "logs/rtc-driver-emulation-audit.json",
+    "documentation": "docs/RTC-DRIVER-EMULATION.md",
+    "count": 56,
+    "original_vendor_boot_origins": 6,
+    "production_changes": false,
+    "scope": "Original ARM64 read/set and OS4 refresh callbacks with MMIO/PMIC/calendar fixtures. Full probe/hctosys/calendar/cold-start and physical drift remain open."
   }
 }
