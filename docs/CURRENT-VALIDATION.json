@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-zip-queue.img",
-  "image_sha256": "4425846118c018b9a87b40c9bb549c6f9aa13af2c724973104c53ea013324a7f",
-  "production_sources": 753,
+  "image_name": "recovery-dijun-unified-sideload-completion.img",
+  "image_sha256": "f5231d7886615dbfe0a89063706178ed2120866085248e5c7aa47e27ceed2c74",
+  "production_sources": 760,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "User confirms invocation is normal.",
   "checks": [
@@ -141,6 +141,46 @@
       "failures": 0,
       "local_report_sha256": "d94806ebf638d3eadef86c4d93e8af5d05970b791afb09fbf20eccd9efd4bd69",
       "scope": "Original public ZIP backend/worker -> real ZIP/digest/extraction/fork/exec.\n\nPrivate chroots and harmless native updaters only. DataManager, progress,\nmounts, cache wiping, block unlocking, size refresh, operation feedback and\nperformance are explicit doubles. Signature rejection without keys executes;\ncryptographic acceptance is covered separately by zip_install_chain_test.py.\nNo GUI pointer events, AB payload, OZIP, ARM updater, phone or block device run.\n"
+    },
+    {
+      "name": "sideload-completion-lifecycle",
+      "status": "PASS",
+      "cases": 33,
+      "failures": 0,
+      "local_report_sha256": "1a166cbdccdc8c556ec88ade3cf9a4d314bbe450b4955603b2c783d9442546b8",
+      "scope": "Original sideload core + GUI backend with private native minadbd subprocesses.\n\nReal socketpair/fork/exec/epoll/send/kill/wait; USB properties, FUSE stat,\nTWinstall_zip, MTP/cache/DataManager/operation feedback are explicit doubles.\nSyscall wrappers inject errors and forbid signalling non-owned PIDs. No phone,\nUSB endpoint, ZIP updater, physical storage, reboot or GUI clicks execute.\n"
+    },
+    {
+      "name": "sideload-package-chain",
+      "status": "PASS",
+      "cases": 27,
+      "failures": 0,
+      "local_report_sha256": "7858fbd402833a4d67ab7a6b97e14a3a9da659b779db62666d124b4a677c8f7d",
+      "scope": "Actual sideload core/backend or ORS branch -> ZIP/digest/extract/updater.\n\nReal private chroot files, native minadbd stand-in via socketpair/fork/exec/epoll,\nproduction ZIP/package/verifier/digest/protocol, harmless native updater. FUSE\nis a symlink publication/stat fixture; properties, mounts/cache/Dalvik/MTP,\nDataManager, performance and operation feedback are doubles. No USB, actual\nminadbd/FUSE driver, ARM updater, AB payload, GUI input or physical writes.\n"
+    },
+    {
+      "name": "sideload-package-chain-before",
+      "status": "FAIL",
+      "cases": 27,
+      "failures": 19,
+      "local_report_sha256": "bae514095b92d90f21fd530b4ae10226667a33867697b30898b12806f90539e1",
+      "scope": "Actual sideload core/backend or ORS branch -> ZIP/digest/extract/updater.\n\nReal private chroot files, native minadbd stand-in via socketpair/fork/exec/epoll,\nproduction ZIP/package/verifier/digest/protocol, harmless native updater. FUSE\nis a symlink publication/stat fixture; properties, mounts/cache/Dalvik/MTP,\nDataManager, performance and operation feedback are doubles. No USB, actual\nminadbd/FUSE driver, ARM updater, AB payload, GUI input or physical writes.\n"
+    },
+    {
+      "name": "sideload-completion-profile-runtime",
+      "status": "PASS",
+      "cases": 102,
+      "failures": 0,
+      "local_report_sha256": "a9372b4550213977a4319877f54b3032ce5211e99e7c10301bb8ace37b2bee8d",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "sideload-completion-module-state",
+      "status": "PASS",
+      "cases": 24,
+      "failures": 0,
+      "local_report_sha256": "eeaab430eca7cad610b6f5bd3b0e9016c74f87a2dd122e8b947ecb1669c147ee",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
     }
   ]
 }

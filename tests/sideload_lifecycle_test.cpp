@@ -53,8 +53,8 @@ struct DataManager {
  static void GetValue(const std::string& k,int& v){v=GetIntValue(k);}
  static std::string GetStrValue(const std::string& k){return std::to_string(GetIntValue(k));}
 };
-namespace gui2_console {template<class... T> void info(T...){} }
-struct PartitionManagerFixture {bool WipeByPath(const char*){return true;}void WipeDalvikCache(){}} PartitionManager;
+namespace gui2_console {template<class... T> void info(T...){} template<class... T> void log_error(T...){} }
+struct PartitionManagerFixture {bool WipeByPath(const char*){return true;}int WipeDalvikCache(){return 1;}} PartitionManager;
 namespace TWFunc {bool ToggleMtp(bool enabled){bool old=mtp;mtp=enabled;if(!enabled&&scenario=="cancel-before-spawn"){entered=true;while(!gate)std::this_thread::yield();}return old;}}
 static void operation_start(const char*){}
 static void operation_end(int ret){operation_result=ret;}

@@ -222,6 +222,10 @@
         {
           "file": "0056-sideload-child-lifecycle.patch",
           "sha256": "ffab03ec5fd11bbc38bf05d245b175a51c9d2c9a6961422c4e61278298bde3fb"
+        },
+        {
+          "file": "0057-sideload-package-completion.patch",
+          "sha256": "07d2517bbfc96ac10c4d9b17287e95be0a1c38e8aece1f377cd7029afecd158b"
         }
       ],
       "result_files": {
@@ -310,10 +314,11 @@
         "sysfs_device_match.hpp": "66987f6f13e174bb22ce057d022006b1eb0fe2cfa3069046c51e30f72063e941",
         "twrpinstall/twinstall.cpp": "b78718bfbea5937d800deb975c5d915007606e29bcb7d5b63ed6fe093dd73c3a",
         "gui2/backend/twrp_install_backend.cpp": "b6c25c2086dde47d2d08a6ed3e62780d18cce758cb5c4d1f44a411124f092da6",
-        "twrpinstall/adb_install.cpp": "693f26011747b0f14968a77397fee92a710e5bbab46e4baf7ce5401ba58b8fe7",
+        "twrpinstall/adb_install.cpp": "5c6b74d91ed923d53ae7b8daf7794a9396350495b691e94cee6316d62342376c",
         "twrpinstall/include/twinstall/adb_install.h": "2338db95bf9ed43f829d3f602264a60d6db8179c8114e8e4eb89222c21246beb",
-        "gui2/backend/twrp_sideload_backend.cpp": "c3dcee7fa939b07172de3f2dad40c992d0fe037128d0ee380f16b8c6835d36ac",
-        "gui2/backend/twrp_sideload_backend.h": "df5ef8d68dd5e6101482ba26cb944bc822c8643e0656193227956a9085a1812e"
+        "gui2/backend/twrp_sideload_backend.cpp": "c8412a060b3ed2e1ac48e20570f3c2a227f8c9e695b76f6df51fc271161c71a9",
+        "gui2/backend/twrp_sideload_backend.h": "df5ef8d68dd5e6101482ba26cb944bc822c8643e0656193227956a9085a1812e",
+        "openrecoveryscript.cpp": "ca819c2a7b2ff22372fe844163a4b2a5a0a40716754e5bc35cce4171fa35d155"
       }
     },
     "system/sepolicy": {

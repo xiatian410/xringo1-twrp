@@ -12,6 +12,16 @@
 
 当前镜像recovery-dijun-unified-sideload-lifecycle.img，SHA256 a5e16b92da91202527714049200ae23c35d13ed2e2d79f6327d55ed2f8afbde3；installclean及make -j$(nproc)30并发，758份来源，六份配置封装核对。镜像仅本地保留，不上传GitHub。
 
-仍未完成：实际minadbd/ADB/FUSE/USB与ZIP updater接续，GUI完整页面交互，安装过程中同步TWinstall_zip或属性等待的有界取消，updater清缓存请求向外传递和缓存失败反馈，脚本路径重复安装及其收尾，重启请求向GUI统一重启入口传递、旧ADB版本错误的精确状态，以及真实USB恢复失败反馈。取消状态不承诺回滚已写内容；token只负责进程/传输退出，不能打断正在执行的同步安装器。保留全部12组整体目标，未连接设备。
+0056时未完成（后续0057进度见下文）：实际minadbd/ADB/FUSE/USB与ZIP updater接续，GUI完整页面交互，安装过程中同步TWinstall_zip或属性等待的有界取消，updater清缓存请求向外传递和缓存失败反馈，脚本路径重复安装及其收尾，重启请求向GUI统一重启入口传递、旧ADB版本错误的精确状态，以及真实USB恢复失败反馈。取消状态不承诺回滚已写内容；token只负责进程/传输退出，不能打断正在执行的同步安装器。保留全部12组整体目标，未连接设备。
 
 同镜像profile9组/102阶段及module-state4组/24调用通过（模块/挂载/属性服务仍为夹具）。公共adb_install头变化使历史ZIP队列报告的来源绑定过期，使用logs/sideload-zip-queue-regression.json重跑23项，保留历史报告而非改写旧摘要。当前范围由scripts/audit_sideload_delivery.py核对。
+
+## 包安装与完成状态
+
+补丁0057让原始AdbInstallPackageHandler把wipe_cache输出交给每个包的状态处理：TWinstall_zip返回后立即尝试/cache，wipe失败将包结果改为INSTALL_ERROR，再将失败状态回复minadbd。多条安装命令各自独立完成清理，未等到队列末尾；后续包请求不会覆盖之前包状态。updater即使返回失败，只要已报告wipe_cache，也仍执行缓存清理，因为其写入可能已经发生。
+
+ORS实际sideload分支以前在twrp_sideload已经调用AdbInstallPackageHandler并安装包后，再次调用TWinstall_zip。补丁移除此重复执行与脚本的第二次cache处理，使用核心返回码，然后沿用核心socket服务和USB清理。GUI sideload页的用户选项清缓存、Dalvik仍是单独的清理操作；错误现在将backend结果设置失败。
+
+新增tests/sideload_package_chain_test.py/.cpp及sideload_package_fixture.cpp。测试从实际AdbInstallPackageHandler/twrp_sideload/GUI backend和ORS分支，接入原始TWinstall_zip、ZIP映射与验证/提取、原始updater protocol/fork/exec、minadbd私有替身及真实8字节socket命令/状态。27场景当前通过、旧实现19失败，精确输入ZIP摘要映射相同。minadbd fixture在读取每次状态ACK之前数cache清理操作，以验证请求已在包确认前处理。涵盖单/多包、第一包wipe和后续包成功/失败、wipe自身失败、updater失败、进度错误、缺失updater、签名拒绝、GUI cache/Dalvik用户选项失败和ORS单次安装。
+
+native minadbd、FUSE由私有chroot文件发布替身模拟；USB属性、mount/cache/Dalvik、DataManager、MTP、操作反馈均为fixture。真实USB端点、kernel FUSE、缓存文件系统、ARM updater、AB payload、GUI点击及设备均未运行。安装或清理失败不回滚已经发生的分区写入。

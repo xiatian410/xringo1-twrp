@@ -1,8 +1,8 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-sideload-lifecycle.img",
-  "image_sha256": "a5e16b92da91202527714049200ae23c35d13ed2e2d79f6327d55ed2f8afbde3",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-sideload-completion.img",
+  "image_sha256": "f5231d7886615dbfe0a89063706178ed2120866085248e5c7aa47e27ceed2c74",
   "image_status": "Clean-built offline candidate: ZIP queue accumulates per-package cache requests and fails when requested cache cleanup fails. Includes existing NV/OTG/ABI fixes. Hardware/GUI/ARM updater/AB payload/sideload remain unverified.",
   "checks": [
     {
@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "Full-page GUI routes, ARM updater/OTA payload and complete ADB/minadbd/FUSE/ZIP sideload integration remain open. Host ZIP verification/extraction/fork36, queue23, image routes40 and updater protocol22 covered separately; sideload core/backend native private-process lifecycle33 covered with property/FUSE/install/MTP/cache doubles, not real USB or joined package execution."
+    "Full-page GUI routes, ARM updater/OTA payload and actual USB/FUSE sideload remain open. Package chain now covers original sideload core/GUI or actual ORS branch through real ZIP/digest/extraction/updater fork/exec and private minadbd socket: 27 scenarios, old19 failures. Property/FUSE/mount/cache/USB remain fixtures. No physical or GUI acceptance."
   ],
   "hardware_unverified": [
     "motor output",
@@ -2424,6 +2424,51 @@
       "result": "pass",
       "grade": "S2",
       "scope": "Original public ZIP backend/worker -> real ZIP/digest/extraction/fork/exec.\n\nPrivate chroots and harmless native updaters only. DataManager, progress,\nmounts, cache wiping, block unlocking, size refresh, operation feedback and\nperformance are explicit doubles. Signature rejection without keys executes;\ncryptographic acceptance is covered separately by zip_install_chain_test.py.\nNo GUI pointer events, AB payload, OZIP, ARM updater, phone or block device run.\n"
+    },
+    {
+      "name": "sideload-completion-lifecycle",
+      "evidence": "logs/sideload-completion-lifecycle.json",
+      "evidence_sha256": "1a166cbdccdc8c556ec88ade3cf9a4d314bbe450b4955603b2c783d9442546b8",
+      "count": 33,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Original sideload core + GUI backend with private native minadbd subprocesses.\n\nReal socketpair/fork/exec/epoll/send/kill/wait; USB properties, FUSE stat,\nTWinstall_zip, MTP/cache/DataManager/operation feedback are explicit doubles.\nSyscall wrappers inject errors and forbid signalling non-owned PIDs. No phone,\nUSB endpoint, ZIP updater, physical storage, reboot or GUI clicks execute.\n"
+    },
+    {
+      "name": "sideload-package-chain",
+      "evidence": "logs/sideload-package-chain.json",
+      "evidence_sha256": "7858fbd402833a4d67ab7a6b97e14a3a9da659b779db62666d124b4a677c8f7d",
+      "count": 27,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Actual sideload core/backend or ORS branch -> ZIP/digest/extract/updater.\n\nReal private chroot files, native minadbd stand-in via socketpair/fork/exec/epoll,\nproduction ZIP/package/verifier/digest/protocol, harmless native updater. FUSE\nis a symlink publication/stat fixture; properties, mounts/cache/Dalvik/MTP,\nDataManager, performance and operation feedback are doubles. No USB, actual\nminadbd/FUSE driver, ARM updater, AB payload, GUI input or physical writes.\n"
+    },
+    {
+      "name": "sideload-package-chain-before",
+      "evidence": "logs/sideload-package-chain-before.json",
+      "evidence_sha256": "bae514095b92d90f21fd530b4ae10226667a33867697b30898b12806f90539e1",
+      "count": 27,
+      "result": "expected_failures",
+      "grade": "S2",
+      "scope": "Actual sideload core/backend or ORS branch -> ZIP/digest/extract/updater.\n\nReal private chroot files, native minadbd stand-in via socketpair/fork/exec/epoll,\nproduction ZIP/package/verifier/digest/protocol, harmless native updater. FUSE\nis a symlink publication/stat fixture; properties, mounts/cache/Dalvik/MTP,\nDataManager, performance and operation feedback are doubles. No USB, actual\nminadbd/FUSE driver, ARM updater, AB payload, GUI input or physical writes.\n"
+    },
+    {
+      "name": "sideload-completion-profile-runtime",
+      "evidence": "logs/sideload-completion-profile-runtime.json",
+      "evidence_sha256": "a9372b4550213977a4319877f54b3032ce5211e99e7c10301bb8ace37b2bee8d",
+      "count": 9,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "sideload-completion-module-state",
+      "evidence": "logs/sideload-completion-module-state.json",
+      "evidence_sha256": "eeaab430eca7cad610b6f5bd3b0e9016c74f87a2dd122e8b947ecb1669c147ee",
+      "count": 4,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
     }
   ],
   "source_review_followups": [
@@ -2739,8 +2784,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/sideload-delivery.json",
-    "scope": "Sideload native process/socket33;old comparable31/29failed;758 sources;six profiles;same-image shell9/module4. Full12 and historical audit drift open.",
+    "evidence": "logs/sideload-completion-delivery.json",
+    "scope": "sideload package completion27/old19 failures; lifecycle33;760 sources;six profiles;same-image runtime9/module4. USB/FUSE/ARM updater/device remain unverified. Full12 and historical drift remain open.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -2954,6 +2999,14 @@
     "old_failures": 29,
     "scope": "Private native minadbd fixture; actual core/backend process and socket lifecycle. USB properties/FUSE/install/MTP/cache remain doubles.",
     "remaining": "Full minadbd/FUSE/ZIP/USB, bounded synchronous install/property cancellation, cache propagation, ORS duplicate install, reboot handoff and precise old-ADB status remain open.",
-    "old_comparable_cases": 31
+    "old_comparable_cases": 31,
+    "package_completion": {
+      "patch": "0057-sideload-package-completion.patch",
+      "evidence": "logs/sideload-package-chain.json",
+      "cases": 27,
+      "old_failures": 19,
+      "ors_duplicate_install_removed": true,
+      "remaining": "Real USB/FUSE/ARM updater and physical cache remain unverified."
+    }
   }
 }

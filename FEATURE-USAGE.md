@@ -1,5 +1,7 @@
 # 功能入口与当前使用边界
 
+本地候选`recovery-dijun-unified-sideload-completion.img`：ORS sideload通过核心安装一次包，updater请求的cache清理在每个minadbd状态ACK前完成并报告失败；GUI的cache/Dalvik清理错误也会显示操作失败。失败可能发生在包已有部分写入后，不会回滚。实际USB/FUSE与ARM updater尚未验收。详见docs/SIDELOAD-LIFECYCLE.md。
+
 当前本地候选`recovery-dijun-unified-sideload-lifecycle.img`包含侧载进程收尾修正。退出侧载时请求当前传输终止，后台统一回收；取消不会回滚已经安装的内容，也不保证立刻打断同步安装。完整USB/FUSE/安装器链路仍未验收，未连接设备。范围见docs/SIDELOAD-LIFECYCLE.md。
 
 当前候选`recovery-dijun-unified-zip-queue.img`，SHA256 `4425846118c018b9a87b40c9bb549c6f9aa13af2c724973104c53ea013324a7f`。多包ZIP安装中，任意已尝试包请求的清缓存会保留到队列结束；后续包失败也不会抹掉此前请求。清理失败时整体显示失败，已完成包数保留，不能据失败状态判断先前安装已撤销。继承NV挂载限制及OTG发现修正，新候选尚未实机验证。以下早期候选记录仅表示当时状态。

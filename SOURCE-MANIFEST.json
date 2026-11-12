@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "bfc783f05a59b91ef343abc1332440a78ca2e9795470fc84c7d8e2232913967d",
+    "sha256": "43b1e761c9dee86548a4f8ef9b08e529ff5ae973f0c701d231496ea1408951dc",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -20,7 +20,7 @@
     "mode": "0o644"
   },
   "FEATURE-USAGE.md": {
-    "sha256": "d29565319d5986c5e0f751eaa8ec975ba1d98c3130120c87d3a245d7710a1bac",
+    "sha256": "7291fc1512b62149fc6a95758c34f4f4e1d1d5177c6286f7e959ef4b29ff38bc",
     "mode": "0o644"
   },
   "FIRMWARE-MAP.md": {
@@ -28,7 +28,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "97d9ed65b832cad08e2f6d5eb707792209710f875c7b3ce6ccc04d6b3aa85f47",
+    "sha256": "8ec49f9e2938bb77af85bdf88a5944cd8f7447a7ec6317ea8c73761b35510f7b",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -40,7 +40,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "ce44de7e8f76efe97b9ea39f401de9a36e2497860a020e8db9f65390441946c0",
+    "sha256": "cbae3bf41475d8c2254d85da847800348ad218c1483f4e4701f2d2089df4e9e2",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "c94cf2989fea2b4f9ddc15a1ebd4c3f147a7a712c957de8b36384693344e1263",
+    "sha256": "720b6ce5e430a74e937c13c1cfbca9b8482e7768db2f7e2fc9d1578b1734dab8",
     "mode": "0o644"
   },
   "docs/DELIVERY-EVIDENCE-STATUS.md": {
@@ -244,7 +244,7 @@
     "mode": "0o644"
   },
   "docs/SIDELOAD-LIFECYCLE.md": {
-    "sha256": "ca10d682402dcd35ecb50279603ab519912ae419f26d4ab468dd69ba80e8fdb3",
+    "sha256": "d974744e9e120df12009accf1bc1f3870a18db992409a760499e402d4c9400cb",
     "mode": "0o644"
   },
   "docs/SPARSE-IMAGE-FLASH.md": {
@@ -563,8 +563,12 @@
     "sha256": "ffab03ec5fd11bbc38bf05d245b175a51c9d2c9a6961422c4e61278298bde3fb",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0057-sideload-package-completion.patch": {
+    "sha256": "07d2517bbfc96ac10c4d9b17287e95be0a1c38e8aece1f377cd7029afecd158b",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "6d43ea031299c55d89a748f91ed0cbca6eac4aa3221defc1f8f0585d802e3298",
+    "sha256": "7ac63a350776652f419580595205188836e9e9354b90c2a76ac3126806f5bddb",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -1131,6 +1135,10 @@
     "sha256": "9dd2701ec67146d43544164fc33ecdc85a51ae0f8b805cdefa797bacbda453e5",
     "mode": "0o644"
   },
+  "scripts/audit_sideload_completion_delivery.py": {
+    "sha256": "44498962508cfca9d9e2c0caa5ea3193e11acfba000c10c1d88e8122de32eca0",
+    "mode": "0o644"
+  },
   "scripts/audit_sideload_delivery.py": {
     "sha256": "e9030b47349ca97283801d82df8c57e9408e59464f3a6ad7e9d8386997fb03c3",
     "mode": "0o644"
@@ -1460,11 +1468,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "70eb32ac664ca2cffeb7b10911529a35f8b0fceb4e0e1a352a16cb09dc8e5295",
+    "sha256": "ab20b2825befcad19a36ddaffb286ee999bb3c07bf48aac35322822c6f75aadb",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "f91f01dae5d96299f0635d517542dbd5be8f713ea1d1b10008d3845d372ab7fd",
+    "sha256": "062c502d6b61fed9da15a8a8be3baf7ca04d1e739a38afea92a674599288fdaf",
     "mode": "0o644"
   },
   "tests/archive_pipeline_stubs.json": {
@@ -2024,11 +2032,23 @@
     "mode": "0o644"
   },
   "tests/sideload_lifecycle_test.cpp": {
-    "sha256": "dff56ad7cc1f5af509a48fc6d21bc83390f14cff78028e87e9f8c6880197f138",
+    "sha256": "21a424d24e341ef497826cf1a6bd15417510521b3e0ae9fb4544d6a8ac4d4f43",
     "mode": "0o644"
   },
   "tests/sideload_lifecycle_test.py": {
     "sha256": "8214971d1473aa9e43c1cf62571ad4c6d130bae8300c9f9778644294efa9d73a",
+    "mode": "0o644"
+  },
+  "tests/sideload_package_chain_test.cpp": {
+    "sha256": "9709d3a7fa785b18b3fb23ff0ff868c671434509c286de787827346f082532ca",
+    "mode": "0o644"
+  },
+  "tests/sideload_package_chain_test.py": {
+    "sha256": "7be60a59e7789ef1e50f2ce97490d41d84d81046a6f9100cf28fc6fdaa608b34",
+    "mode": "0o644"
+  },
+  "tests/sideload_package_fixture.cpp": {
+    "sha256": "25aca2c3d1a11f81cf99685869c2bb2ba2b3939f573e7c5b9c632d799a9bcf28",
     "mode": "0o644"
   },
   "tests/sparse_flash_test.cpp": {

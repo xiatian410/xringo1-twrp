@@ -1,0 +1,95 @@
+diff --git a/gui2/backend/twrp_sideload_backend.cpp b/gui2/backend/twrp_sideload_backend.cpp
+index 0afd5ef..26da76f 100644
+--- a/gui2/backend/twrp_sideload_backend.cpp
++++ b/gui2/backend/twrp_sideload_backend.cpp
+@@ -53,11 +53,16 @@ void twrp_sideload_backend::run() {
+     if (ret == -2) gui2_console::info("need_new_adb");
+     ret = 1;  // failure
+   } else {
+-    int wipe_cache = 0;
+     int wipe_dalvik = 0;
+     DataManager::GetValue("tw_wipe_dalvik", wipe_dalvik);
+-    if (wipe_cache || DataManager::GetIntValue("tw_wipe_cache")) PartitionManager.WipeByPath("/cache");
+-    if (wipe_dalvik) PartitionManager.WipeDalvikCache();
++    if (DataManager::GetIntValue("tw_wipe_cache") && !PartitionManager.WipeByPath("/cache")) {
++      gui2_console::log_error("unable_to_wipe", "/cache");
++      ret = 1;
++    }
++    if (wipe_dalvik && !PartitionManager.WipeDalvikCache()) {
++      LOGERR("Failed to wipe Dalvik cache after sideload\n");
++      ret = 1;
++    }
+   }
+   TWFunc::ToggleMtp(mtp_was_enabled);
+   operation_end(ret);
+diff --git a/openrecoveryscript.cpp b/openrecoveryscript.cpp
+index 0bafef1..684b434 100644
+--- a/openrecoveryscript.cpp
++++ b/openrecoveryscript.cpp
+@@ -375,9 +375,6 @@ int OpenRecoveryScript::run_script_file(void) {
+ 				DataManager::SetValue("tw_action_text2", gui2_console::text("sideload"));
+ 				install_cmd = -1;
+ 
+-				int wipe_cache = 0;
+-				string result;
+-
+ 				gui2_console::info("start_sideload");
+ 
+ 				Device::BuiltinAction reboot_action = Device::REBOOT_BOOTLOADER;
+@@ -386,26 +383,10 @@ int OpenRecoveryScript::run_script_file(void) {
+ 					if (ret_val == -2)
+ 						gui2_console::log_error("need_new_adb");
+ 					ret_val = 1; // failure
+-				} else if (TWinstall_zip(FUSE_SIDELOAD_HOST_PATHNAME, &wipe_cache) == 0) {
+-					if (wipe_cache)
+-						PartitionManager.WipeByPath("/cache");
+-				} else {
+-					ret_val = 1; // failure
+ 				}
+ 				PartitionManager.UnlockBlockPartitions();
+ 				PartitionManager.UpdateSystemDetails();
+ 				sideload = 1; // Causes device to go to the home screen afterwards
+-				pid_t sideload_child_pid = GetMiniAdbdPid();
+-				if (sideload_child_pid != 0) {
+-					LOGINFO("Signaling child sideload process to exit.\n");
+-					struct stat st;
+-					// Calling stat() on this magic filename signals the minadbd
+-					// subprocess to shut down.
+-					stat(FUSE_SIDELOAD_HOST_EXIT_PATHNAME, &st);
+-					int status;
+-					LOGINFO("Waiting for child sideload process to exit.\n");
+-					waitpid(sideload_child_pid, &status, 0);
+-				}
+ 				property_set("ctl.start", "adbd");
+ 				gui2_console::info("done");
+ 			} else if (strcmp(command, "fixperms") == 0 || strcmp(command, "fixpermissions") == 0 || strcmp(command, "fixcontexts") == 0) {
+diff --git a/twrpinstall/adb_install.cpp b/twrpinstall/adb_install.cpp
+index e798c67..5602241 100644
+--- a/twrpinstall/adb_install.cpp
++++ b/twrpinstall/adb_install.cpp
+@@ -49,6 +49,7 @@
+ #include "twinstall/wipe_data.h"
+ #include "minadbd/types.h"
+ #include "otautil/sysutil.h"
++#include "partitions.hpp"
+ #include "recovery_ui/device.h"
+ #include "recovery_ui/ui.h"
+ 
+@@ -139,8 +140,15 @@ static auto AdbInstallPackageHandler(int* result) {
+         break;
+       }
+     }
+-    int dummy;
+-    *result = TWinstall_zip(FUSE_SIDELOAD_HOST_PATHNAME, &dummy);
++    int wipe_cache = 0;
++    *result = TWinstall_zip(FUSE_SIDELOAD_HOST_PATHNAME, &wipe_cache);
++    // Honor a package's request even if a later updater command failed. Its
++    // changes may already have been written. Report cleanup failure to minadbd
++    // before acknowledging this package, rather than losing the request.
++    if (wipe_cache && !PartitionManager.WipeByPath("/cache")) {
++      LOG(ERROR) << "Failed to wipe cache after sideload package";
++      *result = INSTALL_ERROR;
++    }
+     break;
+   }
+ 
