@@ -647,8 +647,12 @@
     "sha256": "ee9ba1e389d89d0f416526fa753f25af5ebf4b85c9e5f07ab884a773001c3e82",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0066-snapshot-map-verification-errors.patch": {
+    "sha256": "7d380bf8ec942574af08786e4843d65be5e238a875e1784014af347bd3559ff2",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "d34677b60d1072edba71df53a8690a1910376d17ce0ec8f9bd472e0ec126cb5d",
+    "sha256": "cad918c76d23deb346a4be58c3b4229ca62d296a92eb3debfa0d151e8daa45bb",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -2101,6 +2105,14 @@
   },
   "tests/ota_payload_stream.py": {
     "sha256": "e74823b22d1b2e6ce5763daf2f35ca6433501630265091e50f150d36a1e1e432",
+    "mode": "0o644"
+  },
+  "tests/ota_snapshot_map.cpp": {
+    "sha256": "6d456caeafbe5a1f2ef058a3cf18f493c3ee261723581d5736a78d9bd47e4276",
+    "mode": "0o644"
+  },
+  "tests/ota_snapshot_map.py": {
+    "sha256": "6748644ede80f2b309a29906bd26f43518a80127cc7bfb798894b3a0c3522545",
     "mode": "0o644"
   },
   "tests/ota_vabc_session.cpp": {

@@ -1,0 +1,32 @@
+diff --git a/payload_consumer/filesystem_verifier_action.cc b/payload_consumer/filesystem_verifier_action.cc
+index 8ebb81a..57531c7 100644
+--- a/payload_consumer/filesystem_verifier_action.cc
++++ b/payload_consumer/filesystem_verifier_action.cc
+@@ -118,7 +118,13 @@ void FilesystemVerifierAction::PerformAction() {
+   // COW data.
+   if (dynamic_control_->UpdateUsesSnapshotCompression() &&
+       !install_plan_.write_verity) {
+-    dynamic_control_->MapAllPartitions();
++    if (!dynamic_control_->MapAllPartitions()) {
++      LOG(ERROR) << "Failed to map snapshot partitions for verification";
++      // MapAllSnapshots can fail after mapping only part of the set.
++      dynamic_control_->UnmapAllPartitions();
++      abort_action_completer.set_code(ErrorCode::kFilesystemVerifierError);
++      return;
++    }
+   }
+   StartPartitionHashing();
+   abort_action_completer.set_should_complete(false);
+@@ -188,7 +194,11 @@ bool FilesystemVerifierAction::InitializeFdVABC(bool should_write_verity) {
+     // then Map() to re-spin daemon.
+     if (install_plan_.write_verity) {
+       dynamic_control_->UnmapAllPartitions();
+-      dynamic_control_->MapAllPartitions();
++      if (!dynamic_control_->MapAllPartitions()) {
++        LOG(ERROR) << "Failed to remap snapshot partitions for verification";
++        dynamic_control_->UnmapAllPartitions();
++        return false;
++      }
+     }
+     return InitializeFd(partition.readonly_target_path);
+   }

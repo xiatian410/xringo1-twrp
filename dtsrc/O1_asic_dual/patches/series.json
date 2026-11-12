@@ -391,11 +391,16 @@
         {
           "file": "0065-delta-partition-finalization-errors.patch",
           "sha256": "ee9ba1e389d89d0f416526fa753f25af5ebf4b85c9e5f07ab884a773001c3e82"
+        },
+        {
+          "file": "0066-snapshot-map-verification-errors.patch",
+          "sha256": "7d380bf8ec942574af08786e4843d65be5e238a875e1784014af347bd3559ff2"
         }
       ],
       "result_files": {
         "aosp/sideload_main.cc": "5a6621e7c30f02c6335d2b12de982d957ada5ad170d8b23719a9c18b08f0cfc0",
-        "payload_consumer/delta_performer.cc": "27dae8d768409874f614a10e14253297fecf5219a1430ed7aee1949ee42d0a9f"
+        "payload_consumer/delta_performer.cc": "27dae8d768409874f614a10e14253297fecf5219a1430ed7aee1949ee42d0a9f",
+        "payload_consumer/filesystem_verifier_action.cc": "1506811dc8a7ee1e611fbe2aa3f28f07a5444d78af7a1407adf78ea090b609c3"
       }
     }
   }
