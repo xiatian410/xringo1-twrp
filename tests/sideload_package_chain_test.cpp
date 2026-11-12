@@ -128,7 +128,7 @@ namespace gui2_backend {
 void operation_start(const string&){++starts;}
 void operation_end(int result){++operation_ends;op_result=result;events.push_back("end");}
 }
-struct Device {enum BuiltinAction {REBOOT,REBOOT_BOOTLOADER,REBOOT_FASTBOOT,REBOOT_RECOVERY,REBOOT_RESCUE};};
+struct Device {enum BuiltinAction {NO_ACTION,REBOOT,REBOOT_BOOTLOADER,REBOOT_FASTBOOT,REBOOT_RECOVERY,REBOOT_RESCUE};};
 #define FUSE_SIDELOAD_HOST_PATHNAME "/sideload/package.zip"
 #define FUSE_SIDELOAD_HOST_EXIT_PATHNAME "/sideload/exit"
 static int exit_stats=0;

@@ -2,7 +2,7 @@
 
 2026-11-12 根据用户最新要求，0054将NV/proinfo/protection排除普通GUI挂载目标，并在后台阻止手动挂载和卸载（含规范化路径及解析别名）。此前“存在且可挂载所以显示”仅解释旧行为，不再作为当前普通界面的展示策略。原厂fstab声明及内部核心MountByPath保留；persist和metadata不在本次NV禁用集合。此策略不是对特权shell或备份恢复工具的访问控制。26项策略/旧17失败、六项LVGL链通过；新候选为recovery-dijun-unified-nv-mount-policy.img，未实机测试。
 
-最新交付索引：`recovery-dijun-unified-zip-selection.img`继承0048发现/命名修正；此次新增仅涉及ZIP updater选择，750来源与相邻候选差异由`logs/zip-selection-delivery.json`核对。以下031497e5与741来源是首次OTG修复候选的历史证据；新候选仍未实机验收。
+最新交付索引见`simulation-report.json`和`ADAPTATION-GOALS.md`；当前候选继承0048 OTG发现修正和0054 NV普通挂载限制。下方031497e5、741来源与旧列表策略均为历史说明，不代表当前NV条目仍允许普通GUI挂载。
 
 2026-11-12 收到11张实机截图。上方内部存储673GB是有效的用户共享存储；列表中另有大量0B的`/storage/usbotg-sdd-1`、`sdb-*`、`sdc-83/84/85`、`sda-*`。这些是OTG枚举生成的项目。此前没有截图时的结论和已分类列表夹具范围见下方历史记录；当前不再缺少这类直接页面证据。
 
@@ -14,7 +14,7 @@
 
 `tests/mount_list_chain_test.py`增加第六场景，使用`/storage/usbotg-sdz-2/10`，经实际列表快照/backend/LVGL builder核对`OTG sdz 2/10`命名和数值排序；其余五项回归保留。此列表输入仍是已分类夹具，与上面的发现测试分别说明边界。
 
-NVData/NVCFG、protect_f/s、persist等出现在挂载复选框，是当前fstab与“存在且可挂载”的展示策略所致。12份原厂fstab来源核对仍有效；这些条目不因此成为用户共享存储，不是本次假OTG项目的修复对象。截图未显示原始emmc类型NVRAM成为挂载项，无依据删除原厂声明。
+历史截图中NVData/NVCFG、protect_f/s、persist等出现在挂载复选框，是旧fstab与“存在且可挂载”的展示策略所致。12份原厂fstab来源核对仍有效；这些条目不因此成为用户共享存储，不是本次假OTG项目的修复对象。截图未显示原始emmc类型NVRAM成为挂载项，无依据删除原厂声明。
 
 构建与交付：installclean及`make -j$(nproc)`（30并发）完成。候选`imgs/built/recovery-dijun-unified-otg-discovery.img`，SHA256 `031497e53bf500805a2ba6d74b4bc0a9315fbdbc5e6740ec028df33059d27561`；741份生产来源和六配置封装/新二进制核对通过。设置保存完整链路22项、存储选择15项回归通过，分别见`logs/otg-discovery-settings-joined.json`与`logs/otg-discovery-selection.json`。当前镜像profile9组/102阶段调用、module4组/24阶段调用检查及定向来源审计统一绑定在`logs/otg-discovery-delivery.json`。历史全量审计的来源漂移仍未全部解决，不把本次定向审计当作全部目标验收。交付审计期间旧backup-manifest镜像及来源清单已不在原路径，不能重新做旧镜像字节比较；审计改为明确核对同步前保存的设备树规格、固定Git基线与旧源码副本，当前候选741份来源直接核验。此来源规格比较不冒充旧镜像二进制复核。用户已确认的settings正常结论保留；本修正不构成自动触摸、物理震动或全部适配完成证明。
 

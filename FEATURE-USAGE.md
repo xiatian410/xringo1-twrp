@@ -1,5 +1,9 @@
 # 功能入口与当前使用边界
 
+本地最新候选`recovery-dijun-unified-sideload-reboot.img`继承NV普通挂载限制和OTG误枚举修正；侧载协议重启请求接入GUI统一路由，Rescue暂不支持。当前为离线候选，不能据此称实体重启或USB已验收。
+
+当前本地离线候选与验证状态以`simulation-report.json`及`ADAPTATION-GOALS.md`为准。NVData/NVCFG/protect_f/s不出现在普通挂载操作列表，GUI手动操作会被拒绝；Recovery内部用途和原厂fstab保持。源码批次同步公开GitHub，编译文件仅保留本地。
+
 本地候选`recovery-dijun-unified-sideload-completion.img`：ORS sideload通过核心安装一次包，updater请求的cache清理在每个minadbd状态ACK前完成并报告失败；GUI的cache/Dalvik清理错误也会显示操作失败。失败可能发生在包已有部分写入后，不会回滚。实际USB/FUSE与ARM updater尚未验收。详见docs/SIDELOAD-LIFECYCLE.md。
 
 当前本地候选`recovery-dijun-unified-sideload-lifecycle.img`包含侧载进程收尾修正。退出侧载时请求当前传输终止，后台统一回收；取消不会回滚已经安装的内容，也不保证立刻打断同步安装。完整USB/FUSE/安装器链路仍未验收，未连接设备。范围见docs/SIDELOAD-LIFECYCLE.md。

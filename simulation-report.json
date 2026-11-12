@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-sideload-completion.img",
-  "image_sha256": "f5231d7886615dbfe0a89063706178ed2120866085248e5c7aa47e27ceed2c74",
-  "image_status": "Clean-built offline candidate: ZIP queue accumulates per-package cache requests and fails when requested cache cleanup fails. Includes existing NV/OTG/ABI fixes. Hardware/GUI/ARM updater/AB payload/sideload remain unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-sideload-reboot.img",
+  "image_sha256": "022af2fccb1040b7537b989c9c25d6c57ba844a27f11fae652d1f73bd93a7d2a",
+  "image_status": "Clean-built offline candidate: minadbd reboot ACK/USB restoration gates and GUI unified handoff; completed-worker cancellation race fixed. NV manual mount and OTG fixes inherited. Hardware, real USB/FUSE/minadbd/BCB remain unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -122,10 +122,10 @@
     {
       "name": "actual-image-profile-activation",
       "grade": "S2/S3",
-      "evidence": "logs/ce-lifecycle-profile-runtime.json",
+      "evidence": "logs/sideload-reboot-profile-runtime.json",
       "count": 9,
       "result": "pass",
-      "evidence_sha256": "04393a223f244b71f313f147b45a46e0c17e170cbdd8e617aaec0c3963aba498",
+      "evidence_sha256": "94f2d78085668a743da7afcd3a2649a0435d0f89ba08279efb2703b29d9616e4",
       "stage_calls": 102,
       "scope": "Same-image 9-test runtime replay covers all six profiles and both slots plus module/input-state boundaries; total shell phase count is recorded in the detailed result."
     },
@@ -485,8 +485,8 @@
     },
     {
       "name": "module-initialization-lifecycle",
-      "evidence": "logs/ce-lifecycle-module-state.json",
-      "evidence_sha256": "73d1f0f2f2001ef55a5e4e9cdd9ad919699f80b865bf27344576e02784c9259f",
+      "evidence": "logs/sideload-reboot-module-state.json",
+      "evidence_sha256": "f1b48b2e171110ae617a9410b037cbcaf3098a2c1c14d0d85c2b1ff045f39910",
       "grade": "S2/S3",
       "result": "pass",
       "count": 4,
@@ -2469,6 +2469,60 @@
       "result": "pass",
       "grade": "S2",
       "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
+    },
+    {
+      "name": "sideload-reboot",
+      "evidence": "logs/sideload-reboot.json",
+      "evidence_sha256": "a0c23dbcbfb019430e7fcbf5ce7847b3eff4353b5e9719da356ad36617218440",
+      "count": 19,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Native sideload reboot COMD -> actual core/GUI or ORS -> GUI poll -> final router.\n\nReal private processes/socket/epoll. Properties, USB/FUSE/MTP and DataManager,\ncapabilities, sync and final TwReboot are explicit doubles; no real reboot,\nphone, bootloader/BCB or GUI rendering. Reuses audited lifecycle fixture preamble.\n"
+    },
+    {
+      "name": "sideload-reboot-before",
+      "evidence": "logs/sideload-reboot-before.json",
+      "evidence_sha256": "5d23fdcb7689a013a1e21a6bafb4e7a99296c0395e73435f840d4df9bee3f729",
+      "count": 19,
+      "result": "expected_failures",
+      "grade": "S2",
+      "scope": "Native sideload reboot COMD -> actual core/GUI or ORS -> GUI poll -> final router.\n\nReal private processes/socket/epoll. Properties, USB/FUSE/MTP and DataManager,\ncapabilities, sync and final TwReboot are explicit doubles; no real reboot,\nphone, bootloader/BCB or GUI rendering. Reuses audited lifecycle fixture preamble.\n"
+    },
+    {
+      "name": "sideload-reboot-lifecycle",
+      "evidence": "logs/sideload-reboot-lifecycle.json",
+      "evidence_sha256": "8e1d8bd64c09d53faafd7fb7ca3999ce63ba778f8faafaae978f534698b029d0",
+      "count": 33,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Original sideload core + GUI backend with private native minadbd subprocesses.\n\nReal socketpair/fork/exec/epoll/send/kill/wait; USB properties, FUSE stat,\nTWinstall_zip, MTP/cache/DataManager/operation feedback are explicit doubles.\nSyscall wrappers inject errors and forbid signalling non-owned PIDs. No phone,\nUSB endpoint, ZIP updater, physical storage, reboot or GUI clicks execute.\n"
+    },
+    {
+      "name": "sideload-reboot-package-regression",
+      "evidence": "logs/sideload-reboot-package-regression.json",
+      "evidence_sha256": "0665f940d4350f3d12e5b297ac271eba1c460804cb6e6f98c5536010fa994852",
+      "count": 27,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Actual sideload core/backend or ORS branch -> ZIP/digest/extract/updater.\n\nReal private chroot files, native minadbd stand-in via socketpair/fork/exec/epoll,\nproduction ZIP/package/verifier/digest/protocol, harmless native updater. FUSE\nis a symlink publication/stat fixture; properties, mounts/cache/Dalvik/MTP,\nDataManager, performance and operation feedback are doubles. No USB, actual\nminadbd/FUSE driver, ARM updater, AB payload, GUI input or physical writes.\n"
+    },
+    {
+      "name": "sideload-reboot-profile-runtime",
+      "evidence": "logs/sideload-reboot-profile-runtime.json",
+      "evidence_sha256": "94f2d78085668a743da7afcd3a2649a0435d0f89ba08279efb2703b29d9616e4",
+      "count": 9,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "sideload-reboot-module-state",
+      "evidence": "logs/sideload-reboot-module-state.json",
+      "evidence_sha256": "f1b48b2e171110ae617a9410b037cbcaf3098a2c1c14d0d85c2b1ff045f39910",
+      "count": 4,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
     }
   ],
   "source_review_followups": [
@@ -2784,8 +2838,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/sideload-completion-delivery.json",
-    "scope": "sideload package completion27/old19 failures; lifecycle33;760 sources;six profiles;same-image runtime9/module4. USB/FUSE/ARM updater/device remain unverified. Full12 and historical drift remain open.",
+    "evidence": "logs/sideload-reboot-delivery.json",
+    "scope": "19 reboot cases/old15 failures; lifecycle33/package27;764 sources;six profiles;same-image runtime/module. Full12/historical drift remain open.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -2998,7 +3052,7 @@
     "cases": 33,
     "old_failures": 29,
     "scope": "Private native minadbd fixture; actual core/backend process and socket lifecycle. USB properties/FUSE/install/MTP/cache remain doubles.",
-    "remaining": "Full minadbd/FUSE/ZIP/USB, bounded synchronous install/property cancellation, cache propagation, ORS duplicate install, reboot handoff and precise old-ADB status remain open.",
+    "remaining": "Real minadbd/FUSE/USB, bounded synchronous installer/property cancellation, precise old-ADB status, USB failure feedback and physical writes remain unverified; package completion/reboot software coverage below.",
     "old_comparable_cases": 31,
     "package_completion": {
       "patch": "0057-sideload-package-completion.patch",
@@ -3007,6 +3061,14 @@
       "old_failures": 19,
       "ors_duplicate_install_removed": true,
       "remaining": "Real USB/FUSE/ARM updater and physical cache remain unverified."
+    },
+    "reboot_handoff": {
+      "patch": "0058-sideload-reboot-handoff.patch",
+      "evidence": "logs/sideload-reboot.json",
+      "cases": 19,
+      "old_failures": 15,
+      "completion_race": "DONE/running publication and cancel checks serialized by state mutex",
+      "limitations": "Rescue/BCB unsupported; actual minadbd/USB and complete GUI/ORS/device reboot unverified."
     }
   }
 }

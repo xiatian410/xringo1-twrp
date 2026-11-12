@@ -226,6 +226,10 @@
         {
           "file": "0057-sideload-package-completion.patch",
           "sha256": "07d2517bbfc96ac10c4d9b17287e95be0a1c38e8aece1f377cd7029afecd158b"
+        },
+        {
+          "file": "0058-sideload-reboot-handoff.patch",
+          "sha256": "ada5175b6f361d816ec28a47ab969b5f8e141ddc5d3b698ff99ce7f4b49fab08"
         }
       ],
       "result_files": {
@@ -247,7 +251,7 @@
         "gui2/backend/decrypt_backend.h": "a6ec26538be3ba26af9c449960752b4ad91bcdf6fa15a2027cfdb915c0fc7945",
         "gui2/backend/twrp_decrypt_backend.cpp": "44fcb069c6c0a90e9642505ef5a0e4d7ed862728b330f6026964c6619d1741cd",
         "gui2/backend/twrp_decrypt_backend.h": "04981432ab630686863a3ba810b8cb5bb2d05884e0ebe82a0b401a1af5e8beab",
-        "gui2/gui2.cpp": "352f2bd701f4b24155142b2a46800ef8a979410dc52c95f9a4cc4f59810904a8",
+        "gui2/gui2.cpp": "8eb320826f214d1cfca4bfb9415f930d198d4ce63243dcaef4bdb62848d94002",
         "gui2/i18n/en.cpp": "f5e87f8bf67a3e2926578e39d6a2999c59474080b7b8bf93e1377b6b2143762b",
         "gui2/i18n/i18n.h": "aa9b311694cc4cc200d458353201e341d86dd23ff40c7aa537f7ae64f06ec2cc",
         "gui2/i18n/ru.cpp": "b64f01c049be61f69b5ef082fea16a591c1ae064d184815df16650e28f609a89",
@@ -314,11 +318,14 @@
         "sysfs_device_match.hpp": "66987f6f13e174bb22ce057d022006b1eb0fe2cfa3069046c51e30f72063e941",
         "twrpinstall/twinstall.cpp": "b78718bfbea5937d800deb975c5d915007606e29bcb7d5b63ed6fe093dd73c3a",
         "gui2/backend/twrp_install_backend.cpp": "b6c25c2086dde47d2d08a6ed3e62780d18cce758cb5c4d1f44a411124f092da6",
-        "twrpinstall/adb_install.cpp": "5c6b74d91ed923d53ae7b8daf7794a9396350495b691e94cee6316d62342376c",
-        "twrpinstall/include/twinstall/adb_install.h": "2338db95bf9ed43f829d3f602264a60d6db8179c8114e8e4eb89222c21246beb",
-        "gui2/backend/twrp_sideload_backend.cpp": "c8412a060b3ed2e1ac48e20570f3c2a227f8c9e695b76f6df51fc271161c71a9",
+        "twrpinstall/adb_install.cpp": "1c736d722b69468144c8e30313497429f80613d3c25c29f5042ccf867e9b1665",
+        "twrpinstall/include/twinstall/adb_install.h": "839476379dd5ecba5354055ba1a048baf02422ddd18b0edd4b7654459a0ee6c5",
+        "gui2/backend/twrp_sideload_backend.cpp": "0870b3b7d59f5be485ed17db62189108fae248b0093e8628d7fc52cb53cc8e8d",
         "gui2/backend/twrp_sideload_backend.h": "df5ef8d68dd5e6101482ba26cb944bc822c8643e0656193227956a9085a1812e",
-        "openrecoveryscript.cpp": "ca819c2a7b2ff22372fe844163a4b2a5a0a40716754e5bc35cce4171fa35d155"
+        "openrecoveryscript.cpp": "a9b5d99e2af4266b50ceae67a487ef40fb97e7422b2015e76873f1dff0027134",
+        "gui2/backend/reboot_backend.h": "49c74edd83b63ee28fc70e34ba58268df9107bc379ab9e65f2e662f3303b109d",
+        "gui2/backend/twrp_reboot_backend.h": "4c6767ff062d6b0885d0b9c9bff626fdf29ddb73b1d47ce1eff135d2bb0d925a",
+        "gui2/backend/twrp_reboot_backend.cpp": "60d2739b437fce369daca252c4eb7e12c5dae1a3198e2eee127b52ef548431d8"
       }
     },
     "system/sepolicy": {

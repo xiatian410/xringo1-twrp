@@ -45,7 +45,7 @@ static std::atomic<int> send_calls=0;
 #define FUSE_SIDELOAD_HOST_PATHNAME "/fixture/fuse/package.zip"
 #define FUSE_SIDELOAD_HOST_EXIT_PATHNAME "/fixture/fuse/exit"
 constexpr int INSTALL_SUCCESS=0,INSTALL_ERROR=1,INSTALL_REBOOT=5;
-struct Device {enum BuiltinAction {REBOOT_BOOTLOADER,REBOOT_FASTBOOT,REBOOT_RECOVERY,REBOOT_RESCUE,REBOOT};};
+struct Device {enum BuiltinAction {NO_ACTION,REBOOT_BOOTLOADER,REBOOT_FASTBOOT,REBOOT_RECOVERY,REBOOT_RESCUE,REBOOT};};
 struct DataManager {
  static void SetValue(const std::string& k,int v){std::lock_guard<std::mutex> l(values_mutex);values[k]=v;}
  static void SetValue(const std::string& k,const char* v){SetValue(k,std::atoi(v));}

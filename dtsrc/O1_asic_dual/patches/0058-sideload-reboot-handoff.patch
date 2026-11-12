@@ -1,0 +1,320 @@
+diff --git a/gui2/backend/reboot_backend.h b/gui2/backend/reboot_backend.h
+index 3d88b43..a3fcea3 100644
+--- a/gui2/backend/reboot_backend.h
++++ b/gui2/backend/reboot_backend.h
+@@ -39,6 +39,9 @@ class reboot_backend {
+   virtual std::string active_slot() const = 0;
+   virtual bool set_active_slot(boot_slot slot) = 0;
+   virtual bool request_reboot(reboot_target target) = 0;
++  // Consume a completed protocol request on the UI thread. No system reboot
++  // happens here; a true result asks the GUI loop to exit normally.
++  virtual bool take_external_reboot() { return false; }
+ 
+   // In fastbootd: whether USB speaks fastboot rather than adb.
+   virtual bool usb_fastboot() const = 0;
+diff --git a/gui2/backend/twrp_reboot_backend.cpp b/gui2/backend/twrp_reboot_backend.cpp
+index 01e6861..6b567b8 100644
+--- a/gui2/backend/twrp_reboot_backend.cpp
++++ b/gui2/backend/twrp_reboot_backend.cpp
+@@ -13,6 +13,7 @@
+ #include "partitions.hpp"
+ #include "twrp_functions.hpp"
+ #include "variables.h"
++#include "twinstall/adb_install.h"
+ 
+ namespace gui2_backend {
+ 
+@@ -103,6 +104,22 @@ bool twrp_reboot_backend::request_reboot(reboot_target target) {
+   return DataManager::SetValue("tw_reboot_arg", argument) == 0;
+ }
+ 
++bool twrp_reboot_backend::take_external_reboot() {
++  Device::BuiltinAction action;
++  if (!TakeMiniAdbdRebootAction(&action)) return false;
++  reboot_target target;
++  switch (action) {
++    case Device::REBOOT: target = reboot_target::SYSTEM; break;
++    case Device::REBOOT_BOOTLOADER: target = reboot_target::BOOTLOADER; break;
++    case Device::REBOOT_FASTBOOT: target = reboot_target::FASTBOOT; break;
++    case Device::REBOOT_RECOVERY: target = reboot_target::RECOVERY; break;
++    default: return false;
++  }
++  if (request_reboot(target)) return true;
++  LOGERR("Unable to hand off sideload reboot target\n");
++  return false;
++}
++
+ // The fastboot page's switch, on tw_enable_fastboot.
+ bool twrp_reboot_backend::usb_fastboot() const {
+   return DataManager::GetIntValue("tw_enable_fastboot") != 0;
+diff --git a/gui2/backend/twrp_reboot_backend.h b/gui2/backend/twrp_reboot_backend.h
+index 0698e5a..e81d2d1 100644
+--- a/gui2/backend/twrp_reboot_backend.h
++++ b/gui2/backend/twrp_reboot_backend.h
+@@ -13,6 +13,7 @@ class twrp_reboot_backend final : public reboot_backend {
+   std::string active_slot() const override;
+   bool set_active_slot(boot_slot slot) override;
+   bool request_reboot(reboot_target target) override;
++  bool take_external_reboot() override;
+   bool usb_fastboot() const override;
+   void set_usb_fastboot(bool fastboot) override;
+   bool os_installed() const override;
+diff --git a/gui2/backend/twrp_sideload_backend.cpp b/gui2/backend/twrp_sideload_backend.cpp
+--- a/gui2/backend/twrp_sideload_backend.cpp
++++ b/gui2/backend/twrp_sideload_backend.cpp
+@@ -8,6 +8,7 @@
+ #include "partitions.hpp"
+ #include "twcommon.h"
+ #include "twinstall/adb_install.h"
++#include "twinstall/install.h"
+ #include "twrp_functions.hpp"
+ #include "twrp_operation.h"
+ 
+@@ -49,7 +50,11 @@
+   Device::BuiltinAction reboot_action = Device::REBOOT_BOOTLOADER;
+   int ret = twrp_sideload("/", &reboot_action, &cancelled_);
+ 
+-  if (ret != 0) {
++  if (ret == INSTALL_REBOOT) {
++    // The UI loop consumes the target after this worker has restored MTP and
++    // published completion. Reboot commands do not request cache cleaning.
++    ret = 0;
++  } else if (ret != 0) {
+     if (ret == -2) gui2_console::info("need_new_adb");
+     ret = 1;  // failure
+   } else {
+@@ -73,8 +78,10 @@
+       state_ = sideload_state::CANCELLED;
+     else
+       state_ = ret == 0 ? sideload_state::DONE : sideload_state::FAILED;
++    // A reader observing completion may immediately acknowledge or destroy
++    // this owner. Do not let that cancel an already completed reboot handoff.
++    running_.store(false);
+   }
+-  running_.store(false);
+ }
+ 
+ // GUIAction::adbsideloadcancel
+@@ -85,7 +92,10 @@
+ }
+ 
+ void twrp_sideload_backend::cancel() {
+-  if (!running_.load() || cancelled_.exchange(true)) return;
++  {
++    std::lock_guard<std::mutex> lock(mutex_);
++    if (state_ != sideload_state::RUNNING || cancelled_.exchange(true)) return;
++  }
+   stop_child();
+ }
+ 
+diff --git a/gui2/gui2.cpp b/gui2/gui2.cpp
+index 234f009..68b0167 100644
+--- a/gui2/gui2.cpp
++++ b/gui2/gui2.cpp
+@@ -6282,6 +6282,14 @@ static bool gui2_loop_should_exit(void*) {
+   return reboot_requested || startup_failed;
+ }
+ 
++static void poll_external_reboot() {
++  if (reboot_requested || reboot == nullptr || startup != nullptr ||
++      (background != nullptr && background->command_running()) ||
++      (sideload != nullptr && sideload->status().state == gui2_backend::sideload_state::RUNNING))
++    return;
++  if (reboot->take_external_reboot()) reboot_requested = true;
++}
++
+ static void refresh_partition_list() {
+   if (background == nullptr) return;
+   const auto page = page_router.current();
+@@ -6341,6 +6349,8 @@ static void gui2_loop_tick(void*, uint64_t now_ms) {
+     splash_dismiss_pending = false;
+   }
+   if (!shell_ready) return;
++  poll_external_reboot();
++  if (reboot_requested) return;
+   if (hardware != nullptr && hardware->take_brightness_error()) {
+     show_hardware_error(strings().hardware_error);
+     set_quick_feedback(strings().hardware_error);
+diff --git a/openrecoveryscript.cpp b/openrecoveryscript.cpp
+index 684b434..2adfb80 100644
+--- a/openrecoveryscript.cpp
++++ b/openrecoveryscript.cpp
+@@ -51,6 +51,7 @@
+ #include "orscmd/orscmd.h"
+ #include "twinstall.h"
+ #include "twinstall/adb_install.h"
++#include "twinstall/install.h"
+ 
+ OpenRecoveryScript::VoidFunction OpenRecoveryScript::call_after_cli_command;
+ 
+@@ -379,7 +380,11 @@ int OpenRecoveryScript::run_script_file(void) {
+ 
+ 				Device::BuiltinAction reboot_action = Device::REBOOT_BOOTLOADER;
+ 				ret_val = twrp_sideload("/", &reboot_action);
+-				if (ret_val != 0) {
++				if (ret_val == INSTALL_REBOOT) {
++					// Stop parsing, close the script and let GUI2 consume the
++					// acknowledged target after this command finishes.
++					ret_val = 1;
++				} else if (ret_val != 0) {
+ 					if (ret_val == -2)
+ 						gui2_console::log_error("need_new_adb");
+ 					ret_val = 1; // failure
+diff --git a/twrpinstall/adb_install.cpp b/twrpinstall/adb_install.cpp
+index 5602241..81c8299 100644
+--- a/twrpinstall/adb_install.cpp
++++ b/twrpinstall/adb_install.cpp
+@@ -64,6 +64,20 @@ static std::mutex child_mutex;
+ static pid_t child = 0;
+ static int child_socket = -1;
+ static const std::atomic<bool>* child_cancellation = nullptr;
++static bool reboot_action_pending = false;
++static Device::BuiltinAction pending_reboot_action = Device::NO_ACTION;
++static const std::atomic<bool>* pending_reboot_cancellation = nullptr;
++
++bool TakeMiniAdbdRebootAction(Device::BuiltinAction* action) {
++  if (action == nullptr) return false;
++  std::lock_guard<std::mutex> lock(child_mutex);
++  if (!reboot_action_pending) return false;
++  *action = pending_reboot_action;
++  reboot_action_pending = false;
++  pending_reboot_action = Device::NO_ACTION;
++  pending_reboot_cancellation = nullptr;
++  return true;
++}
+ 
+ pid_t GetMiniAdbdPid() {
+   std::lock_guard<std::mutex> lock(child_mutex);
+@@ -72,6 +86,10 @@ pid_t GetMiniAdbdPid() {
+ 
+ void RequestMiniAdbdExit(const std::atomic<bool>* cancelled) {
+   std::lock_guard<std::mutex> lock(child_mutex);
++  if (reboot_action_pending && pending_reboot_cancellation == cancelled) {
++    reboot_action_pending = false;
++    pending_reboot_cancellation = nullptr;
++  }
+   if (child <= 0 || child_cancellation != cancelled) return;
+   if (child_socket >= 0) shutdown(child_socket, SHUT_RDWR);
+   kill(child, SIGTERM);
+@@ -174,8 +192,9 @@ static auto AdbRebootHandler(MinadbdCommand command, int* result,
+       *reboot_action = Device::REBOOT_RECOVERY;
+       break;
+     case MinadbdCommand::kRebootRescue:
+-      *reboot_action = Device::REBOOT_RESCUE;
+-      break;
++      // Rescue requires a BCB command and has no TWRP reboot target.
++      *result = INSTALL_ERROR;
++      return std::make_pair(false, false);
+     case MinadbdCommand::kRebootAndroid:
+     default:
+       *reboot_action = Device::REBOOT;
+@@ -188,7 +207,8 @@ static auto AdbRebootHandler(MinadbdCommand command, int* result,
+ // Parses and executes the command from minadbd. Returns whether the caller should keep waiting for
+ // next command.
+ static bool HandleMessageFromMinadbd(int socket_fd,
+-                                     const std::map<MinadbdCommand, CommandFunction>& command_map) {
++                                     const std::map<MinadbdCommand, CommandFunction>& command_map,
++                                     bool* reboot_acknowledged) {
+   char buffer[kMinadbdMessageSize];
+   if (!android::base::ReadFully(socket_fd, buffer, kMinadbdMessageSize)) {
+     PLOG(ERROR) << "Failed to read message from minadbd";
+@@ -215,12 +235,15 @@ static bool HandleMessageFromMinadbd(int socket_fd,
+                        socket_fd)) {
+     return false;
+   }
++  if (result && command_type >= MinadbdCommand::kRebootAndroid &&
++      command_type <= MinadbdCommand::kRebootRecovery) *reboot_acknowledged = true;
+   return should_continue;
+ }
+ 
+ static void ListenAndExecuteMinadbdCommands(
+     android::base::unique_fd&& socket_fd,
+-    const std::map<MinadbdCommand, CommandFunction>& command_map) {
++    const std::map<MinadbdCommand, CommandFunction>& command_map,
++    bool* reboot_acknowledged) {
+   android::base::unique_fd epoll_fd(epoll_create1(O_CLOEXEC));
+   if (epoll_fd == -1) {
+     PLOG(ERROR) << "Failed to create epoll";
+@@ -256,7 +279,7 @@ static void ListenAndExecuteMinadbdCommands(
+     for (int n = 0; n < event_count; n++) {
+       // Consume buffered commands even when the peer has also closed.
+       if (events[n].events & EPOLLIN) {
+-        if (!HandleMessageFromMinadbd(socket_fd.get(), command_map)) return;
++        if (!HandleMessageFromMinadbd(socket_fd.get(), command_map, reboot_acknowledged)) return;
+       } else if (events[n].events & (EPOLLHUP | EPOLLERR)) {
+         LOG(INFO) << "Socket has been closed";
+         return;
+@@ -301,7 +324,7 @@ static void ListenAndExecuteMinadbdCommands(
+ static void CreateMinadbdServiceAndExecuteCommands(
+     const std::map<MinadbdCommand, CommandFunction>& command_map,
+     bool rescue_mode __unused, std::string install_file __unused,
+-    const std::atomic<bool>* cancelled) {
++    const std::atomic<bool>* cancelled, bool* reboot_acknowledged) {
+   if (cancelled && cancelled->load()) return;
+ 
+   android::base::unique_fd recovery_socket;
+@@ -368,7 +391,7 @@ static void CreateMinadbdServiceAndExecuteCommands(
+ 
+   if (cancelled && cancelled->load()) return;
+   // Already called on the sideload worker; no second waiter/thread is needed.
+-  ListenAndExecuteMinadbdCommands(std::move(recovery_socket), command_map);
++  ListenAndExecuteMinadbdCommands(std::move(recovery_socket), command_map, reboot_acknowledged);
+ }
+ 
+ int twrp_sideload(const char* install_file, Device::BuiltinAction* reboot_action,
+@@ -377,6 +400,11 @@ int twrp_sideload(const char* install_file, Device::BuiltinAction* reboot_action
+   static std::mutex session_mutex;
+   std::unique_lock<std::mutex> session(session_mutex, std::try_to_lock);
+   if (!session.owns_lock() || (cancelled && cancelled->load())) return INSTALL_ERROR;
++  {
++    std::lock_guard<std::mutex> lock(child_mutex);
++    // Keep an acknowledged request until the UI has consumed it.
++    if (reboot_action_pending) return INSTALL_ERROR;
++  }
+ 
+   // Save the usb state to restore after the sideload operation.
+   std::string usb_state = android::base::GetProperty("sys.usb.state", "none");
+@@ -402,19 +430,32 @@ int twrp_sideload(const char* install_file, Device::BuiltinAction* reboot_action
+     std::bind(&AdbRebootHandler, MinadbdCommand::kRebootRescue, &install_result, reboot_action) },
+ };
+ 
+-  CreateMinadbdServiceAndExecuteCommands(command_map, false, install_file, cancelled);
++  bool reboot_acknowledged = false;
++  CreateMinadbdServiceAndExecuteCommands(command_map, false, install_file, cancelled,
++                                       &reboot_acknowledged);
+ 
+   // Clean up before switching to the older state, for example setting the state
+   // to none sets sys/class/android_usb/android0/enable to 0.
++  bool usb_restored = true;
+   if (!SetUsbConfig("none")) {
+     LOG(ERROR) << "Failed to clear USB config";
++    usb_restored = false;
+   }
+ 
+   if (usb_state != "none") {
+     if (!SetUsbConfig(usb_state)) {
+       LOG(ERROR) << "Failed to set USB config to " << usb_state;
++      usb_restored = false;
+     }
+   }
+ 
++  if (install_result == INSTALL_REBOOT) {
++    std::lock_guard<std::mutex> lock(child_mutex);
++    if (!reboot_acknowledged || !usb_restored || (cancelled && cancelled->load()))
++      return INSTALL_ERROR;
++    pending_reboot_action = *reboot_action;
++    pending_reboot_cancellation = cancelled;
++    reboot_action_pending = true;
++  }
+   return install_result;
+ }
+diff --git a/twrpinstall/include/twinstall/adb_install.h b/twrpinstall/include/twinstall/adb_install.h
+index 15c6a01..5dfef92 100644
+--- a/twrpinstall/include/twinstall/adb_install.h
++++ b/twrpinstall/include/twinstall/adb_install.h
+@@ -28,3 +28,5 @@ pid_t GetMiniAdbdPid();
+ // Requests transport shutdown for this cancellation token only. The service
+ // owner kills/reaps; stale/other sessions cannot cancel the current owner.
+ void RequestMiniAdbdExit(const std::atomic<bool>* cancelled = nullptr);
++// Consume an acknowledged request after transport and USB cleanup have ended.
++bool TakeMiniAdbdRebootAction(Device::BuiltinAction* action);
