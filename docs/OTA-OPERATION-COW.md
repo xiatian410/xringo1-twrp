@@ -148,3 +148,26 @@ python3 tests/ota_cow_roundtrip.py
 ```
 
 公开仓库只发布源码与结果摘要，不包含这些依赖或原始日志。
+
+## 快照映射失败的校验门控（0066）
+
+`FilesystemVerifierAction` 原先忽略首次 `MapAllPartitions()` 和写入 verity 后重新映射的返回值。映射返回 false 时，如果目标路径仍有内容匹配的旧可读视图，原异步哈希流程可报告成功。这是调用方的软件错误，不依赖真实设备才能证明。
+
+[0066 固定补丁](../dtsrc/O1_asic_dual/patches/0066-snapshot-map-verification-errors.patch) 在首次映射失败时通过既有 ScopedActionCompleter 返回 `kFilesystemVerifierError`（47）；重映射失败时先清理再返回 false，由原调用者传播同一错误。两处都尝试 `UnmapAllPartitions()` 释放可能已部分建立的映射，不重试，不继续读取旧目标。
+
+`UnmapAllPartitions()` 自身的布尔值没有被改为新的通用失败门槛：Android 实现有独立的“没有自管映射”语义，不应盲目等同于清理失败。此处尝试清理不承诺已执行真实快照资源释放。
+
+入口：`python3 tests/ota_snapshot_map.py --image /path/to/recovery.img`。编译完整原 ARM64 verifier 翻译单元，执行真实 ActionProcessor、异步读文件及哈希。FileControl 显式注入映射结果；匹配普通文件模拟残留可读视图，不创建设备或运行 SnapshotManager。生产翻译单元使用原 `NDEBUG` 以匹配 libchrome ABI，测试入口保留断言。
+
+| 场景 | 修正后 | 修正前 |
+| --- | --- | --- |
+| 正常映射 | 成功 | 成功 |
+| 首次映射失败、旧路径内容匹配 | 错误 47 | 误报成功 |
+| 首次映射失败、目标不存在 | 错误 47 | 错误 47 |
+| 正常重新映射 | 成功 | 成功 |
+| 重映射失败、旧路径内容匹配 | 错误 47；包含前置卸载与失败后清理 | 误报成功 |
+| 正常映射、哈希不符 | 错误 15 | 错误 15 |
+
+六场景通过，同一夹具换回旧源码有两处失败；报告为本地 `logs/ota-snapshot-map.json` 与 `logs/ota-snapshot-map-before.json`。当前候选 `recovery-dijun-unified-snapshot-map.img`，SHA-256 `54d2210ef4b3213d4703ca2278b5ed49591ab2d61cac314ed0b737814f202a03`，779 份生产来源。installclean 后 `make -j$(nproc)` 构建完成，更新器含两条新诊断且与构建输出逐字节一致；相对前候选仅更新器、构建属性和文件摘要清单改变。
+
+定向交付核对：`python3 scripts/audit_snapshot_map_delivery.py`，输出 `logs/snapshot-map-delivery.json`。字节未变的 GUI、profile 脚本和原厂资源不重复运行等价测试；旧报告不因此升级为新镜像全流程验收。完整 OTA 输入、实际 SnapshotManager / snapuserd、槽位切换和合并仍待完成。

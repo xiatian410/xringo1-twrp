@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-delta-finalization.img",
-  "image_sha256": "ff01192e210a94a915f2b8e6d421479dcb09cb76d131dad561805e94421d88a2",
-  "production_sources": 777,
+  "image_name": "recovery-dijun-unified-snapshot-map.img",
+  "image_sha256": "54d2210ef4b3213d4703ca2278b5ed49591ab2d61cac314ed0b737814f202a03",
+  "production_sources": 779,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -511,6 +511,16 @@
       "scope": "Stream synthetic CrAU/protobuf/operation bytes through intact ARM64 engine.\n\nOriginal metadata parsing, plan creation, partition factory, VABC/COW and final\nverifier execute. FakeBootControl/FakeHardware and FileControl replace device\nmapping; snapshot view is materialized for verification. Recovery signature\nchecks retain their existing compile-time behavior; not authenticated stock OTA.\n",
       "parsed_manifest_seeded": false,
       "real_signature_verification": false,
+      "full_payload_install": false
+    },
+    {
+      "name": "ota-snapshot-map",
+      "status": "PASS",
+      "cases": 6,
+      "old_failures": 2,
+      "local_report_sha256": "f823478644aaed373e941ae68ebaf5df35d28593611924a07ddd9d65541b06dc",
+      "scope": "Run original asynchronous ARM64 filesystem verifier with map failures.\n\nWhole production TU; original ActionProcessor and hashing, explicit FileControl\nmap result boundary, ordinary file only. No SnapshotManager or real mapping.\n",
+      "snapshot_manager_executed": false,
       "full_payload_install": false
     }
   ],

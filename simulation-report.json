@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-delta-finalization.img",
-  "image_sha256": "ff01192e210a94a915f2b8e6d421479dcb09cb76d131dad561805e94421d88a2",
-  "image_status": "Clean-built offline candidate with patch0065: partition completion and final/intermediate close failures return kDownloadWriteError. Eight real ARM64 DeltaPerformer Write scenarios; parsed manifest/writer I/O are fixtures. Full signed payload/SnapshotManager/merge unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-snapshot-map.img",
+  "image_sha256": "54d2210ef4b3213d4703ca2278b5ed49591ab2d61cac314ed0b737814f202a03",
+  "image_status": "Clean-built offline candidate with patch0066: failed snapshot mappings and remappings stop verification with kFilesystemVerifierError (47) and clean partial mappings. Six intact ARM64 verifier cases; real SnapshotManager/full OTA/merge remain unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -2856,6 +2856,15 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Stream synthetic CrAU/protobuf/operation bytes through intact ARM64 engine.\n\nOriginal metadata parsing, plan creation, partition factory, VABC/COW and final\nverifier execute. FakeBootControl/FakeHardware and FileControl replace device\nmapping; snapshot view is materialized for verification. Recovery signature\nchecks retain their existing compile-time behavior; not authenticated stock OTA.\n"
+    },
+    {
+      "name": "ARM64-snapshot-map-failure-gates",
+      "evidence": "logs/ota-snapshot-map.json",
+      "evidence_sha256": "f823478644aaed373e941ae68ebaf5df35d28593611924a07ddd9d65541b06dc",
+      "count": 6,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Run original asynchronous ARM64 filesystem verifier with map failures.\n\nWhole production TU; original ActionProcessor and hashing, explicit FileControl\nmap result boundary, ordinary file only. No SnapshotManager or real mapping.\n"
     }
   ],
   "source_review_followups": [
@@ -3171,8 +3180,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/delta-finalization-delivery.json",
-    "scope": "Patch0065; clean build;777 source bindings;six profiles;eight ARM64 cases;three old failures;only updater/property/file manifest ramdisk changes.",
+    "evidence": "logs/snapshot-map-delivery.json",
+    "scope": "Patch0066; clean build;779 source bindings;six profiles;six ARM64 cases;two old failures;only updater/property/file manifest ramdisk changes.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -3419,6 +3428,22 @@
       "real_signature_verification": false,
       "full_payload_install": false,
       "mapping_boundary": "FileControl ordinary COW file, materialized original reader output; no SnapshotManager or snapuserd"
+    },
+    "snapshot_map_verification": {
+      "patch": "dtsrc/O1_asic_dual/patches/0066-snapshot-map-verification-errors.patch",
+      "document": "docs/OTA-OPERATION-COW.md",
+      "report": "logs/ota-snapshot-map.json",
+      "report_sha256": "f823478644aaed373e941ae68ebaf5df35d28593611924a07ddd9d65541b06dc",
+      "before": "logs/ota-snapshot-map-before.json",
+      "before_sha256": "44b93953e77fb119661c41727eb2ab255fd287175d30ddd4bc80dcdf9fe10788",
+      "cases": 6,
+      "old_failures": [
+        "initial-fail",
+        "remap-fail"
+      ],
+      "error_code": 47,
+      "snapshot_manager_executed": false,
+      "full_payload_install": false
     }
   },
   "os4_haptics_user_confirmation": {
