@@ -1,0 +1,185 @@
+--- a/gui2/backend/twrp_wipe_backend.cpp
++++ b/gui2/backend/twrp_wipe_backend.cpp
+@@ -1,4 +1,6 @@
+ #include "twrp_wipe_backend.h"
++#include "mount_backend.h"
++#include "twrp_operation_executor.h"
+ 
+ #include <utility>
+ #include <functional>
+@@ -14,8 +16,31 @@
+ namespace gui2_backend {
+ namespace {
+ 
++// Apply the same NV policy to visible rows and stale/manual requests.
++bool wipe_target_allowed(const std::string& path) {
++  if (is_restricted_mount_path(path)) return false;
++  TWPartition* part = PartitionManager.FindPartitionByPath(path);
++  return !part || !is_restricted_mount_path(part->GetMountPoint());
++}
++
+ // GUIAction::wipe; 0 is success.
+ int wipe(std::string arg, const std::function<void(const std::string&, int, bool)>& report) {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  // Validate the entire batch before the first erase, including a list changed
++  // since the page was shown. Internal core/ORS callers retain their own policy.
++  if (arg == "LIST") {
++    const auto list = DataManager::GetStrValue("tw_wipe_list");
++    size_t start = 0;
++    while (start < list.size()) {
++      const auto end = list.find(';', start);
++      if (!wipe_target_allowed(list.substr(start, end == std::string::npos ? end : end - start)))
++        return 1;
++      if (end == std::string::npos) break;
++      start = end + 1;
++    }
++  } else if (!wipe_target_allowed(arg)) {
++    return 1;
++  }
+   operation_start("Format");
+   DataManager::SetValue("tw_partition", arg);
+   int ret_val = false;
+@@ -123,8 +148,10 @@
+ 
+   std::vector<wipe_target> result;
+   result.reserve(list.size());
+-  for (const PartitionList& entry : list)
++  for (const PartitionList& entry : list) {
++    if (is_restricted_mount_path(entry.mount_point)) continue;
+     result.push_back({ entry.display_name, entry.mount_point });
++  }
+   return result;
+ }
+ 
+@@ -171,6 +198,14 @@
+ 
+ // The advanced wipe page: its list writes tw_wipe_list, "path;" per row.
+ bool twrp_wipe_backend::start_wipe(const std::vector<std::string>& mount_points) {
++  if (running_.load()) return false;
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  if (mount_points.empty()) return false;
++  for (const auto& path : mount_points) {
++    // One vector entry must never inject a second LIST target.
++    if (path.empty() || path.find(';') != std::string::npos || !wipe_target_allowed(path))
++      return false;
++  }
+   std::string list;
+   for (const std::string& path : mount_points) list += path + ";";
+   DataManager::SetValue("tw_wipe_list", list);
+--- a/gui2/backend/twrp_tools_backend.cpp
++++ b/gui2/backend/twrp_tools_backend.cpp
+@@ -1,4 +1,6 @@
+ #include "twrp_tools_backend.h"
++#include "mount_backend.h"
++#include "twrp_operation_executor.h"
+ 
+ #include <unistd.h>
+ 
+@@ -20,11 +22,19 @@
+ 
+ namespace {
+ 
++bool partition_tool_target_allowed(const std::string& path) {
++  if (is_restricted_mount_path(path)) return false;
++  TWPartition* part = PartitionManager.FindPartitionByPath(path);
++  return !part || !is_restricted_mount_path(part->GetMountPoint());
++}
++
+ bool flag(const char* name) {
+   return DataManager::GetIntValue(name) != 0;
+ }
+ 
+ int repair(const std::string& part_path) {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  if (!partition_tool_target_allowed(part_path)) return 1;
+   int op_status = 0;
+ 
+   operation_start("Repair Partition");
+@@ -39,6 +49,8 @@
+ }
+ 
+ int resize(const std::string& part_path) {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  if (!partition_tool_target_allowed(part_path)) return 1;
+   int op_status = 0;
+ 
+   operation_start("Resize Partition");
+@@ -53,6 +65,8 @@
+ }
+ 
+ int changefilesystem(const std::string& part_path, const std::string& file_system) {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  if (!partition_tool_target_allowed(part_path)) return 1;
+   int op_status = 0;
+ 
+   operation_start("Change File System");
+@@ -316,6 +330,8 @@
+ bool twrp_tools_backend::details(const std::string& mount_point, partition_details* out) {
+   if (out == nullptr) return false;
+   *out = {};
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  if (!partition_tool_target_allowed(mount_point)) return false;
+   TWPartition* part = PartitionManager.FindPartitionByPath(mount_point);
+   if (part == nullptr) {
+     LOGERR("Unable to locate partition: '%s'\n", mount_point.c_str());
+@@ -382,6 +398,10 @@
+ 
+ bool twrp_tools_backend::start(tool_job job, const std::string& target, const std::string& value) {
+   if (running_.load()) return false;
++  if (job == tool_job::REPAIR || job == tool_job::RESIZE || job == tool_job::CHANGE_FILE_SYSTEM) {
++    twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++    if (!partition_tool_target_allowed(target)) return false;
++  }
+   join_finished_thread();
+   {
+     std::lock_guard<std::mutex> lock(mutex_);
+--- a/gui2/backend/twrp_install_backend.cpp
++++ b/gui2/backend/twrp_install_backend.cpp
+@@ -1,4 +1,5 @@
+ #include "twrp_install_backend.h"
++#include "mount_backend.h"
+ 
+ #include <sys/mount.h>
+ #include <sys/stat.h>
+@@ -191,6 +192,7 @@
+   std::vector<image_target> result;
+   result.reserve(list.size());
+   for (const PartitionList& entry : list) {
++    if (is_restricted_mount_path(entry.mount_point)) continue;
+     result.push_back({ entry.display_name, entry.mount_point, entry.slot_select });
+   }
+   return result;
+@@ -229,7 +231,14 @@
+ 
+ bool twrp_install_backend::start_image(const std::string& path, const std::string& mount_point,
+                                       bool both_slots) {
+-  if (running_.load() || path.empty()) return false;
++  if (running_.load() || path.empty() || mount_point.empty() ||
++      mount_point.find(';') != std::string::npos) return false;
++  {
++    twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++    TWPartition* target = PartitionManager.FindPartitionByPath(mount_point);
++    if (is_restricted_mount_path(mount_point) ||
++        (target && is_restricted_mount_path(target->GetMountPoint()))) return false;
++  }
+   join_finished_thread();
+   {
+     std::lock_guard<std::mutex> lock(mutex_);
+@@ -249,6 +258,17 @@
+ // Image parameters are captured by value when the worker starts.
+ void twrp_install_backend::run_image(std::string image_path, std::string mount_point,
+                                      bool both_slots) {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  TWPartition* target = PartitionManager.FindPartitionByPath(mount_point);
++  if (mount_point.empty() || mount_point.find(';') != std::string::npos ||
++      is_restricted_mount_path(mount_point) ||
++      (target && is_restricted_mount_path(target->GetMountPoint()))) {
++    std::lock_guard<std::mutex> lock(mutex_);
++    state_ = install_state::FAILED;
++    status_.done = 0;
++    running_.store(false);
++    return;
++  }
+   int op_status = 0;
+   bool flag = true;
+ 

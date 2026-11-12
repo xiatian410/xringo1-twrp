@@ -1,0 +1,15 @@
+# Recovery-only raw image targets. Android's filesystem fstab omits these.
+# Keep slot selection in the core; never hardcode the current slot suffix.
+/boot        emmc /dev/block/by-name/boot        flags=display="Boot";backup=1;flashimg=1;slotselect
+/init_boot   emmc /dev/block/by-name/init_boot   flags=display="Init Boot";backup=1;flashimg=1;slotselect
+/vendor_boot emmc /dev/block/by-name/vendor_boot flags=display="Vendor Boot";backup=1;flashimg=1;slotselect
+/recovery    emmc /dev/block/by-name/recovery    flags=display="Recovery";backup=1;flashimg=1;slotselect
+/dtbo        emmc /dev/block/by-name/dtbo        flags=display="DTBO";backup=1;flashimg=1;slotselect
+
+# Keep original fstab and internal mounting, but never offer NV erasure in GUI.
+/nvram                emmc /dev/block/by-name/nvram     flags=wipeingui=0;flashimg=0
+/proinfo              emmc /dev/block/by-name/proinfo   flags=wipeingui=0;flashimg=0
+/mnt/vendor/protect_f  ext4 /dev/block/by-name/protect_f flags=wipeingui=0;flashimg=0
+/mnt/vendor/protect_s  ext4 /dev/block/by-name/protect_s flags=wipeingui=0;flashimg=0
+/mnt/vendor/nvdata     ext4 /dev/block/by-name/nvdata    flags=wipeingui=0;flashimg=0
+/mnt/vendor/nvcfg      ext4 /dev/block/by-name/nvcfg     flags=wipeingui=0;flashimg=0

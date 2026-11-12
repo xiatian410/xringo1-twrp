@@ -24,6 +24,7 @@
 #include <sparse/sparse.h>
 #include "sparse_format.h"
 #include "twrp_install_backend.h"
+#include "mount_backend.h"
 #include "twrp_operation_executor.h"
 twrp_operation_executor& twrp_operation_executor::instance() {
   static twrp_operation_executor executor;return executor;
@@ -117,6 +118,7 @@ struct ProgressTracking {explicit ProgressTracking(uint64_t) {}};
 struct PartitionSettings {std::string backup_folder;ProgressTracking* progress;PartitionManagerOp pm_method;};
 struct PartitionList {std::string display_name,mount_point;bool slot_select=false;};
 struct TWPartition {
+  std::string GetMountPoint(){return mount_point_;}
   std::string mount_point_,actual_block_device_,backup_file_name_,display_name_;
   std::string storage_path_,symlink_mount_point_;
   bool slot_select_=true,is_storage_=false;
@@ -201,6 +203,12 @@ int main(int argc,char** argv) {
   block_io=scenario=="busy";
   const auto input=fs::absolute("input.sparse").string();
   assert(!backend.start_image("",target,dual));
+  if(scenario=="multiple-targets" || scenario=="empty-target") {
+    assert(!backend.start_image(input,target,dual));
+    assert(starts==0 && ends==0 && events.empty());
+    assert(DataManager::GetStrValue("tw_flash_partition").empty());
+    return 0;
+  }
   assert(backend.start_image(scenario=="missing-source"?input+".absent":input,target,dual));
   if(block_io) {
     std::unique_lock lock(gate_mutex);

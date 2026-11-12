@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "907f465be24e022e6cb49162e6462f2dc8ebbbe2e92043e6aa5529a1e9e9f905",
+    "sha256": "a8f49d307ac254124ea72b58c62812b79ee7aebde8d4f27780d4b204b3a79490",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -20,7 +20,7 @@
     "mode": "0o644"
   },
   "FEATURE-USAGE.md": {
-    "sha256": "d8fb650918ee81195fecb8ee80881889361a571541bf4e404f98594dddbcad76",
+    "sha256": "5b61b2240f01211f7630ac438ee2c0c9724d14ec4ede858e3236a4814c8daf72",
     "mode": "0o644"
   },
   "FIRMWARE-MAP.md": {
@@ -28,7 +28,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "c05142d504085f2581703d0113fef9613e07fd43fa2964906d6b699460028ada",
+    "sha256": "721e363abce530be07ab542e5c31e505270694c6d48ca5e7c32e7bc198d47809",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -40,7 +40,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "d1265b455b2688c53ed99814f8cc340dcc23ac4c670924c53f3d925b4ec3119a",
+    "sha256": "4911ecf780feb902c19862a38b133957c16b14a950c1ec8ac39454a445d11dbc",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -68,7 +68,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "cb651bd4e559b1e66717d7d4cb5499bbf758c14dfd873f41d546cedc6ac6f837",
+    "sha256": "47b899d817b0417ae66a8ac3274e510c9448186bead3fd2ae1e541848fabf204",
     "mode": "0o644"
   },
   "docs/DELIVERY-EVIDENCE-STATUS.md": {
@@ -227,6 +227,10 @@
     "sha256": "596a7a5dcb08f47822e91a5f02f5afa8f248eefa6734bcbc5afe789480d9d065",
     "mode": "0o644"
   },
+  "docs/PARTITION-ACTIONS.md": {
+    "sha256": "4c229720312d5ebc9c21cc86e35db9a3a5f795396d8083e424dea0bd030eb739",
+    "mode": "0o644"
+  },
   "docs/PARTITION-OPERATION-PATHS.md": {
     "sha256": "956c87b3ca493ad21aa4c6e7c48280ff87eebaefe21a0d9fcfc641f0a5c5ef71",
     "mode": "0o644"
@@ -296,7 +300,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "2b40f615e1afc7a6acbbabf242a9b6bc0eb921d2eb19a3c1739c256828d42106",
+    "sha256": "ef9d6ce1bff8fc4b1ec48cea378228658a07d0a3478c1428fe811492ad3faa5f",
     "mode": "0o644"
   },
   "docs/ZIP-ARM64-EXECUTION.md": {
@@ -603,8 +607,12 @@
     "sha256": "c34d975ba5ceb120fb8927c0ceeb116451ea00ff620425e30e13d26b5219598f",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0060-partition-actions-policy.patch": {
+    "sha256": "ae7eeda040f8295f7a036c4a363dd9a7c27eead7496fe9e18a9bad9c31ffd583",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "326af484a38c241ed5479cbacbf7173fa2d82572b5805634a1ca449ed3aabaee",
+    "sha256": "0b20307a8ff802e3d70ffea2cac617965002e2a2f9b968fe410f9a40baf4cb80",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -621,6 +629,10 @@
   },
   "dtsrc/O1_asic_dual/profiles/common/root/system/etc/init/dijun-mitee.rc": {
     "sha256": "e8aa6ea24fa35c5b12a24a9274fb1d9e71d609eda7bf45d3ebab678c9cdf26d9",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/common/root/system/etc/twrp.flags": {
+    "sha256": "f846806eadfb1102e3175b1d1221c2bb6aa6d3eef7757e2954f37490276fe3cf",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/common/root/system/etc/vintf/manifest/android.hardware.gatekeeper-service.mitee.xml": {
@@ -1159,6 +1171,10 @@
     "sha256": "254336e4d63d9a84523a2c4162954544f44e3a33e6fffd3340d924a95e6f20d9",
     "mode": "0o644"
   },
+  "scripts/audit_partition_actions_delivery.py": {
+    "sha256": "f217e2c3498ed4056f27f9ae58c9426b1c930cc5e520c982aad2ce55672f74fa",
+    "mode": "0o644"
+  },
   "scripts/audit_profile_service_relocation.py": {
     "sha256": "ac297c9d90a5941fbef832d35663cf08cac911d40c7689c46b8a6656b5ce1616",
     "mode": "0o644"
@@ -1476,7 +1492,7 @@
     "mode": "0o644"
   },
   "scripts/sync_github.py": {
-    "sha256": "500b817bf70c00f5c21676c54865fbe2f6c9ba04857aa3bbfcca91bc50117db6",
+    "sha256": "9a0221ecf02956d916fd3e28d0091641eee9ec317566c36be815977a9bafe9b1",
     "mode": "0o644"
   },
   "scripts/touch_stack.py": {
@@ -1524,11 +1540,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "8bf400c6595864e3cf40538d16ccf9696a292a905f705e112f4fe46c50e0175e",
+    "sha256": "2cad5e71680b9203e1e3cce02126c4ff70438d1b4ec9cfa4a054200e5e67cfc6",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "9e197b3b396ab11f0c4e0e6d541adf662077c137f18836d7878ee1f559e99c7a",
+    "sha256": "a6118b29152540961b0940a31661768b6bce8a8e2a959f69343574db07e4643b",
     "mode": "0o644"
   },
   "tests/archive_pipeline_stubs.json": {
@@ -1856,11 +1872,19 @@
     "mode": "0o644"
   },
   "tests/image_install_chain_test.cpp": {
-    "sha256": "c5697f1b8998729e35cf4d9572c6b19695f9c3b7692f1c0639eb3eac3959e917",
+    "sha256": "1f988e9d990fd70e2108cd0b54bf8b22b00624dc5ff8be78547677bb7581a639",
     "mode": "0o644"
   },
   "tests/image_install_chain_test.py": {
     "sha256": "cd00ae0fa717cc9704ae2c09e13435e877526b81fec0ef16196b0c9610f77a06",
+    "mode": "0o644"
+  },
+  "tests/install_target_interaction_test.cpp": {
+    "sha256": "f1512931a91d284845c0116f8e6dc94f652d15876418e4e6dc0b98bf4d54dc22",
+    "mode": "0o644"
+  },
+  "tests/install_target_interaction_test.py": {
+    "sha256": "1dcc2b1971ea3180d6306d34d53e775455112308ca08074ae23c0b283a7f77e7",
     "mode": "0o644"
   },
   "tests/module_state_test.py": {
@@ -1967,6 +1991,14 @@
     "sha256": "ceecffd49c02fbdb00ca7ff78e1611cd4d0c4e5f74ef55aba334391db755cebf",
     "mode": "0o644"
   },
+  "tests/nv_partition_actions_test.cpp": {
+    "sha256": "2d7540782dedcd46595bae9c51fa3401cf299f7700b1b95b99e5143fc17b1045",
+    "mode": "0o644"
+  },
+  "tests/nv_partition_actions_test.py": {
+    "sha256": "0b7a7b95c75961f19227afc1aa7243a7ffe24272b2167e432b6333a8ac885335",
+    "mode": "0o644"
+  },
   "tests/operation_feedback_test.cpp": {
     "sha256": "fea08e40926369266629ad88a6ddfe38302b38cbf145521072dd6fd78196830b",
     "mode": "0o644"
@@ -2028,11 +2060,11 @@
     "mode": "0o644"
   },
   "tests/repair_tool_chain_test.cpp": {
-    "sha256": "7cbb160fbca1874f03f4d31a0a3c42c54b1256c18dedb0929559e936670d246a",
+    "sha256": "4ff37e9ca94020b0c5ee4a6737a93ff3f9046c22018351af8696f64a88931f5e",
     "mode": "0o644"
   },
   "tests/repair_tool_chain_test.py": {
-    "sha256": "3ca4579e614f7ba642b159b0fccf2fdee04ab58dac01ba29c05d208152d365e1",
+    "sha256": "c6bb3f0bdf74e2b3e0f2de5acb57596b2bf5236f4a74a82229dcc191716f1d7d",
     "mode": "0o644"
   },
   "tests/restore_session_test.cpp": {

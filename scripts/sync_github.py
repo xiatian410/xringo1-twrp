@@ -18,7 +18,7 @@ ROOT = Path(os.environ.get('DIJUN_WORKSPACE', Path(__file__).resolve().parents[1
 MIRROR = ROOT.parent / 'xringo1-twrp-public'
 REPOSITORY = 'xiatian410/xringo1-twrp'
 SUFFIXES = {'.md', '.py', '.cpp', '.c', '.h', '.hpp', '.sh', '.ps1', '.json', '.mk', '.bp',
-            '.rc', '.prop', '.conf', '.fstab', '.te', '.contexts', '.list', '.plan', '.patch', '.xml', '.yml', '.yaml'}
+            '.rc', '.prop', '.conf', '.fstab', '.flags', '.te', '.contexts', '.list', '.plan', '.patch', '.xml', '.yml', '.yaml'}
 NAMES = {'file_contexts', 'service_contexts', 'property_contexts', 'vendorsetup.sh', 'NOTICE', 'LICENSE', '.gitignore'}
 SECRET = re.compile(rb'-----BEGIN (?:RSA |EC |OPENSSH |ENCRYPTED )?PRIVATE KEY-----|\bgh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{30,}')
 

@@ -1,5 +1,7 @@
 # 功能入口与当前使用边界
 
+2026-11-13 分区界面功能修正：补齐确认刷入页五个 raw 目标，0060 将 NV 限制覆盖高级清除、修复、调整大小、更改文件系统及镜像刷入；混合清除列表执行前整体检查。此前仅限制挂载的覆盖不足已纠正。策略26/旧版同组19失败、实际 LVGL25、镜像写入链40、ARM64修复链7及挂载26通过；installclean 后30并发构建 partition-actions 候选，SHA256 f9a11c04da1669ef601ca52ee6c38a99f32011aedcab06a5005af4f74f386db6，769来源/六profile。详见 docs/PARTITION-ACTIONS.md；无实机操作，不冒称整体功能验收，完整12组保留。源码配置/测试/文档同步GitHub，编译文件不上传。
+
 本地最新候选`recovery-dijun-unified-mtp-directory.img`：电脑通过MTP上传目录时应用有效修改时间，目录在SendObjectInfo完成；元数据失败报告错误且保留目录以供重试。后续上传子文件会自然改变父目录日期，不保证整棵树最终日期还原。范围见[目录上传](docs/MTP-DIRECTORY-METADATA.md)。以下旧候选为历史记录。
 
 ZIP安装链新增20项真正ARM64测试载荷的离线执行证据，见[执行范围](docs/ZIP-ARM64-EXECUTION.md)；使用入口和生产镜像未改变。真实OTA updater/update_engine、payload及实机写入仍未验收，不能把测试ELF成功当作任意刷机包兼容。

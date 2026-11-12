@@ -10,6 +10,8 @@
 #include <vector>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "mount_backend.h"
+using gui2_backend::is_restricted_mount_path;
 namespace fs = std::filesystem;
 #define LOGINFO(...) std::printf(__VA_ARGS__)
 #define LOGERR(...) std::fprintf(stderr,__VA_ARGS__)
@@ -31,6 +33,7 @@ executor& instance(){ static executor e; return e; }
 struct guard { std::lock_guard<std::recursive_mutex> lock; guard(std::recursive_mutex& m):lock(m){} };
 }
 struct TWPartition {
+  std::string GetMountPoint(){return mount_point_;}
   std::string mount_point_,symlink_mount_point_,sub_partition_of_;
   bool is_sub_partition_=false,unmount_ok=true;
   std::string current_file_system_="ext4",display_name_="private image",actual_block_device_;

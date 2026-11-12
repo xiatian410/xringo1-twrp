@@ -44,7 +44,7 @@ def main():
                                     'TWPartition* TWPartitionManager::FindPartitionByPath(',
                                     'int TWPartitionManager::RepairByPath(']),
         (SRC/'partition.cpp',['bool TWPartition::Repair()']),
-        (tools_source,['int repair('])]:
+        (tools_source,['bool partition_tool_target_allowed(', 'int repair('])]:
         text=path.read_text()
         bodies.extend(method(text,sig) for sig in signatures)
     dependencies={shell}
@@ -78,7 +78,7 @@ LD_LIBRARY_PATH=/android/system/lib64 exec /qemu -L /android /android/system/bin
         (work/'methods.inc').write_text('\n\n'.join(bodies))
         binary=jail/'repair-test'
         subprocess.run(['g++','-std=c++23','-O1','-g','-static','-pthread','-I'+str(work),
-                        str(ROOT/'tests/repair_tool_chain_test.cpp'),'-o',str(binary)],check=True)
+                        '-I'+str(SRC/'gui2/backend'),str(ROOT/'tests/repair_tool_chain_test.cpp'),'-o',str(binary)],check=True)
         fixtures=jail/'fixtures'; fixtures.mkdir()
         source=fixtures/'source'; source.mkdir()
         payload=b'dijun repair call chain\n'*1024+bytes(range(256)); (source/'payload.bin').write_bytes(payload)

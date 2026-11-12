@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-directory.img",
-  "image_sha256": "215914df1f8768bf00272f5c10c03b90fa8e624e9b1337fa6801a0ef3e5155b0",
-  "production_sources": 765,
+  "image_name": "recovery-dijun-unified-partition-actions.img",
+  "image_sha256": "f9a11c04da1669ef601ca52ee6c38a99f32011aedcab06a5005af4f74f386db6",
+  "production_sources": 769,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "User confirms invocation is normal.",
   "checks": [
@@ -316,6 +316,48 @@
       "cases": 26,
       "failures": 0,
       "local_report_sha256": "012567aad4603da39323949bd5a0a5265c3b6769db6cd526ec651cdc900602af",
+      "scope": "Execute original GUI mount list/action methods with explicit core doubles.\n\nNo real mount, device or settings access. Confirms NV/protection rows are hidden\nand stale/manual toggle calls are rejected in both directions, including a\nresolved alias. Core mounting remains outside this UI policy.\n"
+    },
+    {
+      "name": "nv-partition-actions",
+      "status": "PASS",
+      "cases": 26,
+      "local_report_sha256": "60ac23aeab2a102cdb6acedd27bf5198ea7bbdb1ae38e65606ffa2d86499e97f",
+      "scope": "Execute GUI wipe/tools/image methods with counted core doubles; no devices or writes."
+    },
+    {
+      "name": "nv-partition-actions-before",
+      "status": "FAIL",
+      "cases": 26,
+      "local_report_sha256": "c0db2b5701864a1da9092ae88e5dbd895e59f0db1e0cd082c53c6e2c9331e48f",
+      "scope": "Execute GUI wipe/tools/image methods with counted core doubles; no devices or writes."
+    },
+    {
+      "name": "install-target-interaction",
+      "status": "PASS",
+      "cases": 25,
+      "local_report_sha256": "e72b9759b10776d0fecbd0553bb386b9b5b43a8ac4de8f0018bacd726236a7e1",
+      "scope": "Real LVGL image confirmation page, pointer hit testing and original target callback.\n\nDestination navigation is recorded, not executed. Metrics/fonts and hardware are\nhost fixtures; this does not prove Android touch, persistence or destination pages.\n"
+    },
+    {
+      "name": "partition-actions-image-chain",
+      "status": "PASS",
+      "cases": 40,
+      "local_report_sha256": "88d4e86bf900e730b321558ddbba895d16d000524c7e4067676c123734f5c8ac",
+      "scope": "Run actual image-install worker/thread -> manager -> partition -> libsparse.\n\nUses production public backend header, lifecycle, filename routing, manager\ntarget lookup and slot override. Real sparse parser/writer and private file\ncontents execute. DataManager, progress/console, source mounts, target capacity,\npartition size/device resolution and UpdateSystemDetails are explicit doubles.\nNo ZIP, raw transfer, repacker, GUI widgets, boot-control service, physical block\ndevice, USB, target ARM64 or power-loss execution. A/B resolution is a fixture.\n"
+    },
+    {
+      "name": "partition-actions-repair-chain",
+      "status": "PASS",
+      "cases": 7,
+      "local_report_sha256": "f0169b812f64b3de8807d5cce3db43ba75d4e7fa4ded3f34a35781a124b979dd",
+      "scope": "Join production repair wrapper/partition lookup/Repair/ExecCmd to delivered ARM64 e2fsck.\n\nAll targets are newly created regular files in a private chroot. Partition\nunmount/device resolution and operation presentation are explicit fixtures;\nthere is no GUI, real mount, physical block device, phone, FBE or power-loss test.\nThe /system/bin/e2fsck compatibility launcher execs the same-image ARM64 tool\nthrough QEMU and the same-image Android linker/libraries, preserving its status.\n"
+    },
+    {
+      "name": "partition-actions-mount",
+      "status": "PASS",
+      "cases": 26,
+      "local_report_sha256": "98d525e7f557e52376f05f699c086b7a692a9b450f61ea3e28cc4e7146317617",
       "scope": "Execute original GUI mount list/action methods with explicit core doubles.\n\nNo real mount, device or settings access. Confirms NV/protection rows are hidden\nand stale/manual toggle calls are rejected in both directions, including a\nresolved alias. Core mounting remains outside this UI policy.\n"
     }
   ]

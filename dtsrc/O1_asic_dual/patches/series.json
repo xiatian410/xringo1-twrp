@@ -234,6 +234,10 @@
         {
           "file": "0059-mtp-directory-metadata.patch",
           "sha256": "c34d975ba5ceb120fb8927c0ceeb116451ea00ff620425e30e13d26b5219598f"
+        },
+        {
+          "file": "0060-partition-actions-policy.patch",
+          "sha256": "ae7eeda040f8295f7a036c4a363dd9a7c27eead7496fe9e18a9bad9c31ffd583"
         }
       ],
       "result_files": {
@@ -321,7 +325,7 @@
         "gui2/backend/mount_backend.h": "4cc5e65d3baae879156e640672cc79b55f4abeeee2cd9b58b60af38361c68ebb",
         "sysfs_device_match.hpp": "66987f6f13e174bb22ce057d022006b1eb0fe2cfa3069046c51e30f72063e941",
         "twrpinstall/twinstall.cpp": "b78718bfbea5937d800deb975c5d915007606e29bcb7d5b63ed6fe093dd73c3a",
-        "gui2/backend/twrp_install_backend.cpp": "b6c25c2086dde47d2d08a6ed3e62780d18cce758cb5c4d1f44a411124f092da6",
+        "gui2/backend/twrp_install_backend.cpp": "20ae186a20ea7232dfe25c03522d64be5ba97eaedc6e7579b1bec92fa0ab4c1b",
         "twrpinstall/adb_install.cpp": "1c736d722b69468144c8e30313497429f80613d3c25c29f5042ccf867e9b1665",
         "twrpinstall/include/twinstall/adb_install.h": "839476379dd5ecba5354055ba1a048baf02422ddd18b0edd4b7654459a0ee6c5",
         "gui2/backend/twrp_sideload_backend.cpp": "0870b3b7d59f5be485ed17db62189108fae248b0093e8628d7fc52cb53cc8e8d",
@@ -329,7 +333,9 @@
         "openrecoveryscript.cpp": "a9b5d99e2af4266b50ceae67a487ef40fb97e7422b2015e76873f1dff0027134",
         "gui2/backend/reboot_backend.h": "49c74edd83b63ee28fc70e34ba58268df9107bc379ab9e65f2e662f3303b109d",
         "gui2/backend/twrp_reboot_backend.h": "4c6767ff062d6b0885d0b9c9bff626fdf29ddb73b1d47ce1eff135d2bb0d925a",
-        "gui2/backend/twrp_reboot_backend.cpp": "60d2739b437fce369daca252c4eb7e12c5dae1a3198e2eee127b52ef548431d8"
+        "gui2/backend/twrp_reboot_backend.cpp": "60d2739b437fce369daca252c4eb7e12c5dae1a3198e2eee127b52ef548431d8",
+        "gui2/backend/twrp_wipe_backend.cpp": "0cfc499ccf3e0296bbdc028eedb8e43c5f1b722edbd43a380a1106311c6c0e73",
+        "gui2/backend/twrp_tools_backend.cpp": "03f005966682acbee62aaf4652358905bf03f368f100da3a1f2a1415d2e44ac2"
       }
     },
     "system/sepolicy": {
