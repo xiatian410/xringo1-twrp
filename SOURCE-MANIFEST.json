@@ -40,7 +40,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "ba540772625dacdb6453d0c2ca597345773c2c0e24e6966011930c6c321bdbad",
+    "sha256": "d1265b455b2688c53ed99814f8cc340dcc23ac4c670924c53f3d925b4ec3119a",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -57,6 +57,10 @@
   },
   "docs/BACKUP-SESSION-ADAPTATION.md": {
     "sha256": "a29c8589d6117ef15d330443716388330dcc672b6d9ea5a2a78753122b11ca5e",
+    "mode": "0o644"
+  },
+  "docs/BUILD-ENV-DISK-TUNING.md": {
+    "sha256": "99a0f9ff29a61726b852b54b0f9d0d67edbe8b961a51bbc6dc4a1aaa79b3898a",
     "mode": "0o644"
   },
   "docs/CLOCK-FAILURE-ADAPTATION.md": {

@@ -56,6 +56,8 @@ make -j$(nproc) recoveryimage
 
 主机还需提供 `python`命令指向 Python 3；构建详情见 [MAINTENANCE.md](MAINTENANCE.md)。历史构建说明中的旧候选、内核覆盖目录和测试结果不代表当前支持范围。
 
+构建机磁盘布局、swap 与编译负载内核参数的实测记录见 [docs/BUILD-ENV-DISK-TUNING.md](docs/BUILD-ENV-DISK-TUNING.md)，含重建顺序与回滚边界。该文档只描述本地构建环境，不涉及生产源码或镜像内容。
+
 ## 验证与贡献
 
 ```bash
