@@ -1,4 +1,6 @@
-# 实机截图后的 OTG 误枚举修正
+# 分区列表、OTG 发现与存储挂载
+
+本文合并分区显示策略、OTG 设备发现、system/vendor 挂载模式与存储选择的实现记录。历史候选与测试数字保留各自时间范围，当前交付以根目录验证报告为准。
 
 2026-11-12 根据用户最新要求，0054将NV/proinfo/protection排除普通GUI挂载目标，并在后台阻止手动挂载和卸载（含规范化路径及解析别名）。此前“存在且可挂载所以显示”仅解释旧行为，不再作为当前普通界面的展示策略。原厂fstab声明及内部核心MountByPath保留；persist和metadata不在本次NV禁用集合。此策略不是对特权shell或备份恢复工具的访问控制。26项策略/旧17失败、六项LVGL链通过；新候选为recovery-dijun-unified-nv-mount-policy.img，未实机测试。
 
@@ -22,7 +24,7 @@
 
 以下为收到截图前的历史检查点，所述“缺截图”及“当前”仅指当时。
 
-# backup-manifest 挂载页项目核对
+## backup-manifest 挂载页项目核对
 
 2026-11-12 用户确认当前backup-manifest镜像设置正常，同时询问挂载页三十多个“内部存储”和NV项目。此次只做实际镜像与源码核对，无生产改动、隐藏条目、分区操作或新构建。
 
@@ -47,3 +49,35 @@
 源码入口：`partitionmanager.cpp:GetPartitionList`分别生成mount/storage列表，`gui2/backend/twrp_mount_backend.cpp:targets/storages`保留对应名称，`gui2/pages/mount_page.cpp`将当前存储卡片与分区复选框分区显示。只有上方当前存储卡片取`tw_storage_display_name`；其余挂载复选框使用各条目的`display_name`。当前没有证明源码把所有分区统一命名为“内部存储”。
 
 还缺当前页面的直接证据：若用户描述是三十多个项目都带“内部存储”名称，需要一张包含标题与多个条目的截图，先区分mount列表、storage选择列表、分组标题与重复标签，再核对运行列表。不能把32行fstab解释成已确认的现场重复原因，也不能以此静态核对否定用户观察。此次不要求重刷或重复测试设置。
+
+<a id="mount-mode"></a>
+
+## system/vendor 挂载模式事务
+
+2026-11-12，维护补丁 `0034-mount-mode-transaction.patch` 修正 `gui2/backend/twrp_mount_backend.cpp` 的 `mountsystemtoggle`。旧代码只卸载 system，直接修改仍挂载 vendor 的模式；忽略重新挂载失败，并用后续 vendor 分支覆盖前面的失败。无独立 vendor 也会误报失败。它是挂载模式切换缺陷，不是一般设置保存或物理震动故障的根因结论。
+
+新实现由现有递归操作锁串行化，先查找必需 system 和可选 vendor，保存各自挂载状态及只读策略。所有原本挂载的目标先卸载，然后修改策略，并只重新挂载原本已挂载的目标。全部成功后才提交 `tw_mount_system_ro`；失败返回非零，并尝试恢复原策略与原挂载状态。失败不会被其他分区成功覆盖，operation_end 接收失败状态，返回前刷新分区快照。
+
+回滚也可能失败：重新卸载失败时保留该目标当前策略标志，不能把仍以新模式挂载的目标伪装成旧模式；恢复挂载失败则保留未挂载状态。均有独立日志，并保持操作失败、全局设置不提交。这不是对真实 mount flags 的重新探测，也不是不可失败的原子内核操作。
+
+[执行程序](../tests/mount_mode_test.py)提取真实生产函数，以分区与 DataManager 边界替身覆盖读写/只读、已卸载、只有 vendor 已挂载、可选 vendor 缺失、system 缺失、两个卸载失败、两个 remount 失败、两种回滚失败、非法参数、重复调用和混合原模式。真实递归锁、ASan/UBSan 和宿主编译执行；不访问设备、块设备或执行 mount。[新实现 15 项通过](../logs/mount-mode.json)，[相同用例旧实现 8 项失败](../logs/mount-mode-before.json)。不是 8 个独立缺陷。
+
+交付候选 `recovery-dijun-unified-mount-mode.img`，SHA256 `848096d4b42b41926e2741ba4a34ef1ec4922aaa66036281724e7a2d65b652f1`。installclean + make -j$(nproc)（30并发）构建，717 个来源文件及打包/新二进制核对通过；同镜像 profile 回归结果单独记录。第一次目标编译发现替身错误接受 `UnMount` 名称，已按真实 `Unmount` API 更正并重跑清理构建，失败日志保留。
+
+入口为“挂载”页的 system 读写切换，按现有只读警告确认；动态分区设备可能隐藏该控件，启动只读选择也复用此后端。真实启动选择对返回值的界面展示、完整页面异步体验、真实内核文件系统挂载及用户现场状态仍未验证。没有改 AVB、vbmeta、校准或震动参数。全部任务保持进行中。
+
+<a id="storage-selection"></a>
+
+## 存储选择的失败处理
+
+维护补丁 `0035-storage-selection-failure.patch` 修改真实 `select_storage`：目标必须存在、标记为存储并且路径等于发布的存储根；可移除存储即使已挂载也刷新容量。刷新禁止再次尝试挂载，避免 `UpdateSize` 通用观察路径把挂载失败返回为成功。容量失败、刷新时设备消失或设置值提交失败均返回失败；本次新挂载会尝试卸载，原先挂载的目标保留。卸载恢复失败单独记录，不能声称状态已恢复。
+
+满盘但容量可读的目标仍可选择，后续写入任务负责空间检查。内部存储继承原有挂载逻辑。GUI 发布的 `storage_path_` 是选择入口接受的根路径，子目录不作为存储设备提交。
+
+[测试](../tests/otg_selection_test.py)抽取生产选择方法和真实 `TWPartition::UpdateSize`，执行真实递归锁和作用域清理；底层挂载、设备存在、statfs/df、容量与 DataManager 是替身。ASan/UBSan 下 15 项通过；[旧实现同组](../logs/otg-selection-before.json)12 项失败，这是场景数而非独立缺陷数。覆盖新挂载、已有挂载、失败回退、拔除窗口、无目标、非存储、子目录、满盘、df 回退、恢复卸载失败、内部存储和提交失败。没有执行 USB 发现、真实挂载或读写中拔除。
+
+复现：`python3 tests/otg_selection_test.py`；旧实现使用 `--backend logs/otg-selection-before/twrp_mount_backend.cpp --report logs/otg-selection-before.json`。改变选择方法时同时运行 mount_mode_test、settings_persistence_test、nested_partition_path_test 和 settings_row_test；各测试的替身边界仍然适用。
+
+交付 `recovery-dijun-unified-otg-selection.img`，SHA256 `aaa4b25c1bd58a0b61508288a479d824f38701c38d2ed606530b39c503181ef7`。installclean 后 `make -j$(nproc)`，30 并发构建，718 来源与封装/新二进制核对通过。继承设置整行点击和 persist 路径修正；这些改动不能证明用户这次设置故障已经消失，也不是物理震动修复。
+
+同镜像验证收尾：9组/102次profile阶段调用通过，718份构建来源仍一致，设置交互20/保存21/路径31与挂载模式15回归通过；当前交付审计见 `logs/otg-selection-delivery.json`。硬件与完整12组验收仍未完成。

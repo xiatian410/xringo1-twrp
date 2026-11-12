@@ -122,7 +122,7 @@ def main():
              '机器报告保留每个冲突的符号名与两个 CRC，并检查原厂模块之间可解析的导入/导出关系。'
              '缺失的内核导出表明确记为 unresolved，不能据此声称全依赖通过。', '',
              '包内身份以每份 `analysis/facts.json` 为准。尤其 OS3 末版下载名与包内 `16OS3.1.260921…` 不同。', '',
-             '数据：[机器报告](firmware-compatibility.json)；来源：[获取清单](../firmware-inventory.json)。', '']
+             '来源：[获取清单](../firmware-inventory.json)。逐符号机器报告约 17 MB，留在本地，不随源码发布。准备原厂样本后，运行 `python3 scripts/compare_firmware.py` 可重新生成 `docs/firmware-compatibility.json` 与本页；生成脚本见 [compare_firmware.py](../scripts/compare_firmware.py)。', '']
     (out / 'firmware-compatibility.md').write_text('\n'.join(rows))
     for sample, s in report['samples'].items():
         print(sample, s['unique_module_count'], 'modules,', len(s['module_links']['conflicts']), 'module-link CRC conflicts,',

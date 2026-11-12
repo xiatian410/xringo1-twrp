@@ -53,7 +53,7 @@ def main():
  for name in evidence:
   c,=[c for c in index['checks'] if c['evidence']==name];assert c['evidence_sha256']==sha(ROOT/name),name
  assert index['status']=='in_progress' and len(index['not_yet_completed'])==12
- docs=['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.json','simulation-report.md','FEATURE-USAGE.md','docs/STORAGE-SELECTION-ADAPTATION.md','docs/SETTINGS-ADAPTATION.md']
+ docs=['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.json','simulation-report.md','FEATURE-USAGE.md','docs/MOUNT-LIST-EXPLANATION.md','docs/SETTINGS-ADAPTATION.md']
  report=dict(status='PASS',scope=__doc__,image_sha256=digest,source_files=718,selection_cases=15,before_failed=12,settings_row_cases=20,persistence_cases=21,path_assertions=31,runtime_groups=9,runtime_calls=102,evidence={n:sha(ROOT/n) for n in evidence+['logs/otg-selection-before.json','logs/build-otg-selection.log','logs/verify-otg-selection.log','logs/otg-selection-final-source-recheck.log']},documents={n:sha(ROOT/n) for n in docs},audit_script_sha256=sha(Path(__file__)))
  (ROOT/'logs/otg-selection-delivery.json').write_text(json.dumps(report,indent=2)+'\n')
  print('PASS: selection15/old failures12;settings20/persistence21/path31;718 sources;runtime9 groups/102 calls. No hardware acceptance.')

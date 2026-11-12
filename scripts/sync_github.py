@@ -20,6 +20,9 @@ REPOSITORY = 'xiatian410/xringo1-twrp'
 SUFFIXES = {'.md', '.py', '.cpp', '.c', '.h', '.hpp', '.sh', '.ps1', '.json', '.mk', '.bp',
             '.rc', '.prop', '.conf', '.fstab', '.flags', '.te', '.contexts', '.list', '.plan', '.patch', '.xml', '.yml', '.yaml'}
 NAMES = {'file_contexts', 'service_contexts', 'property_contexts', 'vendorsetup.sh', 'NOTICE', 'LICENSE', '.gitignore'}
+# Generated symbol-by-symbol comparisons stay local. The concise conclusions
+# and the generator remain public; this does not exclude build configuration.
+LOCAL_REPORTS = {'docs/firmware-compatibility.json'}
 SECRET = re.compile(rb'-----BEGIN (?:RSA |EC |OPENSSH |ENCRYPTED )?PRIVATE KEY-----|\bgh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{30,}')
 
 def digest(data):return hashlib.sha256(data).hexdigest()
@@ -35,6 +38,7 @@ def candidates():
         for path in sorted((ROOT/name).rglob('*')):
             if not path.is_file() or path.is_symlink():continue
             rel=path.relative_to(ROOT)
+            if rel.as_posix() in LOCAL_REPORTS:continue
             if any(p in {'__pycache__', '.cache', '.git', 'security'} for p in rel.parts):continue
             if 'prebuilt' in rel.parts and path.name!='Android.mk' and path.suffix!='.json':continue
             if path.suffix not in SUFFIXES and path.name not in NAMES:continue

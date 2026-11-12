@@ -86,7 +86,7 @@ def main():
                   field_vibration='unresolved', field_settings='unresolved',
                   evidence={n: sha(ROOT / n) for n in evidence},
                   documents={n: sha(ROOT / n) for n in ['ADAPTATION-GOALS.md', 'MAINTENANCE.md',
-                             'simulation-report.md', 'simulation-report.json', 'docs/MTP-RESET-SESSION.md']},
+                             'simulation-report.md', 'simulation-report.json', 'docs/MTP-CONTROL-ADAPTATION.md']},
                   audit_script_sha256=sha(Path(__file__)))
     (ROOT / 'logs/mtp-reset-delivery.json').write_text(json.dumps(result, indent=2) + '\n')
     print('PASS: Reset control80/server78(old3/9 failures), transfers48/events62, profile9/102,735 source files; hardware unresolved')

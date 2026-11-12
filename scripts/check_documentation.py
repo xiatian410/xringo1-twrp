@@ -16,11 +16,15 @@ ENTRY_POINTS = (
     'dtsrc/O1_asic_dual/README.md',
     'docs/STATUS-ADAPTATION.md', 'docs/SETTINGS-ADAPTATION.md',
     'docs/FILESYSTEM-TOOLS-EXECUTION.md', 'docs/INSTALL-CHAIN-VALIDATION.md',
-    'docs/OTA-OPERATION-COW.md',
+    'docs/OTA-OPERATION-COW.md', 'docs/MOUNT-LIST-EXPLANATION.md',
+    'docs/MTP-ATOMIC-UPLOAD.md', 'docs/MTP-CONTROL-ADAPTATION.md',
+    'docs/firmware-compatibility.md',
 )
 
 
-TECHNICAL_REPORTS = frozenset(ENTRY_POINTS[-5:])
+TECHNICAL_REPORTS = frozenset(name for name in ENTRY_POINTS
+                              if name.startswith('docs/') and name not in
+                              {'docs/README.md', 'docs/WORK-QUEUE.md'})
 
 def main():
     links = 0

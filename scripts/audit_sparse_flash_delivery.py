@@ -74,7 +74,7 @@ def main():
         checks=[c for c in index['additional_checks'] if c.get('evidence')==p]
         assert checks and all(c['evidence_sha256']==sha(ROOT/p) for c in checks)
     assert index['status']=='in_progress' and len(index['not_yet_completed'])==12
-    docs=['ADAPTATION-GOALS.md','MAINTENANCE.md','FEATURE-USAGE.md','simulation-report.md','simulation-report.json','docs/SPARSE-IMAGE-FLASH.md']
+    docs=['ADAPTATION-GOALS.md','MAINTENANCE.md','FEATURE-USAGE.md','simulation-report.md','simulation-report.json','docs/INSTALL-CHAIN-VALIDATION.md']
     result=dict(status='PASS',scope=__doc__,image=str(image),image_sha256=digest,production_sources=747,
                 sparse_cases=40,old_failures=27,raw_regression_cases=65,profile_groups=9,module_groups=4,
                 evidence={p:sha(ROOT/p) for p in evidence},documents={p:sha(ROOT/p) for p in docs},

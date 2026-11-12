@@ -4,7 +4,7 @@
     "mode": "0o644"
   },
   ".gitignore": {
-    "sha256": "6e3a4d2e1c9b7af0ab7d7dc43381d83a349f5da12a7cfc7cbbd94da8ccf80430",
+    "sha256": "b63efb4e0605730fd7e54826e903831e9d7d581bd2fa4e4eaf53b961fc0db9c9",
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
@@ -32,7 +32,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "d805eb385a308bd6f1eccd2db0c2831beb5564c6ead5d7d7f7b3f1d31d5063f5",
+    "sha256": "a58f526411950fd55b3bac64ca0398e3c18b9a80d2ed163aac62635f2545e61a",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -44,15 +44,11 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "faad735b14e43235ed159e84ba1dbeed1ae6fdc4b4a099f3205d300276567890",
+    "sha256": "9be59be5b3d31a270c1b4ae0e5d9a494973122841b7b1e986688b3548a54de31",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
     "sha256": "ea2ff2b70416b2c899c99c1025c431ca2d3e847d62274f73c126ca884818baeb",
-    "mode": "0o644"
-  },
-  "docs/AB-COMMAND-VALIDATION.md": {
-    "sha256": "da8bd4d5810ecc3b3dd785ae8eec1bea11a9cea2d8257b036c62029abb7798a9",
     "mode": "0o644"
   },
   "docs/ARCHIVE-PIPELINE-ADAPTATION.md": {
@@ -72,7 +68,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "8b4b312065c55e50f5cdbde28dcdc9da75dfe64b2ded56ed776b33756dcb0e2d",
+    "sha256": "51ccf7d5416b46b74d85b1f7688d680f6ae99d68a49239e0cbbd9841a36176fe",
     "mode": "0o644"
   },
   "docs/DIGEST-PUBLICATION.md": {
@@ -140,7 +136,7 @@
     "mode": "0o644"
   },
   "docs/INSTALL-CHAIN-VALIDATION.md": {
-    "sha256": "6cb8e3cb5313a60733043298a00071c9bf94f83ea88e1e8680c95db10a06dbcc",
+    "sha256": "5b7c7aabc1fa0e8c2f4f641990baa0f88a0e4920785af5cdacdf2d7a43ac091a",
     "mode": "0o644"
   },
   "docs/MODULE-STATE-ADAPTATION.md": {
@@ -148,11 +144,7 @@
     "mode": "0o644"
   },
   "docs/MOUNT-LIST-EXPLANATION.md": {
-    "sha256": "34d0a1e3a0c3f85e1d43dbb99a84c84b17e4b06d5f5a087e53c79b450d42a422",
-    "mode": "0o644"
-  },
-  "docs/MOUNT-MODE-ADAPTATION.md": {
-    "sha256": "e731780968cbeb8fa09cc036d7581babc64db87c921846c30d3a438f519b6b5a",
+    "sha256": "8188b63a13ee06e13633dccd8a1d04838845c605be4a92dcb2ff1c517622b512",
     "mode": "0o644"
   },
   "docs/MTP-ADAPTATION.md": {
@@ -160,7 +152,7 @@
     "mode": "0o644"
   },
   "docs/MTP-ATOMIC-UPLOAD.md": {
-    "sha256": "7d7495b0d47d0b428f6d311f7f33a296d1e89f7d1a7534d080a1041a8c746fdc",
+    "sha256": "2687a53a888cc4c29e6d9985d99ffdb02bc2eaf61ee17f82bf7427d085362d27",
     "mode": "0o644"
   },
   "docs/MTP-CALLER-ADAPTATION.md": {
@@ -168,15 +160,11 @@
     "mode": "0o644"
   },
   "docs/MTP-CONTROL-ADAPTATION.md": {
-    "sha256": "f92e1507b9d9304fa0ccee22c355fa0c9a1c7d75618fefdf39c8f48e407ad737",
+    "sha256": "5c5d1fd8c625e9103cdecc41df0662010666febceb17134b7dbf0563dc34851b",
     "mode": "0o644"
   },
   "docs/MTP-DATETIME-ADAPTATION.md": {
     "sha256": "0a3920e95e50698f94b80b220e09dfd47162c1b830bbf7b4c1536938d4cbfca5",
-    "mode": "0o644"
-  },
-  "docs/MTP-DIRECTORY-METADATA.md": {
-    "sha256": "59a1870697bb17c85a14f52c4379d681b9dcc100e0a1ad40ae91dd24fa5af014",
     "mode": "0o644"
   },
   "docs/MTP-EVENTS-ADAPTATION.md": {
@@ -185,14 +173,6 @@
   },
   "docs/MTP-OBJECTS-ADAPTATION.md": {
     "sha256": "fe78a1ae8310ba55c7a0fdde54433d3c685d5a691fa835790084a6762dc6d106",
-    "mode": "0o644"
-  },
-  "docs/MTP-RESET-SESSION.md": {
-    "sha256": "708b4ac6bb15052f82686c064946d5f75e2e37dec7a8f99c3c54f8e36270aee8",
-    "mode": "0o644"
-  },
-  "docs/MTP-TRANSACTION-CANCEL.md": {
-    "sha256": "abab4465f89eaec7e9aa0fd708d75bb8af13698095631048f6dccb86e2d4192f",
     "mode": "0o644"
   },
   "docs/MTP-TRANSFERS-ADAPTATION.md": {
@@ -216,7 +196,7 @@
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
-    "sha256": "177d96947203154888acb6b5691aaafe8cfe756024382f2c242fbc18ecf54aad",
+    "sha256": "a12ae08e50514b8e8d59c6ea6cdcc3c3cbc1cbb4d244412050622a7bfcf04760",
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
@@ -248,7 +228,7 @@
     "mode": "0o644"
   },
   "docs/README.md": {
-    "sha256": "7a9df6e451152273aa3a15ea462bce069f0235ff3a053fa97d285e28afba045e",
+    "sha256": "1585e970b956c20cb439781e859c66645ce1e28449a02dc1c74f33c491d27911",
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
@@ -271,16 +251,8 @@
     "sha256": "ac32945f133cdc403bfbe9d68c4964d1987a08ada2e7e72fe68747b0845fc49c",
     "mode": "0o644"
   },
-  "docs/SPARSE-IMAGE-FLASH.md": {
-    "sha256": "6f1cf0a15690141ea8c51364b8f2ce163fa197bf659193f01d6494bf136cb258",
-    "mode": "0o644"
-  },
   "docs/STATUS-ADAPTATION.md": {
     "sha256": "70fcecae68405ee257b829a073d3bc9ede0c4ef028a78e0de2fcb51677fe3b98",
-    "mode": "0o644"
-  },
-  "docs/STORAGE-SELECTION-ADAPTATION.md": {
-    "sha256": "22fda6dc3c3fa39d4da1ccbfe0205751da37d05bf6b5c88e53621c3e39ddf90a",
     "mode": "0o644"
   },
   "docs/UI-FEEDBACK-ADAPTATION.md": {
@@ -296,7 +268,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "b846cbf50889123b52e74e3cb060237a485623cb5c172241b0e7587947579f60",
+    "sha256": "ae985642718706d2f036cb48db7927731b29cc1a7e9f12d1a47b2b00be74b342",
     "mode": "0o644"
   },
   "docs/crypto-compatibility.json": {
@@ -307,12 +279,8 @@
     "sha256": "40dbfc36490a33a202aad92a2d39cf70c8832c5f1502ee9675b13c91057a4843",
     "mode": "0o644"
   },
-  "docs/firmware-compatibility.json": {
-    "sha256": "c7bcd13f2149d525521c381bc415ab9498085c406217cabdb4a3932ec0d8b26b",
-    "mode": "0o644"
-  },
   "docs/firmware-compatibility.md": {
-    "sha256": "122f214c891f4143eded00b53d4ff5cf6cc64edda23c4e8a8d9e8c081c370cce",
+    "sha256": "ccac8153f12baa6f368b7804fd0a2ef57cdcd756e640a843b2d95c91837096cd",
     "mode": "0o644"
   },
   "docs/system-resource-inventory.json": {
@@ -1160,7 +1128,7 @@
     "mode": "0o644"
   },
   "scripts/audit_mount_mode_delivery.py": {
-    "sha256": "adf4e2ac006226913afd622a152d17501e0b4ae19bd498b989f2d9a848d1ce94",
+    "sha256": "a3575a1cbbd91642d5b80934031eebc92a7c287eec0948cea1a126244740a1ba",
     "mode": "0o644"
   },
   "scripts/audit_mtp_atomic_upload.py": {
@@ -1176,11 +1144,11 @@
     "mode": "0o644"
   },
   "scripts/audit_mtp_reset_delivery.py": {
-    "sha256": "08ddc2db5360c09f6047ba9b5eb9ce444fc57122cbd450f2328e0b5ce90f909d",
+    "sha256": "1471b87ffcdf5f714b295967e2b25d7ec77f40e98b747834456ee53d149d9221",
     "mode": "0o644"
   },
   "scripts/audit_mtp_transaction_delivery.py": {
-    "sha256": "886d03cad46eaf7de017471c55508e13d253572b95791f900b9b70d820b953b5",
+    "sha256": "05204b009e4c6c018854ed957c10e22d733f8430c2981e38954e3ea788aa2bcc",
     "mode": "0o644"
   },
   "scripts/audit_mtp_upload_time_delivery.py": {
@@ -1196,7 +1164,7 @@
     "mode": "0o644"
   },
   "scripts/audit_otg_selection_delivery.py": {
-    "sha256": "254336e4d63d9a84523a2c4162954544f44e3a33e6fffd3340d924a95e6f20d9",
+    "sha256": "4b041632e6cf828e5285aa6ddf82acda3664dc8505c7a85ad31331aa7426bbcf",
     "mode": "0o644"
   },
   "scripts/audit_partition_actions_delivery.py": {
@@ -1244,7 +1212,7 @@
     "mode": "0o644"
   },
   "scripts/audit_sparse_flash_delivery.py": {
-    "sha256": "e7e1702c6358f6a0157cb6e819c525f7788a765d921d31cb4cbb13db99263b2b",
+    "sha256": "83338054a3ea20b590a2c7f21b996ffe205f70205ba8ec142663675fcc112990",
     "mode": "0o644"
   },
   "scripts/audit_stock_nv_fstab.py": {
@@ -1340,7 +1308,7 @@
     "mode": "0o644"
   },
   "scripts/check_documentation.py": {
-    "sha256": "a43d6d2227daead38c39e5402e7f0190250c206595e7d17cf84d4093284520ee",
+    "sha256": "a5b06fc544b47a55e89f75211ac0cddfd1461fe425741ed2d78d0e5b54018afe",
     "mode": "0o644"
   },
   "scripts/check_public_tree.py": {
@@ -1392,7 +1360,7 @@
     "mode": "0o644"
   },
   "scripts/compare_firmware.py": {
-    "sha256": "16c9bac6bf13f0a74887db94eb01c94f83d42709fb1e74bd779e9b84edb41bb9",
+    "sha256": "8a652dd1e8417aa36dd7c5498f9e29ab812cb1120d5302aeb0a4e01a0676fd8b",
     "mode": "0o644"
   },
   "scripts/compare_os4_stable.py": {
@@ -1467,6 +1435,10 @@
     "sha256": "5dcc5504e16d14da7f1b7d1c19a12b22e320cc977f4c88b7a902ac49c383117e",
     "mode": "0o644"
   },
+  "scripts/materialize_cached_ota.py": {
+    "sha256": "877e5af54ea3ef26f0f2a38531e3fb28dc9dfaa046b522f47607dcd6e18f8f04",
+    "mode": "0o644"
+  },
   "scripts/parse_boot.py": {
     "sha256": "ee5b95841d62e81e749d012e2ac070f21b7139a27647464be75ba60d36694301",
     "mode": "0o644"
@@ -1496,7 +1468,7 @@
     "mode": "0o644"
   },
   "scripts/review_stock_payload.py": {
-    "sha256": "b529c799173ce1fc4adfabc6ce5f462cac5250b8a4176c6d40d9730b155cc232",
+    "sha256": "6e2d7b4b5579067785936ab45cfa6bd0ea12ab7e4a5fbfbb08d37db8cce70250",
     "mode": "0o644"
   },
   "scripts/setup_haptics_emulator.py": {
@@ -1532,7 +1504,7 @@
     "mode": "0o644"
   },
   "scripts/sync_github.py": {
-    "sha256": "7fadaaaf7d0b762897c3fb7382d4a86d6c8452fc34bb82a273ae64afaf09617c",
+    "sha256": "ca03fd8fc4ff7eee1b522dfdd2cfda461d23d157210bf32872b68df692eb803e",
     "mode": "0o644"
   },
   "scripts/touch_stack.py": {
@@ -1580,11 +1552,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "f0a4518165cf91af043bc67f01e8eefa4d7415d246bbe17d213b0f168df57008",
+    "sha256": "d8944fd0a3dd06161ba36c748e0748c00bdbc2e5e924a3f31f3b5fbb7bfbb3e4",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "a2973cdb432fc6ff0c680d90f69333ba2ec6e53e2d3010cb5e42b4c70254cd84",
+    "sha256": "5589b62931ebbfd4b75cd0a4619b54ad85ae2db7f8b4856f452cf804d31e2975",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2100,7 +2072,7 @@
     "mode": "0o644"
   },
   "tests/ota_stock_payload.py": {
-    "sha256": "4f84ec581730db4c6f610902a64d7888bd5f7dd3696035ab45a8855b28c735f3",
+    "sha256": "d2b56f658681a7734c7e37bbb6ddab70fe25adbe6ca11c7131bc8f331c53757a",
     "mode": "0o644"
   },
   "tests/ota_vabc_session.cpp": {

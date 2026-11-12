@@ -2910,6 +2910,15 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Stream an unchanged locally available stock payload through the ARM64 engine.\n\nOrdinary target files and COWs replace device mapping; original full manifest,\noperation bytes and final partition hashes execute. No SnapshotManager, real\nmetadata, slot, postinstall, AVB or physical device. No signature-policy changes.\n"
+    },
+    {
+      "name": "ARM64-full-original-OS4-stable-payload",
+      "evidence": "logs/ota-stock-stable-payload.json",
+      "evidence_sha256": "1009b96558654c0ee7b76b2ddd06b5ace5cf5feffc31e3f55f82817956564380",
+      "count": 42,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Stream an unchanged locally available stock payload through the ARM64 engine.\n\nOrdinary target files and COWs replace device mapping; original full manifest,\noperation bytes and final partition hashes execute. No SnapshotManager, real\nmetadata, slot, postinstall, AVB or physical device. No signature-policy changes.\n"
     }
   ],
   "source_review_followups": [
@@ -3543,6 +3552,26 @@
       "postinstall_executed": false,
       "production_change": false,
       "scope": "Stream an unchanged locally available stock payload through the ARM64 engine.\n\nOrdinary target files and COWs replace device mapping; original full manifest,\noperation bytes and final partition hashes execute. No SnapshotManager, real\nmetadata, slot, postinstall, AVB or physical device. No signature-policy changes.\n"
+    },
+    "full_stock_stable_payload": {
+      "document": "docs/OTA-OPERATION-COW.md",
+      "report": "logs/ota-stock-stable-payload.json",
+      "report_sha256": "1009b96558654c0ee7b76b2ddd06b5ace5cf5feffc31e3f55f82817956564380",
+      "review": "logs/ota-stock-stable-payload-review.json",
+      "sample": "os4-stable",
+      "payload_bytes": 7883589123,
+      "partitions": 42,
+      "operations": 4933,
+      "target_bytes": 10297356288,
+      "source_zip_sha256": "a1dcfecccf4397943e6836539bea6573ade01c84ef9ee1e360df9c233493f04b",
+      "source_zip_size": 7883598024,
+      "cache_completion": "logs/ota-stock-stable-materialization.json",
+      "original_payload_unmodified": true,
+      "full_payload_streamed": true,
+      "full_ota_install": false,
+      "snapshot_manager_executed": false,
+      "postinstall_executed": false,
+      "production_change": false
     }
   },
   "os4_haptics_user_confirmation": {

@@ -39,7 +39,7 @@ def main():
  assert index['status']=='in_progress' and len(index['not_yet_completed'])==12
  output=dict(status='PASS',scope=__doc__,image_sha256=digest,cases=15,before_failed=8,source_files=717,runtime_groups=9,runtime_calls=102,
   evidence={n:sha(ROOT/n) for n in ['logs/mount-mode.json','logs/mount-mode-before.json','logs/build-mount-mode.log','logs/verify-mount-mode.log','logs/mount-mode-profile-runtime.json','logs/mount-mode-final-source-recheck.log']},
-  documents={n:sha(ROOT/n) for n in ['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.json','simulation-report.md','FEATURE-USAGE.md','docs/MOUNT-MODE-ADAPTATION.md']},audit_script_sha256=sha(Path(__file__)))
+  documents={n:sha(ROOT/n) for n in ['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.json','simulation-report.md','FEATURE-USAGE.md','docs/MOUNT-LIST-EXPLANATION.md']},audit_script_sha256=sha(Path(__file__)))
  (ROOT/'logs/mount-mode-delivery.json').write_text(json.dumps(output,indent=2)+'\n')
  print('PASS:15 mount-mode cases,8 old failures,717 sources,9 runtime groups/102 calls; physical haptics unverified')
 if __name__=='__main__':main()

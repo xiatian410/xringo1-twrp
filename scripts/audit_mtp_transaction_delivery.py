@@ -90,7 +90,7 @@ def main():
                   evidence={name: sha(ROOT / name) for name in evidence},
                   documents={name: sha(ROOT / name) for name in (
                       'ADAPTATION-GOALS.md', 'MAINTENANCE.md', 'simulation-report.json',
-                      'simulation-report.md', 'docs/MTP-TRANSACTION-CANCEL.md')},
+                      'simulation-report.md', 'docs/MTP-CONTROL-ADAPTATION.md')},
                   audit_script_sha256=sha(Path(__file__)))
     (ROOT / 'logs/mtp-transaction-delivery.json').write_text(json.dumps(result, indent=2) + '\n')
     print('PASS: control73/old5 failures/server68/transfers48/events62; 734 sources/profile9/102; hardware unresolved')

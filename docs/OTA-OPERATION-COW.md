@@ -217,3 +217,13 @@ PreparePartitionsForUpdate / BootControl 的路径和设备映射由明确替身
 首次测试环境遗漏 `/system/etc/security/otacerts.zip`，mandatory 元数据检查在首块返回错误 25。原始失败报告保留为 `logs/ota-stock-payload-missing-cert.json`。随后从**同一交付镜像**提取该证书到原路径，保留 mandatory 配置，未引入测试公钥或修改签名策略；Recovery 内部密码学比较的既有编译边界仍然适用，不能据此宣称整包认证通过。
 
 本地 stdout / stderr 和结构化结果分别保存在 `logs/ota-stock-payload.stdout`、`logs/ota-stock-payload.stderr`、`logs/ota-stock-payload.json`。`python3 scripts/review_stock_payload.py` 复核来源、当前镜像库 / 证书、完整 payload 哈希、操作完成数和 42 个目标哈希，而不重跑耗时执行。本次复核通过；所有 42 个目标哈希与原 manifest 一致，十个动态分区 COW 视图正常读回。原链接器 / 缺失 proc / 普通文件 ioctl 警告保留，没有将这些替身提升为真实系统启动证据。
+
+## OS4 正式版完整输入执行
+
+正式版完整执行使用同一 `tests/ota_stock_payload.py --sample os4-stable` 入口，旧样本默认参数与旧报告保留，不因扩展选择参数重新运行旧样本。`--source` 可指定匹配所选样本的本地原始 ZIP；脚本检查 payload 头、manifest 和 metadata 摘要，最终由更新器检查 FILE_HASH。
+
+`scripts/materialize_cached_ota.py` 将现有正式版范围缓存补成完整普通 ZIP。已有缓存缺 15 个 8 MiB 分片，只补缺失项；请求固定既有 ETag，要求 HTTP 206、精确 Content-Range 和相同对象长度，写入临时文件后再发布。合并前逐块检查大小，合并后检查原 manifest、metadata hash、完整 payload FILE_HASH 与 ZIP 内 properties。此过程不进行证书认证，不能将强 ETag 当作完整 ZIP 哈希。
+
+重组 ZIP 大小为 7,883,598,024 B，SHA-256 为 `a1dcfecccf4397943e6836539bea6573ade01c84ef9ee1e360df9c233493f04b`。payload 大小为 7,883,589,123 B，原 manifest 有 42 分区、4,933 操作，目标共 10,297,356,288 B。原始缓存与 ZIP 只保留本地；`logs/ota-stock-stable-materialization.json` 记录本次补块、分块哈希与最终输入摘要。旧 inventory 不被静默重写为新提取历史。
+
+正式版运行结果写入独立 `logs/ota-stock-stable-payload.json`、`.stdout`、`.stderr`，来源复核入口为 `python3 scripts/review_stock_payload.py --report logs/ota-stock-stable-payload.json`。完整流和来源复核均通过：4,933 个操作全部完成，42 个原 manifest 目标哈希逐项一致，十个动态分区 COW 视图全部正常读回。完整 FILE_SIZE / FILE_HASH 匹配；Prepare、设备映射、namespace 仍是上述离线边界，无实际 SnapshotManager / postinstall / 合并验收。未发现本段生产代码缺陷，无新增补丁或镜像。旧样本结果作为历史证据复用，不因脚本增加参数覆盖旧报告或伪称重新执行。

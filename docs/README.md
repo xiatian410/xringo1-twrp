@@ -7,15 +7,11 @@
 ## 安装、分区与存储
 
 - [OTA payload、VABC / COW 与最终校验](OTA-OPERATION-COW.md)
-- [A/B OTA 命令准备与失败收尾](AB-COMMAND-VALIDATION.md)
-- [镜像路由、ZIP 队列与 ARM64 updater](INSTALL-CHAIN-VALIDATION.md)
+- [镜像刷写、ZIP / A/B 命令与 ARM64 updater](INSTALL-CHAIN-VALIDATION.md)
 - [ADB sideload 子进程与取消生命周期](SIDELOAD-LIFECYCLE.md)
 - [分区界面修正：镜像目标与 NV 操作](PARTITION-ACTIONS.md)
 - [嵌套分区操作路径修正](PARTITION-OPERATION-PATHS.md)
-- [实机截图后的 OTG 误枚举修正](MOUNT-LIST-EXPLANATION.md)
-- [system/vendor 挂载模式事务](MOUNT-MODE-ADAPTATION.md)
-- [存储选择的失败处理](STORAGE-SELECTION-ADAPTATION.md)
-- [Sparse 镜像刷写的容量与完成检查](SPARSE-IMAGE-FLASH.md)
+- [分区列表、OTG 发现、挂载模式与存储选择](MOUNT-LIST-EXPLANATION.md)
 - [文件系统工具执行与修复结果](FILESYSTEM-TOOLS-EXECUTION.md)
 
 ## 启动、固件与安全服务
@@ -43,15 +39,12 @@
 ## USB 与 MTP
 
 - [MTP 离线修正与传输验证](MTP-ADAPTATION.md)
-- [MTP上传原子发布](MTP-ATOMIC-UPLOAD.md)
+- [MTP 上传原子发布与目录元数据](MTP-ATOMIC-UPLOAD.md)
 - [MTP 启停、状态与存储消息离线适配](MTP-CALLER-ADAPTATION.md)
-- [MTP 控制报文与 FunctionFS 事件批处理](MTP-CONTROL-ADAPTATION.md)
+- [MTP 控制报文、事务取消与 Reset](MTP-CONTROL-ADAPTATION.md)
 - [MTP 上传日期解析](MTP-DATETIME-ADAPTATION.md)
-- [MTP 目录上传时间与完成状态](MTP-DIRECTORY-METADATA.md)
 - [MTP 事件请求、退出与重连](MTP-EVENTS-ADAPTATION.md)
 - [MTP 对象数据库与会话适配](MTP-OBJECTS-ADAPTATION.md)
-- [MTP class Reset 与服务器会话释放](MTP-RESET-SESSION.md)
-- [MTP 取消请求与活动事务匹配](MTP-TRANSACTION-CANCEL.md)
 - [MTP 移动、复制与目录重建](MTP-TRANSFERS-ADAPTATION.md)
 - [USB configfs 切换与服务交接](USB-CONFIGFS-ADAPTATION.md)
 

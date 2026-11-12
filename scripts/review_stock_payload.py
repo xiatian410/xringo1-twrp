@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Review full stock payload evidence; do not rerun the expensive execution."""
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -21,7 +22,10 @@ def sha(path):
 
 
 def main():
-    report_path = ROOT/'logs/ota-stock-payload.json'
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--report', type=Path, default=ROOT/'logs/ota-stock-payload.json')
+    args = parser.parse_args()
+    report_path = args.report.resolve()
     r = json.loads(report_path.read_text())
     assert r['status'] == 'PASS' and r['returncode'] == 0
     assert r['fixture_elf_machine'] == 183
@@ -38,7 +42,7 @@ def main():
     sample = ROOT/'firmware/samples'/r['sample']
     assert sha(sample/'payload-manifest.pb') == r['manifest_sha256']
     manifest = parse_manifest((sample/'payload-manifest.pb').read_bytes())
-    stderr = ROOT/'logs/ota-stock-payload.stderr'
+    stderr = Path(r.get('stderr_path', ROOT/'logs/ota-stock-payload.stderr'))
     assert sha(stderr) == r['stderr_sha256']
     text = stderr.read_text()
     actual = re.findall(r'Hash of ([A-Za-z0-9_]+): ([A-F0-9]{64})', text)
@@ -56,7 +60,7 @@ def main():
         full_payload_streamed=True, full_ota_install=False,
         snapshot_manager_executed=False, hardware_testing=False,
         script_sha256=sha(Path(__file__)))
-    (ROOT/'logs/ota-stock-payload-review.json').write_text(json.dumps(result, indent=2)+'\n')
+    report_path.with_name(report_path.stem+'-review.json').write_text(json.dumps(result, indent=2)+'\n')
     print('PASS:', len(expected), 'partition hashes,', count, 'operations, complete payload hash; no real snapshot/boot/postinstall claim')
 
 

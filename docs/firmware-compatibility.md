@@ -37,4 +37,4 @@
 
 包内身份以每份 `analysis/facts.json` 为准。尤其 OS3 末版下载名与包内 `16OS3.1.260921…` 不同。
 
-数据：[机器报告](firmware-compatibility.json)；来源：[获取清单](../firmware-inventory.json)。
+来源：[获取清单](../firmware-inventory.json)。逐符号机器报告约 17 MB，留在本地，不随源码发布。准备原厂样本后，运行 `python3 scripts/compare_firmware.py` 可重新生成 `docs/firmware-compatibility.json` 与本页；生成脚本见 [compare_firmware.py](../scripts/compare_firmware.py)。

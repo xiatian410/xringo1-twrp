@@ -5,6 +5,7 @@ Ordinary target files and COWs replace device mapping; original full manifest,
 operation bytes and final partition hashes execute. No SnapshotManager, real
 metadata, slot, postinstall, AVB or physical device. No signature-policy changes.
 """
+import argparse
 import base64
 import hashlib
 import json
@@ -34,9 +35,14 @@ def sha(path):
 
 
 def main():
-    sample = ROOT/'firmware/samples/os4-current'
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--sample', choices=['os4-current', 'os4-stable'], default='os4-current')
+    parser.add_argument('--source', type=Path, help='Verified local original ZIP for the selected sample')
+    args = parser.parse_args()
+    prefix = 'ota-stock-payload' if args.sample == 'os4-current' else 'ota-stock-stable-payload'
+    sample = ROOT/'firmware/samples'/args.sample
     inventory = json.loads((sample/'inventory.json').read_text())
-    source = Path(inventory['source'])
+    source = (args.source or (sample/'original-ota.zip' if args.sample == 'os4-stable' else Path(inventory['source']))).resolve()
     assert source.is_file() and not source.is_symlink()
     assert sha(sample/'payload-manifest.pb') == inventory['manifest_sha256']
     properties = dict(line.split('=', 1) for line in (sample/'payload_properties.txt').read_text().splitlines())
@@ -96,19 +102,19 @@ def main():
             os.chroot(jail);os.chdir('/')
         command=['/qemu','-L','/android','-E','LD_LIBRARY_PATH=/android/system/lib64',
             '/android/system/bin/linker64','/test',str(offset),properties['FILE_SIZE'],properties['METADATA_SIZE'],base64.b64decode(properties['FILE_HASH']).hex()]
-        stdout=ROOT/'logs/ota-stock-payload.stdout';stderr=ROOT/'logs/ota-stock-payload.stderr'
+        stdout=ROOT/'logs'/(prefix+'.stdout');stderr=ROOT/'logs'/(prefix+'.stderr')
         with stdout.open('w') as out,stderr.open('w') as err:
             result=subprocess.run(command,preexec_fn=isolate,stdout=out,stderr=err,timeout=1800)
         status='PASS' if result.returncode==0 and 'PASS full-stock-payload' in stdout.read_text() else 'FAIL'
-        report=dict(status=status,scope=__doc__,sample='os4-current',image=str(image),image_sha256=sha(image),
-            source_size=source.stat().st_size,source_sha256=sha(source),payload_offset=offset,payload_size=entry.file_size,
+        report=dict(status=status,scope=__doc__,sample=args.sample,image=str(image),image_sha256=sha(image),
+            source=str(source),stderr_path=str(stderr),source_size=source.stat().st_size,source_sha256=sha(source),payload_offset=offset,payload_size=entry.file_size,
             expected_payload_sha256=base64.b64decode(properties['FILE_HASH']).hex(),manifest_sha256=inventory['manifest_sha256'],
             original_manifest_unmodified=True,original_payload_unmodified=True,sources=sources,dependencies=dependencies,image_entries=entries,
             fixture_elf_machine=183,fixture_sha256=hashlib.sha256(elf).hexdigest(),compile_command=compile_args,link_command=link,
             stdout=stdout.read_text(),stderr_sha256=sha(stderr),returncode=result.returncode,
             full_payload_streamed=status=='PASS',full_ota_install=False,snapshot_manager_executed=False,postinstall_executed=False,
             archive_historically_bound_to_image=False,signature_scope='Unchanged Recovery build behavior; no authenticated whole-OTA claim')
-        (ROOT/'logs/ota-stock-payload.json').write_text(json.dumps(report,indent=2)+'\n')
+        (ROOT/'logs'/(prefix+'.json')).write_text(json.dumps(report,indent=2)+'\n')
         print(status,'full stock payload',entry.file_size,'bytes',flush=True)
         return result.returncode if result.returncode else (0 if status=='PASS' else 1)
 

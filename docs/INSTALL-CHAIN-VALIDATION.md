@@ -1,6 +1,6 @@
 # 镜像路由与 ZIP 安装链离线验收
 
-2026-11-13 A/B命令修正：0062 将payload_properties提取失败从成功码改为INSTALL_CORRUPT，拒绝空/NUL headers、压缩/空/越界payload，fork前防御空执行命令。真实ZIP/原命令与pipe/fork/wait接续21项通过，旧版同组8失败，普通ZIP36项回归通过。无害主机程序替代更新器，不执行真实OTA。installclean后30并发构建ab-command候选，SHA256 704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb，六profile封装通过；继承XRING O1及NV限制。见docs/AB-COMMAND-VALIDATION.md，完整12组保持进行中，源码文档同步GitHub、编译文件不上传。
+2026-11-13 A/B命令修正：0062 将payload_properties提取失败从成功码改为INSTALL_CORRUPT，拒绝空/NUL headers、压缩/空/越界payload，fork前防御空执行命令。真实ZIP/原命令与pipe/fork/wait接续21项通过，旧版同组8失败，普通ZIP36项回归通过。无害主机程序替代更新器，不执行真实OTA。installclean后30并发构建ab-command候选，SHA256 704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb，六profile封装通过；继承XRING O1及NV限制。见docs/INSTALL-CHAIN-VALIDATION.md#ab-command，完整12组保持进行中，源码文档同步GitHub、编译文件不上传。
 
 2026-11-12 新增下文“真实 ARM64 测试 updater”：20项执行当前镜像linker/libc和ZIP内AArch64 ELF，原主机36项回归通过。安装父进程仍为主机程序，execve处显式桥接QEMU；不是完整ARM Recovery、真实OTA updater或payload验收。当前生产镜像保持sideload-reboot候选，未新增生产修正或构建。下文“ARM updater未执行”是此前检查点的范围。
 
@@ -65,3 +65,35 @@ python3 scripts/audit_zip_arm64_chain.py
 ```
 
 报告为`logs/zip-install-arm64.json`、`logs/zip-arm64-host-regression.json`与`logs/zip-arm64-chain-audit.json`，公开摘要为`docs/CURRENT-VALIDATION.json`。离线检查没有执行原厂OTA updater、update_engine或真实payload，也没有接入完整GUI/侧载/块设备、内核挂载或断电。不能据这些无害测试载荷推断所有ARM包兼容，完整12组仍进行中。
+
+<a id="ab-command"></a>
+
+## A/B OTA 命令准备与失败收尾
+
+2026-11-13 新增0064：原update_engine_sideload在ApplyPayload同步拒绝时仍进入loop，并传入空Error；现在使用有效Error并立即返回失败。7项定向通过，旧版4项失败，已实际编译入bounded-maintenance候选。这不是完整payload写入验证，详见[有限维护](BOUNDED-MAINTENANCE.md)。
+
+维护补丁 0062 修正 `abupdate_binary_command` 在 `payload_properties.txt` 提取失败时返回 `false`（数值 0，即 `INSTALL_SUCCESS`）的错误。调用者之前可能因此使用空参数启动子进程。现在返回 `INSTALL_CORRUPT`，失败不发布残留命令；`Run_Update_Binary` 也在 fork 前拒绝成功码配空命令的生成器结果。
+
+更新器使用 ZIP 文件与条目的原始偏移直接读取 payload，不做 ZIP 解压。因此命令准备必须确认 `payload.bin` 为 stored、长度非零、压缩长度等于原长度，且偏移/长度在包范围内。新增这些检查，偏移以明确的 64 位格式输出。properties 为空或含 NUL 时拒绝，避免 argv 截断 headers；正常 deflated properties 仍可解压并接受。不替代 update_engine 对 payload 格式、hash、签名、manifest 或设备更新策略的验证。
+
+`tests/ab_command_chain_test.py` 执行原始 metadata 解析、设备/序列号/增量来源匹配、包映射、真实 AOSP ZIP 查询和解压、命令准备、`Run_Update_Binary` 的 pipe/fork/协议/wait。只在 execve 边界将 update_engine 可执行文件替换为无害主机程序，原 argv 保留；它按真实 ZIP 偏移读取并逐字节验证 2052 字节临时 payload，检查 headers、fd 和进度，返回成功、退出 7 或非法协议，不做更新。
+
+21 场景通过：stored payload、deflated properties、压缩/空/缺失 payload、损坏/空/缺失/含 NUL properties、残留命令清除、metadata 缺失/设备/序列号/来源增量/指纹/OTA类型不匹配、无效/缺失 ZIP、子进程失败/非法进度及空生成命令。所有拒绝场景检查 fork 次数为零；已启动子进程核对回收。修正前同组 8 场景失败，其余拒绝行为沿用原策略，不把全部 21 项记作新缺陷。普通 ZIP 安装 36 项回归通过。
+
+范围：测试父进程和无害更新器均为主机执行；属性和进度为明确替身。未调用真实 update_engine、未运行原厂 OTA payload、未写分区，未包含完整 GUI/ARM64 Recovery/USB/FUSE/快照更新生命周期。原厂 OS2/OS3/OS4 的完整安装兼容仍未验收，整体 12 组任务保持进行中。
+
+最终候选 `recovery-dijun-unified-ab-command.img`，SHA256 `704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb`。最终 installclean 后以 `make -j$(nproc)` 30 并发编译，保留 `XRING O1` 加载页显示与 0060 分区操作限制；六 profile 封装通过。本地报告 `logs/ab-command-delivery.json`，公开仓库发布源码/测试/文档与摘要，镜像及原始日志不上传。
+
+<a id="sparse-image"></a>
+
+## Sparse 镜像刷写的容量与完成检查
+
+2026-11-12，按任务文档的安装/刷写验收要求检查真实 `TWPartition::FlashImage` → `IsSparseImage` → `FlashSparseImage`。旧实现只比较输入文件大小与缓存分区大小；sparse 的压缩大小不能限制其展开写入。临时文件实验中，44 字节的 FILL 镜像声明展开为65536字节，旧实现写入32768字节目标并返回成功。没有使用手机或物理块设备。
+
+维护补丁 `0051-sparse-image-capacity-and-commit.patch` 在解析成功后检查实际展开长度，拒绝零长度及超出缓存容量的镜像；再对已打开目标执行 fstat 与 BLKGETSIZE64，拒绝普通文件、未知/零容量或展开越界。容量查询 EINTR 可重试。可选 discard 移到这些检查之后；sparse 对象通过 scope guard 释放。写完必须 fsync 成功且显式 close 成功才报告成功；fsync EINTR 重试，close 错误不重试已释放的描述符。
+
+`tests/sparse_flash_test.py` 在主机编译原始三个生产方法，以及当前 AOSP libsparse 六个源文件和 libbase 的 mapped_file/stringprintf。没有用虚假的 sparse parser 或 writer。20种情况分别在默认配置和可选 discard 配置执行，共40项通过；旧实现同一测试40项中27项断言失败。正常、EINTR、短写均逐字节核对 RAW/FILL/DONT_CARE/RAW 输出和尾部未改内容；DONT_CARE保留已有数据，不承诺清零。越界、容量错误、格式错误和前置拒绝路径核对目标完全未改；第二次写入故障明确保留已经写入的第一块，并返回失败，不能称为回滚。同步/关闭错误即使完整字节已经可读也必须失败。
+
+模拟边界：一个私有普通文件由 fstat/BLKGETSIZE64 描述为块设备，缓存容量发现为夹具；ftruncate模拟块设备拒绝截断。discard仅记录调用，不发送任何ioctl。实际读写、解析、映射、同步以及错误出口执行；没有运行 ARM64 刷写、PartitionManager/GUI 路由、槽位切换或USB。libsparse导入沿用现有 `crc=false`，本次没有新增CRC或内容真实性保证。当前编译未启用discard，不将可选配置检查扩展成设备支持声明。断电、移除中写入、完整ZIP/update-binary/sideload及GUI链路继续未完成。
+
+证据为 `logs/sparse-flash.json`、`logs/sparse-flash-before.json`；raw传输既有65项回归保存为 `logs/sparse-flash-raw-regression.json`。交付镜像和构建/来源审计由后续同名交付报告记录；本页的软件检查不等于实机功能恢复。
