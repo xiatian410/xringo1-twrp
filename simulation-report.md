@@ -75,3 +75,7 @@ Recovery metadata 不可用的直接回退执行了六个原 ARM64 控制器场�
 ## 收尾失败后的实际重试接续
 
 原始 ARM64 PostinstallRunnerAction 经原控制器调用实际 SnapshotManager，六场景确认同步 / 状态发布失败阻止切槽，重新创建控制器后沿用已有文件重试完成；切槽失败后的 Unverified 状态不会重复发布。详见 [接续范围](docs/OTA-OPERATION-COW.md#实际收尾调用链与失败后重试)。本批无生产修改或新构建，当前 snapshot-sync 候选与 784 来源保持不变；挂载 token、HAL / slot / hardware 仍为边界，真实 payload 到映射 / merge / postinstall 脚本全链仍未完成。
+
+## postinstall 子进程接续
+
+原始 ARM64 PostinstallRunnerAction / Subprocess / 进程回收器接实际无害 ARM64 程序，9 场景覆盖必选 / 可选退出、特殊错误、信号、缺程序、挂载拒绝和取消；验证失败阻止切槽及取消后无未回收子进程。六份原厂 manifest 确认两份 OS4 的 otapreopt 为可选，其余四份无该配置。见 [范围](docs/OTA-OPERATION-COW.md#postinstall-程序退出与取消接续)。无生产修改或新构建；实际挂载、原厂 otapreopt / namespace、payload 和 SnapshotManager 全链仍未完成。

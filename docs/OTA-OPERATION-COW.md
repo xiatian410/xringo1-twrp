@@ -273,3 +273,20 @@ python3 scripts/review_snapshot_postinstall.py
 新夹具为 `tests/ota_snapshot_postinstall.cpp`，复用前节的拒绝设备依赖和 fsync 注入。实际切槽和 HAL merge 状态仅观察参数、调用顺序及提供结果；FakeHardware 不执行 vbmeta 写入。没有真实挂载、块设备、snapuserd、COW 合并或断电。本证据接续原始收尾控制流，尚未把原厂 payload、实际映射与 postinstall 脚本贯通，不将其称作完整 OTA 安装。
 
 本地报告 `logs/ota-snapshot-postinstall.json` 与 `logs/ota-snapshot-postinstall-review.json`。六场景通过，未发现需追加生产修改的行为。共享测试脚本增加模式后，原 16 场景及旧 helper 的四个预期失败做一次必要回归。当前候选仍为前节 snapshot-sync，784 生产来源未变；本批仅增加验证证据，没有新镜像构建。
+
+## postinstall 程序退出与取消接续
+
+进一步执行原始 `PostinstallRunnerAction → Subprocess → brillo::ProcessImpl / ProcessReaper / AsynchronousSignalHandler`。父进程和无害子程序均为实际 ARM64 ELF，经当前候选的 linker / libc 在私有 chroot 中运行。真实 clone、进程组、进度管道、signalfd、wait 和取消清理均执行；execv 边界显式改为启动 QEMU 和 Android linker，保留原 postinstall 程序及两个参数（target slot=1、progress fd=3）。不依赖主机 binfmt，不挂载 proc 或任何设备。
+
+设备只读标记、挂载 / 卸载、FinishUpdate 和切槽为记录型边界，实际 mount / ioctl 没有执行。程序写入精确进入标记、发送 0.25 / NaN / 0.75 进度后，按场景退出或等待取消。9 场景覆盖成功、exit7、可选 exit7、特殊 exit3 / exit4、SIGTERM、程序缺失、挂载拒绝、执行中取消。必选失败阻止 FinishUpdate 和切槽；可选失败沿原策略继续。取消产生 ProcessingStopped，不冒充完成或切槽，检查无遗留可回收子进程。进度值有界且正常场景实际接收两段有效进度，NaN 未污染进度。
+
+```bash
+python3 tests/ota_postinstall_program.py
+python3 scripts/review_postinstall_program.py
+```
+
+夹具 `tests/ota_postinstall_program.cpp` 在包含 libchrome 头时匹配生产 NDEBUG ABI，随后显式恢复并检查断言开启；子程序源码 `tests/ota_postinstall_program.c` 不操作原厂数据。最初夹具存在 wrapper 声明、final stub 继承、libchrome ABI 和标记长度错误，均在编译 / 运行失败后修正，没有修改生产实现或放宽最终状态检查。本地报告 `logs/ota-postinstall-program.json` 和 `logs/ota-postinstall-program-review.json` 记录原始诊断与源码 / 库 / ELF 摘要。
+
+同时读取并核对六份已有原厂 payload manifest 的摘要：两份 OS4 配置 `system/system/bin/otapreopt_script`（partition=system，relative path=`system/bin/otapreopt_script`），`run_postinstall=true`、`postinstall_optional=true`；OS2 / OS3 四样本无 postinstall 配置。这里只确认安装计划的原厂配置，不代表已经执行 otapreopt。
+
+九场景通过，未发现需生产修正的行为。本批无新构建，沿用 snapshot-sync 候选与 784 来源。原厂 otapreopt、真实挂载与执行 namespace、实际 SnapshotManager / payload 到脚本接续及快照合并仍未完成，不把单独通过的链条拼接为完整 OTA 证明。

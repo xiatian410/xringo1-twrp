@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance. A/B command preparation now has21-case native coverage with real ZIP and harmless engine; not payload application. VABC Init/replace/ZERO/checkpoint/Finished/Close and original snapshot reader -> materialized-file -> original asynchronous target verifier now execute10 ARM64 cases. Short input is rejected with error15; full DeltaPerformer/signed payload/SnapshotManager/snapuserd/merge remain open. Patch0065 now propagates partition finish/close errors through intact ARM64 DeltaPerformer Write (8 cases, 3 pre-fix failures); parsed manifest and writer I/O are explicit boundaries. Full payload authentication/mapping/install lifecycle remains open. Synthetic CrAU/protobuf/data streaming now runs13 ARM64 cases through original ParseManifest/InstallPlan/factory/VABC/VerifyPayload/target verifier without private-state seeding. Device mapping remains FileControl; recovery signature verification remains existing compile-time bypass, framing marker is not valid signature. Stock authenticated OTA, SnapshotManager/snapuserd and complete installer lifecycle remain open. Actual SnapshotManager FinishedSnapshotWrites state-file lifecycle16cases now covered; real mapping/merge/payload-to-finalization integration still open. Original PostinstallRunnerAction -> controller -> actual SnapshotManager completion/recreated-controller retries6cases covered with mounted-token/HAL/slot/hardware boundaries; full real payload/mapping/postinstall-script chain remains open."
+    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance. A/B command preparation now has21-case native coverage with real ZIP and harmless engine; not payload application. VABC Init/replace/ZERO/checkpoint/Finished/Close and original snapshot reader -> materialized-file -> original asynchronous target verifier now execute10 ARM64 cases. Short input is rejected with error15; full DeltaPerformer/signed payload/SnapshotManager/snapuserd/merge remain open. Patch0065 now propagates partition finish/close errors through intact ARM64 DeltaPerformer Write (8 cases, 3 pre-fix failures); parsed manifest and writer I/O are explicit boundaries. Full payload authentication/mapping/install lifecycle remains open. Synthetic CrAU/protobuf/data streaming now runs13 ARM64 cases through original ParseManifest/InstallPlan/factory/VABC/VerifyPayload/target verifier without private-state seeding. Device mapping remains FileControl; recovery signature verification remains existing compile-time bypass, framing marker is not valid signature. Stock authenticated OTA, SnapshotManager/snapuserd and complete installer lifecycle remain open. Actual SnapshotManager FinishedSnapshotWrites state-file lifecycle16cases now covered; real mapping/merge/payload-to-finalization integration still open. Original PostinstallRunnerAction -> controller -> actual SnapshotManager completion/recreated-controller retries6cases covered with mounted-token/HAL/slot/hardware boundaries; full real payload/mapping/postinstall-script chain remains open. Actual ARM64 harmless postinstall program with original parent/Subprocess/process reaper9cases now covered, including mandatory/optional exits and cancellation. Original otapreopt/mount/namespace/payload integration remains open."
   ],
   "hardware_unverified": [
     "motor output",
@@ -2971,6 +2971,14 @@
       "evidence_sha256": "70fc597e733529af2f5360a364dd8797d3986f80d8e964b1e277205752088bda",
       "count": 6,
       "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries."
+    },
+    {
+      "name": "ARM64-postinstall-program-lifecycle",
+      "grade": "S2",
+      "evidence": "logs/ota-postinstall-program.json",
+      "evidence_sha256": "35f7052678683909ebfc552cf4ec99e2ba1b2d9f648d39d41082fc630b816730",
+      "count": 9,
+      "scope": "Actual ARM64 postinstall program and original PostinstallRunnerAction/Subprocess.\n\nPrivate chroot, real clone/pipes/signalfd/wait and harmless dynamic ARM64 child.\nExplicit execv QEMU bridge preserves script argv; mounts/readonly/boot/hardware\nare recorded fixtures. No devices, actual OTA scripts, snapshots or full OTA.\n"
     }
   ],
   "source_review_followups": [
@@ -3663,6 +3671,65 @@
       "postinstall_connected": true,
       "full_payload_install": false,
       "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries."
+    },
+    "postinstall_program_lifecycle": {
+      "document": "docs/OTA-OPERATION-COW.md#postinstall-程序退出与取消接续",
+      "report": "logs/ota-postinstall-program.json",
+      "review": "logs/ota-postinstall-program-review.json",
+      "report_sha256": "35f7052678683909ebfc552cf4ec99e2ba1b2d9f648d39d41082fc630b816730",
+      "cases": 9,
+      "production_fix": false,
+      "new_build": false,
+      "original_parent_subprocess": true,
+      "arm64_child": true,
+      "stock_postinstall_configuration": [
+        {
+          "sample": "os2-final",
+          "manifest_sha256": "dd40990cc5618cad4314aa5c42dfd5b886d4d8436f9da5b80321882ef28a5955",
+          "configured": []
+        },
+        {
+          "sample": "os2-initial",
+          "manifest_sha256": "e94c7c5d99b3c0cb72e19b9ccc21c547288d99bb2c3ce90db45b06577a918b0a",
+          "configured": []
+        },
+        {
+          "sample": "os3-final",
+          "manifest_sha256": "c496497527607dae9a97475226db6d82251f0d39d657db4a2f17954773cb3bad",
+          "configured": []
+        },
+        {
+          "sample": "os3-initial",
+          "manifest_sha256": "bb3f27e04c775713d0b66a4bc309b3cf135fb469f2f8a2c1b985ca673844da64",
+          "configured": []
+        },
+        {
+          "sample": "os4-current",
+          "manifest_sha256": "cd41381064cbcd323d9b7059730bb800d9e81b39ea4622d86eaad2f444e4df9c",
+          "configured": [
+            {
+              "partition": "system",
+              "run": true,
+              "path": "system/bin/otapreopt_script",
+              "optional": true
+            }
+          ]
+        },
+        {
+          "sample": "os4-stable",
+          "manifest_sha256": "a8382eeb1961af09fadb1f3c035f78f69eb55bbd7502abf453167cd93be0a1c6",
+          "configured": [
+            {
+              "partition": "system",
+              "run": true,
+              "path": "system/bin/otapreopt_script",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "full_ota_install": false,
+      "scope": "Actual ARM64 postinstall program and original PostinstallRunnerAction/Subprocess.\n\nPrivate chroot, real clone/pipes/signalfd/wait and harmless dynamic ARM64 child.\nExplicit execv QEMU bridge preserves script argv; mounts/readonly/boot/hardware\nare recorded fixtures. No devices, actual OTA scripts, snapshots or full OTA.\n"
     }
   },
   "os4_haptics_user_confirmation": {

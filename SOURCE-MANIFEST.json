@@ -68,7 +68,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "bc9269ceb5cffaec445faf29b2bd57e5d01fe0bf6b66d2634d181d68cfb55f60",
+    "sha256": "4ea25641728bcb1d814e3eb2374f0d8ea3e8c6a6df0eff13b3c8601d32cbcbe7",
     "mode": "0o644"
   },
   "docs/DIGEST-PUBLICATION.md": {
@@ -196,7 +196,7 @@
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
-    "sha256": "4b07887fee10f3ccb3ee721966412692dcb64b4fc92a0a83105a14a9bd6657ea",
+    "sha256": "1a846898632fe3b6fcc3c258704168291e1b820faf50196939ceb27aff9e78e8",
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
@@ -256,7 +256,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "063dd7d27bfec40ce97ca6895d0e339466d5bf60989ffc2e04b22c3ef536bb31",
+    "sha256": "29dc4d3e335ae1ff4ebf60b5b441bf65b0cdf8a6a6e875a715e4df4e88b95c46",
     "mode": "0o644"
   },
   "docs/crypto-compatibility.json": {
@@ -1479,6 +1479,10 @@
     "sha256": "cd6f475f2df6f7852e30a0462277de439784b27ed370a4ec5dad03bf36fe3428",
     "mode": "0o644"
   },
+  "scripts/review_postinstall_program.py": {
+    "sha256": "cb5faa426e166f4caf955ef10a83b9761fe973b52ed5ba8c20682ea7b8876a4f",
+    "mode": "0o644"
+  },
   "scripts/review_recovery_fallback.py": {
     "sha256": "feaac544041a3d5fee7e9bc9bfc0e239328eb8cf4386dd40e20aeb9525313643",
     "mode": "0o644"
@@ -1572,11 +1576,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "39b84184c2056272d733f935cccdcf82417d90b2ac60954efa6ddf989542fa47",
+    "sha256": "a98e7987b43c547db572d4f4c2d9293f93fd65360e75e968b068a75209e8c07a",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "4d025598e2ba968d2504698cf4261775b0c6e7c33c51e09be47f625d14ac9563",
+    "sha256": "8b0563221c9d4f09e53a2f5428346f16c5b1cfd67b4b4845ab8fe0a8071df44d",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2093,6 +2097,18 @@
   },
   "tests/ota_payload_stream.py": {
     "sha256": "2063ab895b53a07b05c943b2ca332f572bd8fc0f08c65a41d491e1b3ddae7609",
+    "mode": "0o644"
+  },
+  "tests/ota_postinstall_program.c": {
+    "sha256": "7709a41ef993aa3055d985b11eefd0edb9e66be4eabb3635ced5e4c81193513d",
+    "mode": "0o644"
+  },
+  "tests/ota_postinstall_program.cpp": {
+    "sha256": "93c9fde71ef28562ba650e10e3d96ad76b33383a2570a36ad3e3997b3b0e7e3a",
+    "mode": "0o644"
+  },
+  "tests/ota_postinstall_program.py": {
+    "sha256": "dbe785c97c05735020972e6feb3dca5c646b0c4b613844992b7b1dab9adcf5b5",
     "mode": "0o644"
   },
   "tests/ota_recovery_fallback.cpp": {

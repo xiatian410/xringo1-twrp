@@ -641,6 +641,16 @@
       "production_fix": false,
       "snapshot_manager_executed": true,
       "postinstall_connected": true
+    },
+    {
+      "name": "ARM64-postinstall-program-lifecycle",
+      "status": "PASS",
+      "cases": 9,
+      "failures": 0,
+      "local_report_sha256": "35f7052678683909ebfc552cf4ec99e2ba1b2d9f648d39d41082fc630b816730",
+      "scope": "Actual ARM64 postinstall program and original PostinstallRunnerAction/Subprocess.\n\nPrivate chroot, real clone/pipes/signalfd/wait and harmless dynamic ARM64 child.\nExplicit execv QEMU bridge preserves script argv; mounts/readonly/boot/hardware\nare recorded fixtures. No devices, actual OTA scripts, snapshots or full OTA.\n",
+      "production_fix": false,
+      "snapshot_manager_executed": false
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
@@ -648,5 +658,5 @@
     12
   ],
   "current_batch_document": "docs/OTA-OPERATION-COW.md",
-  "current_batch_groups_scope": "Six original ARM64 PostinstallRunnerAction/controller/actual SnapshotManager completion and persisted retries; hardware effects and mounted token explicit boundaries. No production change/new build."
+  "current_batch_groups_scope": "Actual ARM64 harmless postinstall child and original parent/Subprocess lifecycle9cases; six stock manifest configs. Explicit exec/mount/boot boundaries, no production change/new build."
 }
