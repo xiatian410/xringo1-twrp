@@ -21,8 +21,19 @@ atomic_bool fail_unlink=false;atomic_int write_fault=0;
 bool upload_fd(int fd);
 atomic_int timestamp_calls=0;
 atomic_bool timestamp_fault=false;
+atomic_bool directory_timestamp_fault=false,directory_close_fault=false;
+atomic_int directory_timestamp_calls=0;
+atomic_bool directory_open_fault=false;
+extern "C" int __real_open(const char*,int,...);
+extern "C" int __wrap_open(const char*p,int flags,...){
+ if(directory_open_fault&&string(p)=="/one/new-dir"&&(flags&O_DIRECTORY)){errno=EACCES;return -1;}
+ if(flags&O_CREAT){va_list args;va_start(args,flags);auto mode=va_arg(args,int);va_end(args);return __real_open(p,flags,mode);}
+ return __real_open(p,flags);
+}
+bool upload_directory(int fd){struct stat a{},b{};return fstat(fd,&a)==0&&S_ISDIR(a.st_mode)&&stat("/one/new-dir",&b)==0&&a.st_dev==b.st_dev&&a.st_ino==b.st_ino;}
 extern "C" int __real_futimens(int,const struct timespec[2]);
 extern "C" int __wrap_futimens(int fd,const struct timespec t[2]){
+ if(upload_directory(fd)){++directory_timestamp_calls;if(directory_timestamp_fault){errno=EIO;return -1;}}
  if(upload_fd(fd)){++timestamp_calls;if(timestamp_fault){errno=EIO;return -1;}}
  return __real_futimens(fd,t);
 }
@@ -32,7 +43,7 @@ extern "C" int __wrap_rename(const char*a,const char*b){if(publish_fault==1&&str
 extern "C" int __real_mkstemp(char*);
 extern "C" int __wrap_mkstemp(char*p){if(publish_fault==2){errno=ENOSPC;return -1;}return __real_mkstemp(p);}
 extern "C" int __real_close(int);
-extern "C" int __wrap_close(int fd){bool bad=publish_fault==3&&upload_fd(fd);int r=__real_close(fd);if(bad){errno=EIO;return -1;}return r;}
+extern "C" int __wrap_close(int fd){bool bad=(publish_fault==3&&upload_fd(fd))||(directory_close_fault&&upload_directory(fd));int r=__real_close(fd);if(bad){errno=EIO;return -1;}return r;}
 extern "C" int __real_unlinkat(int,const char*,int);
 extern "C" int __wrap_unlinkat(int fd,const char* p,int flags){if(fail_unlink){errno=EACCES;return -1;}return __real_unlinkat(fd,p,flags);}
 
@@ -171,6 +182,45 @@ int main(int argc,char** argv){
   {lock_guard l(peer.mutex);peer.receive_fail=false;}
   Bytes payload{'o','k','!'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&payload).code==MTP_RESPONSE_OK);
   REQUIRE(stat("/one/retry.txt",&st)==0&&st.st_mtime>=before&&timestamp_calls==calls);
+ }else if(test.starts_with("directory-time-")){
+  setenv("TZ","CST-8",1);tzset();const auto kind=test.substr(15);
+  const bool failed=kind=="time-error"||kind=="close-error"||kind=="open-error"||kind=="existing-time-error"||kind=="existing-close-error";
+  const bool dated=kind!="missing"&&kind!="invalid"&&kind!="missing-unexpected-data";
+  const string date=(kind=="missing"||kind=="missing-unexpected-data")?"":kind=="invalid"?"20260229T120000Z":kind=="offset"?"19700101T080000+0800":kind=="pre-epoch"?"19691231T235959Z":"19700101T000000Z";
+  if(kind=="existing"||kind=="existing-time-error"||kind=="existing-close-error"){
+   fs::create_directory("/one/new-dir");writefile("/one/new-dir/keep.txt","keep");
+   auto initial=info("new-dir",0,MTP_FORMAT_ASSOCIATION);
+   REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&initial).code==MTP_RESPONSE_OK);
+  }
+  directory_timestamp_fault=kind=="time-error"||kind=="existing-time-error";directory_close_fault=kind=="close-error"||kind=="existing-close-error";directory_open_fault=kind=="open-error";
+  const auto before=time(nullptr);auto data=info("new-dir",0,MTP_FORMAT_ASSOCIATION,date);
+  auto r=s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data);
+  REQUIRE((r.code==MTP_RESPONSE_OK)==!failed);
+  directory_timestamp_fault=false;directory_close_fault=false;directory_open_fault=false;
+  REQUIRE(fs::is_directory("/one/new-dir"));
+  struct stat st{};REQUIRE(stat("/one/new-dir",&st)==0);
+  REQUIRE(directory_timestamp_calls==((dated&&kind!="open-error")?1:0));
+  const auto actual_handle=find(s.db,0x10001,"new-dir");REQUIRE(actual_handle);
+  MtpObjectInfo actual(actual_handle);REQUIRE(s.db.getObjectInfo(actual_handle,actual)==MTP_RESPONSE_OK&&actual.mDateModified==st.st_mtime);
+  if(!failed){
+   if(dated)REQUIRE(st.st_mtime==(kind=="pre-epoch"?-1:0)&&st.st_mtim.tv_nsec==0);
+   else REQUIRE(st.st_mtime>=before&&st.st_mtime<=time(nullptr));
+   const auto h=word(r.response,20);MtpObjectInfo entry(h);REQUIRE(s.db.getObjectInfo(h,entry)==MTP_RESPONSE_OK&&entry.mDateModified==st.st_mtime);
+   if(kind=="existing")REQUIRE(readfile("/one/new-dir/keep.txt")=="keep");
+  }
+  // A directory finishes in SendObjectInfo, and must not reserve a later
+  // SendObject. Use an empty data packet to keep the pre-fix peer synchronized.
+  if(kind=="existing-time-error"||kind=="existing-close-error")REQUIRE(readfile("/one/new-dir/keep.txt")=="keep");
+  if(kind=="unexpected-data"||kind=="missing-unexpected-data"||failed){Bytes empty;REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&empty).code==MTP_RESPONSE_NO_VALID_OBJECT_INFO);}
+  if(kind=="next-command")REQUIRE(s.call(MTP_OPERATION_GET_STORAGE_IDS).code==MTP_RESPONSE_OK);
+  if(kind=="retry"||failed){
+   data=info("new-dir",0,MTP_FORMAT_ASSOCIATION,"19691231T235959Z");
+   REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+   REQUIRE(stat("/one/new-dir",&st)==0&&st.st_mtime==-1);
+  }
+  data=info("retry.txt",3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  Bytes payload{'o','k','!'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&payload).code==MTP_RESPONSE_OK);
+  REQUIRE(stat("/one/retry.txt",&st)==0&&st.st_mtime>=before&&readfile("/one/retry.txt")=="ok!");
  }else if(test.starts_with("atomic-")){
   const bool replacing=!test.starts_with("atomic-new-");
   const string name=replacing?"a.txt":"new.txt",path="/one/"+name;

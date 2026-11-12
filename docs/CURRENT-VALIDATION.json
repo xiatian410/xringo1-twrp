@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-sideload-reboot.img",
-  "image_sha256": "022af2fccb1040b7537b989c9c25d6c57ba844a27f11fae652d1f73bd93a7d2a",
-  "production_sources": 764,
+  "image_name": "recovery-dijun-unified-mtp-directory.img",
+  "image_sha256": "215914df1f8768bf00272f5c10c03b90fa8e624e9b1337fa6801a0ef3e5155b0",
+  "production_sources": 765,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "User confirms invocation is normal.",
   "checks": [
@@ -245,6 +245,46 @@
       "failures": 0,
       "local_report_sha256": "e48ff1789250424fe043beb049494e8f98e28d531244ac91e723c69ddb1d7881",
       "scope": "Execute actual TWinstall_zip -> mapped package -> ZIP/verifier/digest -> updater.\n\nNative x86_64 builds of the current AOSP ZIP and TWRP sources run in a private\nchroot with ordinary files and locally generated test keys. Actual BoringSSL\nhost archive and AOSP host libbase/log/libc++ are hashed dependencies. Property,\nDataManager/progress and unmount are doubles. ABI-named updaters contain host\ncode solely to check selection; no ARM64/OTA payload/GUI/sideload/device run.\n"
+    },
+    {
+      "name": "mtp-directory-objects",
+      "status": "PASS",
+      "cases": 110,
+      "failures": 0,
+      "local_report_sha256": "31b9160fb61658930e9d08372ea2b247abe3fa4b499c29b90d4bd4d36d615607",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "mtp-directory-before",
+      "status": "FAIL",
+      "cases": 16,
+      "failures": 14,
+      "local_report_sha256": "d9df4011f5f0fa69d4bf123f679ba875914a6ff8cdf870f535371077d475cdec",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "mtp-directory-transfers",
+      "status": "PASS",
+      "cases": 48,
+      "failures": 0,
+      "local_report_sha256": "0548a6743786078cf290d31b927ba790cb672794d2a9d4c2bcdda5a5359268b8",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "mtp-directory-profile-runtime",
+      "status": "PASS",
+      "cases": 102,
+      "failures": 0,
+      "local_report_sha256": "71a349a145dc0cbbe7ca383403872206a360f4377a4ec3bf5d762039208bb802",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "mtp-directory-module-state",
+      "status": "PASS",
+      "cases": 24,
+      "failures": 0,
+      "local_report_sha256": "b655f927b06101be8fcc085627df5822e48e7e28d0ab4a4626986f73a71e3447",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
     }
   ]
 }

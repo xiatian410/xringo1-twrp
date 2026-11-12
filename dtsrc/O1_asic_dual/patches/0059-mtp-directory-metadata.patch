@@ -1,0 +1,43 @@
+diff --git a/mtp/MtpServer.cpp b/mtp/MtpServer.cpp
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -1119,14 +1119,31 @@
+             return MTP_RESPONSE_GENERAL_ERROR;
+         }
+ 
+-        // SendObject does not get sent for directories, so call endSendObject here instead
+-        mDatabase->endSendObject(handle, MTP_RESPONSE_OK);
+-    }
+-    mSendObjectFilePath = path;
+-    // save the handle for the SendObject call, which should follow
+-    mSendObjectHandle = handle;
+-    mSendObjectFormat = format;
+-    mSendObjectModifiedTime = hasModifiedTime ? std::optional<time_t>(modifiedTime) : std::nullopt;
++        // A directory has no SendObject data phase. Apply its metadata before
++        // refreshing the database and leave no pending file transfer behind.
++        if (hasModifiedTime) {
++            const int fd = open(path, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
++            ret = fd < 0 ? -1 : 0;
++            if (fd >= 0) {
++                struct timespec times[2]{};
++                times[0].tv_nsec = UTIME_NOW;
++                times[1].tv_sec = modifiedTime;
++                if (futimens(fd, times) != 0) ret = -1;
++                if (close(fd) != 0) ret = -1;
++            }
++        }
++        mDatabase->endSendObject(handle, ret == 0);
++        if (ret != 0) {
++            // The directory may already contain user data. Preserve it even
++            // when metadata fails; the host can retry the same directory.
++            return MTP_RESPONSE_GENERAL_ERROR;
++        }
++    } else {
++        mSendObjectFilePath = path;
++        mSendObjectHandle = handle;
++        mSendObjectFormat = format;
++        mSendObjectModifiedTime = hasModifiedTime ? std::optional<time_t>(modifiedTime) : std::nullopt;
++    }
+ 
+     mResponse.setParameter(1, storageID);
+     mResponse.setParameter(2, parent);

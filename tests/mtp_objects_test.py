@@ -23,6 +23,7 @@ CASES += ['atomic-'+kind+'-'+case for kind in ['overwrite','new'] for case in
 CASES += ['reset-'+kind for kind in ['idle','pending-new','pending-overwrite','data-in','data-out','response','receive','send','edit','disconnect']]
 CASES += ['upload-time-'+kind+'-'+case for kind in ['overwrite','new'] for case in
           ['epoch-zero','epoch-offset','pre-epoch','missing','invalid','time-error','receive-error','sync-error']]
+CASES += ['directory-time-'+case for case in ['epoch-zero','offset','pre-epoch','missing','invalid','existing','time-error','close-error','unexpected-data','next-file','next-command','retry','open-error','existing-time-error','missing-unexpected-data','existing-close-error']]
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 
 def main():
@@ -80,7 +81,7 @@ template<class T> inline std::string Trim(const T& v){std::string s(v);auto a=s.
                   AOSP/'system/core/libusbhost/include',AOSP/'system/core/libcutils/include']
         cmd=['g++','-std=c++23','-O1','-g','-pthread','-DMTP_DEVICE','-fno-pie','-no-pie',
              '-fsanitize=address,undefined','-fno-sanitize-recover=all','-fno-omit-frame-pointer',
-             '-include','unistd.h','-include','ctime','-include','cstring','-include','climits','-include','cstdint','-include','chrono','-include','cstdarg','-Wl,--wrap=unlink','-Wl,--wrap=unlinkat','-Wl,--wrap=write','-Wl,--wrap=fsync','-Wl,--wrap=mkdir','-Wl,--wrap=rename','-Wl,--wrap=mkstemp','-Wl,--wrap=close','-Wl,--wrap=futimens',*[f'-I{p}' for p in includes],
+             '-include','unistd.h','-include','ctime','-include','cstring','-include','climits','-include','cstdint','-include','chrono','-include','cstdarg','-Wl,--wrap=unlink','-Wl,--wrap=unlinkat','-Wl,--wrap=write','-Wl,--wrap=fsync','-Wl,--wrap=mkdir','-Wl,--wrap=rename','-Wl,--wrap=mkstemp','-Wl,--wrap=close','-Wl,--wrap=futimens','-Wl,--wrap=open',*[f'-I{p}' for p in includes],
              *[str(stage/n) for n in names],str(ROOT/'tests/mtp_objects_test.cpp'),'-o',str(tmp/'test')]
         subprocess.run(cmd,check=True)
         results=[]

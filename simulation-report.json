@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-sideload-reboot.img",
-  "image_sha256": "022af2fccb1040b7537b989c9c25d6c57ba844a27f11fae652d1f73bd93a7d2a",
-  "image_status": "Clean-built offline candidate: minadbd reboot ACK/USB restoration gates and GUI unified handoff; completed-worker cancellation race fixed. NV manual mount and OTG fixes inherited. Hardware, real USB/FUSE/minadbd/BCB remain unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-directory.img",
+  "image_sha256": "215914df1f8768bf00272f5c10c03b90fa8e624e9b1337fa6801a0ef3e5155b0",
+  "image_status": "Clean-built offline candidate: MTP directory SendObjectInfo applies valid modification time, reports metadata errors without deleting directories, and leaves no pending SendObject; inherited NV/OTG/sideload fixes. Hardware/USB/Windows unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1934,7 +1934,7 @@
     "OS4 stable automatic ordinary-report startup/GUI/resume; manual raw0 intervention restores215 real input events. New touch/settings image untested.",
     "security-service actual ARM64 symbol relocation and precise runtime namespace, synthetic crypto volumes; six-profile dependency lists and independent real linker relocation controls now covered",
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
-    "MTP remaining media metadata/directory date semantics (file epoch0 and timestamp-error publication now covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
+    "MTP remaining media metadata and final post-child directory date semantics (file epoch0/timestamp-error publication and directory SendObjectInfo time/completion16 cases covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
     "backup/restore real archive codec/GUI and sparse-hole/progress behavior, actual filesystem power-loss durability and content authenticity; new-backup completion manifests and restore rejection are covered by17 helper,55 RunBackup and56 RunRestore host cases but do not prove sudden power-loss behavior",
     "full GUI/PartitionManager write/format/repair lifecycle and I/O faults; current-image tools17 historical cases, e2fsck result146 assertions and current-image wrapper/lookup/Repair/ExecCmd/ARM64 checker7 joined cases covered with explicit unmount/device/presentation fixtures; real mounts/full GUI still pending",
     "RTC cold-start read failures/drift fixtures",
@@ -2541,6 +2541,51 @@
       "result": "pass",
       "grade": "S2",
       "scope": "Execute actual TWinstall_zip -> mapped package -> ZIP/verifier/digest -> updater.\n\nNative x86_64 builds of the current AOSP ZIP and TWRP sources run in a private\nchroot with ordinary files and locally generated test keys. Actual BoringSSL\nhost archive and AOSP host libbase/log/libc++ are hashed dependencies. Property,\nDataManager/progress and unmount are doubles. ABI-named updaters contain host\ncode solely to check selection; no ARM64/OTA payload/GUI/sideload/device run.\n"
+    },
+    {
+      "name": "mtp-directory-objects",
+      "evidence": "logs/mtp-directory-objects.json",
+      "evidence_sha256": "31b9160fb61658930e9d08372ea2b247abe3fa4b499c29b90d4bd4d36d615607",
+      "count": 110,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "mtp-directory-before",
+      "evidence": "logs/mtp-directory-before.json",
+      "evidence_sha256": "d9df4011f5f0fa69d4bf123f679ba875914a6ff8cdf870f535371077d475cdec",
+      "count": 16,
+      "result": "expected-failure",
+      "grade": "S2",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "mtp-directory-transfers",
+      "evidence": "logs/mtp-directory-transfers.json",
+      "evidence_sha256": "0548a6743786078cf290d31b927ba790cb672794d2a9d4c2bcdda5a5359268b8",
+      "count": 48,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "mtp-directory-profile-runtime",
+      "evidence": "logs/mtp-directory-profile-runtime.json",
+      "evidence_sha256": "71a349a145dc0cbbe7ca383403872206a360f4377a4ec3bf5d762039208bb802",
+      "count": 9,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "mtp-directory-module-state",
+      "evidence": "logs/mtp-directory-module-state.json",
+      "evidence_sha256": "b655f927b06101be8fcc085627df5822e48e7e28d0ab4a4626986f73a71e3447",
+      "count": 4,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
     }
   ],
   "source_review_followups": [
@@ -2856,8 +2901,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/sideload-reboot-delivery.json",
-    "scope": "19 reboot cases/old15 failures; lifecycle33/package27;764 sources;six profiles;same-image runtime/module. Full12/historical drift remain open.",
+    "evidence": "logs/mtp-directory-delivery.json",
+    "scope": "MTP objects110/new16/old14 failures/transfers48;765 production sources/six profiles/same-image runtime9/module4. Full12 remains open.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -3090,5 +3135,12 @@
       "completion_race": "DONE/running publication and cancel checks serialized by state mutex",
       "limitations": "Rescue/BCB unsupported; actual minadbd/USB and complete GUI/ORS/device reboot unverified."
     }
+  },
+  "mtp_directory_metadata": {
+    "patch": "dtsrc/O1_asic_dual/patches/0059-mtp-directory-metadata.patch",
+    "evidence": "logs/mtp-directory-objects.json",
+    "before": "logs/mtp-directory-before.json",
+    "semantics": "Apply valid optional modified time to directory fd during SendObjectInfo, finish database metadata there, never reserve SendObject for directory. Report open/futimens/close errors, retain existing directory contents and permit retry.",
+    "remaining": "Subsequent child uploads naturally change parent mtime; no end-of-tree host signal/restoration. Cross-restart staging recovery, actual USB/Windows/ARM MTP/power loss remain open."
   }
 }

@@ -1,5 +1,7 @@
 # 小米 15S Pro（dijun）TWRP 多版本适配目标与离线验收规范
 
+2026-11-12 MTP目录上传修正：补丁0059在SendObjectInfo创建/接纳目录后，通过目录fd应用有效修改时间（含epoch0、负秒和时区偏移），刷新数据库后结束，不再保留待SendObject状态；open/futimens/close失败返回错误，保留已有目录和内容以供重试。对象链路110项（新增16项）通过，旧实现同组16项有14失败，move/copy48项回归通过。installclean及make -j$(nproc)30并发构建recovery-dijun-unified-mtp-directory.img，SHA256 215914df1f8768bf00272f5c10c03b90fa8e624e9b1337fa6801a0ef3e5155b0，765来源/六profile封装通过。定向交付见logs/mtp-directory-delivery.json；实际USB/Windows、跨重启临时文件归属回收、子文件上传结束后的父目录日期恢复与断电仍未完成。NV/OTG/侧载修正继承，OS4震动及设置正常确认保留，完整12组继续进行中；源码文档同步GitHub，编译文件不上传。
+
 2026-11-12 ARM64安装链证据：新增真正AArch64动态ELF无害updater，在原始主机ZIP安装链经签名/摘要、选择/提取、fork、协议管道和wait执行20场景通过；当前镜像linker/libc及固定QEMU在明确execve边界接入，构造函数/main参数、进度、缺库/缺符号拒绝、信号/退出状态与失败前写入均有核对。原主机36项回归通过，定向审计见logs/zip-arm64-chain-audit.json，范围见docs/ZIP-ARM64-EXECUTION.md。生产源码和764项镜像来源未变，沿用recovery-dijun-unified-sideload-reboot.img（022af2fc…），本轮无新构建。不是完整ARM64 Recovery、原厂OTA/update_engine、实际USB/FUSE或GUI验收，完整12组仍进行中。NV普通挂载隐藏/拒绝和OTG发现修正保留；设置与OS4震动用户正常确认保留。源码/文档/测试按约定同步GitHub，编译文件不上传。
 
 GitHub同步检查点：0058源码、补丁、测试与文档已推送提交`6404774b290a8a6a0046400b386a590c9ca21f53`，核对远端main一致，公开CI通过（run 43223343428）。公开的是审计脚本与`docs/CURRENT-VALIDATION.json`摘要；完整本地`logs/`报告和编译镜像不上传。本条进度记录随后另批同步，不将检查点提交号冒称始终为最新HEAD。

@@ -1,5 +1,7 @@
 # 功能入口与当前使用边界
 
+本地最新候选`recovery-dijun-unified-mtp-directory.img`：电脑通过MTP上传目录时应用有效修改时间，目录在SendObjectInfo完成；元数据失败报告错误且保留目录以供重试。后续上传子文件会自然改变父目录日期，不保证整棵树最终日期还原。范围见[目录上传](docs/MTP-DIRECTORY-METADATA.md)。以下旧候选为历史记录。
+
 ZIP安装链新增20项真正ARM64测试载荷的离线执行证据，见[执行范围](docs/ZIP-ARM64-EXECUTION.md)；使用入口和生产镜像未改变。真实OTA updater/update_engine、payload及实机写入仍未验收，不能把测试ELF成功当作任意刷机包兼容。
 
 本地最新候选`recovery-dijun-unified-sideload-reboot.img`继承NV普通挂载限制和OTG误枚举修正；侧载协议重启请求接入GUI统一路由，Rescue暂不支持。当前为离线候选，不能据此称实体重启或USB已验收。
