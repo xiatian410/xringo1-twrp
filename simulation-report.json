@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-snapshot-sync.img",
-  "image_sha256": "e1e651e05787f750a310a8eaaff8da897e38043c40d8eac59b69afce2f8d3cc6",
-  "image_status": "Clean-built patch0069: SnapshotManager atomic publication rejects file fsync errors and retries EINTR. Actual ARM64 state-file lifecycle16cases /old2false-success. Full adaptation remains in progress.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-tool-console.img",
+  "image_sha256": "93a36568316d6b0acba348d63c524db8b424953acfbfae9154d09d9b89d79b90",
+  "image_status": "Clean-built patch0070: bounded tool progress console, first-frame gate and terminal status before log polling;785 sources/six profiles. Field refresh incident remains unresolved.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -2987,6 +2987,22 @@
       "evidence_sha256": "a2d10e5199d6ba70b785a1cbec677a38a55c2fd682ddad7af3d2a7de8e53a8f7",
       "count": 8,
       "scope": "Execute exact OS4 otapreopt scripts with delivered ARM64 shell and getprop.\n\nPrivate ordinary-file chroot only. Native static command adapters explicitly\nbridge shell exec to packaged getprop through QEMU, or supply named property\nfixtures. ART/pm calls are rejected and recorded; no real Android property area,\nBinder, mounts, original dexopt execution or complete OTA integration.\n"
+    },
+    {
+      "name": "tool-console",
+      "result": "pass",
+      "count": 6,
+      "evidence": "logs/tool-console.json",
+      "evidence_sha256": "e232c6961572736f24f94bc19bd9f438bda26200ec1036803764a5281cfafc76",
+      "scope": "Bounded tool console + actual worker/progress LVGL, large history and reentry.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
+    },
+    {
+      "name": "tool-console-before",
+      "result": "expected-failure",
+      "count": 6,
+      "evidence": "logs/tool-console-before.json",
+      "evidence_sha256": "4471d1003121b2dcd05fa0661fc9b79b9aeb58d50181ffd557b087680406192c",
+      "scope": "Bounded tool console + actual worker/progress LVGL, large history and reentry.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
     }
   ],
   "source_review_followups": [
@@ -3302,8 +3318,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/snapshot-sync-delivery.json",
-    "scope": "Patch0069;clean build;784 sources;six profiles;actual ARM64 SnapshotManager16cases /four old failed checks (two I/O false-success, two missing EINTR retries);unchanged GUI/profile/update_engine scope reused.",
+    "evidence": "logs/tool-console-delivery.json",
+    "scope": "Patch0070; clean build;785 sources;six profiles;six bounded-console LVGL scenarios. Same-image libgui2 verified; unchanged worker, update_engine and profile assets reused.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -3832,12 +3848,15 @@
     "status": "unresolved-presentation",
     "document": "docs/REFRESH-STUCK-INVESTIGATION.md",
     "local_analysis": "logs/refresh-capture-analysis.json",
-    "production_fix": false,
+    "production_fix": true,
     "conclusion": "User logs show refresh successfully ended; non-atomic main-thread sample passes XRING DRM commit, not proof of sustained hang.",
     "worker_evidence": "logs/refresh-worker-chain.json",
     "worker_scope": "Original worker state publication and LVGL adapter pass with scan/presentation doubles; full GUI tick and DRM unverified. No production fix.",
     "lifecycle_evidence": "logs/backup-manage-refresh-lifecycle.json",
-    "lifecycle_scope": "Refreshed only because shared tools worker changed for0067. Three original page lifecycle schedules pass. Does not reproduce or resolve field presentation fault."
+    "lifecycle_scope": "Refreshed only because shared tools worker changed for0067. Three original page lifecycle schedules pass. Does not reproduce or resolve field presentation fault.",
+    "production_fix_scope": "Bound tool console work, defer logs until matching first present, update terminal state first; field root cause not proven.",
+    "console_evidence": "logs/tool-console.json",
+    "field_incident_fixed": false
   },
   "finite_maintenance": {
     "date": "2026-11-13",

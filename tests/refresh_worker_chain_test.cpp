@@ -10,6 +10,7 @@
 #include "lvgl.h"
 #include "core/ui_helpers.h"
 #include "pages/progress_page.h"
+#include "pages/console_window.h"
 #include "backend/twrp_tools_backend.h"
 #include "twrp_operation_executor.h"
 
@@ -61,7 +62,7 @@ bool twrp_tools_backend::users_locked(){assert(false);return false;}
 }
 static gui2_backend::twrp_tools_backend object;
 static gui2_backend::tools_backend*tools=&object;
-static struct {gui2_pages::progress_page_view tool_progress;}page_state;
+static struct {gui2_pages::progress_page_view tool_progress; gui2_pages::console_window tool_console; bool tool_console_armed=false; size_t tool_console_consumed=0; bool install_console_armed=false,decrypt_console_armed=false; gui2_pages::progress_page_view install_progress,decrypt_progress;}page_state;
 static struct {const char*running="Refreshing partition info";const char*done="Refresh complete";}tool_job_request;
 namespace gui2_i18n {extern const language_pack kEnglish;}
 static const auto&strings(){return gui2_i18n::kEnglish;}

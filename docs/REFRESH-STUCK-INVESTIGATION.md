@@ -39,3 +39,26 @@
 `tests/refresh_worker_chain_test.py --lifecycle`接续实际page_host/scaffold/router/PUSH/POP及动作行；运行后完成、建页前完成、8次循环重入均通过。动作行属于当前页面，完成后可返回；旧视图、动作和过渡阻挡随页删除，settle后只余一个页面。该测试的路由组装、tick、扫描和flush是显式替身，不是完整gui2主循环或DRM，没有复现现场根因。详见`logs/refresh-page-lifecycle.json`及[有限维护](BOUNDED-MAINTENANCE.md)。原worker报告保留为历史，不重写其旧来源哈希。
 
 0067 修改了共用工具 worker 的备份目录分支，因此原三种页面调度做了必要回归，均通过，报告为 `logs/backup-manage-refresh-lifecycle.json`。它取代本地旧生命周期报告的当前来源绑定；旧哈希仅为历史引用，不伪称旧报告与新源码一致。本批修复的是备份目录管理，现场刷新问题仍未解决。
+
+## 工具日志分批渲染（0070）
+
+本轮定位并修正一项独立的软件响应问题：工具进度页从游标 0 一次取出全部历史日志，并逐行创建 LVGL 标签、强制布局后才刷新状态。历史记录数量决定建页与轮询的同步工作量。这个路径与已有安装 / 解密页的有界日志窗口不一致；它可以拖延状态呈现，但现有现场采集没有测量 GUI 用户态耗时，不能认定它就是那次停留的唯一根因。
+
+补丁 `0070-tool-console-bounded-window.patch` 复用现有 `console_window`：
+
+- 首帧成功提交、页面种类与实例序号均匹配后才读取日志；页面删除、重建时清空窗口并撤销读取许可。
+- 默认保留最多 160 个显示行，单次读取最多 24 项 / 4096 字节 / 64 条消息，每批应用最多 32 行；长行使用已有 UTF-8 分段。
+- 初次进入从最近 160 项开始；向上滚动可回看旧内容，不删除 backend 历史。
+- 状态更新先于日志读取；日志锁暂忙时，不阻止 DONE 状态更新。
+
+`tests/tool_console_test.py` 执行原 worker/start/run/status、原进度适配器、原日志轮询方法、原 before_render/after_present 与实际 LVGL。六个场景覆盖 5000 项历史、建页前完成、日志锁忙、向上回看、日志代次变化、删除重建；全部通过。修正前六项均在首次无界读取断言失败，属于同一个缺陷的重复入口，不能计作六个独立缺陷。
+
+```bash
+python3 tests/tool_console_test.py
+# 需本地保留的旧源码；预期失败：
+python3 tests/tool_console_test.py --before
+```
+
+报告为本地 `logs/tool-console.json` 与 `logs/tool-console-before.json`。目录扫描、console 生产端、字体、flush 和测试调度是显式替身；没有执行完整 GUI 主循环、Android 或 XRING DRM。原生命周期结果保留为历史，不重写其来源。
+
+当前候选为 `recovery-dijun-unified-tool-console.img`，SHA-256 `93a36568316d6b0acba348d63c524db8b424953acfbfae9154d09d9b89d79b90`。清理构建后有 785 项生产来源绑定、六份 profile；与 snapshot-sync 候选相比仅 `libgui2.so`、构建属性与 ramdisk 摘要变化。原容量计算与工具 worker 未改。本轮修复日志渲染工作量，现场问题仍记为未闭环，不宣称实机修复。

@@ -1,0 +1,93 @@
+diff --git a/gui2/gui2.cpp b/gui2/gui2.cpp
+--- a/gui2/gui2.cpp
++++ b/gui2/gui2.cpp
+@@ -287,6 +287,7 @@
+ static size_t rendered_page_sequence = 0;
+ static bool rendered_install_page = false;
+ static bool rendered_decrypt_page = false;
++static bool rendered_tool_page = false;
+ static void show_select_storage_page(page_transition transition);
+ static void show_restore_list_page(page_transition transition);
+ static void show_restore_page(page_transition transition);
+@@ -1198,7 +1199,8 @@
+   page_state.change_fs_confirm.detach();
+   page_state.tool_confirm.detach();
+   page_state.tool_progress = {};
+-  page_state.tool_console_consumed = 0;
++  gui2_pages::console_window_reset(&page_state.tool_console);
++  page_state.tool_console_armed = false;
+   page_state.tool_input_keyboard.dismiss();
+   page_state.tool_input = nullptr;
+   page_state.decrypt_status = nullptr;
+@@ -4744,12 +4746,8 @@
+ }
+ 
+ static void poll_tool_console(void) {
+-  if (console == nullptr || page_state.tool_progress.console.body == nullptr) return;
+-  std::vector<gui2_backend::console_line> lines;
+-  page_state.tool_console_consumed = console->fetch(page_state.tool_console_consumed, &lines);
+-  if (lines.empty()) return;
+-  gui2_pages::append_console_lines(&page_state.tool_progress.console, ui, lines);
+-  gui2_pages::scroll_console_to_end(page_state.tool_progress.console);
++  poll_progress_console(page_state.tool_progress.console, page_state.tool_console,
++                        page_state.tool_console_armed);
+ }
+ 
+ static void refresh_tool_progress(void) {
+@@ -4790,10 +4788,11 @@
+   options.subtitle = page_summary;
+   add_progress_actions(&options);
+   page_state.tool_progress = gui2_pages::build_progress_page(options);
+-  page_state.tool_console_consumed = 0;
++  gui2_pages::console_window_reset(&page_state.tool_console);
++  page_state.tool_console_armed = false;
+   page_state.tool_last_poll_ms = 0;
++  refresh_tool_progress();
+   poll_tool_console();
+-  refresh_tool_progress();
+ }
+ 
+ // Advanced wipe -> partition options -> change file system.
+@@ -6408,8 +6407,8 @@
+   if (page_state.tool_progress.body != nullptr &&
+       now_ms - page_state.tool_last_poll_ms >= 100) {
+     page_state.tool_last_poll_ms = now_ms;
++    refresh_tool_progress();
+     poll_tool_console();
+-    refresh_tool_progress();
+   }
+   if (page_state.sideload_progress.body != nullptr &&
+       now_ms - page_state.sideload_last_poll_ms >= 100) {
+@@ -6541,12 +6540,19 @@
+       page_router.current() == page_kind::DECRYPT_PROGRESS &&
+       page_state.decrypt_progress.console.body != nullptr)
+     page_state.decrypt_console_armed = true;
++  if (!page_state.tool_console_armed &&
++      gui2_pages::console_window_frame_arms(presented, rendered_tool_page,
++                                            rendered_page_sequence == page_sequence) &&
++      page_router.current() == page_kind::TOOL_PROGRESS &&
++      page_state.tool_progress.console.body != nullptr)
++    page_state.tool_console_armed = true;
+ }
+ 
+ static void gui2_loop_before_render(void*) {
+   if (!shell_ready) return;
+   rendered_install_page = page_router.current() == page_kind::INSTALL_PROGRESS;
+   rendered_decrypt_page = page_router.current() == page_kind::DECRYPT_PROGRESS;
++  rendered_tool_page = page_router.current() == page_kind::TOOL_PROGRESS;
+   rendered_page_sequence = page_sequence;
+ }
+ 
+diff --git a/gui2/pages/page_state.h b/gui2/pages/page_state.h
+--- a/gui2/pages/page_state.h
++++ b/gui2/pages/page_state.h
+@@ -146,7 +146,8 @@
+   gui2_components::swipe_slider change_fs_confirm;
+   gui2_components::swipe_slider tool_confirm;
+   progress_page_view tool_progress;
+-  size_t tool_console_consumed = 0;
++  console_window tool_console;
++  bool tool_console_armed = false;
+   uint64_t tool_last_poll_ms = 0;
+   gui2_components::keyboard tool_input_keyboard;
+   lv_obj_t* tool_input = nullptr;

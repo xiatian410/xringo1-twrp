@@ -258,6 +258,10 @@
         {
           "file": "0068-log-export-failure-propagation.patch",
           "sha256": "2283f7d7299f8c20fef949319ef4d6d5131e9d8c7e0cb64ad9eaf22d396b6493"
+        },
+        {
+          "file": "0070-tool-console-bounded-window.patch",
+          "sha256": "6b17e5e4db0acef322500816c52362d9fac94b8edca0485419dc7570a9bbfaa3"
         }
       ],
       "result_files": {
@@ -279,7 +283,7 @@
         "gui2/backend/decrypt_backend.h": "a6ec26538be3ba26af9c449960752b4ad91bcdf6fa15a2027cfdb915c0fc7945",
         "gui2/backend/twrp_decrypt_backend.cpp": "44fcb069c6c0a90e9642505ef5a0e4d7ed862728b330f6026964c6619d1741cd",
         "gui2/backend/twrp_decrypt_backend.h": "04981432ab630686863a3ba810b8cb5bb2d05884e0ebe82a0b401a1af5e8beab",
-        "gui2/gui2.cpp": "8eb320826f214d1cfca4bfb9415f930d198d4ce63243dcaef4bdb62848d94002",
+        "gui2/gui2.cpp": "b84006651211dfee894591ed158e7ecc68f22f28c9abb823b2a92f6bd2a67a5b",
         "gui2/i18n/en.cpp": "f5e87f8bf67a3e2926578e39d6a2999c59474080b7b8bf93e1377b6b2143762b",
         "gui2/i18n/i18n.h": "aa9b311694cc4cc200d458353201e341d86dd23ff40c7aa537f7ae64f06ec2cc",
         "gui2/i18n/ru.cpp": "b64f01c049be61f69b5ef082fea16a591c1ae064d184815df16650e28f609a89",
@@ -288,7 +292,7 @@
         "gui2/pages/decrypt_page.cpp": "0a91c9295da9e64f15099a67f4c11a26ce67c30ec9d11c5e27fc7149ef08227a",
         "gui2/pages/decrypt_page.h": "a0b337a0813d646af6f70dea67b122063f819d6917ee8b311c64c9ca8e081897",
         "gui2/pages/page_router.h": "4b3850d8f395fb7944eec077e2b4715ab8e7dc3743f17d6eabfcca8fb0ff7326",
-        "gui2/pages/page_state.h": "0f7ba76b94a7fa0bfd43277f8a8d247a202275975338b4db1c153457ad76c02b",
+        "gui2/pages/page_state.h": "04e53b1ca6beaba13690a0a15212c8729fb8c818239234c3c5a29ee47c83220b",
         "twrp.cpp": "9e5a1a5c0b967847ed56b512f6811859c73bee03aeae6aac118181049761f63d",
         "gui2/backend/status_backend.cpp": "5b62ad4a677ea2c1ad53f670a737c7813406c1a88b837972ce56f43a68918a3e",
         "twrpminui/haptics.cpp": "62399d18e29969e4a27bf37c6fe924dd8536912a8c6e0f548d56fb3e5230a0af",

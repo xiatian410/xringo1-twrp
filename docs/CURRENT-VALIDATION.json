@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-snapshot-sync.img",
-  "image_sha256": "e1e651e05787f750a310a8eaaff8da897e38043c40d8eac59b69afce2f8d3cc6",
-  "production_sources": 784,
+  "image_name": "recovery-dijun-unified-tool-console.img",
+  "image_sha256": "93a36568316d6b0acba348d63c524db8b424953acfbfae9154d09d9b89d79b90",
+  "production_sources": 785,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -661,6 +661,22 @@
       "scope": "Execute exact OS4 otapreopt scripts with delivered ARM64 shell and getprop.\n\nPrivate ordinary-file chroot only. Native static command adapters explicitly\nbridge shell exec to packaged getprop through QEMU, or supply named property\nfixtures. ART/pm calls are rejected and recorded; no real Android property area,\nBinder, mounts, original dexopt execution or complete OTA integration.\n",
       "production_fix": false,
       "stock_scripts_exact": true
+    },
+    {
+      "name": "tool-console",
+      "status": "PASS",
+      "cases": 6,
+      "failures": 0,
+      "local_report_sha256": "e232c6961572736f24f94bc19bd9f438bda26200ec1036803764a5281cfafc76",
+      "scope": "Bounded tool console + actual worker/progress LVGL, large history and reentry.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
+    },
+    {
+      "name": "tool-console-before",
+      "status": "FAIL",
+      "cases": 6,
+      "failures": 6,
+      "local_report_sha256": "4471d1003121b2dcd05fa0661fc9b79b9aeb58d50181ffd557b087680406192c",
+      "scope": "Bounded tool console + actual worker/progress LVGL, large history and reentry.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
