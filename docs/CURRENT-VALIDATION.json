@@ -651,6 +651,16 @@
       "scope": "Actual ARM64 postinstall program and original PostinstallRunnerAction/Subprocess.\n\nPrivate chroot, real clone/pipes/signalfd/wait and harmless dynamic ARM64 child.\nExplicit execv QEMU bridge preserves script argv; mounts/readonly/boot/hardware\nare recorded fixtures. No devices, actual OTA scripts, snapshots or full OTA.\n",
       "production_fix": false,
       "snapshot_manager_executed": false
+    },
+    {
+      "name": "OS4-stock-postinstall-recovery-guard",
+      "status": "PASS",
+      "cases": 8,
+      "failures": 0,
+      "local_report_sha256": "a2d10e5199d6ba70b785a1cbec677a38a55c2fd682ddad7af3d2a7de8e53a8f7",
+      "scope": "Execute exact OS4 otapreopt scripts with delivered ARM64 shell and getprop.\n\nPrivate ordinary-file chroot only. Native static command adapters explicitly\nbridge shell exec to packaged getprop through QEMU, or supply named property\nfixtures. ART/pm calls are rejected and recorded; no real Android property area,\nBinder, mounts, original dexopt execution or complete OTA integration.\n",
+      "production_fix": false,
+      "stock_scripts_exact": true
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
@@ -658,5 +668,5 @@
     12
   ],
   "current_batch_document": "docs/OTA-OPERATION-COW.md",
-  "current_batch_groups_scope": "Actual ARM64 harmless postinstall child and original parent/Subprocess lifecycle9cases; six stock manifest configs. Explicit exec/mount/boot boundaries, no production change/new build."
+  "current_batch_groups_scope": "Exact OS4 current/stable otapreopt scripts executed with delivered ARM64 shell/getprop;8guard cases, explicit property/exec boundaries. No ART service change/new build."
 }

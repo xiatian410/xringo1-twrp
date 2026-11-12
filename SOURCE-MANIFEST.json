@@ -68,7 +68,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "4ea25641728bcb1d814e3eb2374f0d8ea3e8c6a6df0eff13b3c8601d32cbcbe7",
+    "sha256": "e44dfb974b3aee3ad90a8f993f5453ff9e2f44df2a3a17ad3ff99bb7c015a3bd",
     "mode": "0o644"
   },
   "docs/DIGEST-PUBLICATION.md": {
@@ -196,7 +196,7 @@
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
-    "sha256": "1a846898632fe3b6fcc3c258704168291e1b820faf50196939ceb27aff9e78e8",
+    "sha256": "b4071fdb61d35a8e9e39eedfafb0318ff9704b3dcc6b206220934862a15e3ac7",
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
@@ -256,7 +256,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "29dc4d3e335ae1ff4ebf60b5b441bf65b0cdf8a6a6e875a715e4df4e88b95c46",
+    "sha256": "98a707628372e1e28dd2669cfb1979173e34aef94a9e5b14cb2ae846e41fac2a",
     "mode": "0o644"
   },
   "docs/crypto-compatibility.json": {
@@ -1495,6 +1495,10 @@
     "sha256": "6e2d7b4b5579067785936ab45cfa6bd0ea12ab7e4a5fbfbb08d37db8cce70250",
     "mode": "0o644"
   },
+  "scripts/review_stock_postinstall.py": {
+    "sha256": "be24d08188dabee9c0d8b176d9d34212a083d6d6e371b6fc07e9dcecd0704417",
+    "mode": "0o644"
+  },
   "scripts/setup_haptics_emulator.py": {
     "sha256": "35c15446e7f6c0d477d775fe613b520db430b1dd4b9bfa9b22e013ddb2db9539",
     "mode": "0o644"
@@ -1576,11 +1580,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "a98e7987b43c547db572d4f4c2d9293f93fd65360e75e968b068a75209e8c07a",
+    "sha256": "c8c7ebcbe84411c0a67d083b94cafa7d9c15d793803a6333292f18627562d510",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "8b0563221c9d4f09e53a2f5428346f16c5b1cfd67b4b4845ab8fe0a8071df44d",
+    "sha256": "078877f2bb93d7b7a8a06c92400b8eb87c3034143867f07f3361692f8fe43db9",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2145,6 +2149,10 @@
   },
   "tests/ota_stock_payload.py": {
     "sha256": "d2b56f658681a7734c7e37bbb6ddab70fe25adbe6ca11c7131bc8f331c53757a",
+    "mode": "0o644"
+  },
+  "tests/ota_stock_postinstall.py": {
+    "sha256": "a325fd45b2d84482f046fb8fbd81b8ba271748381b420aacbc72a4053614bac0",
     "mode": "0o644"
   },
   "tests/ota_vabc_session.cpp": {

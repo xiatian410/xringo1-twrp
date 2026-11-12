@@ -79,3 +79,7 @@ Recovery metadata 不可用的直接回退执行了六个原 ARM64 控制器场�
 ## postinstall 子进程接续
 
 原始 ARM64 PostinstallRunnerAction / Subprocess / 进程回收器接实际无害 ARM64 程序，9 场景覆盖必选 / 可选退出、特殊错误、信号、缺程序、挂载拒绝和取消；验证失败阻止切槽及取消后无未回收子进程。六份原厂 manifest 确认两份 OS4 的 otapreopt 为可选，其余四份无该配置。见 [范围](docs/OTA-OPERATION-COW.md#postinstall-程序退出与取消接续)。无生产修改或新构建；实际挂载、原厂 otapreopt / namespace、payload 和 SnapshotManager 全链仍未完成。
+
+## 原厂 OS4 postinstall 的 Recovery 出口
+
+两份原厂 otapreopt 脚本字节一致，经当前候选的实际 ARM64 shell/getprop 执行，八个场景确认 `dev.bootcomplete` 非 1 时返回 0、没有 ART 调用。实际属性区缺失时原 getprop 返回空值；其他属性输入为显式夹具。无需因缺 ART 就补服务或改脚本。见 [范围](docs/OTA-OPERATION-COW.md#os4-原厂脚本的-recovery-退出条件)。本批无生产修改或构建；真实属性区、挂载、namespace 及原安装器到原厂脚本全链仍未完成。

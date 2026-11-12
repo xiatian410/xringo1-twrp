@@ -290,3 +290,18 @@ python3 scripts/review_postinstall_program.py
 同时读取并核对六份已有原厂 payload manifest 的摘要：两份 OS4 配置 `system/system/bin/otapreopt_script`（partition=system，relative path=`system/bin/otapreopt_script`），`run_postinstall=true`、`postinstall_optional=true`；OS2 / OS3 四样本无 postinstall 配置。这里只确认安装计划的原厂配置，不代表已经执行 otapreopt。
 
 九场景通过，未发现需生产修正的行为。本批无新构建，沿用 snapshot-sync 候选与 784 来源。原厂 otapreopt、真实挂载与执行 namespace、实际 SnapshotManager / payload 到脚本接续及快照合并仍未完成，不把单独通过的链条拼接为完整 OTA 证明。
+
+## OS4 原厂脚本的 Recovery 退出条件
+
+从两份经过完整 system 分区 SHA-256 校验的 EROFS 原文件，按各自 manifest 指定路径读取 `system/bin/otapreopt_script`，核对文件类型、大小和权限。两份脚本均为 4461 B，SHA-256 `66ee2eb7128149b25a939599535eb68a19c0c03bfc5140b79f86663577dad9ce`。脚本首先读取 `dev.bootcomplete`，仅精确值 `1` 才进入槽位与 ART 处理；其他值打印未完成启动并返回 0。原注释明确说明这是避免 sideload 等环境中等待永不会出现的服务管理器。
+
+实际候选内 ARM64 shell 和 toolbox/getprop 经 QEMU / 当前 linker/libc 执行。私有 chroot 没有 Android 属性区，先单独运行原 getprop 确认返回 0 / 空值，再经 shell 的原始命令替换运行原厂脚本。另以显式属性命令夹具提供 `0`、非 `1` 字符串、`1`；最后一种仅配非法槽位验证错误出口。两样本各四种场景通过：属性区缺失 / 未启动 / 异常属性值均返回 0，启动完成但非法槽位返回 1。所有场景没有调用 ART；放置的拒绝型 pm adapter 会记录任何越界调用。
+
+```bash
+python3 tests/ota_stock_postinstall.py
+python3 scripts/review_stock_postinstall.py
+```
+
+exec 命令 adapter 为私有编译的静态主机程序，显式将 shell 对 getprop 的 exec 转为 QEMU 加载候选 toolbox，或提供上述属性夹具；它不是 Android 属性服务。原厂脚本字节保持不变，不发布到仓库。报告 `logs/ota-stock-postinstall.json` 与 `logs/ota-stock-postinstall-review.json` 绑定输入、镜像内库、shell / toolbox、QEMU 和工具摘要。
+
+**维护决定：** 没有依据因 Recovery 缺 ART/Binder 就补入这些系统服务或修改原厂脚本，保留原退出逻辑。本批仅新增证据，沿用 snapshot-sync / 784 来源，无新构建。此执行尚未从真实挂载点由原 PostinstallRunnerAction 启动，不证明真实属性区、SELinux、mount namespace、原厂 ART 分支、完整 payload 或快照合并通过；前节的子进程测试与本节脚本执行不冒充已贯通。
