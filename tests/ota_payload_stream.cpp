@@ -6,6 +6,7 @@
 #include "update_engine/common/dynamic_partition_control_interface.h"
 #include "update_engine/common/hash_calculator.h"
 #include "update_engine/payload_consumer/filesystem_verifier_action.h"
+#include "update_engine/payload_consumer/postinstall_runner_action.h"
 #include "update_engine/payload_consumer/vabc_partition_writer.h"
 #include <brillo/message_loops/base_message_loop.h>
 #include <xz.h>
@@ -28,6 +29,7 @@ using android::base::unique_fd;
 using namespace android::snapshot;
 using namespace chromeos_update_engine;
 constexpr size_t kSize = 32 * 4096;
+static std::vector<std::string> final_events;
 
 static std::vector<char> load(const char* path) {
     std::ifstream stream(path, std::ios::binary);
@@ -45,6 +47,8 @@ class FileControl final : public DynamicPartitionControlInterface {
     bool deny_open = false;
     unsigned opens = 0, maps = 0, unmaps = 0, prepares = 0;
     bool deny_prepare = false;
+    bool finish_ok = true;
+    unsigned finishes = 0;
     FeatureFlag GetVirtualAbCompressionXorFeatureFlag() override {
         return FeatureFlag(FeatureFlag::Value::NONE);
     }
@@ -73,7 +77,9 @@ class FileControl final : public DynamicPartitionControlInterface {
     bool UnmapAllPartitions() override { ++unmaps; return true; }
 #define NOFLAG(name) FeatureFlag name() override { assert(false); return FeatureFlag(FeatureFlag::Value::NONE); }
     NOFLAG(GetDynamicPartitionsFeatureFlag)
-    NOFLAG(GetVirtualAbFeatureFlag)
+    FeatureFlag GetVirtualAbFeatureFlag() override {
+        return FeatureFlag(FeatureFlag::Value::LAUNCH);
+    }
     NOFLAG(GetVirtualAbCompressionFeatureFlag)
     NOFLAG(GetVirtualAbUserspaceSnapshotsFeatureFlag)
 #undef NOFLAG
@@ -88,7 +94,9 @@ class FileControl final : public DynamicPartitionControlInterface {
         *required = deny_prepare ? 1048576 : 0;
         return !deny_prepare;
     }
-    bool FinishUpdate(bool) override { assert(false); return false; }
+    bool FinishUpdate(bool powerwash) override {
+        assert(!powerwash); ++finishes; final_events.push_back("finish"); return finish_ok;
+    }
     std::unique_ptr<AbstractAction> GetCleanupPreviousUpdateAction(BootControlInterface*, PrefsInterface*, CleanupPreviousUpdateActionDelegateInterface*) override { assert(false); return nullptr; }
     bool ResetUpdate(PrefsInterface*) override { assert(false); return false; }
     bool ListDynamicPartitionsForSlot(uint32_t, uint32_t, std::vector<std::string>*) override { assert(false); return false; }
@@ -108,11 +116,14 @@ class Feed final : public InstallPlanAction {
 };
 class Done final : public ActionProcessorDelegate {
  public:
-    bool completed = false, verifier_ran = false;
+    bool completed = false, verifier_ran = false, postinstall_ran = false;
+    ErrorCode verifier_result = ErrorCode::kError;
     ErrorCode result = ErrorCode::kError;
     void ActionCompleted(ActionProcessor*, AbstractAction* action, ErrorCode code) override {
         if (action->Type() == FilesystemVerifierAction::StaticType()) {
-            verifier_ran = true; result = code;
+            verifier_ran = true; verifier_result = code; result = code;
+        } else if (action->Type() == PostinstallRunnerAction::StaticType()) {
+            postinstall_ran = true; result = code;
         }
     }
     void ProcessingDone(const ActionProcessor*, ErrorCode code) override {
@@ -125,6 +136,11 @@ class Done final : public ActionProcessorDelegate {
 
 class FileBoot final : public FakeBootControl {
  public:
+    bool slot_ok = true;
+    unsigned switches = 0;
+    bool SetActiveBootSlot(Slot slot) override {
+        assert(slot == 1); ++switches; final_events.push_back("slot"); return slot_ok;
+    }
     std::optional<PartitionDevice> GetPartitionDevice(const std::string& name,
             uint32_t slot, uint32_t current, bool untouched = false) const override {
         assert(name == "system" && slot == 1 && current == 0 && !untouched);
@@ -135,7 +151,8 @@ static void be64(std::string* out, uint64_t value) {
     value = htobe64(value); out->append(reinterpret_cast<char*>(&value), sizeof(value));
 }
 int main(int argc, char** argv) {
-    assert(argc == 3);
+    assert(argc == 3 || argc == 4);
+    const bool finalize = argc == 4 && std::string(argv[3]) == "finalize";
     xz_crc32_init();
     const std::string mode = argv[1];
     auto encoded = load("/work/input.bin");
@@ -196,6 +213,8 @@ int main(int argc, char** argv) {
     auto* control = control_owner.get();
     control->deny_open = mode == "open-fail";
     control->deny_prepare = mode == "prepare-fail";
+    control->finish_ok = mode != "finish-fail";
+    boot.slot_ok = mode != "slot-fail";
     boot.SetDynamicPartitionControl(std::move(control_owner));
     FakeHardware hardware;
     MemoryPrefs prefs;
@@ -270,14 +289,56 @@ int main(int argc, char** argv) {
     assert(view.Close() && actual == expected);
     store("/work/readback.bin", actual);
     store("/work/view.bin", actual);
+    if (mode == "final-hash-fail") {
+        actual[0] ^= 1;
+        store("/work/view.bin", actual);
+    }
+    if (finalize) {
+        // This scope skips actual postinstall scripts; still execute original
+        // FinishUpdate -> SetActiveBootSlot gate after the real verifier.
+        plan.download_url.clear();
+        plan.switch_slot_on_reboot = mode != "no-switch";
+    }
     brillo::BaseMessageLoop loop; loop.SetAsCurrent();
     ActionProcessor processor; Done delegate; processor.set_delegate(&delegate);
     auto feed = std::make_unique<Feed>(); feed->plan = plan;
     auto verifier = std::make_unique<FilesystemVerifierAction>(control);
     BondActions(feed.get(), verifier.get());
-    processor.EnqueueAction(std::move(feed)); processor.EnqueueAction(std::move(verifier));
+    processor.EnqueueAction(std::move(feed));
+    if (finalize) {
+        auto postinstall = std::make_unique<PostinstallRunnerAction>(&boot, &hardware);
+        BondActions(verifier.get(), postinstall.get());
+        processor.EnqueueAction(std::move(verifier));
+        processor.EnqueueAction(std::move(postinstall));
+    } else {
+        processor.EnqueueAction(std::move(verifier));
+    }
     processor.StartProcessing(); if (!delegate.completed) loop.Run();
-    assert(delegate.completed && delegate.result == ErrorCode::kSuccess);
-    assert(control->maps == 1 && control->unmaps == 1);
+    if (finalize) {
+        const bool hash_failed = mode == "final-hash-fail";
+        const auto expected_result = hash_failed ? ErrorCode::kNewRootfsVerificationError :
+            mode == "no-switch" ? ErrorCode::kUpdatedButNotActive :
+            (mode == "finish-fail" || mode == "slot-fail") ? ErrorCode::kPostinstallRunnerError :
+            ErrorCode::kSuccess;
+        assert(delegate.completed && delegate.result == expected_result);
+        assert(delegate.postinstall_ran == !hash_failed);
+        assert(delegate.verifier_result == (hash_failed ? ErrorCode::kNewRootfsVerificationError : ErrorCode::kSuccess));
+        const unsigned wanted_finish = hash_failed || mode == "no-switch" ? 0 : 1;
+        const unsigned wanted_switch = wanted_finish && control->finish_ok ? 1 : 0;
+        assert(control->finishes == wanted_finish && boot.switches == wanted_switch);
+        std::vector<std::string> wanted_events;
+        if (wanted_finish) wanted_events.push_back("finish");
+        if (wanted_switch) wanted_events.push_back("slot");
+        assert(final_events == wanted_events);
+        // A queued action that never ran still has an empty internal plan,
+        // so only the verifier unmaps after a preceding hash failure.
+        assert(control->maps == 1 && control->unmaps == (hash_failed ? 1u : 2u));
+        printf("finalization code=%d verifier=%d postinstall=%d finishes=%u switches=%u maps=%u unmaps=%u\n",
+            int(delegate.result), int(delegate.verifier_result), delegate.postinstall_ran,
+            control->finishes, boot.switches, control->maps, control->unmaps);
+    } else {
+        assert(delegate.completed && delegate.result == ErrorCode::kSuccess);
+        assert(control->maps == 1 && control->unmaps == 1);
+    }
     puts("PASS stream-to-VABC-to-target-verifier");
 }

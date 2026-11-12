@@ -522,6 +522,24 @@
       "scope": "Run original asynchronous ARM64 filesystem verifier with map failures.\n\nWhole production TU; original ActionProcessor and hashing, explicit FileControl\nmap result boundary, ordinary file only. No SnapshotManager or real mapping.\n",
       "snapshot_manager_executed": false,
       "full_payload_install": false
+    },
+    {
+      "name": "ota-payload-finalization",
+      "status": "PASS",
+      "cases": 5,
+      "local_report_sha256": "917ee2a1e24f21e9ef4750349a814287af786dcc315c54661d34c0d1c6fdfc48",
+      "scope": "Stream synthetic CrAU/protobuf/operation bytes through intact ARM64 engine.\n\nOriginal metadata parsing, plan creation, partition factory, VABC/COW and final\nverifier execute. FakeBootControl/FakeHardware and FileControl replace device\nmapping; snapshot view is materialized for verification. Recovery signature\nchecks retain their existing compile-time behavior; not authenticated stock OTA.\n\nFinalization mode connects original PostinstallRunnerAction and observes FinishUpdate -> SetActiveBootSlot ordering. Boot control/hardware are explicit test doubles; no real slot, metadata or vbmeta writes, actual postinstall script, SnapshotManager or merge.",
+      "snapshot_manager_executed": false,
+      "full_payload_install": false,
+      "production_change": false
+    },
+    {
+      "name": "ota-payload-stream-after-finalization-extension",
+      "status": "PASS",
+      "cases": 13,
+      "local_report_sha256": "3e5a4f6f33a55752a39444bc97348914569c27e2911f926b5b72d86b8ab28802",
+      "scope": "Original stream mode regression after shared harness change; separate unchanged historical report retained.",
+      "full_payload_install": false
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",

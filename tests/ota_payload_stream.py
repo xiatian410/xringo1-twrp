@@ -35,7 +35,10 @@ def main():
     parser.add_argument('--source', type=Path, default=ANDROID/'system/update_engine/payload_consumer/delta_performer.cc')
     parser.add_argument('--report', type=Path, default=ROOT/'logs/ota-payload-stream.json')
     parser.add_argument('--image', type=Path)
+    parser.add_argument('--finalize', action='store_true', help='Connect final hash verification to original PostinstallRunnerAction; five targeted cases')
     args = parser.parse_args()
+    if args.finalize and args.report == ROOT/'logs/ota-payload-stream.json':
+        args.report = ROOT/'logs/ota-payload-finalization.json'
     args.source = args.source.resolve()
     if args.image is not None:
         args.image = args.image.resolve()
@@ -97,25 +100,28 @@ def main():
                      ('xz', 8, lzma.compress(expected, check=lzma.CHECK_CRC32))]
         scenarios += [(name, 0, expected) for name in ['bad-magic', 'bad-major', 'bad-minor',
             'bad-metadata-size', 'bad-operation-hash', 'prepare-fail', 'open-fail', 'truncated-data', 'truncated-signature', 'missing-signature']]
+        if args.finalize:
+            scenarios = [(name, 0, expected) for name in ['raw', 'finish-fail', 'slot-fail', 'no-switch', 'final-hash-fail']]
         for name, kind, encoded in scenarios:
             for stale in ['test.cow', 'readback.bin', 'view.bin']:
                 (jail/'work'/stale).unlink(missing_ok=True)
             (jail/'work/input.bin').write_bytes(encoded)
             result = subprocess.run(['/qemu', '-L', '/android', '-E', 'LD_LIBRARY_PATH=/android/system/lib64',
-                '/android/system/bin/linker64', '/test', name, str(kind)], preexec_fn=isolate,
+                '/android/system/bin/linker64', '/test', name, str(kind), *(['finalize'] if args.finalize else [])], preexec_fn=isolate,
                 capture_output=True, text=True, timeout=20)
             readback = jail/'work/readback.bin'
             if result.returncode == 0:
-                assert readback.read_bytes() == expected if name in ['raw', 'bz', 'xz'] else not readback.exists()
+                assert readback.read_bytes() == expected if args.finalize or name in ['raw', 'bz', 'xz'] else not readback.exists()
             cases.append(dict(name=name, status='PASS' if result.returncode == 0 else 'FAIL',
                 returncode=result.returncode, stdout=result.stdout, stderr=result.stderr,
                 input_sha256=hashlib.sha256(encoded).hexdigest()))
-        report = dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL', scope=__doc__,
+        report = dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL', scope=(__doc__ + ('\nFinalization mode connects original PostinstallRunnerAction and observes FinishUpdate -> SetActiveBootSlot ordering. Boot control/hardware are explicit test doubles; no real slot, metadata or vbmeta writes, actual postinstall script, SnapshotManager or merge.' if args.finalize else '')),
             sources=sources, dependencies=dependencies, image=str(image), image_sha256=sha(image),
             image_entries=entries, fixture_elf_machine=183, fixture_sha256=hashlib.sha256(data).hexdigest(),
             compile_template=compile_args, link_command=link, cases=cases,
             full_payload_install=False, parsed_manifest_seeded=False, writer_failure_boundary=False,
             synthetic_payload_stream=True, real_signature_verification=False,
+            postinstall_connected=args.finalize, boot_control_boundary="Explicit observing FakeBootControl and FileControl; no real slot or metadata writes",
             snapshot_mapping="FileControl ordinary COW file, materialized original reader output; no SnapshotManager or snapuserd")
         args.report.write_text(json.dumps(report, indent=2)+'\n')
         print(report['status'], len(cases), 'cases;', sum(c['status']=='FAIL' for c in cases), 'failures')

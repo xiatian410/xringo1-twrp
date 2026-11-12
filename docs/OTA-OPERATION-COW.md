@@ -171,3 +171,21 @@ python3 tests/ota_cow_roundtrip.py
 六场景通过，同一夹具换回旧源码有两处失败；报告为本地 `logs/ota-snapshot-map.json` 与 `logs/ota-snapshot-map-before.json`。当前候选 `recovery-dijun-unified-snapshot-map.img`，SHA-256 `54d2210ef4b3213d4703ca2278b5ed49591ab2d61cac314ed0b737814f202a03`，779 份生产来源。installclean 后 `make -j$(nproc)` 构建完成，更新器含两条新诊断且与构建输出逐字节一致；相对前候选仅更新器、构建属性和文件摘要清单改变。
 
 定向交付核对：`python3 scripts/audit_snapshot_map_delivery.py`，输出 `logs/snapshot-map-delivery.json`。字节未变的 GUI、profile 脚本和原厂资源不重复运行等价测试；旧报告不因此升级为新镜像全流程验收。完整 OTA 输入、实际 SnapshotManager / snapuserd、槽位切换和合并仍待完成。
+
+## 从 payload 接到安装结束与切槽门控
+
+`python3 tests/ota_payload_stream.py --finalize` 扩展同一测试入口，将合成 payload、VABC / COW、快照读回和原异步校验器的输出直接连接到真实 `PostinstallRunnerAction`。五个场景通过；不是复制五个独立叶函数。未发现本段需要新增生产补丁的错误，本批不重新构建镜像。
+
+| 场景 | 最终结果 | FinishUpdate / 切槽调用 |
+| --- | --- | --- |
+| 完整写入、校验和完成 | 成功 | 各一次，先 FinishUpdate 后切槽 |
+| FinishUpdate 拒绝 | 错误 5 | 完成一次，不切槽 |
+| 切槽接口拒绝 | 错误 5 | 各一次，错误传到 ActionProcessor 结束 |
+| 明确不切换槽位 | 状态 52（UpdatedButNotActive） | 均不调用 |
+| 最终目标哈希不符 | 错误 15 | 不进入 PostinstallRunnerAction，均不调用 |
+
+报告为本地 `logs/ota-payload-finalization.json`，来源复核为 `logs/ota-payload-finalization-review.json`。原始 13 场景因同一测试入口有改动，使用独立报告 `logs/ota-payload-finalization-stream-regression.json` 回归，旧报告原样保留。首次新场景的清理计数断言错误已保留：被前序哈希失败清除的未运行 action 内部 plan 仍为空，析构不会额外卸载；这不是生产故障。
+
+本组明确跳过实际 postinstall 脚本，安装计划 `download_url` 为空；不能据此宣称原厂 postinstall 分区挂载或脚本执行已通过。FinishUpdate 与 SetActiveBootSlot 是观察调用顺序并注入失败的边界，FakeHardware 的相关回调仅在内存中执行，不修改槽位、metadata、vbmeta 或其他真实设备。原校验器、postinstall action、ActionProcessor 均来自实际 ARM64 构建代码；生产 archive 按测试时摘要绑定，不能升级为旧镜像清单的历史绑定。
+
+当前候选仍为 snapshot-map，779 份生产来源及镜像字节不变。此证据缩小的是“校验结果如何到达安装结束及切槽接口”的缺口；实际 SnapshotManager、Boot Control HAL、完整下载器 / GUI、真实 OTA 输入、postinstall 脚本和快照合并仍未完成，不追加等价的正常路径测试来代替这些边界。

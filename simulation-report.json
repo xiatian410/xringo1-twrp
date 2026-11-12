@@ -2865,6 +2865,24 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Run original asynchronous ARM64 filesystem verifier with map failures.\n\nWhole production TU; original ActionProcessor and hashing, explicit FileControl\nmap result boundary, ordinary file only. No SnapshotManager or real mapping.\n"
+    },
+    {
+      "name": "ARM64-payload-to-postinstall-finalization",
+      "evidence": "logs/ota-payload-finalization.json",
+      "evidence_sha256": "917ee2a1e24f21e9ef4750349a814287af786dcc315c54661d34c0d1c6fdfc48",
+      "count": 5,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Stream synthetic CrAU/protobuf/operation bytes through intact ARM64 engine.\n\nOriginal metadata parsing, plan creation, partition factory, VABC/COW and final\nverifier execute. FakeBootControl/FakeHardware and FileControl replace device\nmapping; snapshot view is materialized for verification. Recovery signature\nchecks retain their existing compile-time behavior; not authenticated stock OTA.\n\nFinalization mode connects original PostinstallRunnerAction and observes FinishUpdate -> SetActiveBootSlot ordering. Boot control/hardware are explicit test doubles; no real slot, metadata or vbmeta writes, actual postinstall script, SnapshotManager or merge."
+    },
+    {
+      "name": "ARM64-payload-finalization-stream-regression",
+      "evidence": "logs/ota-payload-finalization-stream-regression.json",
+      "evidence_sha256": "3e5a4f6f33a55752a39444bc97348914569c27e2911f926b5b72d86b8ab28802",
+      "count": 13,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Original thirteen payload scenarios after the shared fixture/driver extension; no postinstall in this mode."
     }
   ],
   "source_review_followups": [
@@ -3444,6 +3462,22 @@
       "error_code": 47,
       "snapshot_manager_executed": false,
       "full_payload_install": false
+    },
+    "payload_to_postinstall": {
+      "status": "PASS",
+      "report": "logs/ota-payload-finalization.json",
+      "report_sha256": "917ee2a1e24f21e9ef4750349a814287af786dcc315c54661d34c0d1c6fdfc48",
+      "image_sha256": "54d2210ef4b3213d4703ca2278b5ed49591ab2d61cac314ed0b737814f202a03",
+      "cases": 5,
+      "postinstall_source": "/root/AAA/twrp/system/update_engine/payload_consumer/postinstall_runner_action.cc",
+      "postinstall_source_sha256": "64c51461e3b8e95b24b810f0aa516b5dda50846475a39d3802cc1a17b601f886",
+      "snapshot_manager_executed": false,
+      "full_payload_install": false,
+      "document": "docs/OTA-OPERATION-COW.md",
+      "review": "logs/ota-payload-finalization-review.json",
+      "boot_control": "Explicit observing fake; finishes before slot, no slot after failed verifier/finish, error5 on finish/slot failure,52 when no-switch.",
+      "production_change": false,
+      "stream_regression": "logs/ota-payload-finalization-stream-regression.json"
     }
   },
   "os4_haptics_user_confirmation": {
