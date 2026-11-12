@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-manager-wipe.img",
-  "image_sha256": "bfe8bebdcfd4fbaf3fbb2b291239922b1bf089d527b7aeef3389342026e762e4",
-  "production_sources": 790,
+  "image_name": "recovery-dijun-unified-format-transition.img",
+  "image_sha256": "f0a1ff30d0735eafdc6cc1822351a8cd34d01745b51c767b33fbf808ad1b0ba7",
+  "production_sources": 791,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -781,6 +781,22 @@
       "failures": 9,
       "local_report_sha256": "3b271bb0391264529251f87380a1c9bf871f7164c0fd593609e849a4022e801c",
       "scope": "Dalvik and media manager wipe to production backend LIST/run terminal states.\n\nPrivate chroot ordinary files, uid/gid65534, actual filesystem permission errors,\nRemoveDir and manager methods; media root inode/user xattr readback. Mounts, MTP,\nmetadata and presentation are fixtures. User xattr is NOT real fscrypt policy.\nNo actual mount, phone, full GUI/start/thread, I/O kernel or power-loss test.\n"
+    },
+    {
+      "name": "format-transition",
+      "status": "PASS",
+      "cases": 25,
+      "failures": 0,
+      "local_report_sha256": "76d564eaf82396664fb2fbb2b0bdc6752d4ef16cd7a2c239deece9dacca63de6",
+      "scope": "Production Wipe dispatch and format helpers through manager/backend result.\n\nCommand execution, capacity/device discovery, unmount, properties and metadata\nare explicit fixtures. No mkfs subprocess, physical device, mount, complete GUI\nor real filesystem conversion; validates conversion selection/failure/state.\n"
+    },
+    {
+      "name": "format-transition-before",
+      "status": "FAIL",
+      "cases": 25,
+      "failures": 10,
+      "local_report_sha256": "a3b1bda4dd9c10447a5b62afacc4303a2da9d9fb79e94942174887e8e7fcc192",
+      "scope": "Production Wipe dispatch and format helpers through manager/backend result.\n\nCommand execution, capacity/device discovery, unmount, properties and metadata\nare explicit fixtures. No mkfs subprocess, physical device, mount, complete GUI\nor real filesystem conversion; validates conversion selection/failure/state.\n"
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
@@ -788,5 +804,5 @@
     6
   ],
   "current_batch_document": "docs/FILESYSTEM-TOOLS-EXECUTION.md",
-  "current_batch_groups_scope": "Dalvik and internal-media manager wipe correction; no restriction to full goal. Real ordinary file/inode/user xattr readback; mounts/MTP/metadata/presentation fixtures, not real fscrypt. Reuse unchanged media recursion and backup removal evidence."
+  "current_batch_groups_scope": "Requested-format conversion dispatch/fallback/state only; formatter command execution and device/mount metadata are fixtures. Whole goal unrestricted, actual conversion lifecycle pending."
 }

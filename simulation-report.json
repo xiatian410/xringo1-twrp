@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-manager-wipe.img",
-  "image_sha256": "bfe8bebdcfd4fbaf3fbb2b291239922b1bf089d527b7aeef3389342026e762e4",
-  "image_status": "Clean-built patch0075: Dalvik mount/query/removal failure propagation; internal storage wipe keeps media root and propagates content removal failure with MTP re-registration.790 sources/six profiles. Full adaptation remains open.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-format-transition.img",
+  "image_sha256": "f0a1ff30d0735eafdc6cc1822351a8cd34d01745b51c767b33fbf808ad1b0ba7",
+  "image_status": "Clean-built patch0076: requested-filesystem conversion bypasses rm-rf override; missing-tool conversion rejects fallback; dispatch uses requested aliases; successful f2fs/exfat/ntfs updates state.791 sources/six profiles; full adaptation remains open.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1936,7 +1936,7 @@
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
     "MTP remaining media metadata and final post-child directory date semantics (file epoch0/timestamp-error publication and directory SendObjectInfo time/completion16 cases covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
     "backup/restore real archive codec/GUI and sparse-hole/progress behavior, actual filesystem power-loss durability and content authenticity; new-backup completion manifests and restore rejection are covered by17 helper,55 RunBackup and56 RunRestore host cases but do not prove sudden power-loss behavior",
-    "full GUI/PartitionManager write/format/repair lifecycle and I/O faults; current-image tools17 historical cases, e2fsck result146 assertions and current-image wrapper/lookup/Repair/ExecCmd/ARM64 checker7 joined cases covered with explicit unmount/device/presentation fixtures; real mounts/full GUI still pending; patch0073 covers RemoveDir + WipeRmrf/AndSec/DataCache -> manager -> backend LIST/run terminal result with real private permission failures; patch0074 executes media-preserving recursion and real exclusion matching through manager/backend13 cases; full Wipe dispatch, GUI/format lifecycle, concurrent writers and power-loss remain pending; patch0075 covers Dalvik mount/query/delete failures and internal-media root retention through backend16 cases, inode/user xattr marker is not actual fscrypt proof; full GUI/format/repair, real mounts/MTP and I/O lifecycle remain pending",
+    "full GUI/PartitionManager write/format/repair lifecycle and I/O faults; current-image tools17 historical cases, e2fsck result146 assertions and current-image wrapper/lookup/Repair/ExecCmd/ARM64 checker7 joined cases covered with explicit unmount/device/presentation fixtures; real mounts/full GUI still pending; patch0073 covers RemoveDir + WipeRmrf/AndSec/DataCache -> manager -> backend LIST/run terminal result with real private permission failures; patch0074 executes media-preserving recursion and real exclusion matching through manager/backend13 cases; full Wipe dispatch, GUI/format lifecycle, concurrent writers and power-loss remain pending; patch0075 covers Dalvik mount/query/delete failures and internal-media root retention through backend16 cases, inode/user xattr marker is not actual fscrypt proof; full GUI/format/repair, real mounts/MTP and I/O lifecycle remain pending; patch0076 covers requested format dispatch/rmrf override/missing tools/result state25 fixture cases; actual target formatter -> readback -> repair -> full GUI/mount lifecycle still pending",
     "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
     "video target ARM64 codec/display-shadow sampling integration, real storage/codec fault behavior, hour-scale stability and seek/index performance (bounded12.5s multi-cluster/keyframe correctness covered), GUI player rendering and full-resolution performance; host frames/queue/failure recovery plus independent FFmpeg native decode and72 short input seeks covered",
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
@@ -3107,6 +3107,22 @@
       "evidence": "logs/manager-wipe-before.json",
       "evidence_sha256": "3b271bb0391264529251f87380a1c9bf871f7164c0fd593609e849a4022e801c",
       "scope": "Dalvik and media manager wipe to production backend LIST/run terminal states.\n\nPrivate chroot ordinary files, uid/gid65534, actual filesystem permission errors,\nRemoveDir and manager methods; media root inode/user xattr readback. Mounts, MTP,\nmetadata and presentation are fixtures. User xattr is NOT real fscrypt policy.\nNo actual mount, phone, full GUI/start/thread, I/O kernel or power-loss test.\n"
+    },
+    {
+      "name": "format-transition-0076",
+      "result": "pass",
+      "count": 25,
+      "evidence": "logs/format-transition.json",
+      "evidence_sha256": "76d564eaf82396664fb2fbb2b0bdc6752d4ef16cd7a2c239deece9dacca63de6",
+      "scope": "Production Wipe dispatch and format helpers through manager/backend result.\n\nCommand execution, capacity/device discovery, unmount, properties and metadata\nare explicit fixtures. No mkfs subprocess, physical device, mount, complete GUI\nor real filesystem conversion; validates conversion selection/failure/state.\n"
+    },
+    {
+      "name": "format-transition-before-0076",
+      "result": "expected-failure",
+      "count": 25,
+      "evidence": "logs/format-transition-before.json",
+      "evidence_sha256": "a3b1bda4dd9c10447a5b62afacc4303a2da9d9fb79e94942174887e8e7fcc192",
+      "scope": "Production Wipe dispatch and format helpers through manager/backend result.\n\nCommand execution, capacity/device discovery, unmount, properties and metadata\nare explicit fixtures. No mkfs subprocess, physical device, mount, complete GUI\nor real filesystem conversion; validates conversion selection/failure/state.\n"
     }
   ],
   "source_review_followups": [
@@ -3422,8 +3438,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/manager-wipe-delivery.json",
-    "scope": "Patch0075; clean build;790 sources;six profiles;actual manager Dalvik/media + RemoveDir -> backend LIST/run16 cases, old9 failures; media root inode/user xattr preserved. Mount/MTP/metadata/presentation fixtures; not real fscrypt. Unchanged 0074 manager method bodies and other sources support reuse13+12.",
+    "evidence": "logs/format-transition-delivery.json",
+    "scope": "Patch0076; clean build;791 sources;six profiles;original Wipe/format helpers/manager/backend25 cases, old10 failures. Commands/capacity/unmount/devices/properties/metadata fixtures; not actual mkfs. Reuse unchanged executed methods in media13/manager16.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {

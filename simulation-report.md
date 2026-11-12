@@ -6,14 +6,16 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-manager-wipe.img` |
-| SHA-256 | `bfe8bebdcfd4fbaf3fbb2b291239922b1bf089d527b7aeef3389342026e762e4` |
-| 生产来源绑定 | 790 份 |
+| 文件 | `recovery-dijun-unified-format-transition.img` |
+| SHA-256 | `f0a1ff30d0735eafdc6cc1822351a8cd34d01745b51c767b33fbf808ad1b0ba7` |
+| 生产来源绑定 | 791 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
 ## 本次候选包含的修正
+
+- **0076**：格式转换不受 rm-rf 设置覆盖；缺工具拒绝转换而非删除旧文件假成功；按请求别名分派，格式化成功及时更新类型。25 场景通过、旧 10 失败；命令/设备是替身，真实转换接续仍待覆盖。见[范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#文件系统转换分派与状态0076)。
 
 - **0075**：Dalvik 挂载/路径查询/删除失败传播；内部存储只清除媒体根目录内容，保留根 inode/元数据，恢复 MTP 登记后仍保留删除失败状态。16 场景通过、旧 9 失败；普通 user xattr 不是 fscrypt 验收。见[范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#dalvik-与内部存储清除0075)。
 
@@ -41,12 +43,13 @@
 - **0064**：A/B 更新器使用有效 Error 对象；同步拒绝立即返回错误，不进入无完成回调的循环。
 - 继承此前 XRING O1 加载页、刷入目标、NV 普通界面限制、OTG 发现及安装 / MTP 收尾等修正。
 
-完整范围见 [有限维护交付记录](docs/archive/BOUNDED-MAINTENANCE.md)。本批重新编译 Recovery 主程序；相对 media-wipe 候选只改变主程序、构建属性与 ramdisk 摘要，GUI / MTP / 更新器 / profile 字节不变。
+完整范围见 [有限维护交付记录](docs/archive/BOUNDED-MAINTENANCE.md)。本批重新编译 Recovery 主程序；相对 manager-wipe 候选只改变主程序、构建属性与 ramdisk 摘要，GUI / MTP / 更新器 / profile 字节不变。
 
 ## 本批与继承证据
 
 | 范围 | 结果 | 限制 |
 | --- | --- | --- |
+| 格式转换分派 | 25 场景 / 旧 10 失败 | 原 Wipe/helper/manager/backend；命令/卸载/容量/设备/metadata 替身 |
 | Dalvik / 内部媒体 | 16 场景 / 旧 9 失败 | 真正文件删除、inode/user xattr；挂载/MTP/展示替身，非 fscrypt 或完整 GUI |
 | 保留媒体递归 | 13 场景 / 旧 3 失败 | 原排除匹配与真实权限错误；Wipe 分派 / 挂载 / 设备 / 展示替身，非完整 GUI |
 | 目录清除失败 | 11 场景 / 旧 5 失败，备份目录回归 12 项 | 普通文件真实权限错误；挂载 / 设备 / 展示替身，未覆盖保留媒体路径 |
@@ -65,7 +68,7 @@
 | init / profile | 5 份 init、9 组 / 102 次阶段调用 | host verifier 与脚本回放，不是完整系统启动 |
 | RTC / 视频 | 相关来源未变，复用既有结果 | 不为刷新日期重跑，不外推硬件和性能 |
 
-Dalvik / 内部媒体为本批修复；保留媒体递归、目录清除失败、五页日志生命周期、MTP 格式、工具进度日志、日志导出、备份目录、快照映射等行保留此前交付范围，未将旧报告重新绑定为新镜像执行结果。以上不是总功能通过率；历史全量审计仍有证据来源漂移，不能用定向通过代替全量通过。
+格式转换分派为本批修复；Dalvik / 内部媒体、保留媒体递归、目录清除失败、五页日志生命周期、MTP 格式、工具进度日志、日志导出、备份目录、快照映射等行保留此前交付范围，未将旧报告重新绑定为新镜像执行结果。以上不是总功能通过率；历史全量审计仍有证据来源漂移，不能用定向通过代替全量通过。
 
 ## 此前新增证据（对应旧候选，范围保留）
 

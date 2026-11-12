@@ -282,6 +282,10 @@
         {
           "file": "0075-manager-cache-media-wipe-errors.patch",
           "sha256": "a30b24fd5bef7990b721c9b3c3d6452e0e542ce1990139e1b2b5522d4db86948"
+        },
+        {
+          "file": "0076-filesystem-conversion-dispatch.patch",
+          "sha256": "da7bb48099287941ebb5b93c61cd088f137a74150fb25a697c0ddc015218c4c5"
         }
       ],
       "result_files": {
@@ -289,7 +293,7 @@
         "etc/init/keystore2.rc": "aa28727dfc718c059b926215f1fcfa9917132265dc01fbd329dcb928a783768e",
         "gui2/app/screen_actions.cpp": "188556ece804fedc23d4d9c2214418de89f49caa4560405dc41e9bcfd5577da1",
         "gui2/gui2_input.cpp": "3504c83906edf8192d0ff717d35a6f6c38770282cba8fd56ec24ebcd55dbe625",
-        "partition.cpp": "3f9f6c60ad3f5e525a822ca1f09b4beb97f5a2982cf597b9d901afc645b919b4",
+        "partition.cpp": "63937dfb14da3b0a71762c7398fa61dcfab933f993e8f3ddd71b66ea4189edd4",
         "twrpminui/force_feedback.cpp": "f7bdb5f50e5ef9d0ecd2ab161fa8f6143292c1207f064147a2db94b080d86f41",
         "twrpminui/graphics_drm.cpp": "61611757cc147b2f925ed52c6f73334acd7ae11d7fa3954d720cbeb8d47d0447",
         "mtp/MtpFfsHandle.cpp": "65f9c45e4cc3ac14dcf8c03aa96c94c59983a10d80bf29b38d2d1e3f15836fe3",

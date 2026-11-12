@@ -1,0 +1,109 @@
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -1640,13 +1640,19 @@
+     return false;
+   }
+ 
++  // Conversion must format the requested filesystem. A global rm-rf setting
++  // only applies to wiping the existing format, never to changing it.
++  const bool same_file_system = current_file_system_ == new_file_system ||
++      (current_file_system_ == "tntfs" && new_file_system == "ntfs") ||
++      (current_file_system_ == "mifs" && new_file_system == "f2fs");
++
+   if (mount_point_ == TWPartitionManager::GetAndroidRootPath()) {
+     if (tw_get_default_metadata(TWPartitionManager::GetAndroidRootPath().c_str()) != 0) {
+       gui2_console::warning("restore_system_context", TWPartitionManager::GetAndroidRootPath());
+     }
+   }
+ 
+-  if (has_data_media_ && current_file_system_ == new_file_system) {
++  if (has_data_media_ && same_file_system) {
+     wiped = WipeDataWithoutWipingMedia();
+     if (mount_point_ == "/data" && TWFunc::GetLogDir() == DATA_LOGS_DIR) {
+       if (!TWPartitionManager::RecreateLogsDir())
+@@ -1655,13 +1661,13 @@
+   } else {
+     int check = 0;
+     DataManager::GetValue(TW_RM_RF_VAR, check);
+-    if (check || use_rm_rf_) wiped = WipeRmrf();
++    if (same_file_system && (check || use_rm_rf_)) wiped = WipeRmrf();
+     else if (new_file_system == "ext4") wiped = WipeExt4();
+     else if (new_file_system == "ext2" || new_file_system ==
+              "ext3") wiped = WipeExtfs(new_file_system);
+     else if (new_file_system == "exfat") wiped = WipeExfat();
+-    else if (new_file_system == "ntfs" || current_file_system_ == "tntfs") wiped = WipeNtfs();
+-    else if (new_file_system == "f2fs" || current_file_system_ == "mifs") wiped = WipeF2fs();
++    else if (new_file_system == "ntfs" || new_file_system == "tntfs") wiped = WipeNtfs();
++    else if (new_file_system == "f2fs" || new_file_system == "mifs") wiped = WipeF2fs();
+     else if (new_file_system == "vfat") wiped = WipeFat();
+     else {
+       LOGERR("Unable to wipe '%s' -- unknown file system '%s'\n", mount_point_.c_str(),
+@@ -2052,7 +2058,11 @@
+   if (!Unmount(true)) return false;
+ 
+   if (!TWFunc::IsPathExists("/system/bin/mke2fs") || !
+-      TWFunc::IsPathExists("/system/bin/e2fsdroid")) return WipeRmrf();
++      TWFunc::IsPathExists("/system/bin/e2fsdroid")) {
++    if (current_file_system_ == file_system) return WipeRmrf();
++    gui2_console::log_error("unable_to_wipe", display_name_);
++    return false;
++  }
+ 
+   FindActualBlockDevice();
+   if (!is_present_) {
+@@ -2146,6 +2156,7 @@
+     PartitionManager.MountByPath(sedir.c_str(), true);
+     rmdir(sedir.c_str());
+     mkdir(sedir.c_str(), S_IRWXU | S_IRWXG | S_IWGRP | S_IXGRP);
++    current_file_system_ = "ext4";
+     return true;
+   }
+ #else
+@@ -2169,7 +2180,9 @@
+     gui2_console::log_error("unable_to_wipe", display_name_);
+     return false;
+   }
+-  return WipeRmrf();
++  if (current_file_system_ == "vfat") return WipeRmrf();
++  gui2_console::log_error("unable_to_wipe", display_name_);
++  return false;
+ }
+ 
+ bool TWPartition::WipeExfat() {
+@@ -2179,6 +2192,7 @@
+     gui2_console::info("formatting_using", display_name_, "mkfs.exfat");
+     FindActualBlockDevice();
+     if (const std::string cmd = "mkfs.exfat " + actual_block_device_; TWFunc::ExecCmd(cmd) == 0) {
++      current_file_system_ = "exfat";
+       RecreateAndSecFolder();
+       gui2_console::info("done");
+       return true;
+@@ -2211,8 +2225,10 @@
+   if (TWFunc::IsPathExists("/system/bin/make_f2fs")) f2fs_command =
+                                                      "/system/bin/make_f2fs -g android";
+   else {
+-    LOGINFO("make_f2fs binary not found, using rm -rf to wipe.\n");
+-    return WipeRmrf();
++    if (current_file_system_ == "f2fs" || current_file_system_ == "mifs")
++      return WipeRmrf();
++    gui2_console::log_error("unable_to_wipe", display_name_);
++    return false;
+   }
+ 
+   bool needs_casefold = false;
+@@ -2247,6 +2263,7 @@
+   LOGINFO("make_f2fs command: %s\n", f2fs_command.c_str());
+ 
+   if (TWFunc::ExecCmd(f2fs_command) == 0) {
++    current_file_system_ = "f2fs";
+     RecreateAndSecFolder();
+     gui2_console::info("done");
+     return true;
+@@ -2267,6 +2284,7 @@
+   gui2_console::info("formatting_using", display_name_, ntfsmake_binary);
+   FindActualBlockDevice();
+   if (const std::string cmd = "/system/bin/" + ntfsmake_binary + " " + actual_block_device_; TWFunc::ExecCmd(cmd) == 0) {
++    current_file_system_ = "ntfs";
+     RecreateAndSecFolder();
+     gui2_console::info("done");
+     return true;

@@ -2,7 +2,7 @@
 
 设备：Xiaomi 15S Pro（dijun / XRING O1）。目标：OS3 / OS4 优先，同一镜像尽可能覆盖所列 OS2 样本。本文保留目标和验收要求，不再堆积逐轮进度；当前进度集中在 [工作队列](docs/WORK-QUEUE.md) 与 [验证报告](simulation-report.md)。
 
-本轮生产进展：0075 修正 Dalvik 挂载/查询/删除失败误成功，并让清除内部存储保留媒体根目录，传播内容删除错误。16 场景通过、旧 9 失败；复用未变的媒体递归/备份目录证据，清理构建 790 来源 / 六 profile。普通 inode/xattr 核对不是 fscrypt 验收，见[范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#dalvik-与内部存储清除0075)。
+本轮生产进展：0076 修正更改文件系统被 rm-rf 覆盖、缺工具误回退、旧类型别名误分派及成功类型未更新。原始 Wipe/helper/manager/backend 25 场景通过、旧 10 失败；命令为替身，清理构建 791 来源 / 六 profile。真实格式化/读回接续仍待完成，见[范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#文件系统转换分派与状态0076)。
 
 ## 执行约定
 

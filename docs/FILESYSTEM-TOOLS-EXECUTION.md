@@ -102,3 +102,24 @@ python3 scripts/audit_manager_wipe_delivery.py
 挂载、MTP、metadata 和操作展示为替身，未执行完整 GUI/start/thread、真实挂载、USB 或内核 I/O 错误。0074 使用的 manager lookup / WipeByPath 方法与本次前源码逐方法比较一致，其他绑定来源不变，复用其 13 项结果及备份目录 12 项，不改写旧报告或重复执行。
 
 候选 `recovery-dijun-unified-manager-wipe.img`，SHA-256 `bfe8bebdcfd4fbaf3fbb2b291239922b1bf089d527b7aeef3389342026e762e4`；先 installclean，再 `make -j$(nproc)` 30 并发，790 来源 / 六 profile。相对 media-wipe 候选只改变 Recovery 主程序、构建属性与 ramdisk 摘要，GUI/MTP/updater/profile 字节不变。完整格式化 / 写入 / 修复、真实 fscrypt/MTP 与断电仍未闭环；不将三批目录清除修正当作完整文件系统适配完成。
+
+## 文件系统转换分派与状态（0076）
+
+更改文件系统调用原 `Wipe(new_file_system)`，但全局 rm-rf / 分区 use_rm_rf 标志原先会直接删除旧文件并返回成功，没有转换格式。ext / FAT / F2FS 工具缺失时也可能退回同样的删除。NTFS / F2FS 分派还错误使用旧 `current_file_system_` 的 tntfs / mifs 别名；F2FS/exFAT/NTFS 成功后未更新类型，随后的重建 / 挂载可能仍使用旧类型。
+
+[0076 固定补丁](../dtsrc/O1_asic_dual/patches/0076-filesystem-conversion-dispatch.patch)将 rm-rf 限于同类型清除；转换必须走请求格式。工具缺失只允许同类型的既有 rm-rf 回退，转换返回失败。分派按请求类型及别名选择，成功后在重建前更新 F2FS/exFAT/NTFS 类型；USE_EXT4 分支成功也补齐 ext4 类型。未知格式、拒绝清除、卸载失败和工具非零仍失败，不把部分格式化解释为回滚。
+
+```bash
+python3 tests/format_transition_test.py
+# 需要本地旧源，预期十项失败：
+python3 tests/format_transition_test.py --before
+python3 scripts/audit_format_transition_delivery.py
+```
+
+25 场景执行完整原 `Wipe(new_file_system)`、ext4 wrapper/extfs/FAT/exFAT/F2FS/NTFS helper、manager lookup/WipeByPath 与 changefilesystem backend 包装。覆盖五类格式成功、旧 tntfs→F2FS / mifs→FAT、两种 rm-rf 覆盖、同类型 rm-rf、五类缺工具、三类同类型回退、四类命令失败及卸载/设备/允许清除状态。旧实现同组十项失败；这包括同一缺陷的多触发方式，不是十个独立根因。
+
+命令执行、容量、设备探测、卸载、属性与 metadata 为替身；没有运行 mkfs、挂载或完整 GUI，不将更新内存类型称作真实盘面转换。extfs 选择以无 selinux_handle 分支执行，实际 e2fsdroid / USE_EXT4 内建分支未执行。首次测试编译缺少 filesystem 头文件，补齐后通过，失败日志保留。原工具执行与修复检查仍按其历史范围保留，未被伪装为本批接续验证。
+
+0074/0075 的相关执行方法未变：逐方法对比保存的旧源，核对其他绑定来源，复用媒体递归13项与 manager清除16项，不重跑已修正目录清除。它们当时明确替代 Wipe 分派，不能与本批拼成一次完整设备调用。
+
+候选 `recovery-dijun-unified-format-transition.img`，SHA-256 `f0a1ff30d0735eafdc6cc1822351a8cd34d01745b51c767b33fbf808ad1b0ba7`；先 installclean，再 `make -j$(nproc)` 30 并发，791 来源 / 六 profile。相对 manager-wipe 只改变 Recovery 主程序、构建属性与 ramdisk 摘要，其他业务库和 profile 不变。下一明确边界是实际目标格式化工具与读回/修复接续及 GUI/挂载生命周期，不继续扩增等价命令夹具。
