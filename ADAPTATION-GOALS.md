@@ -1,5 +1,7 @@
 # 小米 15S Pro（dijun）TWRP 多版本适配目标与离线验收规范
 
+2026-11-12 ARM64安装链证据：新增真正AArch64动态ELF无害updater，在原始主机ZIP安装链经签名/摘要、选择/提取、fork、协议管道和wait执行20场景通过；当前镜像linker/libc及固定QEMU在明确execve边界接入，构造函数/main参数、进度、缺库/缺符号拒绝、信号/退出状态与失败前写入均有核对。原主机36项回归通过，定向审计见logs/zip-arm64-chain-audit.json，范围见docs/ZIP-ARM64-EXECUTION.md。生产源码和764项镜像来源未变，沿用recovery-dijun-unified-sideload-reboot.img（022af2fc…），本轮无新构建。不是完整ARM64 Recovery、原厂OTA/update_engine、实际USB/FUSE或GUI验收，完整12组仍进行中。NV普通挂载隐藏/拒绝和OTG发现修正保留；设置与OS4震动用户正常确认保留。源码/文档/测试按约定同步GitHub，编译文件不上传。
+
 GitHub同步检查点：0058源码、补丁、测试与文档已推送提交`6404774b290a8a6a0046400b386a590c9ca21f53`，核对远端main一致，公开CI通过（run 43223343428）。公开的是审计脚本与`docs/CURRENT-VALIDATION.json`摘要；完整本地`logs/`报告和编译镜像不上传。本条进度记录随后另批同步，不将检查点提交号冒称始终为最新HEAD。
 
 2026-11-12 sideload重启交接：补丁0058将minadbd成功ACK且USB恢复成功后的system/bootloader/fastboot/recovery请求交给GUI统一退出/重启，等待启动流程、后台命令和侧载worker结束；ORS收到重启即停止脚本。修复完成状态先发布、running标志后清除导致析构可能取消待交接请求的竞态：状态发布与取消检查共用mutex。最终19场景通过，修复前同组15失败；生命周期33/实际ZIP侧载链27回归通过。installclean及make -j$(nproc)30并发构建`recovery-dijun-unified-sideload-reboot.img`，SHA256 `022af2fccb1040b7537b989c9c25d6c57ba844a27f11fae652d1f73bd93a7d2a`，764来源/六配置封装通过；同镜像脚本结果与交付审计见logs/sideload-reboot-delivery.json。Rescue/BCB未实现，真实minadbd/USB/FUSE、完整ORS和实机重启未验收。继承0054 NV普通挂载隐藏/双向拒绝、0048 OTG发现修正；设置和OS4震动用户确认保留。源码文档按每批次同步公开GitHub，镜像不上传；完整12组保持进行中。

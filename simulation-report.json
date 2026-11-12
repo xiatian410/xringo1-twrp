@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "Full-page GUI routes, ARM updater/OTA payload and actual USB/FUSE sideload remain open. Package chain now covers original sideload core/GUI or actual ORS branch through real ZIP/digest/extraction/updater fork/exec and private minadbd socket: 27 scenarios, old19 failures. Property/FUSE/mount/cache/USB remain fixtures. No physical or GUI acceptance."
+    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance."
   ],
   "hardware_unverified": [
     "motor output",
@@ -2523,6 +2523,24 @@
       "result": "pass",
       "grade": "S2",
       "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
+    },
+    {
+      "name": "zip-genuine-arm64-updater",
+      "evidence": "logs/zip-install-arm64.json",
+      "evidence_sha256": "e41a83c9ad79d01c110ca8b409749c9cb599bdd66fd1f5f29e8bb2498c6c4751",
+      "count": 20,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Original host ZIP install chain with genuine ARM64 payloads. Test-only QEMU launch boundary for the production ZIP install chain.\n\nThe host parent still executes original extraction, argv construction, pipe,\nfork, protocol parser and wait. Its execve boundary launches QEMU/linker with\nthe extracted ARM64 payload and the unchanged updater arguments. No binfmt,\ndevice, ARM parent process, production updater logic or OTA engine is tested.\n"
+    },
+    {
+      "name": "zip-arm64-native-regression",
+      "evidence": "logs/zip-arm64-host-regression.json",
+      "evidence_sha256": "e48ff1789250424fe043beb049494e8f98e28d531244ac91e723c69ddb1d7881",
+      "count": 36,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Execute actual TWinstall_zip -> mapped package -> ZIP/verifier/digest -> updater.\n\nNative x86_64 builds of the current AOSP ZIP and TWRP sources run in a private\nchroot with ordinary files and locally generated test keys. Actual BoringSSL\nhost archive and AOSP host libbase/log/libc++ are hashed dependencies. Property,\nDataManager/progress and unmount are doubles. ABI-named updaters contain host\ncode solely to check selection; no ARM64/OTA payload/GUI/sideload/device run.\n"
     }
   ],
   "source_review_followups": [
@@ -3016,7 +3034,7 @@
     "image_route": "logs/image-install-chain.json",
     "updater": "logs/zip-updater.json",
     "before": "logs/zip-updater-before.json",
-    "boundaries": "Actual public ZIP backend and worker join native TWinstall_zip/package/digest/extraction/fork/exec; mounts/cache wipe/block unlock/progress/DataManager/operation/performance doubles. Independent signature-acceptance and image-route checks. No GUI clicks, ARM updater, OZIP, AB payload/update_engine, sideload/FUSE or physical writes.",
+    "boundaries": "Actual public ZIP backend/worker has native chain coverage. Separate host TWinstall_zip/package/signature/digest/extraction/fork/protocol/wait chain executes genuine harmless AArch64 ELF through an explicit QEMU execve bridge with current-image linker/libc:20 cases; native regression36. Mount/cache/block/progress/property boundaries remain doubles. No full ARM64 recovery parent, stock OTA updater, OZIP, AB payload/update_engine, real USB/FUSE sideload, GUI clicks or physical writes.",
     "selection_patch": "dtsrc/O1_asic_dual/patches/0053-zip-updater-abi-selection.patch",
     "zip_chain": "logs/zip-install-chain.json",
     "zip_chain_before": "logs/zip-install-chain-before.json",
@@ -3024,7 +3042,9 @@
     "queue_patch": "dtsrc/O1_asic_dual/patches/0055-zip-queue-cache-completion.patch",
     "queue": "logs/zip-queue-chain.json",
     "queue_before": "logs/zip-queue-before.json",
-    "image_route_current": "logs/zip-queue-image-regression.json"
+    "image_route_current": "logs/zip-queue-image-regression.json",
+    "arm64_fixture": "logs/zip-install-arm64.json",
+    "native_current_regression": "logs/zip-arm64-host-regression.json"
   },
   "os4_haptics_user_confirmation": {
     "date": "2026-11-12",

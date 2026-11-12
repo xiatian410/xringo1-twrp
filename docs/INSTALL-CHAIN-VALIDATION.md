@@ -1,5 +1,7 @@
 # 镜像路由与 ZIP 安装链离线验收
 
+2026-11-12 新增[真正ARM64测试updater接续](ZIP-ARM64-EXECUTION.md)：20项执行当前镜像linker/libc和ZIP内AArch64 ELF，原主机36项回归通过。安装父进程仍为主机程序，execve处显式桥接QEMU；不是完整ARM Recovery、真实OTA updater或payload验收。当前生产镜像保持sideload-reboot候选，未新增生产修正或构建。下文“ARM updater未执行”是此前检查点的范围。
+
 2026-11-12 ZIP 队列接续：`tests/zip_queue_chain_test.py`从真实公开 backend 的 `start_zip`进入后台线程，运行 `run_zip → flash_zip → TWinstall_zip → 实际 ZIP/摘要/提取 → fork/exec/wait`，随后读取状态、acknowledge 和析构/join。23 项通过，固定 ZIP 时间戳后的修复前/后输入 SHA256 映射完全一致；旧 backend 同组有 5 项失败，报告为 `logs/zip-queue-chain.json`及`logs/zip-queue-before.json`。
 
 复现的两个缺陷是：每次 updater 都会重置传出的 wipe_cache，导致前一个包请求清缓存而后一个包未请求时丢失；WipeByPath 返回失败也没有改变最终 DONE 状态。维护补丁0055为每包使用独立输出并累计请求，队列退出时统一清理；清理失败通过现有 `unable_to_wipe`本地化消息记录，并发布 FAILED。已完成包数保留，不将完成缓存清理当作回滚或重新执行包。

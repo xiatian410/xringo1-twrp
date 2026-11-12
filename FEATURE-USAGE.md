@@ -1,5 +1,7 @@
 # 功能入口与当前使用边界
 
+ZIP安装链新增20项真正ARM64测试载荷的离线执行证据，见[执行范围](docs/ZIP-ARM64-EXECUTION.md)；使用入口和生产镜像未改变。真实OTA updater/update_engine、payload及实机写入仍未验收，不能把测试ELF成功当作任意刷机包兼容。
+
 本地最新候选`recovery-dijun-unified-sideload-reboot.img`继承NV普通挂载限制和OTG误枚举修正；侧载协议重启请求接入GUI统一路由，Rescue暂不支持。当前为离线候选，不能据此称实体重启或USB已验收。
 
 当前本地离线候选与验证状态以`simulation-report.json`及`ADAPTATION-GOALS.md`为准。NVData/NVCFG/protect_f/s不出现在普通挂载操作列表，GUI手动操作会被拒绝；Recovery内部用途和原厂fstab保持。源码批次同步公开GitHub，编译文件仅保留本地。

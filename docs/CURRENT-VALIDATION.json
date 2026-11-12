@@ -229,6 +229,22 @@
       "failures": 0,
       "local_report_sha256": "f1b48b2e171110ae617a9410b037cbcaf3098a2c1c14d0d85c2b1ff045f39910",
       "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
+    },
+    {
+      "name": "zip-genuine-arm64-updater",
+      "status": "PASS",
+      "cases": 20,
+      "failures": 0,
+      "local_report_sha256": "e41a83c9ad79d01c110ca8b409749c9cb599bdd66fd1f5f29e8bb2498c6c4751",
+      "scope": "Original host ZIP install chain with genuine ARM64 payloads. Test-only QEMU launch boundary for the production ZIP install chain.\n\nThe host parent still executes original extraction, argv construction, pipe,\nfork, protocol parser and wait. Its execve boundary launches QEMU/linker with\nthe extracted ARM64 payload and the unchanged updater arguments. No binfmt,\ndevice, ARM parent process, production updater logic or OTA engine is tested.\n"
+    },
+    {
+      "name": "zip-arm64-native-regression",
+      "status": "PASS",
+      "cases": 36,
+      "failures": 0,
+      "local_report_sha256": "e48ff1789250424fe043beb049494e8f98e28d531244ac91e723c69ddb1d7881",
+      "scope": "Execute actual TWinstall_zip -> mapped package -> ZIP/verifier/digest -> updater.\n\nNative x86_64 builds of the current AOSP ZIP and TWRP sources run in a private\nchroot with ordinary files and locally generated test keys. Actual BoringSSL\nhost archive and AOSP host libbase/log/libc++ are hashed dependencies. Property,\nDataManager/progress and unmount are doubles. ABI-named updaters contain host\ncode solely to check selection; no ARM64/OTA payload/GUI/sideload/device run.\n"
     }
   ]
 }

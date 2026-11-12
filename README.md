@@ -6,6 +6,8 @@
 
 ## 当前修正
 
+ZIP安装离线检查现已接续真正的ARM64测试updater（20场景），使用当前镜像Android linker/libc；父安装器及QEMU启动桥的限制见[范围说明](docs/ZIP-ARM64-EXECUTION.md)。当前镜像没有因此变化；不代表原厂OTA/payload或设备验收。
+
 最新本地候选为`recovery-dijun-unified-sideload-reboot.img`，包含NV普通挂载限制、OTG控制器完整模式匹配及侧载重启交接。19项重启主机回归、33项生命周期和27项ZIP侧载链通过；实际USB/BCB/实机仍未验收。源码按每批次修改同步本公开仓库，编译镜像不上传。
 
 - OTG：完整匹配 USB 控制器路径，修复把内置 UFS 分区列成大量 0 B OTG 存储的缺陷。
