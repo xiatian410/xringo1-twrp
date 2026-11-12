@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "dc789ffac6d60369024205176589735380d5223d436c379edd0968ed13fa984d",
+    "sha256": "e97728fe3789752edba58e765cdf6271ab5dde51f15c5a0c448d4c591bc5f399",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -28,7 +28,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "76be6bb9cf9624d871e9774160a92d40650506572262e1718fe4a81e91dc112f",
+    "sha256": "8ab1836dc7434673bf09529b0e9291a7d1ea05442d10d72df1c30decb56935a7",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -40,11 +40,15 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "d525bf155a7b35611865262d38ffa64add17162870ad20b52af8a455a5a895da",
+    "sha256": "ea0a870d87fdd8795724677d6614a1801cc751ad1b970837e997761ccbd57c75",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
     "sha256": "88b66a9cb1f6d747bc2034ee52ad94bcc024f20b5c94b4449b59b70ca747e705",
+    "mode": "0o644"
+  },
+  "docs/AB-COMMAND-VALIDATION.md": {
+    "sha256": "d301c30b27757c48cfffec63aa960c0a146384b782e7f1e756192ccfb33e1e71",
     "mode": "0o644"
   },
   "docs/ARCHIVE-PIPELINE-ADAPTATION.md": {
@@ -68,7 +72,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "4d3164477fd3547563bc59b98107ff4eb17176f426920db3f92d67ed347276f4",
+    "sha256": "daa817912560759ffafd089789b97be15ed0fa35c50df89d633d38b91e4d7dfb",
     "mode": "0o644"
   },
   "docs/DELIVERY-EVIDENCE-STATUS.md": {
@@ -152,7 +156,7 @@
     "mode": "0o644"
   },
   "docs/INSTALL-CHAIN-VALIDATION.md": {
-    "sha256": "1362ef4a2e100da43f5278227952a386c6d6314c4990b551fe662e52a8002f59",
+    "sha256": "be998bd6debc029cc2ba91ace02949ba95fa3369c3e4e60d22d281e6022c5040",
     "mode": "0o644"
   },
   "docs/MODULE-STATE-ADAPTATION.md": {
@@ -255,6 +259,10 @@
     "sha256": "e522dbd867a4659d3a9301905de13b994f7d908ddf97be350b882aad370672ed",
     "mode": "0o644"
   },
+  "docs/REFRESH-STUCK-INVESTIGATION.md": {
+    "sha256": "93360410c23c5869988efeebfe7c2b54a69cf4b5efbb5ea3c637681c23264609",
+    "mode": "0o644"
+  },
   "docs/RESTORE-SESSION-ADAPTATION.md": {
     "sha256": "1cad042ca46b858f45507d2e66b24ad605ad9bf0369600b811978c7eabbd2c3e",
     "mode": "0o644"
@@ -300,7 +308,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "11f1b094a0819b2ffd728a91189bccca77b570b4812468adc9ff6485a1d12f0f",
+    "sha256": "dbaaa4b0f0b86afd6eb23ceb91bcf146dbd273fb2343d61cfcf5a7b9604dedf4",
     "mode": "0o644"
   },
   "docs/ZIP-ARM64-EXECUTION.md": {
@@ -615,8 +623,12 @@
     "sha256": "34f50d46c8263169f42105bda9f0184a4f75b4861f444fe284fe186a51e3a1ea",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0062-ab-payload-command-validation.patch": {
+    "sha256": "f65aefcdaea5803835e5b6e48ecd76763701b51835460f88d90bc7cdba25359f",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "f70519dcfccf814465745af718c9de3f14a8c4e2e7152b0e739db780faec244a",
+    "sha256": "38b091b6c033429e2747f27df2496f0f83ec725f4cc6858d27c25b7fe170422c",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -971,8 +983,16 @@
     "sha256": "acb0e60ab1753bbd69a36547e64a3dff0efd0891883ef06437f40ad10ca5acde",
     "mode": "0o644"
   },
+  "scripts/analyze_refresh_capture.py": {
+    "sha256": "c2e83823c8799cde544e6b8eb767c55f9be5bf4362e6e597c74cdac92f4beabd",
+    "mode": "0o644"
+  },
   "scripts/analyze_touch_window.py": {
     "sha256": "33dfc7a181a2a715b01b36432cb35841e421c38e4bcee6749a97928b43902012",
+    "mode": "0o644"
+  },
+  "scripts/audit_ab_command_delivery.py": {
+    "sha256": "3091f0649274f9e588cc7fa5458a1f64ab14323512fd24ca5a9b3739d6131356",
     "mode": "0o644"
   },
   "scripts/audit_ce_lifecycle_delivery.py": {
@@ -1496,7 +1516,7 @@
     "mode": "0o644"
   },
   "scripts/sync_github.py": {
-    "sha256": "9a0221ecf02956d916fd3e28d0091641eee9ec317566c36be815977a9bafe9b1",
+    "sha256": "712a73ca9e2be629dcafedc23cb903c0ea2ee19ac3b189ccff50693c3abe0e87",
     "mode": "0o644"
   },
   "scripts/touch_stack.py": {
@@ -1544,11 +1564,19 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "c80986dcaeb6f1967e711f2b3085d876b112cbc54e836a3741a4d819c32858cc",
+    "sha256": "4eb5d5c788bff76b268870690cee244723050f1f23119210e0ee154b5bb5d3e8",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "8f8d364ea24dea57965d574f4f629b9a5b70a3dfb6eb1ae7435eb339531619f6",
+    "sha256": "c5b21144ba0467456c714da1b7d2b0e2ce846141a96d23e364f8340c495a7ec9",
+    "mode": "0o644"
+  },
+  "tests/ab_command_chain_test.cpp": {
+    "sha256": "6ce4be70a5af8903aae112666c83dfea2b87ce5077de3fb16411b41d24748a76",
+    "mode": "0o644"
+  },
+  "tests/ab_command_chain_test.py": {
+    "sha256": "4c94f7e459490683d1312beb7024f0544b4dce82c49c3a6c1a2f66dbeb57fdf9",
     "mode": "0o644"
   },
   "tests/archive_pipeline_stubs.json": {
@@ -2059,6 +2087,14 @@
     "sha256": "399abfef910ac2ee1a2fd45a577bd380b912889365744ffeb74b788c2b15f12b",
     "mode": "0o644"
   },
+  "tests/refresh_progress_test.cpp": {
+    "sha256": "cc925bdd16f57b12f3efac0b45be442dc0033d863a13d2219a7291cb92bf267c",
+    "mode": "0o644"
+  },
+  "tests/refresh_progress_test.py": {
+    "sha256": "89fd29ff4f7d5974578c6ff2a33ef5636b8c37e1b874e89e200328c7896ae30c",
+    "mode": "0o644"
+  },
   "tests/repair_exit_status_test.py": {
     "sha256": "6faf038144bdbf2c48fb8e400b4865d590fd140509e2b8eb29605bc448006a52",
     "mode": "0o644"
@@ -2413,6 +2449,18 @@
   },
   "tools/haptics-diagnostic/haptics-diagnostic.c": {
     "sha256": "98143fe14edeb092330d29e848fe3686adba5f2093ef0ba322b84469fdfcd5df",
+    "mode": "0o644"
+  },
+  "tools/refresh-state-collector/README.md": {
+    "sha256": "5dca11bd1464ac4a280df92ed1cded3c7bacc8130925988a000acc4081d7f8f0",
+    "mode": "0o644"
+  },
+  "tools/refresh-state-collector/collect-refresh-state.ps1": {
+    "sha256": "ebd7ab6cd739ddee2b9e4b739e8797aa40eace77c1160b73bd0d901e4048f5ce",
+    "mode": "0o644"
+  },
+  "tools/refresh-state-collector/collect-refresh-state.sh": {
+    "sha256": "178033a517f428789b0fd11ca998aac842b2170f7a24c3d3908008f39cbaff89",
     "mode": "0o644"
   },
   "tools/settings-state-collector/collect-settings-state.ps1": {

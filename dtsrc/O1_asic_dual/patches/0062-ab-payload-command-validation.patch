@@ -1,0 +1,99 @@
+--- a/twrpinstall/installcommand.cpp
++++ b/twrpinstall/installcommand.cpp
+@@ -15,6 +15,7 @@
+  */
+ 
+ #include <stdlib.h>
++#include <algorithm>
+ #include <string>
+ #include <vector>
+ 
+@@ -206,12 +207,15 @@
+ abupdate_binary_command(const char* path, int retry_count __unused,
+                       int status_fd, std::vector<std::string>* cmd)
+ {
++    if (cmd == nullptr) return INSTALL_ERROR;
++    cmd->clear();
+     auto package = Package::CreateMemoryPackage(path);
+ 	if (!package) {
+ 		return INSTALL_CORRUPT;
+ 	}
+ 
+ 	ZipArchiveHandle Zip = package->GetZipArchiveHandle();
++    if (Zip == nullptr) return INSTALL_CORRUPT;
+     read_source_target_build(Zip);
+     int ret = check_newer_ab_build(Zip);
+     if (ret) {
+@@ -220,11 +224,15 @@
+ 
+     // For A/B updates we extract the payload properties to a buffer and obtain
+     // the RAW payload offset in the zip file.
+-    // if (!Zip->EntryExists(AB_OTA_PAYLOAD_PROPERTIES)) {
+ 	std::string binary_name(AB_OTA_PAYLOAD_PROPERTIES);
+     ZipEntry64 binary_entry;
+     if (FindEntry(Zip, binary_name, &binary_entry) != 0) {
+         printf("Can't find %s\n", AB_OTA_PAYLOAD_PROPERTIES);
++        return INSTALL_CORRUPT;
++    }
++    if (binary_entry.uncompressed_length == 0 ||
++        binary_entry.uncompressed_length > std::vector<unsigned char>().max_size()) {
++        printf("Invalid payload properties size\n");
+         return INSTALL_CORRUPT;
+     }
+     std::vector<unsigned char> payload_properties(
+@@ -233,8 +241,12 @@
+                                   binary_entry.uncompressed_length);
+     if (extract_ret != 0) {
+         printf("Can't extract %s\n", AB_OTA_PAYLOAD_PROPERTIES);
+-        return false;
+-    }
++        return INSTALL_CORRUPT;
++    }
++    // execve arguments cannot carry embedded NULs: never silently truncate
++    // the headers after ZIP extraction has validated the complete contents.
++    if (std::find(payload_properties.begin(), payload_properties.end(), 0) !=
++        payload_properties.end()) return INSTALL_CORRUPT;
+ 
+     std::string ab_ota_payload(AB_OTA_PAYLOAD);
+     ZipEntry64 ab_ota_payload_entry;
+@@ -242,12 +254,22 @@
+         printf("Can't find %s\n", AB_OTA_PAYLOAD);
+         return INSTALL_CORRUPT;
+     }
+-    // long payload_offset = Zip->GetEntryOffset(AB_OTA_PAYLOAD);
+-    long payload_offset = ab_ota_payload_entry.offset;
++    // update_engine reads the ZIP directly at this offset, without inflation.
++    const auto payload_offset = ab_ota_payload_entry.offset;
++    const auto package_size = package->GetPackageSize();
++    if (ab_ota_payload_entry.method != kCompressStored || payload_offset < 0 ||
++        ab_ota_payload_entry.uncompressed_length == 0 ||
++        ab_ota_payload_entry.compressed_length != ab_ota_payload_entry.uncompressed_length ||
++        static_cast<uint64_t>(payload_offset) > package_size ||
++        ab_ota_payload_entry.uncompressed_length >
++            package_size - static_cast<uint64_t>(payload_offset)) {
++        printf("Invalid raw payload entry\n");
++        return INSTALL_CORRUPT;
++    }
+     *cmd = {
+         "/system/bin/update_engine_sideload",
+         android::base::StringPrintf("--payload=file://%s", path),
+-        android::base::StringPrintf("--offset=%ld", payload_offset),
++        android::base::StringPrintf("--offset=%" PRId64, static_cast<int64_t>(payload_offset)),
+         "--headers=" + std::string(payload_properties.begin(),
+                                    payload_properties.end()),
+         android::base::StringPrintf("--status_fd=%d", status_fd),
+--- a/twrpinstall/twinstall.cpp
++++ b/twrpinstall/twinstall.cpp
+@@ -167,10 +167,10 @@
+ 		LOGERR("Unknown zip type %i\n", ztype);
+ 		ret_val = INSTALL_CORRUPT;
+ 	}
+-    if (ret_val) {
++    if (ret_val || args.empty() || args.front().empty()) {
+         close(pipe_fd[0]);
+         close(pipe_fd[1]);
+-        return ret_val;
++        return ret_val ? ret_val : INSTALL_ERROR;
+     }
+ 
+ 	// Convert the vector to a NULL-terminated char* array suitable for execv.

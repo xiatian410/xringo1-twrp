@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-xring-label.img",
-  "image_sha256": "6f0c39e745f79b18e80657117f668d0d41a1af8ec97312883593f8f4f73e12f2",
-  "image_status": "Clean-built candidate: splash displays XRING O1 via display-only property; preserves product identifiers, five image targets and NV GUI action restrictions. Hardware unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-ab-command.img",
+  "image_sha256": "704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb",
+  "image_status": "Clean-built offline candidate: A/B command preparation rejects property extraction errors and invalid raw ZIP payload entries before fork; inherits XRING O1 and partition action fixes. Actual OTA/update_engine unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance."
+    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance. A/B command preparation now has21-case native coverage with real ZIP and harmless engine; not payload application."
   ],
   "hardware_unverified": [
     "motor output",
@@ -2685,6 +2685,42 @@
       "grade": "S1/S2",
       "result": "pass",
       "scope": "Offline source/packaging and original display method; no phone or rendered hardware validation."
+    },
+    {
+      "name": "ab-command-chain",
+      "evidence": "logs/ab-command-chain.json",
+      "evidence_sha256": "ca270f5ad741e53c88c2b944f0ab15b47a87ce33de4bc5f66eeb525f0cc49425",
+      "count": 21,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Original A/B metadata/package/ZIP command preparation -> fork/pipe/wait.\n\nA harmless native executable replaces update_engine_sideload only at execve.\nIt verifies argv and actual bytes at the ZIP payload offset, reports progress,\nand never installs a payload. Android properties/progress are explicit doubles.\nNo real updater, partition writes, signature validation, GUI, ARM64 or device.\n"
+    },
+    {
+      "name": "ab-command-before",
+      "evidence": "logs/ab-command-before.json",
+      "evidence_sha256": "779557b469e62bf839173b1e90e17ed9a3ff3bc937bf263830026a493fe91d26",
+      "count": 21,
+      "grade": "S2",
+      "result": "expected_failures",
+      "scope": "Original A/B metadata/package/ZIP command preparation -> fork/pipe/wait.\n\nA harmless native executable replaces update_engine_sideload only at execve.\nIt verifies argv and actual bytes at the ZIP payload offset, reports progress,\nand never installs a payload. Android properties/progress are explicit doubles.\nNo real updater, partition writes, signature validation, GUI, ARM64 or device.\n"
+    },
+    {
+      "name": "ab-command-zip-regression",
+      "evidence": "logs/ab-command-zip-regression.json",
+      "evidence_sha256": "b9e9799addce0862b55ee852a27575b1fb5d47d296ec06e4f111820bb0a51a99",
+      "count": 36,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Execute actual TWinstall_zip -> mapped package -> ZIP/verifier/digest -> updater.\n\nNative x86_64 builds of the current AOSP ZIP and TWRP sources run in a private\nchroot with ordinary files and locally generated test keys. Actual BoringSSL\nhost archive and AOSP host libbase/log/libc++ are hashed dependencies. Property,\nDataManager/progress and unmount are doubles. ABI-named updaters contain host\ncode solely to check selection; no ARM64/OTA payload/GUI/sideload/device run.\n"
+    },
+    {
+      "name": "refresh-progress-terminal-mapping",
+      "evidence": "logs/refresh-progress.json",
+      "evidence_sha256": "6535a364d053d70d16f83d9ef66eef22a76add748d4ff207dcfe275402cc1d2d",
+      "count": 3,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Actual tool progress adapter + LVGL terminal transition; no Android worker/DRM."
     }
   ],
   "source_review_followups": [
@@ -3178,7 +3214,7 @@
     "image_route": "logs/image-install-chain.json",
     "updater": "logs/zip-updater.json",
     "before": "logs/zip-updater-before.json",
-    "boundaries": "Actual public ZIP backend/worker has native chain coverage. Separate host TWinstall_zip/package/signature/digest/extraction/fork/protocol/wait chain executes genuine harmless AArch64 ELF through an explicit QEMU execve bridge with current-image linker/libc:20 cases; native regression36. Mount/cache/block/progress/property boundaries remain doubles. No full ARM64 recovery parent, stock OTA updater, OZIP, AB payload/update_engine, real USB/FUSE sideload, GUI clicks or physical writes.",
+    "boundaries": "Actual public ZIP backend/worker has native chain coverage. Separate host TWinstall_zip/package/signature/digest/extraction/fork/protocol/wait chain executes genuine harmless AArch64 ELF through an explicit QEMU execve bridge with current-image linker/libc:20 cases; native regression36. Mount/cache/block/progress/property boundaries remain doubles. No full ARM64 recovery parent, stock OTA updater, OZIP, AB payload/update_engine, real USB/FUSE sideload, GUI clicks or physical writes. A/B metadata/real ZIP command preparation and pipe/fork/protocol/wait now covered with harmless host engine replacement:21 cases, old8 failures; actual update_engine/payload application remains open.",
     "selection_patch": "dtsrc/O1_asic_dual/patches/0053-zip-updater-abi-selection.patch",
     "zip_chain": "logs/zip-install-chain.json",
     "zip_chain_before": "logs/zip-install-chain-before.json",
@@ -3188,7 +3224,8 @@
     "queue_before": "logs/zip-queue-before.json",
     "image_route_current": "logs/zip-queue-image-regression.json",
     "arm64_fixture": "logs/zip-install-arm64.json",
-    "native_current_regression": "logs/zip-arm64-host-regression.json"
+    "native_current_regression": "logs/zip-arm64-host-regression.json",
+    "ab_command": "logs/ab-command-chain.json"
   },
   "os4_haptics_user_confirmation": {
     "date": "2026-11-12",
@@ -3263,5 +3300,12 @@
     "original_vendor_boot_origins": 6,
     "production_changes": false,
     "scope": "Original ARM64 read/set and OS4 refresh callbacks with MMIO/PMIC/calendar fixtures. Full probe/hctosys/calendar/cold-start and physical drift remain open."
+  },
+  "refresh_stuck_investigation": {
+    "status": "unresolved-presentation",
+    "document": "docs/REFRESH-STUCK-INVESTIGATION.md",
+    "local_analysis": "logs/refresh-capture-analysis.json",
+    "production_fix": false,
+    "conclusion": "User logs show refresh successfully ended; non-atomic main-thread sample passes XRING DRM commit, not proof of sustained hang."
   }
 }

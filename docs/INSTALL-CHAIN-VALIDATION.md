@@ -1,5 +1,7 @@
 # 镜像路由与 ZIP 安装链离线验收
 
+2026-11-13 A/B命令修正：0062 将payload_properties提取失败从成功码改为INSTALL_CORRUPT，拒绝空/NUL headers、压缩/空/越界payload，fork前防御空执行命令。真实ZIP/原命令与pipe/fork/wait接续21项通过，旧版同组8失败，普通ZIP36项回归通过。无害主机程序替代更新器，不执行真实OTA。installclean后30并发构建ab-command候选，SHA256 704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb，六profile封装通过；继承XRING O1及NV限制。见docs/AB-COMMAND-VALIDATION.md，完整12组保持进行中，源码文档同步GitHub、编译文件不上传。
+
 2026-11-12 新增[真正ARM64测试updater接续](ZIP-ARM64-EXECUTION.md)：20项执行当前镜像linker/libc和ZIP内AArch64 ELF，原主机36项回归通过。安装父进程仍为主机程序，execve处显式桥接QEMU；不是完整ARM Recovery、真实OTA updater或payload验收。当前生产镜像保持sideload-reboot候选，未新增生产修正或构建。下文“ARM updater未执行”是此前检查点的范围。
 
 2026-11-12 ZIP 队列接续：`tests/zip_queue_chain_test.py`从真实公开 backend 的 `start_zip`进入后台线程，运行 `run_zip → flash_zip → TWinstall_zip → 实际 ZIP/摘要/提取 → fork/exec/wait`，随后读取状态、acknowledge 和析构/join。23 项通过，固定 ZIP 时间戳后的修复前/后输入 SHA256 映射完全一致；旧 backend 同组有 5 项失败，报告为 `logs/zip-queue-chain.json`及`logs/zip-queue-before.json`。

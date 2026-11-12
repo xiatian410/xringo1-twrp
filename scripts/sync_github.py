@@ -31,7 +31,7 @@ def candidates():
         path=ROOT/name
         if path.is_file():yield path
     for name in ['scripts', 'tests', 'docs', 'dtsrc/O1_asic_dual', '.github', 'manifests',
-                 'tools/haptics-diagnostic', 'tools/settings-state-collector']:
+                 'tools/haptics-diagnostic', 'tools/settings-state-collector', 'tools/refresh-state-collector']:
         for path in sorted((ROOT/name).rglob('*')):
             if not path.is_file() or path.is_symlink():continue
             rel=path.relative_to(ROOT)

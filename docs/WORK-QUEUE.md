@@ -1,13 +1,16 @@
 # 当前工作队列与验收边界
 
-本页于 2026-11-12 按用户“重复工作和任务”的反馈整理。完整目标仍为 [ADAPTATION-GOALS.md](../ADAPTATION-GOALS.md)，不删减原要求；历史流水记录保留作追溯，不再从历史“仍未完成”段落反复开启同一调查。
+## 紧急优先：备份刷新容量不结束（2026-11-13）
+
+现场ZIP已收到并分析，见 [调查说明](REFRESH-STUCK-INVESTIGATION.md)。刷新已在约5.15秒内成功结束，采样时主线程经过XRING DRM atomic commit，但只有一次非原子内核栈/wchan/syscall读取，不证明长期驱动阻塞。当前优先转向页面终态/提交证据；不按“扫描卡死”改容量逻辑。原LVGL终态映射三个具体场景通过，现场发布/轮询/实际输出仍未证明；未发布本故障修复版。OTA后续暂缓，0062既有工作归档同步。OS4震动正常确认不变。
+
 
 ## 当前状态
 
 - OS4 震动调用正常：用户已确认，退出当前调查队列。
 - backup-manifest 基线设置正常：用户已确认；没有新故障证据时不重新诊断设置。
 - NV 普通挂载限制、OTG 完整控制器匹配已有生产补丁并进入后续候选，分别为 0054、0048。离线回归不能冒充新候选实机验收。
-- 最新生产候选为 `recovery-dijun-unified-xring-label.img`，SHA256 `6f0c39e745f79b18e80657117f668d0d41a1af8ec97312883593f8f4f73e12f2`（新增加载页 XRING O1 显示）；分区界面修正范围见 [说明](PARTITION-ACTIONS.md)。
+- 最新生产候选为 `recovery-dijun-unified-ab-command.img`，SHA256 `704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb`；保留 XRING O1 与分区操作修正。
 - 公开仓库已创建；每个连贯修改批次同步源码、测试、文档并核对远端 HEAD，编译产物不上传。
 
 ## 已交付：用户报告的分区界面与加载页
@@ -57,4 +60,4 @@
 
 ## 启动链检查结论与安装链下一步
 
-当前 init/profile-cache/module/input/raw0 入口顺序复核未发现足以支持新生产修改的缺陷；自动报告/GUI/唤醒仍无新候选实机证据，保留边界，不重复叶函数模拟。后续转安装链：`twrpinstall/installcommand.cpp::abupdate_binary_command` 的属性提取失败返回 false（即 INSTALL_SUCCESS），且未校验 payload.bin 必须为未压缩连续内容。本轮仅核对源码，尚未修改或声称修复；下一步以真实 ZIP 复现错误返回及压缩 payload，再修正命令生成。用户显示名请求已优先完成。
+当前 init/profile-cache/module/input/raw0 入口顺序复核未发现足以支持新生产修改的缺陷；自动报告/GUI/唤醒仍无新候选实机证据，保留边界，不重复叶函数模拟。后续转安装链：`twrpinstall/installcommand.cpp::abupdate_binary_command` 的属性提取失败返回 false（即 INSTALL_SUCCESS），且未校验 payload.bin 必须为未压缩连续内容。已由0062修正并用真实ZIP复现前后差异，见 [A/B命令说明](AB-COMMAND-VALIDATION.md)。下一步需推进实际 update_engine 对合成 payload 的私有文件接续与快照/失败收尾，而不是继续拆分命令叶函数；当前不宣称原厂OTA安装完成。

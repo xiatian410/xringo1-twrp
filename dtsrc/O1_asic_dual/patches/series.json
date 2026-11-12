@@ -242,6 +242,10 @@
         {
           "file": "0061-splash-device-label.patch",
           "sha256": "34f50d46c8263169f42105bda9f0184a4f75b4861f444fe284fe186a51e3a1ea"
+        },
+        {
+          "file": "0062-ab-payload-command-validation.patch",
+          "sha256": "f65aefcdaea5803835e5b6e48ecd76763701b51835460f88d90bc7cdba25359f"
         }
       ],
       "result_files": {
@@ -328,7 +332,7 @@
         "backup_manifest.hpp": "220b34f93914e59c06a20e91876afcfbadca7aca3f254ca1dbb7988d30f39f22",
         "gui2/backend/mount_backend.h": "4cc5e65d3baae879156e640672cc79b55f4abeeee2cd9b58b60af38361c68ebb",
         "sysfs_device_match.hpp": "66987f6f13e174bb22ce057d022006b1eb0fe2cfa3069046c51e30f72063e941",
-        "twrpinstall/twinstall.cpp": "b78718bfbea5937d800deb975c5d915007606e29bcb7d5b63ed6fe093dd73c3a",
+        "twrpinstall/twinstall.cpp": "c99be8c70dffadc4f92e0b7ce356fbcf2e9d97ec468ebee8e34c7c50c6e81b0e",
         "gui2/backend/twrp_install_backend.cpp": "20ae186a20ea7232dfe25c03522d64be5ba97eaedc6e7579b1bec92fa0ab4c1b",
         "twrpinstall/adb_install.cpp": "1c736d722b69468144c8e30313497429f80613d3c25c29f5042ccf867e9b1665",
         "twrpinstall/include/twinstall/adb_install.h": "839476379dd5ecba5354055ba1a048baf02422ddd18b0edd4b7654459a0ee6c5",
@@ -339,7 +343,8 @@
         "gui2/backend/twrp_reboot_backend.h": "4c6767ff062d6b0885d0b9c9bff626fdf29ddb73b1d47ce1eff135d2bb0d925a",
         "gui2/backend/twrp_reboot_backend.cpp": "60d2739b437fce369daca252c4eb7e12c5dae1a3198e2eee127b52ef548431d8",
         "gui2/backend/twrp_wipe_backend.cpp": "0cfc499ccf3e0296bbdc028eedb8e43c5f1b722edbd43a380a1106311c6c0e73",
-        "gui2/backend/twrp_tools_backend.cpp": "03f005966682acbee62aaf4652358905bf03f368f100da3a1f2a1415d2e44ac2"
+        "gui2/backend/twrp_tools_backend.cpp": "03f005966682acbee62aaf4652358905bf03f368f100da3a1f2a1415d2e44ac2",
+        "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a"
       }
     },
     "system/sepolicy": {

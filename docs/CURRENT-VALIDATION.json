@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-xring-label.img",
-  "image_sha256": "6f0c39e745f79b18e80657117f668d0d41a1af8ec97312883593f8f4f73e12f2",
-  "production_sources": 770,
+  "image_name": "recovery-dijun-unified-ab-command.img",
+  "image_sha256": "704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb",
+  "production_sources": 772,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "User confirms invocation is normal.",
   "checks": [
@@ -366,6 +366,38 @@
       "cases": 4,
       "local_report_sha256": "263794258fdd5db29ed334a946acc76fa66b7e386120389a2e30de8d50f80ee9",
       "scope": "Offline source/packaging and original display method; no phone or rendered hardware validation."
+    },
+    {
+      "name": "ab-command-chain",
+      "status": "PASS",
+      "cases": 21,
+      "failures": 0,
+      "local_report_sha256": "ca270f5ad741e53c88c2b944f0ab15b47a87ce33de4bc5f66eeb525f0cc49425",
+      "scope": "Original A/B metadata/package/ZIP command preparation -> fork/pipe/wait.\n\nA harmless native executable replaces update_engine_sideload only at execve.\nIt verifies argv and actual bytes at the ZIP payload offset, reports progress,\nand never installs a payload. Android properties/progress are explicit doubles.\nNo real updater, partition writes, signature validation, GUI, ARM64 or device.\n"
+    },
+    {
+      "name": "ab-command-before",
+      "status": "FAIL",
+      "cases": 21,
+      "failures": 8,
+      "local_report_sha256": "779557b469e62bf839173b1e90e17ed9a3ff3bc937bf263830026a493fe91d26",
+      "scope": "Original A/B metadata/package/ZIP command preparation -> fork/pipe/wait.\n\nA harmless native executable replaces update_engine_sideload only at execve.\nIt verifies argv and actual bytes at the ZIP payload offset, reports progress,\nand never installs a payload. Android properties/progress are explicit doubles.\nNo real updater, partition writes, signature validation, GUI, ARM64 or device.\n"
+    },
+    {
+      "name": "ab-command-zip-regression",
+      "status": "PASS",
+      "cases": 36,
+      "failures": 0,
+      "local_report_sha256": "b9e9799addce0862b55ee852a27575b1fb5d47d296ec06e4f111820bb0a51a99",
+      "scope": "Execute actual TWinstall_zip -> mapped package -> ZIP/verifier/digest -> updater.\n\nNative x86_64 builds of the current AOSP ZIP and TWRP sources run in a private\nchroot with ordinary files and locally generated test keys. Actual BoringSSL\nhost archive and AOSP host libbase/log/libc++ are hashed dependencies. Property,\nDataManager/progress and unmount are doubles. ABI-named updaters contain host\ncode solely to check selection; no ARM64/OTA payload/GUI/sideload/device run.\n"
+    },
+    {
+      "name": "refresh-progress-terminal-mapping",
+      "status": "PASS",
+      "cases": 3,
+      "local_report_sha256": "6535a364d053d70d16f83d9ef66eef22a76add748d4ff207dcfe275402cc1d2d",
+      "scope": "Actual tool progress adapter + LVGL terminal transition; no Android worker/DRM."
     }
-  ]
+  ],
+  "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim."
 }
