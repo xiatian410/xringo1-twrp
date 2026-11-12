@@ -238,6 +238,10 @@
         {
           "file": "0060-partition-actions-policy.patch",
           "sha256": "ae7eeda040f8295f7a036c4a363dd9a7c27eead7496fe9e18a9bad9c31ffd583"
+        },
+        {
+          "file": "0061-splash-device-label.patch",
+          "sha256": "34f50d46c8263169f42105bda9f0184a4f75b4861f444fe284fe186a51e3a1ea"
         }
       ],
       "result_files": {
@@ -269,7 +273,7 @@
         "gui2/pages/decrypt_page.h": "a0b337a0813d646af6f70dea67b122063f819d6917ee8b311c64c9ca8e081897",
         "gui2/pages/page_router.h": "4b3850d8f395fb7944eec077e2b4715ab8e7dc3743f17d6eabfcca8fb0ff7326",
         "gui2/pages/page_state.h": "0f7ba76b94a7fa0bfd43277f8a8d247a202275975338b4db1c153457ad76c02b",
-        "twrp.cpp": "1657efdc05d0ae23ed5128d27dab522be9f26e7ebd581260301a0eef3ebfaf57",
+        "twrp.cpp": "9e5a1a5c0b967847ed56b512f6811859c73bee03aeae6aac118181049761f63d",
         "gui2/backend/status_backend.cpp": "5b62ad4a677ea2c1ad53f670a737c7813406c1a88b837972ce56f43a68918a3e",
         "twrpminui/haptics.cpp": "62399d18e29969e4a27bf37c6fe924dd8536912a8c6e0f548d56fb3e5230a0af",
         "gui2/backend/twrp_hardware_settings.cpp": "98863b74240108e4734a4e638bc4b6e0ec77d2eaa2bab98abdcea71cab936bf2",

@@ -1,5 +1,7 @@
 # dijun 维护与离线验证
 
+2026-11-13 加载页显示名：维护补丁0061支持仅供显示的 ro.twrp.device_label，设备树配置为 XRING O1，保留型号后缀及 O1_asic 产品/构建/OTA 标识。installclean 后 make -j$(nproc)30并发构建 recovery-dijun-unified-xring-label.img，SHA256 6f0c39e745f79b18e80657117f668d0d41a1af8ec97312883593f8f4f73e12f2；770来源/六profile封装、原显示方法 override/回退与镜像内属性/分区flags核对通过。继承0060刷入目标及NV限制，不重跑未改的功能链、不宣称实机验收。源码配置文档同步GitHub，镜像不上传。
+
 2026-11-13 分区界面功能修正：补齐确认刷入页五个 raw 目标，0060 将 NV 限制覆盖高级清除、修复、调整大小、更改文件系统及镜像刷入；混合清除列表执行前整体检查。此前仅限制挂载的覆盖不足已纠正。策略26/旧版同组19失败、实际 LVGL25、镜像写入链40、ARM64修复链7及挂载26通过；installclean 后30并发构建 partition-actions 候选，SHA256 f9a11c04da1669ef601ca52ee6c38a99f32011aedcab06a5005af4f74f386db6，769来源/六profile。详见 docs/PARTITION-ACTIONS.md；无实机操作，不冒称整体功能验收，完整12组保留。源码配置/测试/文档同步GitHub，编译文件不上传。
 
 2026-11-12 NV与公开同步复核：当前普通GUI隐藏NVData/NVCFG/protect等目标，后台双向拒绝手动挂载/卸载（含规范化路径及解析别名），26项当前源码复核通过；保留原厂fstab和内部核心访问，不是特权访问控制。公开仓库https://github.com/xiatian410/xringo1-twrp已确认PUBLIC；后续每个连贯源码/配置/测试/文档修改批次均执行scripts/sync_github.py --push并核对远端HEAD，镜像、编译文件、原厂blob、私钥和原始设备日志不上传。详见AGENTS.md和docs/GITHUB-PUBLICATION.md。

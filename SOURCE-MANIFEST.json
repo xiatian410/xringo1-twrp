@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "a8f49d307ac254124ea72b58c62812b79ee7aebde8d4f27780d4b204b3a79490",
+    "sha256": "dc789ffac6d60369024205176589735380d5223d436c379edd0968ed13fa984d",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -28,7 +28,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "721e363abce530be07ab542e5c31e505270694c6d48ca5e7c32e7bc198d47809",
+    "sha256": "76be6bb9cf9624d871e9774160a92d40650506572262e1718fe4a81e91dc112f",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -40,7 +40,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "4911ecf780feb902c19862a38b133957c16b14a950c1ec8ac39454a445d11dbc",
+    "sha256": "d525bf155a7b35611865262d38ffa64add17162870ad20b52af8a455a5a895da",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -68,7 +68,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "47b899d817b0417ae66a8ac3274e510c9448186bead3fd2ae1e541848fabf204",
+    "sha256": "4d3164477fd3547563bc59b98107ff4eb17176f426920db3f92d67ed347276f4",
     "mode": "0o644"
   },
   "docs/DELIVERY-EVIDENCE-STATUS.md": {
@@ -300,7 +300,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "ef9d6ce1bff8fc4b1ec48cea378228658a07d0a3478c1428fe811492ad3faa5f",
+    "sha256": "11f1b094a0819b2ffd728a91189bccca77b570b4812468adc9ff6485a1d12f0f",
     "mode": "0o644"
   },
   "docs/ZIP-ARM64-EXECUTION.md": {
@@ -611,8 +611,12 @@
     "sha256": "ae7eeda040f8295f7a036c4a363dd9a7c27eead7496fe9e18a9bad9c31ffd583",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0061-splash-device-label.patch": {
+    "sha256": "34f50d46c8263169f42105bda9f0184a4f75b4861f444fe284fe186a51e3a1ea",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "0b20307a8ff802e3d70ffea2cac617965002e2a2f9b968fe410f9a40baf4cb80",
+    "sha256": "f70519dcfccf814465745af718c9de3f14a8c4e2e7152b0e739db780faec244a",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -924,7 +928,7 @@
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/system.prop": {
-    "sha256": "b146ec60e7755f7bf4a47c668f3df1ac40dba96f7ed4002c51a96085c72fb6ef",
+    "sha256": "23440f53e57f2f8543780775175eb329a5d373874a216eebc9396774d93c4975",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/system/etc/task_profiles.json": {
@@ -1540,11 +1544,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "2cad5e71680b9203e1e3cce02126c4ff70438d1b4ec9cfa4a054200e5e67cfc6",
+    "sha256": "c80986dcaeb6f1967e711f2b3085d876b112cbc54e836a3741a4d819c32858cc",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "a6118b29152540961b0940a31661768b6bce8a8e2a959f69343574db07e4643b",
+    "sha256": "8f8d364ea24dea57965d574f4f629b9a5b70a3dfb6eb1ae7435eb339531619f6",
     "mode": "0o644"
   },
   "tests/archive_pipeline_stubs.json": {

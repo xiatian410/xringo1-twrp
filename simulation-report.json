@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-partition-actions.img",
-  "image_sha256": "f9a11c04da1669ef601ca52ee6c38a99f32011aedcab06a5005af4f74f386db6",
-  "image_status": "Clean-built offline candidate: adds five raw image targets; hides NV from advanced wipe/image targets and rejects stale/alias NV wipe/tool/image actions before mutation. Hardware unverified; full 12 groups remain active.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-xring-label.img",
+  "image_sha256": "6f0c39e745f79b18e80657117f668d0d41a1af8ec97312883593f8f4f73e12f2",
+  "image_status": "Clean-built candidate: splash displays XRING O1 via display-only property; preserves product identifiers, five image targets and NV GUI action restrictions. Hardware unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -2676,6 +2676,15 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Execute original GUI mount list/action methods with explicit core doubles.\n\nNo real mount, device or settings access. Confirms NV/protection rows are hidden\nand stale/manual toggle calls are rejected in both directions, including a\nresolved alias. Core mounting remains outside this UI policy.\n"
+    },
+    {
+      "name": "splash-device-label",
+      "evidence": "logs/splash-label-delivery.json",
+      "evidence_sha256": "263794258fdd5db29ed334a946acc76fa66b7e386120389a2e30de8d50f80ee9",
+      "count": 4,
+      "grade": "S1/S2",
+      "result": "pass",
+      "scope": "Offline source/packaging and original display method; no phone or rendered hardware validation."
     }
   ],
   "source_review_followups": [

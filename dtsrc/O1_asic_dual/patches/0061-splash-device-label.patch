@@ -1,0 +1,12 @@
+--- a/twrp.cpp
++++ b/twrp.cpp
+@@ -428,7 +428,8 @@
+ 	}
+ 
+ 	std::string device_label() override {
+-		const std::string device = android::base::GetProperty("ro.product.device", "");
++		const std::string device = android::base::GetProperty(
++			"ro.twrp.device_label", android::base::GetProperty("ro.product.device", ""));
+ 		const std::string model = android::base::GetProperty("ro.product.model", "");
+ 		if (device.empty() || model.empty())
+ 			return device + model;

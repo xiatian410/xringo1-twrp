@@ -29,3 +29,6 @@ ro.twrp.default_timezone_selection=TAIST-8;TAIDT
 
 # Resolve the stock physical CPU sensor by type, independently of zone numbering.
 ro.twrp.cpu_temp_type=cpu-crg
+
+# Human-readable splash label; keep product/device identity for OTA and init.
+ro.twrp.device_label=XRING O1

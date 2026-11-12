@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-partition-actions.img",
-  "image_sha256": "f9a11c04da1669ef601ca52ee6c38a99f32011aedcab06a5005af4f74f386db6",
-  "production_sources": 769,
+  "image_name": "recovery-dijun-unified-xring-label.img",
+  "image_sha256": "6f0c39e745f79b18e80657117f668d0d41a1af8ec97312883593f8f4f73e12f2",
+  "production_sources": 770,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "User confirms invocation is normal.",
   "checks": [
@@ -359,6 +359,13 @@
       "cases": 26,
       "local_report_sha256": "98d525e7f557e52376f05f699c086b7a692a9b450f61ea3e28cc4e7146317617",
       "scope": "Execute original GUI mount list/action methods with explicit core doubles.\n\nNo real mount, device or settings access. Confirms NV/protection rows are hidden\nand stale/manual toggle calls are rejected in both directions, including a\nresolved alias. Core mounting remains outside this UI policy.\n"
+    },
+    {
+      "name": "splash-device-label",
+      "status": "PASS",
+      "cases": 4,
+      "local_report_sha256": "263794258fdd5db29ed334a946acc76fa66b7e386120389a2e30de8d50f80ee9",
+      "scope": "Offline source/packaging and original display method; no phone or rendered hardware validation."
     }
   ]
 }

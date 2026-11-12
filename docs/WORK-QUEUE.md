@@ -7,10 +7,14 @@
 - OS4 震动调用正常：用户已确认，退出当前调查队列。
 - backup-manifest 基线设置正常：用户已确认；没有新故障证据时不重新诊断设置。
 - NV 普通挂载限制、OTG 完整控制器匹配已有生产补丁并进入后续候选，分别为 0054、0048。离线回归不能冒充新候选实机验收。
-- 最新生产候选为 `recovery-dijun-unified-partition-actions.img`，SHA256 `f9a11c04da1669ef601ca52ee6c38a99f32011aedcab06a5005af4f74f386db6`；分区界面修正范围见 [说明](PARTITION-ACTIONS.md)。
+- 最新生产候选为 `recovery-dijun-unified-xring-label.img`，SHA256 `6f0c39e745f79b18e80657117f668d0d41a1af8ec97312883593f8f4f73e12f2`（新增加载页 XRING O1 显示）；分区界面修正范围见 [说明](PARTITION-ACTIONS.md)。
 - 公开仓库已创建；每个连贯修改批次同步源码、测试、文档并核对远端 HEAD，编译产物不上传。
 
-## 本批：用户报告的分区界面缺陷
+## 已交付：用户报告的分区界面与加载页
+
+2026-11-13 加载页显示名：维护补丁0061支持仅供显示的 ro.twrp.device_label，设备树配置为 XRING O1，保留型号后缀及 O1_asic 产品/构建/OTA 标识。installclean 后 make -j$(nproc)30并发构建 recovery-dijun-unified-xring-label.img，SHA256 6f0c39e745f79b18e80657117f668d0d41a1af8ec97312883593f8f4f73e12f2；770来源/六profile封装、原显示方法 override/回退与镜像内属性/分区flags核对通过。继承0060刷入目标及NV限制，不重跑未改的功能链、不宣称实机验收。源码配置文档同步GitHub，镜像不上传。
+
+
 
 2026-11-13 分区界面功能修正：补齐确认刷入页五个 raw 目标，0060 将 NV 限制覆盖高级清除、修复、调整大小、更改文件系统及镜像刷入；混合清除列表执行前整体检查。此前仅限制挂载的覆盖不足已纠正。策略26/旧版同组19失败、实际 LVGL25、镜像写入链40、ARM64修复链7及挂载26通过；installclean 后30并发构建 partition-actions 候选，SHA256 f9a11c04da1669ef601ca52ee6c38a99f32011aedcab06a5005af4f74f386db6，769来源/六profile。详见 docs/PARTITION-ACTIONS.md；无实机操作，不冒称整体功能验收，完整12组保留。源码配置/测试/文档同步GitHub，编译文件不上传。
 
@@ -50,3 +54,7 @@
 3. 每批汇报分别说明：生产行为改变、仅新增证据、仍缺什么。测试数量和 GitHub CI 通过不等于用户功能修复。
 4. 有具体生产缺陷才维护补丁并构建；最终构建继续要求 `installclean` 与 `make -j$(nproc)`。纯文档或证据整理不构建新镜像。
 5. 用户报告的具体缺陷优先。此次已交付分区界面生产修正；用户关于重复工作的反馈不被解释成取消完整适配目标。
+
+## 启动链检查结论与安装链下一步
+
+当前 init/profile-cache/module/input/raw0 入口顺序复核未发现足以支持新生产修改的缺陷；自动报告/GUI/唤醒仍无新候选实机证据，保留边界，不重复叶函数模拟。后续转安装链：`twrpinstall/installcommand.cpp::abupdate_binary_command` 的属性提取失败返回 false（即 INSTALL_SUCCESS），且未校验 payload.bin 必须为未压缩连续内容。本轮仅核对源码，尚未修改或声称修复；下一步以真实 ZIP 复现错误返回及压缩 payload，再修正命令生成。用户显示名请求已优先完成。

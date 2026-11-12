@@ -1,6 +1,6 @@
 # Xiaomi 15S Pro / dijun — unified recovery adaptation
 
-当前候选修正刷入目标缺失与高级清除/分区工具 NV 暴露，见 [分区操作说明](docs/PARTITION-ACTIONS.md)。源码公开同步；镜像与编译文件不上传。
+当前候选加载页显示 `XRING O1`，并修正刷入目标缺失与高级清除/分区工具 NV 暴露，见 [分区操作说明](docs/PARTITION-ACTIONS.md)。源码公开同步；镜像与编译文件不上传。
 
 面向 Xiaomi 15S Pro（dijun、XRing O1）的 TWRP / YARP 多版本设备树、平台补丁与离线验证工程。优先使用同一镜像适配 HyperOS 3 / 4，并对 HyperOS 2 建立独立兼容档案。
 
