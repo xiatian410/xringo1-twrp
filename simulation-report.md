@@ -1,5 +1,7 @@
 # 离线检查与模拟报告（进行中）
 
+2026-11-12 安全服务本体ARM64重定位：六profile的原厂tee-supplicant/KeyMint/Gatekeeper共18个加载执行，通过当前镜像原始linker在call_pre_init_constructors调用前断点停止，核对PC、g_is_ldd=0及r_debug实际加载对象/来源。每profile额外缺库与等长缺符号私有副本对照各一项，共30项通过；正向服务与生产ELF均未修改。使用镜像ld.config及init绝对库路径，chroot无真实proc/属性区，仍不宣称精确init/APEX/namespace、服务构造函数/main/Binder/TEE/密钥操作或合成加密卷完成。详见docs/PROFILE-SERVICE-RELOCATION.md与logs/profile-service-relocation-audit.json。生产镜像仍为mtp-directory（215914df…）/765来源，本轮无生产修改或构建；完整12组继续进行中，OS4震动调用正常确认保留。测试审计文档按约定同步GitHub，编译文件不上传。
+
 2026-11-12 MTP目录上传修正：补丁0059在SendObjectInfo创建/接纳目录后，通过目录fd应用有效修改时间（含epoch0、负秒和时区偏移），刷新数据库后结束，不再保留待SendObject状态；open/futimens/close失败返回错误，保留已有目录和内容以供重试。对象链路110项（新增16项）通过，旧实现同组16项有14失败，move/copy48项回归通过。installclean及make -j$(nproc)30并发构建recovery-dijun-unified-mtp-directory.img，SHA256 215914df1f8768bf00272f5c10c03b90fa8e624e9b1337fa6801a0ef3e5155b0，765来源/六profile封装通过。定向交付见logs/mtp-directory-delivery.json；实际USB/Windows、跨重启临时文件归属回收、子文件上传结束后的父目录日期恢复与断电仍未完成。NV/OTG/侧载修正继承，OS4震动及设置正常确认保留，完整12组继续进行中；源码文档同步GitHub，编译文件不上传。
 
 2026-11-12 ARM64安装链证据：新增真正AArch64动态ELF无害updater，在原始主机ZIP安装链经签名/摘要、选择/提取、fork、协议管道和wait执行20场景通过；当前镜像linker/libc及固定QEMU在明确execve边界接入，构造函数/main参数、进度、缺库/缺符号拒绝、信号/退出状态与失败前写入均有核对。原主机36项回归通过，定向审计见logs/zip-arm64-chain-audit.json，范围见docs/ZIP-ARM64-EXECUTION.md。生产源码和764项镜像来源未变，沿用recovery-dijun-unified-sideload-reboot.img（022af2fc…），本轮无新构建。不是完整ARM64 Recovery、原厂OTA/update_engine、实际USB/FUSE或GUI验收，完整12组仍进行中。NV普通挂载隐藏/拒绝和OTG发现修正保留；设置与OS4震动用户正常确认保留。源码/文档/测试按约定同步GitHub，编译文件不上传。

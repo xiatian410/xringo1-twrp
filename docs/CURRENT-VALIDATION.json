@@ -285,6 +285,14 @@
       "failures": 0,
       "local_report_sha256": "b655f927b06101be8fcc085627df5822e48e7e28d0ab4a4626986f73a71e3447",
       "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
+    },
+    {
+      "name": "profile-original-ARM64-service-relocation",
+      "status": "PASS",
+      "cases": 30,
+      "failures": 0,
+      "local_report_sha256": "89de7af8fd0288265041410161747bebe97b6b98c63787ba3e323d28241827ac",
+      "scope": "Run unmodified ARM64 security-service relocation, stopping before constructors.\n\nImage linker and original six-profile ELF bytes execute via QEMU in a private\nchroot. RSP sets one debugger breakpoint at the linker's pre-init call site;\nno relocation result is substituted, no service constructor/main/Binder/TEE runs.\nExact image ld.config and init LD_LIBRARY_PATH are staged. Missing /proc and\nAndroid properties remain boundaries; this is not a complete init boot.\n"
     }
   ]
 }

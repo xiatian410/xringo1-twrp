@@ -6,6 +6,8 @@
 
 ## 当前修正
 
+六份固件的18个原厂安全服务已通过真实ARM64 linker重定位检查，停在构造函数前；另有12项缺库/缺符号对照。完整namespace、TEE和解密仍未验收，见[执行边界](docs/PROFILE-SERVICE-RELOCATION.md)。本轮没有更改生产镜像。
+
 ZIP安装离线检查现已接续真正的ARM64测试updater（20场景），使用当前镜像Android linker/libc；父安装器及QEMU启动桥的限制见[范围说明](docs/ZIP-ARM64-EXECUTION.md)。该检查不代表原厂OTA/payload或设备验收；镜像按后续生产修正另行更新。
 
 最新本地候选为`recovery-dijun-unified-mtp-directory.img`，新增MTP目录上传修改时间及完成状态修正，继承NV普通挂载限制、OTG发现与侧载重启交接。对象链路110项、转移48项通过；实际USB/Windows/实机仍未验收。源码按每批次修改同步本公开仓库，编译镜像不上传。

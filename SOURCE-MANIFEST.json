@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "53af8821d96f424416f506e675c498fcb9edde4f6ac495704400d550618b823e",
+    "sha256": "8eb0699eae97883a79af4edefccd4860e1b8f0e3c36f6eb65d39e876ddb689f5",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -28,7 +28,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "39b571aee61263f17d443785cc0a11975b8ece64d8bf6c261585377bffcf218d",
+    "sha256": "ba6bc34a4727221b486cc584c4ee1da3a07e9b280fb693cf4c8143f79d60748f",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -40,7 +40,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "428ecaba6b60dfd6da84dc233a73d9fd08ed37eda8ad202ba7a0457f22a27ca3",
+    "sha256": "2dd7a4f1885a1a28eaeeeca9857257ca37d66ba8ea701ef863db33bb262b592b",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "b4a423e0cbdb2213a3099f82201219103b893016d526db7845b6a357fd4c1cef",
+    "sha256": "4a0fea1033ac17f0e3a90e9dce11d5bdb3917824f8e45ff9adf81aee501fa69b",
     "mode": "0o644"
   },
   "docs/DELIVERY-EVIDENCE-STATUS.md": {
@@ -228,11 +228,15 @@
     "mode": "0o644"
   },
   "docs/PROFILE-LINKER-ARM64.md": {
-    "sha256": "b90478f060187f732c6c4549e5f2dcddfdcc1951ac49ba52b9d2eb1c43b9567f",
+    "sha256": "f7c02a12456663601c558bc53e150fcd4295715f202fe5de94bc1cb10f42fede",
     "mode": "0o644"
   },
   "docs/PROFILE-SELECTION.md": {
     "sha256": "5cb45811a3d342f890e532cf07d735cf9d7d547641dde7acdbd43164cdf85457",
+    "mode": "0o644"
+  },
+  "docs/PROFILE-SERVICE-RELOCATION.md": {
+    "sha256": "ee5f9173678698a9001b9c29298f6a084759036a5f128b1fc1d097c8a9c8f0b6",
     "mode": "0o644"
   },
   "docs/RAW-IMAGE-ADAPTATION.md": {
@@ -1139,6 +1143,10 @@
     "sha256": "254336e4d63d9a84523a2c4162954544f44e3a33e6fffd3340d924a95e6f20d9",
     "mode": "0o644"
   },
+  "scripts/audit_profile_service_relocation.py": {
+    "sha256": "ff0a9be017a06ad5ed9a46a9406f4675efcdb542ce6b6f9f5d77de911bec12af",
+    "mode": "0o644"
+  },
   "scripts/audit_recording_close_delivery.py": {
     "sha256": "dee210066b3d3e97be001bd6812843e331903fabab97641b21c04b41eab89222",
     "mode": "0o644"
@@ -1496,11 +1504,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "6409685cd73382c04a7f19a3aaeabf293a96082fc507856483ed6a3b076377f9",
+    "sha256": "c85625bed48fc8e2a4e443340cd32ffb0efb550c521cecaa3aa6aa560f30ed24",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "4654e79fe9557acb6e39c08f7e313d50b14945293e7e4955c6a45f1ad2832813",
+    "sha256": "8caffd5a889c58857cf3758da1056aff1dfebebad8cb1db55dbbc1997b2d8857",
     "mode": "0o644"
   },
   "tests/archive_pipeline_stubs.json": {
@@ -1981,6 +1989,10 @@
   },
   "tests/profile_selection_test.py": {
     "sha256": "78e06a184cb86bf375f8ca964708f6e0c2307c9d22ab53dfb85caede3af79d04",
+    "mode": "0o644"
+  },
+  "tests/profile_service_relocation_test.py": {
+    "sha256": "8d03791a282b2fdcae8c8580774d067734cd0c3383442cff9a7739feaa4ab6e1",
     "mode": "0o644"
   },
   "tests/raw_image_test.cpp": {

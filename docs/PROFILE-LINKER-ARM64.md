@@ -1,5 +1,7 @@
 # 六版本安全服务依赖与 ARM64 linker 执行
 
+2026-11-12更新：当前镜像新增[服务本体重定位检查](PROFILE-SERVICE-RELOCATION.md)，18个原厂服务加载停在构造函数前、6项缺符号和6项缺库检查通过；补上此处历史测试未执行的服务本体符号重定位。仍不证明完整init namespace、服务注册或解密。以下保留当时镜像和`--list`证据范围。
+
 本轮使用 Android 原始构建输出 `/root/AAA/twrp/out/target/product/O1_asic/recovery.img`，SHA-256 `c282f535b1fdac6f5eafe25ca46116441195affe9d67f4511178a930634c4346`。`imgs/built/recovery-dijun-unified-module-state.img` 当前缺失，没有复制、重命名另一份候选，也没有新构建。测试通过不证明交付目录已恢复。
 
 执行 `python3 tests/profile_linker_arm64_test.py --image /root/AAA/twrp/out/target/product/O1_asic/recovery.img`，得到 [机器报告](../logs/profile-linker-arm64.json)与[运行日志](../logs/profile-linker-arm64.log)。从镜像 cpio 直接提取 linker、Recovery 根目录库和六份 runtime-files/CAS；临时目录只写所需普通文件，验证 CAS 哈希，没有运行设备命令或访问真实输入/块设备。
