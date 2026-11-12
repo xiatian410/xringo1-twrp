@@ -1,5 +1,7 @@
 # 离线检查与模拟报告（进行中）
 
+2026-11-12 安全服务实际namespace检查：在原始ARM64 linker构造函数前直接读取默认namespace字段，六profile各三个服务确认环境私有库优先、默认bootstrap/system搜索路径和不隔离配置。每profile删除配置及加入存在的标记目录各一项，实际搜索路径按预期变化；共42项通过，默认重定位30项回归通过。成员偏移从同执行字节linker的DWARF提取，库/服务原始CAS绑定；bootstrap插入和不存在路径忽略均保留原始语义，不改生产。见docs/PROFILE-SERVICE-NAMESPACE.md与logs/profile-service-namespace-audit.json。仍不证明真实init/mount namespace/APEX/属性区/proc、服务初始化或密钥/合成加密卷完成；完整12组继续进行中。生产mtp-directory镜像215914df…/765来源未变，本轮无构建，OS4震动正常确认保持，源码文档同步GitHub，编译文件不上传。
+
 2026-11-12 安全服务本体ARM64重定位：六profile的原厂tee-supplicant/KeyMint/Gatekeeper共18个加载执行，通过当前镜像原始linker在call_pre_init_constructors调用前断点停止，核对PC、g_is_ldd=0及r_debug实际加载对象/来源。每profile额外缺库与等长缺符号私有副本对照各一项，共30项通过；正向服务与生产ELF均未修改。使用镜像ld.config及init绝对库路径，chroot无真实proc/属性区，仍不宣称精确init/APEX/namespace、服务构造函数/main/Binder/TEE/密钥操作或合成加密卷完成。详见docs/PROFILE-SERVICE-RELOCATION.md与logs/profile-service-relocation-audit.json。生产镜像仍为mtp-directory（215914df…）/765来源，本轮无生产修改或构建；完整12组继续进行中，OS4震动调用正常确认保留。测试审计文档按约定同步GitHub，编译文件不上传。
 
 2026-11-12 MTP目录上传修正：补丁0059在SendObjectInfo创建/接纳目录后，通过目录fd应用有效修改时间（含epoch0、负秒和时区偏移），刷新数据库后结束，不再保留待SendObject状态；open/futimens/close失败返回错误，保留已有目录和内容以供重试。对象链路110项（新增16项）通过，旧实现同组16项有14失败，move/copy48项回归通过。installclean及make -j$(nproc)30并发构建recovery-dijun-unified-mtp-directory.img，SHA256 215914df1f8768bf00272f5c10c03b90fa8e624e9b1337fa6801a0ef3e5155b0，765来源/六profile封装通过。定向交付见logs/mtp-directory-delivery.json；实际USB/Windows、跨重启临时文件归属回收、子文件上传结束后的父目录日期恢复与断电仍未完成。NV/OTG/侧载修正继承，OS4震动及设置正常确认保留，完整12组继续进行中；源码文档同步GitHub，编译文件不上传。

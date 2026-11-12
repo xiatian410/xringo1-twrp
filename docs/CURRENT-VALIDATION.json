@@ -291,7 +291,15 @@
       "status": "PASS",
       "cases": 30,
       "failures": 0,
-      "local_report_sha256": "89de7af8fd0288265041410161747bebe97b6b98c63787ba3e323d28241827ac",
+      "local_report_sha256": "8e24b6e9fa87f9e2edbd3c6d5f95f852b60441eb53366f1e11a36ffa1dfcb343",
+      "scope": "Run unmodified ARM64 security-service relocation, stopping before constructors.\n\nImage linker and original six-profile ELF bytes execute via QEMU in a private\nchroot. RSP sets one debugger breakpoint at the linker's pre-init call site;\nno relocation result is substituted, no service constructor/main/Binder/TEE runs.\nExact image ld.config and init LD_LIBRARY_PATH are staged. Missing /proc and\nAndroid properties remain boundaries; this is not a complete init boot.\n"
+    },
+    {
+      "name": "profile-runtime-namespace-config",
+      "status": "PASS",
+      "cases": 42,
+      "failures": 0,
+      "local_report_sha256": "1770ff5c958ab3587d95fbf1b3d1eafa0a57352247fa3a43310517edaa0867c0",
       "scope": "Run unmodified ARM64 security-service relocation, stopping before constructors.\n\nImage linker and original six-profile ELF bytes execute via QEMU in a private\nchroot. RSP sets one debugger breakpoint at the linker's pre-init call site;\nno relocation result is substituted, no service constructor/main/Binder/TEE runs.\nExact image ld.config and init LD_LIBRARY_PATH are staged. Missing /proc and\nAndroid properties remain boundaries; this is not a complete init boot.\n"
     }
   ]

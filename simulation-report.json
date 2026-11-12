@@ -1932,7 +1932,7 @@
   ],
   "not_yet_completed": [
     "OS4 stable automatic ordinary-report startup/GUI/resume; manual raw0 intervention restores215 real input events. New touch/settings image untested.",
-    "Security services: original six-profile ARM64 services now complete real relocation18 before constructors, with6 missing-library and6 undefined-symbol controls. Exact init/APEX/property/runtime namespace, service initialization/Binder/TEE/key operations and synthetic crypto volumes remain open. Historical --list and independent controls are narrower evidence.",
+    "Security services: original six-profile ARM64 relocation18, missing-library6 and undefined-symbol6 covered; actual default namespace fields and config removal/marker12 controls now covered in private chroot (42-case suite). Real init/mount namespace/APEX/property/proc runtime, service initialization/Binder/TEE/key operations and synthetic crypto volumes remain open.",
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
     "MTP remaining media metadata and final post-child directory date semantics (file epoch0/timestamp-error publication and directory SendObjectInfo time/completion16 cases covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
     "backup/restore real archive codec/GUI and sparse-hole/progress behavior, actual filesystem power-loss durability and content authenticity; new-backup completion manifests and restore rejection are covered by17 helper,55 RunBackup and56 RunRestore host cases but do not prove sudden power-loss behavior",
@@ -2590,8 +2590,17 @@
     {
       "name": "profile-original-ARM64-service-relocation",
       "evidence": "logs/profile-service-relocation.json",
-      "evidence_sha256": "89de7af8fd0288265041410161747bebe97b6b98c63787ba3e323d28241827ac",
+      "evidence_sha256": "8e24b6e9fa87f9e2edbd3c6d5f95f852b60441eb53366f1e11a36ffa1dfcb343",
       "count": 30,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run unmodified ARM64 security-service relocation, stopping before constructors.\n\nImage linker and original six-profile ELF bytes execute via QEMU in a private\nchroot. RSP sets one debugger breakpoint at the linker's pre-init call site;\nno relocation result is substituted, no service constructor/main/Binder/TEE runs.\nExact image ld.config and init LD_LIBRARY_PATH are staged. Missing /proc and\nAndroid properties remain boundaries; this is not a complete init boot.\n"
+    },
+    {
+      "name": "profile-runtime-namespace-config",
+      "evidence": "logs/profile-service-namespace.json",
+      "evidence_sha256": "1770ff5c958ab3587d95fbf1b3d1eafa0a57352247fa3a43310517edaa0867c0",
+      "count": 42,
       "result": "pass",
       "grade": "S2",
       "scope": "Run unmodified ARM64 security-service relocation, stopping before constructors.\n\nImage linker and original six-profile ELF bytes execute via QEMU in a private\nchroot. RSP sets one debugger breakpoint at the linker's pre-init call site;\nno relocation result is substituted, no service constructor/main/Binder/TEE runs.\nExact image ld.config and init LD_LIBRARY_PATH are staged. Missing /proc and\nAndroid properties remain boundaries; this is not a complete init boot.\n"
@@ -3161,6 +3170,8 @@
     "image_sha256": "215914df1f8768bf00272f5c10c03b90fa8e624e9b1337fa6801a0ef3e5155b0",
     "production_changes": false,
     "scope": "Run unmodified ARM64 security-service relocation, stopping before constructors.\n\nImage linker and original six-profile ELF bytes execute via QEMU in a private\nchroot. RSP sets one debugger breakpoint at the linker's pre-init call site;\nno relocation result is substituted, no service constructor/main/Binder/TEE runs.\nExact image ld.config and init LD_LIBRARY_PATH are staged. Missing /proc and\nAndroid properties remain boundaries; this is not a complete init boot.\n",
-    "remaining": "Exact init/APEX/property/namespace runtime, service constructors/main/Binder/TEE and synthetic encrypted volume/key operations remain unverified."
+    "remaining": "Actual init/mount namespace/APEX/property/proc runtime, service constructors/main/Binder/TEE and synthetic encrypted volume/key operations remain unverified. Default namespace fields/search paths and configuration consumption verified inside explicit private chroots.",
+    "namespace_evidence": "logs/profile-service-namespace.json",
+    "namespace_audit": "logs/profile-service-namespace-audit.json"
   }
 }

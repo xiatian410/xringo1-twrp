@@ -1,5 +1,7 @@
 # 六份固件安全服务本体的 ARM64 重定位
 
+后续已补充[运行时搜索配置](PROFILE-SERVICE-NAMESPACE.md)：直接读取默认namespace并执行配置移除/标记对照，共42项；完整init/APEX/属性区边界仍保留。默认30项重定位回归也已按更新脚本重跑。
+
 此前`--list`的18项成功只证明依赖查找：bionic在该模式跳过重定位、构造函数和main。本次执行六份固件的原厂tee-supplicant、KeyMint与Gatekeeper，共18个真实服务加载过程，补上服务本体符号重定位证据。
 
 从当前`recovery-dijun-unified-mtp-directory.img`直接读取linker、公共库、六份runtime-files及CAS原始ELF字节。每个profile在独立临时chroot中使用与init一致的`/vendor/bin/...`、`/system/lib64/mitee`和`LD_LIBRARY_PATH`，并包含镜像原始`/system/etc/ld.config.txt`。QEMU执行原始ARM64 linker；其GDB远程协议仅设置一个执行断点，停止在调用主程序`call_pre_init_constructors`的BL指令之前，核对实际PC与`g_is_ldd=0`。没有替换重定位实现、返回值或服务代码，也不进入服务构造函数/main。

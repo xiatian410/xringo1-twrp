@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "8eb0699eae97883a79af4edefccd4860e1b8f0e3c36f6eb65d39e876ddb689f5",
+    "sha256": "85a0b73c6b1499cfadfb23969393d78f222efa3301b7ed0bb98bf9c277a04775",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -28,7 +28,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "ba6bc34a4727221b486cc584c4ee1da3a07e9b280fb693cf4c8143f79d60748f",
+    "sha256": "f7c6386ba048fa02712b9d2371eddf82478b48e5028425806b789ceea0a1f4d1",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -40,7 +40,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "2dd7a4f1885a1a28eaeeeca9857257ca37d66ba8ea701ef863db33bb262b592b",
+    "sha256": "ba540772625dacdb6453d0c2ca597345773c2c0e24e6966011930c6c321bdbad",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "4a0fea1033ac17f0e3a90e9dce11d5bdb3917824f8e45ff9adf81aee501fa69b",
+    "sha256": "8123738bc8e1c0868f393f7cd0d5217ce0f7481235d221b9e76459017b3cc6ab",
     "mode": "0o644"
   },
   "docs/DELIVERY-EVIDENCE-STATUS.md": {
@@ -235,8 +235,12 @@
     "sha256": "5cb45811a3d342f890e532cf07d735cf9d7d547641dde7acdbd43164cdf85457",
     "mode": "0o644"
   },
+  "docs/PROFILE-SERVICE-NAMESPACE.md": {
+    "sha256": "c78a95a005a6ade20a08b1a3bc6234c20d188918a20704a6235022136f04bc15",
+    "mode": "0o644"
+  },
   "docs/PROFILE-SERVICE-RELOCATION.md": {
-    "sha256": "ee5f9173678698a9001b9c29298f6a084759036a5f128b1fc1d097c8a9c8f0b6",
+    "sha256": "f20227711cc8ae7c4a5461043a6a1806b764861bd354f709b390022d1a0572a9",
     "mode": "0o644"
   },
   "docs/RAW-IMAGE-ADAPTATION.md": {
@@ -1144,7 +1148,7 @@
     "mode": "0o644"
   },
   "scripts/audit_profile_service_relocation.py": {
-    "sha256": "ff0a9be017a06ad5ed9a46a9406f4675efcdb542ce6b6f9f5d77de911bec12af",
+    "sha256": "ac297c9d90a5941fbef832d35663cf08cac911d40c7689c46b8a6656b5ce1616",
     "mode": "0o644"
   },
   "scripts/audit_recording_close_delivery.py": {
@@ -1504,11 +1508,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "c85625bed48fc8e2a4e443340cd32ffb0efb550c521cecaa3aa6aa560f30ed24",
+    "sha256": "2a35a2a046dc43b6ead65be2520ad5e44e0c47fc95b3979dcd9980c943ed20f5",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "8caffd5a889c58857cf3758da1056aff1dfebebad8cb1db55dbbc1997b2d8857",
+    "sha256": "660b5ae29b86fea9b402b14d878a598ca4fad3bd41dee1ec176c753a046627c1",
     "mode": "0o644"
   },
   "tests/archive_pipeline_stubs.json": {
@@ -1992,7 +1996,7 @@
     "mode": "0o644"
   },
   "tests/profile_service_relocation_test.py": {
-    "sha256": "8d03791a282b2fdcae8c8580774d067734cd0c3383442cff9a7739feaa4ab6e1",
+    "sha256": "271a774a59bacbe5d266f857c1d3dcb027e34a37818c6bd679e1792d1ecda6d7",
     "mode": "0o644"
   },
   "tests/raw_image_test.cpp": {

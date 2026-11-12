@@ -7,6 +7,7 @@ no relocation result is substituted, no service constructor/main/Binder/TEE runs
 Exact image ld.config and init LD_LIBRARY_PATH are staged. Missing /proc and
 Android properties remain boundaries; this is not a complete init boot.
 """
+import argparse
 import hashlib
 import json
 import os
@@ -97,6 +98,9 @@ class Remote:
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--namespace', action='store_true', help='Inspect namespace memory and config removal/change controls')
+    args = parser.parse_args()
     index = json.loads((ROOT / 'simulation-report.json').read_text())
     image = Path(index['image'])
     raw, archive = entries(image)
@@ -141,6 +145,32 @@ def main():
     assert paths == ['/system/lib64/mitee:/system/lib64'] * 3
     profiles = sorted(n.split('/')[4] for n in archive if n.startswith('system/etc/dijun/profiles/') and n.endswith('/runtime-files.list'))
     assert len(profiles) == 6
+    namespace_layout = {}
+    if args.namespace:
+        dwarf = subprocess.check_output([str(BIN/'llvm-dwarfdump'), '--name=android_namespace_t',
+                                          '--show-children', str(LINK/'unstripped/linker64')], text=True)
+        for block in dwarf.split('DW_TAG_member')[1:]:
+            name = re.search(r'DW_AT_name\s+\("([^"\n]+)"\)', block)
+            offset = re.search(r'DW_AT_data_member_location\s+\((0x[0-9a-f]+)\)', block)
+            if name and offset:
+                value = int(offset[1], 16)
+                assert name[1] not in namespace_layout or namespace_layout[name[1]] == value
+                namespace_layout[name[1]] = value
+        assert namespace_layout['name_'] == 0
+        assert all(k in namespace_layout for k in ['is_isolated_', 'ld_library_paths_', 'default_library_paths_', 'permitted_paths_'])
+    def string_object(remote, address):
+        raw = remote.memory(address, 24)
+        if raw[0] & 1:
+            length, pointer = struct.unpack_from('<QQ', raw, 8)
+            assert length < 4096
+            return remote.memory(pointer, length).decode()
+        length = raw[0] >> 1
+        assert length < 23
+        return raw[1:1+length].decode()
+    def string_vector(remote, address):
+        begin, end, cap = struct.unpack('<QQQ', remote.memory(address, 24))
+        assert begin <= end <= cap and (end-begin) % 24 == 0 and end-begin < 4096
+        return [string_object(remote, pos) for pos in range(begin, end, 24)]
     cases = []
     env = {k: v for k, v in os.environ.items() if not k.startswith(('LD_', 'QEMU_'))}
     with tempfile.TemporaryDirectory(prefix='dijun-service-relocation-') as temp:
@@ -160,7 +190,18 @@ def main():
             shutil.copyfile(QEMU, jail/'qemu')
             (jail/'qemu').chmod(0o755)
             put(jail, 'dev/null', b'')  # ordinary file, never a device
-            for service in SERVICES:
+            runs = [(service, 'image-config') for service in SERVICES]
+            if args.namespace:
+                runs += [(SERVICES[0], 'config-absent'), (SERVICES[0], 'config-marker')]
+            config = jail/'system/etc/ld.config.txt'
+            original_config = config.read_bytes()
+            for service, variant in runs:
+                if variant == 'config-absent':
+                    config.unlink()
+                elif variant == 'config-marker':
+                    (jail/'namespace-proof').mkdir(exist_ok=True)
+                    config.write_bytes(original_config.replace(b'namespace.default.search.paths = /system/${LIB}',
+                                                               b'namespace.default.search.paths = /system/${LIB}:/namespace-proof'))
                 with socket.socket() as probe:
                     probe.bind(('127.0.0.1', 0))
                     port = probe.getsockname()[1]
@@ -212,8 +253,24 @@ def main():
                             private = jail/'system/lib64/mitee'/Path(row['path']).name
                             if private.is_file():
                                 assert row['path'].startswith('/system/lib64/mitee/'), row
+                        observation = {}
+                        if args.namespace:
+                            ns = load+symbol['__dl_g_default_namespace']
+                            observation = dict(name=string_object(remote, ns+namespace_layout['name_']),
+                                isolated=bool(remote.memory(ns+namespace_layout['is_isolated_'], 1)[0]),
+                                ld_library_paths=string_vector(remote, ns+namespace_layout['ld_library_paths_']),
+                                default_library_paths=string_vector(remote, ns+namespace_layout['default_library_paths_']),
+                                permitted_paths=string_vector(remote, ns+namespace_layout['permitted_paths_']))
+                            assert observation['name'] == '(default)' and not observation['isolated']
+                            assert observation['ld_library_paths'] == paths[0].split(':')
+                            expected = ['/system/lib64/bootstrap', '/system/lib64'] if variant == 'image-config' else (
+                                ['/system/lib64/bootstrap', '/system/lib64', '/odm/lib64', '/vendor/lib64'] if variant == 'config-absent' else
+                                ['/system/lib64/bootstrap', '/system/lib64', '/namespace-proof'])
+                            assert observation['default_library_paths'] == expected, (variant, observation)
+                            assert observation['permitted_paths'] == []
                         cases.append(dict(profile=profile, service=service, case='relocated-before-constructors',
-                                          status='PASS', stop_offset=stop, g_is_ldd=0, loaded=loaded))
+                                          status='PASS', stop_offset=stop, g_is_ldd=0, loaded=loaded,
+                                          config_variant=variant, namespace=observation))
                     finally:
                         if sock is not None:
                             sock.close()
@@ -221,7 +278,8 @@ def main():
                             proc.kill()
                         proc.wait(timeout=5)
                 cases[-1]['stderr'] = log.read_text()
-                print('PASS', profile, service, len(loaded), flush=True)
+                print('PASS', profile, service, variant, len(loaded), flush=True)
+                config.write_bytes(original_config)
             # Mutate only the private control copy's undefined-symbol name.
             # The preceding three service runs use exact, unmodified CAS bytes.
             program = jail/SERVICES[0]
@@ -247,13 +305,17 @@ def main():
                BIN/'llvm-nm', BIN/'llvm-objdump', ROOT/'scripts/verify_devicefix.py',
                ANDROID/'bionic/linker/linker_main.cpp', ANDROID/'bionic/linker/linker_relocate.cpp',
                ANDROID/'bionic/linker/linker.cpp', ANDROID/'bionic/libc/include/link.h']
+    if args.namespace:
+        sources += [BIN/'llvm-dwarfdump', ANDROID/'bionic/linker/linker_namespaces.h',
+                    ANDROID/'bionic/linker/linker_config.cpp']
     report = dict(status='PASS', scope=__doc__, image=str(image), image_sha256=sha(raw), cases=cases,
-                  count=len(cases), image_entries=bound, breakpoint_offset=stop, load_segments=load_bindings,
+                  count=len(cases), namespace_layout=namespace_layout, image_entries=bound, breakpoint_offset=stop, load_segments=load_bindings,
                   sources={str(p): sha(p.read_bytes()) for p in sources},
                   boundaries=['No service constructors/main, Binder or TEE; linker own initialization/IFUNCs execute.',
                               'Image ld.config and init paths present; /proc realpath/property/APEX/init namespace behavior incomplete.',
                               'No production edits or binary patch; QEMU debugger breakpoint only.'])
-    (ROOT/'logs/profile-service-relocation.json').write_text(json.dumps(report, indent=2)+'\n')
+    destination = ROOT/('logs/profile-service-namespace.json' if args.namespace else 'logs/profile-service-relocation.json')
+    destination.write_text(json.dumps(report, indent=2)+'\n')
     print('PASS', len(cases), 'original ARM64 service relocation/missing-library cases')
 
 
