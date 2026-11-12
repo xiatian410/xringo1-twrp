@@ -39,6 +39,7 @@ template<class... A> static int unused(A...){assert(false);return 1;}
 static int repair(const std::string&s){return unused(s);}
 static int resize(const std::string&s){return unused(s);}
 static int changefilesystem(const std::string&a,const std::string&b){return unused(a,b);}
+static int manage_backup(const std::string&,const std::string&,const std::string&,bool){assert(false);return 1;}
 static int cmd(const std::string&s){return unused(s);}
 static int applycustomtwrpfolder(const std::string&s){return unused(s);}
 static int fixabrecoverybootloop(){return unused();}

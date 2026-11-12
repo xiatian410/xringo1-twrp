@@ -18,7 +18,7 @@ def main():
  if args.lifecycle:
   files += [SRC/n for n in ['shell/page_host.cpp','shell/page_scaffold.cpp','shell/navigation_fade.cpp','pages/page_router.cpp']]
  harness=ROOT/'tests'/('refresh_page_lifecycle_test.cpp' if args.lifecycle else 'refresh_worker_chain_test.cpp')
- signatures=['std::string base_name(', 'int refreshsizes()', 'twrp_tools_backend::~twrp_tools_backend()', 'void twrp_tools_backend::join_finished_thread()', 'bool twrp_tools_backend::start(', 'void twrp_tools_backend::run(', 'tool_state twrp_tools_backend::status()', 'void twrp_tools_backend::acknowledge()']
+ signatures=['int refreshsizes()', 'twrp_tools_backend::~twrp_tools_backend()', 'void twrp_tools_backend::join_finished_thread()', 'bool twrp_tools_backend::start(', 'void twrp_tools_backend::run(', 'tool_state twrp_tools_backend::status()', 'void twrp_tools_backend::acknowledge()']
  with tempfile.TemporaryDirectory(prefix='refresh-worker-') as tmp:
   p=Path(tmp);(p/'worker.inc').write_text('\n\n'.join(method(text,s) for s in signatures))
   (p/'callback.inc').write_text(extract((SRC/'gui2.cpp').read_text(),'refresh_tool_progress'))

@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-snapshot-map.img",
-  "image_sha256": "54d2210ef4b3213d4703ca2278b5ed49591ab2d61cac314ed0b737814f202a03",
-  "image_status": "Clean-built offline candidate with patch0066: failed snapshot mappings and remappings stop verification with kFilesystemVerifierError (47) and clean partial mappings. Six intact ARM64 verifier cases; real SnapshotManager/full OTA/merge remain unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-backup-manage.img",
+  "image_sha256": "ecdab5945ca529e3b20049e79ea8799f18292c9b4883f6210055719be6527fe4",
+  "image_status": "Clean-built patch0067 literal backup rename/delete; no shell interpolation, current-parent gate, no-replace rename. Full adaptation remains in progress.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -2919,6 +2919,24 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Stream an unchanged locally available stock payload through the ARM64 engine.\n\nOrdinary target files and COWs replace device mapping; original full manifest,\noperation bytes and final partition hashes execute. No SnapshotManager, real\nmetadata, slot, postinstall, AVB or physical device. No signature-policy changes.\n"
+    },
+    {
+      "name": "backup-folder-literal-operations",
+      "evidence": "logs/backup-manage.json",
+      "evidence_sha256": "318126bf9d9b99da602fe14a71f18fed7704439b3ba81dc35776913c7f4fa06f",
+      "count": 12,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Execute production tool worker backup rename/delete against private files.\n\nReal threads, shell on old implementation, renameat2 and filesystem removal;\nDataManager and operation presentation are explicit boundaries. No GUI or device.\n"
+    },
+    {
+      "name": "backup-manage-refresh-lifecycle",
+      "evidence": "logs/backup-manage-refresh-lifecycle.json",
+      "evidence_sha256": "8ac6eeb4d62e231562dc43e4f342e0a79a4592a9c8aede1823bd74a9a157ad51",
+      "count": 3,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Original worker/progress adapter, LVGL page_host/scaffold/PUSH/POP/router/actions and bounded re-entry. Route composition, fonts, tick, scan, operation presentation and flush are explicit host fixtures; not full gui2_loop or Android/DRM."
     }
   ],
   "source_review_followups": [
@@ -3234,8 +3252,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/snapshot-map-delivery.json",
-    "scope": "Patch0066; clean build;779 source bindings;six profiles;six ARM64 cases;two old failures;only updater/property/file manifest ramdisk changes.",
+    "evidence": "logs/backup-manage-delivery.json",
+    "scope": "Patch0067; clean build;780 sources;six profiles;12 backup cases /8 old failures;3 shared-worker refresh lifecycle schedules. No phone or power-loss test.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -3656,8 +3674,8 @@
     "conclusion": "User logs show refresh successfully ended; non-atomic main-thread sample passes XRING DRM commit, not proof of sustained hang.",
     "worker_evidence": "logs/refresh-worker-chain.json",
     "worker_scope": "Original worker state publication and LVGL adapter pass with scan/presentation doubles; full GUI tick and DRM unverified. No production fix.",
-    "lifecycle_evidence": "logs/refresh-page-lifecycle.json",
-    "lifecycle_scope": "Actual host LVGL page host/router/PUSH/POP/actions plus worker; route/tick/scan/display fixtures. No defect reproduced; physical presentation unresolved."
+    "lifecycle_evidence": "logs/backup-manage-refresh-lifecycle.json",
+    "lifecycle_scope": "Refreshed only because shared tools worker changed for0067. Three original page lifecycle schedules pass. Does not reproduce or resolve field presentation fault."
   },
   "finite_maintenance": {
     "date": "2026-11-13",
@@ -3686,5 +3704,18 @@
     "vibration": "Resolved by user confirmation; no routine rechecks.",
     "current_queue": "docs/WORK-QUEUE.md",
     "documentation": "README and topic index replace repeated progress diaries; historical reports retain their original scope."
+  },
+  "backup_folder_management": {
+    "document": "docs/BACKUP-SESSION-ADAPTATION.md",
+    "patch": "0067",
+    "evidence": "logs/backup-manage.json",
+    "before": "logs/backup-manage-before.json",
+    "cases": 12,
+    "before_failed": 8,
+    "shell_used": false,
+    "rename_no_replace": true,
+    "parent_fd_anchored": true,
+    "all_external_path_races_eliminated": false,
+    "power_loss_verified": false
   }
 }

@@ -250,6 +250,10 @@
         {
           "file": "0063-status-temperature-resize-bounds.patch",
           "sha256": "0726aeb3aae3fe3130eeadd1b50060b9bad564409c7f7437a583efdaf9344ebd"
+        },
+        {
+          "file": "0067-backup-folder-literal-operations.patch",
+          "sha256": "290207a9c63f7451f46eb6045ed8d4c26824484020bc675f647596d54faac7fc"
         }
       ],
       "result_files": {
@@ -347,7 +351,7 @@
         "gui2/backend/twrp_reboot_backend.h": "4c6767ff062d6b0885d0b9c9bff626fdf29ddb73b1d47ce1eff135d2bb0d925a",
         "gui2/backend/twrp_reboot_backend.cpp": "60d2739b437fce369daca252c4eb7e12c5dae1a3198e2eee127b52ef548431d8",
         "gui2/backend/twrp_wipe_backend.cpp": "0cfc499ccf3e0296bbdc028eedb8e43c5f1b722edbd43a380a1106311c6c0e73",
-        "gui2/backend/twrp_tools_backend.cpp": "03f005966682acbee62aaf4652358905bf03f368f100da3a1f2a1415d2e44ac2",
+        "gui2/backend/twrp_tools_backend.cpp": "932fb061b1a06101a829851c44a109337793981b8dd693b6c20a8e5ff1b4adce",
         "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a"
       }
     },

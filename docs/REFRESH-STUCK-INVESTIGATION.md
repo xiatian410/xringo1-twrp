@@ -37,3 +37,5 @@
 ## 本轮页面生命周期有限收尾
 
 `tests/refresh_worker_chain_test.py --lifecycle`接续实际page_host/scaffold/router/PUSH/POP及动作行；运行后完成、建页前完成、8次循环重入均通过。动作行属于当前页面，完成后可返回；旧视图、动作和过渡阻挡随页删除，settle后只余一个页面。该测试的路由组装、tick、扫描和flush是显式替身，不是完整gui2主循环或DRM，没有复现现场根因。详见`logs/refresh-page-lifecycle.json`及[有限维护](BOUNDED-MAINTENANCE.md)。原worker报告保留为历史，不重写其旧来源哈希。
+
+0067 修改了共用工具 worker 的备份目录分支，因此原三种页面调度做了必要回归，均通过，报告为 `logs/backup-manage-refresh-lifecycle.json`。它取代本地旧生命周期报告的当前来源绑定；旧哈希仅为历史引用，不伪称旧报告与新源码一致。本批修复的是备份目录管理，现场刷新问题仍未解决。

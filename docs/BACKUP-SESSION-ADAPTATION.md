@@ -39,3 +39,15 @@
 - tar/pigz/OAES 内容往返另由[编解码管道 46 项](ARCHIVE-PIPELINE-ADAPTATION.md)覆盖；完整管理器流程、稀疏空洞、真实进度条和可信卷清单/卷尾缺失检测仍待补；digest sidecar独立原子提交已由后续0046及独立真实文件检查覆盖，不等于整份备份原子提交。
 - 同步内核写入失败可能形成部分恢复；本次不会回滚已写分区。FlashImage/repacker 独立入口的取消残留仍待审计。
 - 震动物理效果和所有手机外设继续标为 U；本次不声称改善了电机硬件表现。
+
+## 备份目录重命名与删除（0067）
+
+工具 worker 原来拼接 `cd … && mv …` / `rm -rf …`。已有备份目录可从电脑导入，名称不受重命名输入框的字符限制；名称及备份根路径中的 `$()` 会被 shell 展开。重命名目标在前端检查后被创建时，`mv` 还可能把原备份移入目标目录并报告成功。旧实现只取 target 的 basename，未确认其属于当前备份根。
+
+[0067 固定补丁](../dtsrc/O1_asic_dual/patches/0067-backup-folder-literal-operations.patch) 在共用存储操作锁内验证目标为当前根的直接子目录，拒绝目录符号链接、无效新名称及缺失目标。打开父目录后，重命名使用 `renameat2(RENAME_NOREPLACE)`，不覆盖或移入已有目标；删除通过父 fd 锚定路径调用原 `TWFunc::RemoveDir`。不再将备份名称送入 shell。内核不支持 no-replace 时明确失败，不退回覆盖式 rename。
+
+`python3 tests/backup_manage_test.py` 执行生产 start/run/status/acknowledge/join、实际线程、文件 API 和原 RemoveDir；DataManager、操作展示及未调用工具为明确边界。12 场景通过，原实现同组 8 场景失败：普通与特殊名称/根路径、不同父目录、目标已存在、越界名称、目录链接、删除、源缺失和 worker 复用。仅操作私有临时普通文件。共享 worker 的刷新页面生命周期另有三种调度通过，包括八次重入，没有复现或修复用户的刷新卡住现场。
+
+候选 `recovery-dijun-unified-backup-manage.img`，SHA-256 `ecdab5945ca529e3b20049e79ea8799f18292c9b4883f6210055719be6527fe4`；installclean 后 `make -j$(nproc)` 30 并发构建，780 份生产来源和六份 profile 核对。相对 snapshot-map 只有 Recovery 主程序、构建属性与文件摘要变化。审计入口 `python3 scripts/audit_backup_manage_delivery.py`。
+
+范围限制：这是目录管理修复，不是完整备份/恢复或断电持久性验收。父 fd 防止根路径变化重定向，但不承诺消除外部并发替换子目录的全部竞争。删除中途失败可能已移除部分内容；不承诺回滚，也不改变其他命令工具或 TWRP 根目录改名入口。

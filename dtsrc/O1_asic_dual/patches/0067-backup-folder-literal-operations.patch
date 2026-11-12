@@ -1,0 +1,90 @@
+--- a/gui2/backend/twrp_tools_backend.cpp
++++ b/gui2/backend/twrp_tools_backend.cpp
+@@ -3,6 +3,11 @@
+ #include "twrp_operation_executor.h"
+ 
+ #include <unistd.h>
++#include <fcntl.h>
++#include <linux/fs.h>
++#include <sys/stat.h>
++#include <sys/syscall.h>
++#include <filesystem>
+ 
+ #include <fstream>
+ 
+@@ -79,6 +84,42 @@
+   PartitionManager.UpdateSystemDetails();
+   operation_end(op_status);
+   return op_status;
++}
++
++// Backup folder operations use literal names, never shell command text.
++int manage_backup(const std::string& root, const std::string& target,
++                  const std::string& value, bool remove) {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  operation_start(remove ? "Delete Backup" : "Rename Backup");
++  int status = 1;
++  const std::filesystem::path folder = std::filesystem::path(root).lexically_normal();
++  const std::filesystem::path source = std::filesystem::path(target).lexically_normal();
++  const std::string name = source.filename().string();
++  const bool valid_value = !value.empty() && value != "." && value != ".." &&
++      value.find('/') == std::string::npos && value.find('\0') == std::string::npos;
++  if (!root.empty() && folder.is_absolute() && source.parent_path() == folder &&
++      !name.empty() && name != "." && name != ".." &&
++      target.find('\0') == std::string::npos && root.find('\0') == std::string::npos &&
++      (remove || valid_value)) {
++    const int fd = open(folder.c_str(), O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW);
++    if (fd >= 0) {
++      struct stat st = {};
++      if (fstatat(fd, name.c_str(), &st, AT_SYMLINK_NOFOLLOW) == 0 && S_ISDIR(st.st_mode)) {
++        if (remove) {
++          // Anchor the parent even if its pathname changes while the worker runs.
++          const std::string path = "/proc/self/fd/" + std::to_string(fd) + "/" + name;
++          status = TWFunc::RemoveDir(path, false) == 0 ? 0 : 1;
++        } else {
++          status = syscall(__NR_renameat2, fd, name.c_str(), fd, value.c_str(),
++                           RENAME_NOREPLACE) == 0 ? 0 : 1;
++        }
++      }
++      close(fd);
++    }
++  }
++  if (status != 0) LOGERR("Backup folder operation failed: '%s'\n", target.c_str());
++  operation_end(status);
++  return status;
+ }
+ 
+ // GUIAction::cmd
+@@ -316,10 +357,6 @@
+   return op_status;
+ }
+ 
+-std::string base_name(const std::string& path) {
+-  const size_t slash = path.find_last_of('/');
+-  return slash == std::string::npos ? path : path.substr(slash + 1);
+-}
+ 
+ }  // namespace
+ 
+@@ -414,7 +451,6 @@
+ 
+ void twrp_tools_backend::run(tool_job job, std::string target, std::string value) {
+   const std::string backups = DataManager::GetStrValue(TW_BACKUPS_FOLDER_VAR);
+-  const std::string name = base_name(target);
+   int op_status = 1;
+   switch (job) {
+     case tool_job::REPAIR:
+@@ -427,11 +463,10 @@
+       op_status = changefilesystem(target, value);
+       break;
+     case tool_job::RENAME_BACKUP:
+-      op_status = cmd("cd " + backups + " && mv \"" + name + "\" \"" +
+-                      value + "\"");
++      op_status = manage_backup(backups, target, value, false);
+       break;
+     case tool_job::DELETE_BACKUP:
+-      op_status = cmd("cd " + backups + " && rm -rf \"" + name + "\"");
++      op_status = manage_backup(backups, target, "", true);
+       break;
+     case tool_job::TWRP_FOLDER:
+       op_status = applycustomtwrpfolder(value);
