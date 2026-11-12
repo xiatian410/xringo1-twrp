@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance. A/B command preparation now has21-case native coverage with real ZIP and harmless engine; not payload application. VABC Init/replace/ZERO/checkpoint/Finished/Close and original snapshot reader -> materialized-file -> original asynchronous target verifier now execute10 ARM64 cases. Short input is rejected with error15; full DeltaPerformer/signed payload/SnapshotManager/snapuserd/merge remain open. Patch0065 now propagates partition finish/close errors through intact ARM64 DeltaPerformer Write (8 cases, 3 pre-fix failures); parsed manifest and writer I/O are explicit boundaries. Full payload authentication/mapping/install lifecycle remains open."
+    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance. A/B command preparation now has21-case native coverage with real ZIP and harmless engine; not payload application. VABC Init/replace/ZERO/checkpoint/Finished/Close and original snapshot reader -> materialized-file -> original asynchronous target verifier now execute10 ARM64 cases. Short input is rejected with error15; full DeltaPerformer/signed payload/SnapshotManager/snapuserd/merge remain open. Patch0065 now propagates partition finish/close errors through intact ARM64 DeltaPerformer Write (8 cases, 3 pre-fix failures); parsed manifest and writer I/O are explicit boundaries. Full payload authentication/mapping/install lifecycle remains open. Synthetic CrAU/protobuf/data streaming now runs13 ARM64 cases through original ParseManifest/InstallPlan/factory/VABC/VerifyPayload/target verifier without private-state seeding. Device mapping remains FileControl; recovery signature verification remains existing compile-time bypass, framing marker is not valid signature. Stock authenticated OTA, SnapshotManager/snapuserd and complete installer lifecycle remain open."
   ],
   "hardware_unverified": [
     "motor output",
@@ -2847,6 +2847,15 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Run intact ARM64 DeltaPerformer::Write with explicit writer failures.\n\nExisting test friend seeds the already-parsed manifest boundary. Real operation\nhashing, chunk buffering, dispatch, progress, completion and close paths execute.\nPartition writer I/O is an observing failure boundary; not payload authentication\nor full installation. No phone, mount, or physical block device.\n"
+    },
+    {
+      "name": "ARM64-synthetic-payload-stream",
+      "evidence": "logs/ota-payload-stream.json",
+      "evidence_sha256": "01c0cf772ad784a83418a0b8c51beb4729aae3b011633ec5c6efdab155c41cb9",
+      "count": 13,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Stream synthetic CrAU/protobuf/operation bytes through intact ARM64 engine.\n\nOriginal metadata parsing, plan creation, partition factory, VABC/COW and final\nverifier execute. FakeBootControl/FakeHardware and FileControl replace device\nmapping; snapshot view is materialized for verification. Recovery signature\nchecks retain their existing compile-time behavior; not authenticated stock OTA.\n"
     }
   ],
   "source_review_followups": [
@@ -3397,6 +3406,19 @@
       "old_failures": 3,
       "scope": "Run intact ARM64 DeltaPerformer::Write with explicit writer failures.\n\nExisting test friend seeds the already-parsed manifest boundary. Real operation\nhashing, chunk buffering, dispatch, progress, completion and close paths execute.\nPartition writer I/O is an observing failure boundary; not payload authentication\nor full installation. No phone, mount, or physical block device.\n",
       "full_payload_install": false
+    },
+    "synthetic_payload_stream": {
+      "document": "docs/OTA-OPERATION-COW.md",
+      "report": "logs/ota-payload-stream.json",
+      "report_sha256": "01c0cf772ad784a83418a0b8c51beb4729aae3b011633ec5c6efdab155c41cb9",
+      "cases": 13,
+      "status": "PASS",
+      "scope": "Stream synthetic CrAU/protobuf/operation bytes through intact ARM64 engine.\n\nOriginal metadata parsing, plan creation, partition factory, VABC/COW and final\nverifier execute. FakeBootControl/FakeHardware and FileControl replace device\nmapping; snapshot view is materialized for verification. Recovery signature\nchecks retain their existing compile-time behavior; not authenticated stock OTA.\n",
+      "parsed_manifest_seeded": false,
+      "production_change": false,
+      "real_signature_verification": false,
+      "full_payload_install": false,
+      "mapping_boundary": "FileControl ordinary COW file, materialized original reader output; no SnapshotManager or snapuserd"
     }
   },
   "os4_haptics_user_confirmation": {

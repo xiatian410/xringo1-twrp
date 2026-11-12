@@ -78,3 +78,25 @@
 当前镜像为 `recovery-dijun-unified-delta-finalization.img`，SHA-256 `ff01192e210a94a915f2b8e6d421479dcb09cb76d131dad561805e94421d88a2`。先 installclean，再 `make -j$(nproc)` 清理构建，777 份生产来源、六份 profile 与编译更新器逐字节核对。相对前候选仅更新器、构建属性和文件摘要清单改变，未重跑字节未变的 GUI / runtime 功能。
 
 交付检查入口 `python3 scripts/audit_delta_finalization_delivery.py`；本地报告 `logs/delta-finalization-delivery.json`。这是生产修复及其必要回归，仍未执行完整签名 payload 输入、SnapshotManager、槽位切换或合并，不扩大为 OTA 全链验收。
+
+## 合成 payload 从头输入的完整软件接续
+
+入口：`python3 tests/ota_payload_stream.py`；本地报告 `logs/ota-payload-stream.json`。本次不修改生产代码或重编镜像，沿用 delta-finalization 候选。此前直接设置“manifest 已解析”的 friend 只属于收尾错误测试；本组**不使用 friend 或私有状态赋值**。
+
+测试构造 CrAU v2 头、真实 protobuf manifest、操作数据及尾部签名格式块，以每次 113 字节流入原 `DeltaPerformer::Write`。真实执行元数据解析、manifest 检查、MemoryPrefs、InstallPlan 分区解析、分区工厂选择、VABC 写入 / 收尾、payload 长度 / 哈希比较、COW 快照读取，并将完整视图落盘交给原异步 FilesystemVerifierAction。RAW、BZ、XZ 的 64 KiB 内容逐字节读回匹配。
+
+| 输入 / 失败场景 | 结果与写入边界 |
+| --- | --- |
+| RAW / BZ / XZ | 完整软件链成功、payload 哈希与最终目标哈希匹配 |
+| 错误 magic / major / minor / metadata size | 错误 21 / 44 / 45 / 32；未准备分区或打开 COW |
+| 操作哈希错误 | 错误 29；COW 已打开但无 replace 数据 |
+| 分区准备空间不足 / COW 打开失败 | 错误 60 / 7，无操作写入 |
+| 操作数据截断一字节 | Write 等待更多字节；Close 非零、VerifyPayload 长度错误，无操作写入 |
+| 尾部签名块截断一字节 | 操作已写入 16 块；Close 非零、VerifyPayload 长度错误，不回滚 |
+| 没有尾部签名块 | 操作已写入，VerifyPayload 拒绝缺失签名块 |
+
+共 13 场景。初次把无签名流当成可通过 VerifyPayload 的输入，真实实现拒绝；补齐明确标识的签名格式夹具后，又把“尾部截断无写入”的错误假设修正为上述两个阶段。保留首次失败报告于本地，不把这些夹具问题算成生产缺陷。
+
+**签名边界**：当前 `__ANDROID_RECOVERY__` 编译会跳过 metadata 与 payload 的密码学签名比较，但配置公钥时仍要求非空尾部签名块。测试使用临时生成的公钥和 protobuf 中的 `unsigned-fixture-marker`，它不是有效签名，不能宣称认证成功。没有修改公钥、原信任策略或生产签名代码；完整 OTA ZIP 的外层签名验收属于另一入口范围。
+
+FakeHardware / FakeBootControl 提供版本与槽位接口，FileControl 代替 PreparePartitionsForUpdate 和设备映射，只创建临时普通文件。真实 SnapshotManager / snapuserd / LP / UBLK、重启槽位与合并均未执行。没有真实 OTA 分区数据、postinstall 或完整下载器生命周期，仍不能声明“OTA 全链完成”。交付 linker / 共享库直接取自当前镜像；archive 测试时绑定，来源范围不升级为旧镜像历史证明。

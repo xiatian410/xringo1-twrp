@@ -76,7 +76,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "bec757daae402246a15c2fcf64d6e39bbaa443b615271890b66a182c3248368b",
+    "sha256": "34e9cddc658f8096b7b3c838fef80a972bdeafcba4a355167ea4bf601d19a7ff",
     "mode": "0o644"
   },
   "docs/DELIVERY-EVIDENCE-STATUS.md": {
@@ -236,7 +236,7 @@
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
-    "sha256": "2413fc2b7ee939b64d3f62d11302d94f0b39ebcb492ceaf4d80d92332644493a",
+    "sha256": "6aa0f02cdd8ccacd708fdfa2e8027597a526bb33d813cf5324c76b7794554d6a",
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
@@ -320,7 +320,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "fa092d4632f2cccbcaea7aaa34e2d20c06dd87f8cea0ffb29d06669f415d39a1",
+    "sha256": "fda8a413bf4e9f322a35ce42d5fa8edd0d4fd12bac5f919813b173f4cb4e8f0b",
     "mode": "0o644"
   },
   "docs/ZIP-ARM64-EXECUTION.md": {
@@ -1596,7 +1596,7 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "452967f7cf8702c22ed15eeccc6210cce0493e391c507fc30dc716b28eb14d65",
+    "sha256": "bf61599c8bf1afe238b26e7695789f66bce6f045dcb4f7b18553a6addc1e7c92",
     "mode": "0o644"
   },
   "simulation-report.md": {
@@ -2093,6 +2093,14 @@
   },
   "tests/ota_operation_cow.py": {
     "sha256": "d55536f8b078889681e86f18d30093df12dbd621ce9eb2c13eccf9e728d45592",
+    "mode": "0o644"
+  },
+  "tests/ota_payload_stream.cpp": {
+    "sha256": "e01753241543087cd35c7ecb05df8db5e5ba9a46edef9d979415cbf66a7fdb44",
+    "mode": "0o644"
+  },
+  "tests/ota_payload_stream.py": {
+    "sha256": "e74823b22d1b2e6ce5763daf2f35ca6433501630265091e50f150d36a1e1e432",
     "mode": "0o644"
   },
   "tests/ota_vabc_session.cpp": {
