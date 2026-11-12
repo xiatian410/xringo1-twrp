@@ -32,7 +32,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "a58f526411950fd55b3bac64ca0398e3c18b9a80d2ed163aac62635f2545e61a",
+    "sha256": "8c1d0c67468c7d8b4ad349b978a67ddf4887a2f520eade450907074f4fa01a54",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -44,7 +44,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "9be59be5b3d31a270c1b4ae0e5d9a494973122841b7b1e986688b3548a54de31",
+    "sha256": "ca1ab4eabc9883e3caa9e25b7311c9bea0baf760bb4fed3ba01eeb3c32e62ce2",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -200,27 +200,15 @@
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
-    "sha256": "4c229720312d5ebc9c21cc86e35db9a3a5f795396d8083e424dea0bd030eb739",
-    "mode": "0o644"
-  },
-  "docs/PARTITION-OPERATION-PATHS.md": {
-    "sha256": "956c87b3ca493ad21aa4c6e7c48280ff87eebaefe21a0d9fcfc641f0a5c5ef71",
+    "sha256": "b799498a2148392f1ef91cdb70317c7f55ee7c9538834ada1d51898f2182187a",
     "mode": "0o644"
   },
   "docs/PROFILE-LINKER-ARM64.md": {
-    "sha256": "f7c02a12456663601c558bc53e150fcd4295715f202fe5de94bc1cb10f42fede",
+    "sha256": "ccda2a16ff289a142391a784bf7f5e127d43b8404faf0fdeb372742c7479344c",
     "mode": "0o644"
   },
   "docs/PROFILE-SELECTION.md": {
     "sha256": "5cb45811a3d342f890e532cf07d735cf9d7d547641dde7acdbd43164cdf85457",
-    "mode": "0o644"
-  },
-  "docs/PROFILE-SERVICE-NAMESPACE.md": {
-    "sha256": "c78a95a005a6ade20a08b1a3bc6234c20d188918a20704a6235022136f04bc15",
-    "mode": "0o644"
-  },
-  "docs/PROFILE-SERVICE-RELOCATION.md": {
-    "sha256": "f20227711cc8ae7c4a5461043a6a1806b764861bd354f709b390022d1a0572a9",
     "mode": "0o644"
   },
   "docs/RAW-IMAGE-ADAPTATION.md": {
@@ -228,7 +216,7 @@
     "mode": "0o644"
   },
   "docs/README.md": {
-    "sha256": "1585e970b956c20cb439781e859c66645ce1e28449a02dc1c74f33c491d27911",
+    "sha256": "301485d8ae011324e907b9e0867a7b3b070a2c2195b88b5c63ae716848d49f64",
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
@@ -268,7 +256,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "b8977fcafa73d0b552c5a570b5811d010bb23883b0a4a12edd5934071b1804f9",
+    "sha256": "3f4cdc92185f12654dfd8da52429e0cd348971eef2f1faac808afbd0e934d2c1",
     "mode": "0o644"
   },
   "docs/crypto-compatibility.json": {
@@ -1324,7 +1312,7 @@
     "mode": "0o644"
   },
   "scripts/check_documentation.py": {
-    "sha256": "a5b06fc544b47a55e89f75211ac0cddfd1461fe425741ed2d78d0e5b54018afe",
+    "sha256": "85bbf6c99b983834eedfd1a2dbce6e1339b7ddc342a239c3f4edb32615f6ef83",
     "mode": "0o644"
   },
   "scripts/check_public_tree.py": {
@@ -1572,7 +1560,7 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "e00ba11a3295ffb80665462cd974131917a7d04614fbeaa239ed30b1133d397c",
+    "sha256": "630100c0f5b35517e8cff99d7a6fe1770e0454587b8aaf39a71ec5ef6e61d1c8",
     "mode": "0o644"
   },
   "simulation-report.md": {

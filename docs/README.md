@@ -10,7 +10,6 @@
 - [镜像刷写、ZIP / A/B 命令与 ARM64 updater](INSTALL-CHAIN-VALIDATION.md)
 - [ADB sideload 子进程与取消生命周期](SIDELOAD-LIFECYCLE.md)
 - [分区界面修正：镜像目标与 NV 操作](PARTITION-ACTIONS.md)
-- [嵌套分区操作路径修正](PARTITION-OPERATION-PATHS.md)
 - [分区列表、OTG 发现、挂载模式与存储选择](MOUNT-LIST-EXPLANATION.md)
 - [文件系统工具执行与修复结果](FILESYSTEM-TOOLS-EXECUTION.md)
 
@@ -20,9 +19,7 @@
 - [模块初始化状态：依赖就绪判断修正](MODULE-STATE-ADAPTATION.md)
 - [OS4.0.4.0 正式版增补记录](OS4-STABLE-ADAPTATION.md)
 - [OS4 正式版无法触摸：反馈、离线排查与顺序修正候选](OS4-TOUCH-FAILURE.md)
-- [六版本安全服务依赖与 ARM64 linker 执行](PROFILE-LINKER-ARM64.md)
-- [六份固件安全服务本体的 ARM64 重定位](PROFILE-SERVICE-RELOCATION.md)
-- [安全服务运行时库搜索配置](PROFILE-SERVICE-NAMESPACE.md)
+- [安全服务依赖、ARM64 重定位与运行时库搜索](PROFILE-LINKER-ARM64.md)
 - [多用户发现与解锁入口](MULTIUSER-ADAPTATION.md)
 - [固件兼容性分析（离线阶段）](firmware-compatibility.md)
 - [MiTEE 组合比较（静态候选）](crypto-compatibility.md)

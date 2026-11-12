@@ -3167,7 +3167,7 @@
   "partition_operation_paths": {
     "status": "software_fix_built_hardware_unverified",
     "patch": "dtsrc/O1_asic_dual/patches/0029-nested-partition-operations.patch",
-    "documentation": "docs/PARTITION-OPERATION-PATHS.md",
+    "documentation": "docs/PARTITION-ACTIONS.md#嵌套分区操作路径",
     "scope": "Real manager routing methods, private partition doubles, no real filesystem tools, wipes, mounts or device access. Nested paths,system alias,subpartition failure propagation and cache fallback result. Underlying WipeDataCache removal error checking remains incomplete."
   },
   "filesystem_tools": {
