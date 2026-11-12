@@ -1,29 +1,16 @@
 # 设置保存与时区离线验证
 
-2026-11-12 用户最新反馈覆盖下文“现场待确认”状态：用户明确确认在`recovery-dijun-unified-backup-manifest.img`上设置功能已经正常，并要求停止盲目猜测和持续修复。保留既有历史检查，不再把先前症状当作当前未解决事实，也不要求重复设置采集。该确认属于用户现场观察，没有扩大为所有设置逐项验收、跨版本验收或其他功能已恢复。新问题为挂载页项目数量及NV显示，单独记于`MOUNT-LIST-EXPLANATION.md`；此次无生产修改/构建。
+**状态：用户已确认 `recovery-dijun-unified-backup-manifest.img` 的设置功能正常。** 该观察不扩展为所有版本或所有功能逐项验收；没有新故障不重复诊断。当前候选见 [交付报告](../simulation-report.md)。
 
-2026-11-12 设置首页分发补查：`python3 tests/settings_navigation_test.py` 的45项检查通过，报告 `logs/settings-navigation.json`。执行真实LVGL、page_host的PUSH动画及结束清理、page_scaffold、action/settings builder、setting_card、SVG图标与原样提取的settings_option_event_cb；九个入口分别检查标题、说明、箭头、空白处点击与移出取消，后段入口经scroll_to_view显示后点击。导航终点只记录目标，不构建目标页；1440×3200尺寸、缩放和字体为主机夹具，没有完整shell覆盖层或真实触摸/存储。未复现首页统一拦截，不能排除现场遮罩、输入或保存失败。通用开关在保存失败时静默回退旧值，是已知行为而非此次已确认根因；本次不改生产源码或镜像，设置现场故障继续未解决。
+## 已维护的修正
 
-2026-11-12 本次“似乎所有设置都无法设置”续查：在当前源码重新运行LVGL设置行20项、完整设置保存链路22项及dijun坐标映射6组，分别通过，结果为 `logs/settings-current-recheck-row.json`、`logs/settings-current-recheck-joined.json`、`logs/dijun-touch-regression.json`。这只能证明主机上当前源码的对应路径，不能确认设备正在运行的镜像包含同一源码，也不能证明真实persist挂载、屏幕点击命中或GUI现场保存。旧 `logs/settings-latest-report-joined.json` 的来源审计因当前 `partitionmanager.cpp` 哈希已变化而失败；不要把旧审计当作当前来源绑定结果。现有 `touch-after-raw-off.txt` 没有本次点击后的保存回执。没有执行设备命令或生成新镜像；设置现场状态仍未解决。
+- **0028**：嵌套 persist 路径按完整路径边界查找，避免设置保存被误拒绝。
+- **0033**：设置卡片整行点击，保留移出取消行为。
+- **0038**：语言 / 主题保存失败时恢复内存状态，允许重试；目录 fsync 失败不等于磁盘已回滚。
 
-当前状态：最新候选及哈希以`simulation-report.json`为准，已继承0028路径、0033整行点击、0038语言/主题失败重试修正。当前生产general回调在set_persistent或flush失败时还原开关；因此“立即回退”符合保存失败路径，但“点击完全无响应”还可能发生在事件到达回调之前。现有现场文件`imgs/built/1/touch-after-raw-off.txt`未提供这次设置操作的保存失败回执，不能据此确定原因。下文候选名称均为对应修正时的历史检查点，不是要求逐个重刷。已有`tools/settings-state-collector.zip`可区分运行二进制、操作前后日志与persist状态；不因离线用例通过而将现场故障标为已解决。
+入口导航已有 45 项有限检查，覆盖九个入口的标题、说明、箭头、空白点击与移出取消。LVGL、page host 和原始事件回调执行，目标页、字体、读数及挂载等范围仍有夹具；不据此宣称完整设备界面验收。
 
-设置保存失败后重试修正：维护补丁0038让语言/主题在flush失败时恢复旧内存值，保留待选项；避免主题值先变而未重建、再次点击被同值判断阻断。真实回调/LVGL事件9项通过，旧实现同组4项失败；存储/路由/console为显式夹具，不是实际persist或完整GUI。设置整行20项、真实文件保存21项、嵌套路径31断言回归通过。installclean后make -j$(nproc)30并发构建新候选recovery-dijun-unified-settings-retry.img，SHA256 `e8adb7259265b4fa05a1057ba9141e09af805c7ff2240cb07a45bb009bbe2214`，724来源及封装/新二进制核对通过。同镜像profile回放结果另记。目录fsync失败可能已发布完整新文件，内存回退并不构成磁盘回滚；这一边界保持明确。尚无本次设置现场日志，不能解释全部设置不可修改；物理震动未解决，触摸P0和全部12组继续进行中。
-
-复现入口：`python3 tests/settings_retry_test.py --output logs/settings-retry.json`；可用`--source backups/settings-retry-pre-fix/gui2/gui2.cpp`复查旧实现。9项分别覆盖语言/主题的成功、SetValue拒绝、Flush失败、失败后恢复重试，以及解密页语言返回。真实LVGL发送点击并执行异步回调；没有运行全页路由或存储挂载。旧实现语言和主题各有Flush失败/重试两项失败，修改后均通过。未移除存储保护、未忽略错误、未改校准或震动参数。
-
-下文提到的temperature-ui、thermal-identity等候选均是此前检查点；当前交付以本文开头及simulation-report.json为准。设置现场根因仍需已有采集工具的操作前后记录。
-
-
-用户再次报告设置项目似乎均不能修改：本轮重新执行当前生产源码的整行点击检查20项、设置存储21项、嵌套路径31断言，分别见 `logs/settings-current-user-report-ui.json`、`logs/settings-current-user-report-storage.json`、`logs/settings-current-user-report-path.log`，均通过。它们不能确认本次运行版本或现场保存结果，尚未定位此次故障。当前可用候选是 thermal-identity，包含此前0028与0033；本轮没有生产修改或新镜像。
-
-已将采集脚本展开维护于 `tools/settings-state-collector/` 并重新打包。新增运行 recovery/libgui2 摘要、进程映射、输入能力、raw 模式和fstab只读采集，用于核对用户是否在包含旧路径修复的版本上，以及设置事件/存储失败的分界。只需当前Recovery中一次安全设置操作前后的日志；不得据此认定触摸或全部设置已恢复。脚本通过主机shell语法和打包检查，未在Windows/Android执行。
-
-历史交付检查点 [recovery-dijun-unified-otg-selection.img](../imgs/built/recovery-dijun-unified-otg-selection.img)，SHA256 `aaa4b25c1bd58a0b61508288a479d824f38701c38d2ed606530b39c503181ef7`，继承下文设置保存/persist路径/整行点击修正，并新增[存储选择失败处理](STORAGE-SELECTION-ADAPTATION.md)。尚未收到用户本次设置操作前后采集结果，不能确认“所有设置无法修改”的现场原因已解决。下文旧候选属于历史检查点。
-
-本轮使用真实 `InfoManager` 实现，以及从 `data.cpp` 原样取出的加载、保存、Flush、时区环境更新方法。
-挂载、属性和 SELinux 元数据接口由替身提供；实际读写临时文件，实际执行 libc 时区转换。
-没有访问手机、真实 persist 分区、RTC 或主机物理块设备，也没有修改主机时钟。
+历史报告记录于 `simulation-report.json`；本地 `logs/` 不随源码发布。下文保留修正机制、复现入口和历史证据边界，其中旧候选、待采集及未解决表述不覆盖上述用户确认。
 
 ## 2026-11-12：嵌套 persist 路径导致保存被拒绝
 

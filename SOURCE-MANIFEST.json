@@ -32,7 +32,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "48ee12e0857e6932fa9545829ca177ba7b293cb573a96ddef0addde768bfe7b3",
+    "sha256": "7d61d0486e1cec911d6d7e46b90a9bd77c9d7658d02baef7b1f9049186f83e06",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -44,7 +44,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "eff9a95a190fc481b87d85955773b3802ad6466951272cd6b71137531dd46990",
+    "sha256": "1c2f4a4cb5731489af0d22be6a85bf9391f9482957126a5d6cbe6de618a12e92",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -100,7 +100,7 @@
     "mode": "0o644"
   },
   "docs/HAPTICS-ADAPTATION.md": {
-    "sha256": "0c8dd1df0ec1fcbf809ab2f649efb59427a2cbe7ce5e2489a83b88e22e65b6a3",
+    "sha256": "13eea490a9c86213240336667b4f5a225cdacf41610ab3e1d8d94c52b1b2ccfe",
     "mode": "0o644"
   },
   "docs/HAPTICS-ASP-FF-STATE.md": {
@@ -121,10 +121,6 @@
   },
   "docs/HAPTICS-LIFECYCLE-EMULATION.md": {
     "sha256": "a3909a7060c84b210656591899e13223e695ccc377162c17ff48df72ce69f113",
-    "mode": "0o644"
-  },
-  "docs/HAPTICS-OS4-HISTORY.md": {
-    "sha256": "4da7e8adc0954b717b99926294f0aa5fc087b48cd50a2cd7e7adc0625cf7b408",
     "mode": "0o644"
   },
   "docs/HAPTICS-PCM-FF-STATE.md": {
@@ -272,7 +268,7 @@
     "mode": "0o644"
   },
   "docs/README.md": {
-    "sha256": "ecb6596d34441e97ee0ab7e384e33c3cde626b9c120d5f62cfe09e4f73d618bc",
+    "sha256": "ecbe64c3cc1a90da9b585468ba46313fc129855cddb72923daa2f539e5cec914",
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
@@ -288,7 +284,7 @@
     "mode": "0o644"
   },
   "docs/SETTINGS-ADAPTATION.md": {
-    "sha256": "597b0001dd6a2c15ccfa533d21f89388254ee593a0158fe8a1ca45dc6e07ed43",
+    "sha256": "dd18c5369bec12b6530c497b3323b90695672b4a998132e3acf253fb9ff40f30",
     "mode": "0o644"
   },
   "docs/SIDELOAD-LIFECYCLE.md": {

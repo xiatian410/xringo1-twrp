@@ -8,7 +8,6 @@
 
 - [OTA 快照 COW 格式的 ARM64 往返验证](OTA-COW-ROUNDTRIP.md)
 - [payload 操作执行器到 COW 的 ARM64 接续](OTA-OPERATION-COW.md)
-
 - [A/B OTA 命令准备与失败收尾](AB-COMMAND-VALIDATION.md)
 - [镜像路由与 ZIP 安装链离线验收](INSTALL-CHAIN-VALIDATION.md)
 - [ZIP 安装链中的真实 ARM64 测试 updater](ZIP-ARM64-EXECUTION.md)
@@ -78,25 +77,6 @@
 - [MTP Reset检查点的交付与证据状态（历史）](DELIVERY-EVIDENCE-STATUS.md)
 - [公开仓库维护约定](GITHUB-PUBLICATION.md)
 
-## 已解决震动的历史技术记录
+## 已解决项的历史参考
 
-<details>
-<summary>展开历史文档（不作为当前待办）</summary>
-
-- [dijun 震动离线适配记录](HAPTICS-ADAPTATION.md)
-- [ASP 状态与独立 FF 播放接续](HAPTICS-ASP-FF-STATE.md)
-- [原厂震动音频 socket 对端核查](HAPTICS-AUDIO-SOCKET-PEER.md)
-- [原厂震动驱动函数离线模拟](HAPTICS-DRIVER-EMULATION.md)
-- [OS4 原厂震动 DSP 固件解析与地址解析](HAPTICS-FIRMWARE-EMULATION.md)
-- [原厂震动注册、效果生命周期与 DTBO 离线复核](HAPTICS-LIFECYCLE-EMULATION.md)
-- [dijun 震动离线适配记录](HAPTICS-OS4-HISTORY.md)
-- [原始 codec/PCM widget 与 FF 播放接续](HAPTICS-PCM-FF-STATE.md)
-- [OS4 原厂 PCM 与波形库初始化核查](HAPTICS-PCM-INITIALIZATION.md)
-- [原厂震动播放 worker 与初始化边界模拟](HAPTICS-PLAYBACK-EMULATION.md)
-- [FF能力查询中断处理](HAPTICS-PROBE-ADAPTATION.md)
-- [震动用户态请求诊断](HAPTICS-REQUEST-TRACE.md)
-- [OS4 原厂服务线程、XML 与首次 PCM 启动](HAPTICS-SERVICE-THREAD-XML.md)
-- [OS4 无震动状态采集](HAPTICS-STATE-COLLECTION.md)
-- [GUI 震动后台执行与资源回收](HAPTICS-WORKER-ADAPTATION.md)
-
-</details>
+[震动适配记录](HAPTICS-ADAPTATION.md) 汇总实现要点和独立技术文档。OS4 震动已由用户确认正常，不作为当前待办或例行检查。
