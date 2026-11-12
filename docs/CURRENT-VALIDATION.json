@@ -625,11 +625,22 @@
       "status": "PASS",
       "cases": 16,
       "failures": 0,
-      "local_report_sha256": "16dcb4c1a7d8060ee4fc5e7f0a7b81471e98a0b8a4bdca32792386936c51638f",
+      "local_report_sha256": "3fcf7d0314531b7b1e843146d242e2b498953c48844824f654466ce5861fb627",
       "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n",
       "production_fix": true,
       "snapshot_manager_executed": true,
       "old_failed_checks": 4
+    },
+    {
+      "name": "ARM64-snapshot-postinstall-retry-chain",
+      "status": "PASS",
+      "cases": 6,
+      "failures": 0,
+      "local_report_sha256": "70fc597e733529af2f5360a364dd8797d3986f80d8e964b1e277205752088bda",
+      "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries.",
+      "production_fix": false,
+      "snapshot_manager_executed": true,
+      "postinstall_connected": true
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
@@ -637,5 +648,5 @@
     12
   ],
   "current_batch_document": "docs/OTA-OPERATION-COW.md",
-  "current_batch_groups_scope": "Patch0069: reject SnapshotManager file fsync errors; actual ARM64 state/flags lifecycle, no devices or full OTA."
+  "current_batch_groups_scope": "Six original ARM64 PostinstallRunnerAction/controller/actual SnapshotManager completion and persisted retries; hardware effects and mounted token explicit boundaries. No production change/new build."
 }

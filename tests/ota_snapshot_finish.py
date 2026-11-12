@@ -30,10 +30,16 @@ def sha(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--report', type=Path, default=ROOT/'logs/ota-snapshot-finish.json')
+    parser.add_argument('--report', type=Path)
+    parser.add_argument('--postinstall', action='store_true', help='Join original controller/PostinstallRunnerAction with persisted-state retries')
     parser.add_argument('--image', type=Path)
     parser.add_argument('--utility-source', type=Path, help='Compile an explicit helper source for old-source comparison only')
     args = parser.parse_args()
+    if args.report is None:
+        args.report = ROOT/('logs/ota-snapshot-postinstall.json' if args.postinstall else 'logs/ota-snapshot-finish.json')
+    if args.postinstall and args.utility_source:
+        parser.error('old-helper comparison is only supported for leaf cases')
+    fixture = ROOT/('tests/ota_snapshot_postinstall.cpp' if args.postinstall else 'tests/ota_snapshot_finish.cpp')
     if args.image is not None:
         args.image = args.image.resolve()
     reference = json.loads((ROOT/'logs/ota-vabc-session.json').read_text())
@@ -49,6 +55,11 @@ def main():
         ROOT/'tests/ota_vabc_session.py', ANDROID/'system/core/fs_mgr/libsnapshot/snapshot.cpp',
         ANDROID/'system/core/fs_mgr/libsnapshot/utility.cpp', ROOT/'scripts/firmware_facts.py',
         ROOT/'scripts/acquire_firmware.py']}
+    sources[str(fixture)] = sha(fixture)
+    if args.postinstall:
+        for path in [ANDROID/'system/update_engine/aosp/dynamic_partition_control_android.cc',
+                     ANDROID/'system/update_engine/payload_consumer/postinstall_runner_action.cc']:
+            sources[str(path)] = sha(path)
     with tempfile.TemporaryDirectory(prefix='ota-snapshot-finish-') as temp:
         work = Path(temp)
         obj = 'out/soong/.intermediates/system/update_engine/libupdate_engine_boot_control/android_recovery_arm64_armv8-a_static/obj/system/update_engine/aosp/dynamic_partition_control_android.o'
@@ -60,7 +71,7 @@ def main():
         command.insert(-1, '-UNDEBUG')
         command[command.index('-o')+1] = str(work/'fixture.o')
         command[command.index('-MF')+1] = str(work/'fixture.d')
-        command[-1] = str(ROOT/'tests/ota_snapshot_finish.cpp')
+        command[-1] = str(fixture)
         build(command)
         depfile = (work/'fixture.d').read_text().replace('\\\n', ' ')
         for name in shlex.split(depfile.split(':', 1)[1]):
@@ -106,18 +117,21 @@ def main():
         def isolate():
             os.chroot(jail); os.chdir('/')
         cases = []
-        for name in ['normal', 'wipe', 'idempotent', 'wrong-state', 'missing-metadata', 'missing-snapshots', 'invalid-snapshot', 'forward-write-error', 'rollback-remove-error', 'boot-rename-error', 'state-open-error', 'merge-status-error', 'boot-sync-error', 'state-sync-error', 'boot-sync-interrupted', 'state-sync-interrupted']:
+        names = ['normal', 'wipe', 'idempotent', 'wrong-state', 'missing-metadata', 'missing-snapshots', 'invalid-snapshot', 'forward-write-error', 'rollback-remove-error', 'boot-rename-error', 'state-open-error', 'merge-status-error', 'boot-sync-error', 'state-sync-error', 'boot-sync-interrupted', 'state-sync-interrupted']
+        if args.postinstall:
+            names = ['normal', 'boot-sync-retry', 'state-sync-retry', 'state-open-retry', 'merge-status-retry', 'slot-retry']
+        for name in names:
             shutil.rmtree(jail/'work'); (jail/'work').mkdir()
             result = subprocess.run(['/qemu', '-L', '/android', '-E', 'LD_LIBRARY_PATH=/android/system/lib64',
                 '/android/system/bin/linker64', '/test', name], preexec_fn=isolate,
                 capture_output=True, text=True, timeout=20)
             cases.append(dict(name=name, status='PASS' if result.returncode == 0 else 'FAIL',
                 returncode=result.returncode, stdout=result.stdout, stderr=result.stderr))
-        report = dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL', scope=__doc__,
+        report = dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL', scope=__doc__ + ('\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries.' if args.postinstall else ''),
             sources=sources, dependencies=dependencies, image=str(image), image_sha256=sha(image),
             image_entries=entries, fixture_elf_machine=183, fixture_sha256=hashlib.sha256(data).hexdigest(),
             compile_template=compile_args, link_command=link, cases=cases,
-            full_payload_install=False, snapshot_manager_executed=True, hardware_effects_denied=True, merge_status_result_boundary=True, utility_override=str(args.utility_source) if args.utility_source else None)
+            full_payload_install=False, postinstall_connected=args.postinstall, snapshot_manager_executed=True, hardware_effects_denied=True, merge_status_result_boundary=True, utility_override=str(args.utility_source) if args.utility_source else None)
         args.report.write_text(json.dumps(report, indent=2)+'\n')
         print(report['status'], len(cases), 'cases;', sum(c['status']=='FAIL' for c in cases), 'failures')
         return 0 if report['status']=='PASS' else 1

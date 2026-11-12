@@ -258,3 +258,18 @@ python3 scripts/audit_snapshot_sync_delivery.py
 最终候选 `recovery-dijun-unified-snapshot-sync.img`，SHA-256 `e1e651e05787f750a310a8eaaff8da897e38043c40d8eac59b69afce2f8d3cc6`。`installclean` 后 `make -j$(nproc)`，30 并发，784 生产来源绑定、六 profile 封装通过。本地报告为 `logs/ota-snapshot-finish.json`、`logs/ota-snapshot-finish-before.json` 与 `logs/snapshot-sync-delivery.json`；原始日志和镜像不上传。
 
 **边界：** 状态组不是事务。boot 标记或 HAL merge 状态可能先于最终 state 写入保留；失败的临时文件也会保留，后续正常写入沿用既有覆盖行为。已经 `Unverified` 的幂等调用不会重新检查标记。本批不新增全组回滚，不证明断电持久性、实际 HAL、metadata 挂载、设备映射、snapuserd、合并或整份 OTA 到最终切槽的完整接续。两份原厂 payload 的既有结果仅复用未变的执行器范围，不把本批状态文件测试与它们拼接成完整安装证明。
+
+## 实际收尾调用链与失败后重试
+
+0069 的文件同步修正后，进一步把原始 `PostinstallRunnerAction → DynamicPartitionControlAndroid::FinishUpdate → SnapshotManager::GetUpdateState / FinishedSnapshotWrites` 接在同一个 ARM64 进程内运行。原控制器通过现有 friend 接口注入真实 SnapshotManager 和“metadata 已挂载”的显式 token；没有覆写 FinishUpdate 返回结果，也没有修改原始实现。PostinstallRunnerAction 的输入为合成 InstallPlan，空 URL 沿原无脚本路径完成，不执行真实 postinstall 脚本。
+
+六场景执行正常完成，以及 boot / state 文件同步失败、state 临时文件打开失败、HAL merge 状态拒绝、切槽失败。前四类收尾失败返回 `kPostinstallRunnerError`，切槽调用次数为零。移除注入故障后销毁并重新创建控制器与 SnapshotManager，沿用同一份状态文件、启动标记和残留临时文件重试；全部完成并仅在收尾成功后尝试切槽。切槽失败时实际状态已经 Unverified，重试由原控制器跳过重复状态发布，直接再次尝试切槽。检查完整顺序、最终状态字段及标记内容，而非只看终态成功。
+
+```bash
+python3 tests/ota_snapshot_finish.py --postinstall
+python3 scripts/review_snapshot_postinstall.py
+```
+
+新夹具为 `tests/ota_snapshot_postinstall.cpp`，复用前节的拒绝设备依赖和 fsync 注入。实际切槽和 HAL merge 状态仅观察参数、调用顺序及提供结果；FakeHardware 不执行 vbmeta 写入。没有真实挂载、块设备、snapuserd、COW 合并或断电。本证据接续原始收尾控制流，尚未把原厂 payload、实际映射与 postinstall 脚本贯通，不将其称作完整 OTA 安装。
+
+本地报告 `logs/ota-snapshot-postinstall.json` 与 `logs/ota-snapshot-postinstall-review.json`。六场景通过，未发现需追加生产修改的行为。共享测试脚本增加模式后，原 16 场景及旧 helper 的四个预期失败做一次必要回归。当前候选仍为前节 snapshot-sync，784 生产来源未变；本批仅增加验证证据，没有新镜像构建。

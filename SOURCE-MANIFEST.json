@@ -68,7 +68,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "675c092b5cf2a00292e093be359c749a326455c91c783b3294f60391a99bc441",
+    "sha256": "bc9269ceb5cffaec445faf29b2bd57e5d01fe0bf6b66d2634d181d68cfb55f60",
     "mode": "0o644"
   },
   "docs/DIGEST-PUBLICATION.md": {
@@ -196,7 +196,7 @@
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
-    "sha256": "6073d87ca92873e2fe7a62840e0d95d4174e8c39a1fb47502428dbd2af71993a",
+    "sha256": "4b07887fee10f3ccb3ee721966412692dcb64b4fc92a0a83105a14a9bd6657ea",
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
@@ -256,7 +256,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "2a1dc72892b9a156da44e8a2aecb0bcac9f9f92bc323e7c98c8499106190ad82",
+    "sha256": "063dd7d27bfec40ce97ca6895d0e339466d5bf60989ffc2e04b22c3ef536bb31",
     "mode": "0o644"
   },
   "docs/crypto-compatibility.json": {
@@ -1483,6 +1483,10 @@
     "sha256": "feaac544041a3d5fee7e9bc9bfc0e239328eb8cf4386dd40e20aeb9525313643",
     "mode": "0o644"
   },
+  "scripts/review_snapshot_postinstall.py": {
+    "sha256": "55c152dfaf03935e80aff38b4842857179db597059c286c0cf203fa55856bf39",
+    "mode": "0o644"
+  },
   "scripts/review_stock_payload.py": {
     "sha256": "6e2d7b4b5579067785936ab45cfa6bd0ea12ab7e4a5fbfbb08d37db8cce70250",
     "mode": "0o644"
@@ -1568,11 +1572,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "d0ba47e95410e25bd44167646b697d8df08967e4d2d8e9d5ccb469da59481396",
+    "sha256": "39b84184c2056272d733f935cccdcf82417d90b2ac60954efa6ddf989542fa47",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "a2d99a93a2fd4651f14cec17ae39c906a7aac533473be72586d57cd270f3040d",
+    "sha256": "4d025598e2ba968d2504698cf4261775b0c6e7c33c51e09be47f625d14ac9563",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2100,11 +2104,11 @@
     "mode": "0o644"
   },
   "tests/ota_snapshot_finish.cpp": {
-    "sha256": "01d893df3bbbd58285ab77b979f9caeb79ba7f7a906c8cc255b3e9fad83ce185",
+    "sha256": "5490ae03215e7691e4168f4ef2584c44b5d9f8939f9e16c39526bff45801e8b0",
     "mode": "0o644"
   },
   "tests/ota_snapshot_finish.py": {
-    "sha256": "e2613a73d182d4ec5dd4aa339b6f58e693010c2ebda6285a2979219aabb1383f",
+    "sha256": "6cb4a0b48af048120be951a7b673ddd614d8e0eaf49dd56d901290365462e16e",
     "mode": "0o644"
   },
   "tests/ota_snapshot_map.cpp": {
@@ -2113,6 +2117,10 @@
   },
   "tests/ota_snapshot_map.py": {
     "sha256": "6748644ede80f2b309a29906bd26f43518a80127cc7bfb798894b3a0c3522545",
+    "mode": "0o644"
+  },
+  "tests/ota_snapshot_postinstall.cpp": {
+    "sha256": "2bd090664a0e649c403dcfc235f6c4f8b94e7988a310b9b4f794e8e0d41701c7",
     "mode": "0o644"
   },
   "tests/ota_stock_payload.cpp": {

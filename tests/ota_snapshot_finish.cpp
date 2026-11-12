@@ -157,4 +157,5 @@ int main(int argc, char** argv) {
  }
  assert(sync_injections == unsigned(name == "boot-sync-error" || name == "state-sync-error" || sync_interrupt));
  printf("PASS %s actual state/flags checked; no device effects\n", name.c_str());
+ return 0;
 }
