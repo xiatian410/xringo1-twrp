@@ -2,10 +2,6 @@
 
 设备：Xiaomi 15S Pro（dijun / XRING O1）。目标：OS3 / OS4 优先，同一镜像尽可能覆盖所列 OS2 样本。本文保留目标和验收要求，不再堆积逐轮进度；当前进度集中在 [工作队列](docs/WORK-QUEUE.md) 与 [验证报告](simulation-report.md)。
 
-本轮生产进展：0076 修正更改文件系统被 rm-rf 覆盖、缺工具误回退、旧类型别名误分派及成功类型未更新。原始 Wipe/helper/manager/backend 25 场景通过、旧 10 失败；命令为替身，清理构建 791 来源 / 六 profile。真实格式化/读回接续仍待完成，见[范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#文件系统转换分派与状态0076)。
-
-后续证据进展：同镜像实际 ARM64 格式化/修复工具已接原调用链，六场景通过；ext4 内容独立读回一致，F2FS 填充后结构检查通过。没有新增生产修正或构建，真实挂载/GUI/fscrypt 边界保留，见[执行范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#实际格式化工具与调用链接续)。
-
 ## 执行约定
 
 - 维护范围不限于此前六组，按具体未解决问题推进，不自动启动全量重复审计。

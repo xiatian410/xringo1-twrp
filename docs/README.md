@@ -27,16 +27,14 @@
 - [tar、压缩、加密与分卷管道适配](ARCHIVE-PIPELINE-ADAPTATION.md)
 - [文件归档恢复：实际代码离线验证](ARCHIVE-RESTORE-ADAPTATION.md)
 - [原始分区镜像备份与恢复的离线验证](RAW-IMAGE-ADAPTATION.md)
-- [备份会话、取消和 tar 子进程](BACKUP-SESSION-ADAPTATION.md)
+- [备份会话、取消、目录管理与摘要发布](BACKUP-SESSION-ADAPTATION.md)
 - [恢复会话预检与分卷校验](RESTORE-SESSION-ADAPTATION.md)
-- [备份摘要文件的原子发布](DIGEST-PUBLICATION.md)
 
 ## USB 与 MTP
 
 - [MTP 传输、启停与存储消息](MTP-ADAPTATION.md)
-- [MTP 上传原子发布与目录元数据](MTP-ATOMIC-UPLOAD.md)
+- [MTP 上传、日期与目录元数据](MTP-ATOMIC-UPLOAD.md)
 - [MTP 控制报文、事务取消与 Reset](MTP-CONTROL-ADAPTATION.md)
-- [MTP 上传日期解析](MTP-DATETIME-ADAPTATION.md)
 - [MTP 事件请求、退出与重连](MTP-EVENTS-ADAPTATION.md)
 - [MTP 对象数据库与会话适配](MTP-OBJECTS-ADAPTATION.md)
 - [MTP 移动、复制与目录重建](MTP-TRANSFERS-ADAPTATION.md)

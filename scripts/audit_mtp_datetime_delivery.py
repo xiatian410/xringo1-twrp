@@ -44,7 +44,7 @@ def main():
  assert index['status']=='in_progress' and len(index['not_yet_completed'])==12
  recheck=(ROOT/'logs/mtp-datetime-final-source-recheck.log').read_text();assert 'Pending: 0 source updates, device tree changed=False' in recheck
  names=evidence+['logs/mtp-datetime-before.json','logs/verify-mtp-datetime.log','logs/mtp-datetime-final-source-recheck.log']
- out=dict(status='PASS',scope=__doc__,image_sha256=digest,sources=725,date_cases=80,baseline_cases=79,baseline_failures=48,object_cases=46,transfer_cases=48,runtime_groups=9,runtime_calls=102,evidence={n:sha(ROOT/n) for n in names},documents={n:sha(ROOT/n) for n in ['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.json','simulation-report.md','docs/MTP-DATETIME-ADAPTATION.md','docs/MTP-OBJECTS-ADAPTATION.md','FEATURE-USAGE.md']},audit_script_sha256=sha(Path(__file__)))
+ out=dict(status='PASS',scope=__doc__,image_sha256=digest,sources=725,date_cases=80,baseline_cases=79,baseline_failures=48,object_cases=46,transfer_cases=48,runtime_groups=9,runtime_calls=102,evidence={n:sha(ROOT/n) for n in names},documents={n:sha(ROOT/n) for n in ['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.json','simulation-report.md','docs/MTP-ATOMIC-UPLOAD.md','docs/MTP-OBJECTS-ADAPTATION.md','FEATURE-USAGE.md']},audit_script_sha256=sha(Path(__file__)))
  (ROOT/'logs/mtp-datetime-delivery.json').write_text(json.dumps(out,indent=2)+'\n')
  print('PASS: date80/baseline48 failures;objects46/transfers48;725 sources;profile9/102. Physical vibration and full12 groups remain incomplete.')
 if __name__=='__main__':main()

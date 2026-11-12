@@ -98,8 +98,7 @@ def main():
                   field_vibration='unresolved', field_settings='unresolved', field_touch='unresolved',
                   full_goal='in_progress', outstanding_groups=12, evidence={n: sha(ROOT / n) for n in evidence},
                   documents={n: sha(ROOT / n) for n in ['ADAPTATION-GOALS.md', 'MAINTENANCE.md',
-                             'simulation-report.md', 'simulation-report.json', 'docs/DIGEST-PUBLICATION.md',
-                             'docs/BACKUP-SESSION-ADAPTATION.md', 'FEATURE-USAGE.md',
+                             'simulation-report.md', 'simulation-report.json', 'docs/BACKUP-SESSION-ADAPTATION.md', 'FEATURE-USAGE.md',
                              'docs/HAPTICS-ADAPTATION.md']},
                   audit_script_sha256=sha(Path(__file__)))
     (ROOT / 'logs/digest-atomic-delivery.json').write_text(json.dumps(result, indent=2) + '\n')

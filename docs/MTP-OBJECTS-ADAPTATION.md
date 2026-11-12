@@ -51,7 +51,7 @@ python3 tests/mtp_objects_test.py --source backups/mtp-objects-pre-fix --report 
 
 后续 [USB configfs 与服务交接](USB-CONFIGFS-ADAPTATION.md)使用真实 init 调度和生产 helper 完成 42 项回放；实际 USB 控制器、Windows、完整旁加载和 MTP 调用者确认仍不由此证明。
 
-后续0039补齐上传日期解析：原42项加4项日期落盘共46项通过；直接MtpUtils80项与转移48项另记，见[MTP日期范围](MTP-DATETIME-ADAPTATION.md)。原子上传覆盖、输出日期、完整元数据及现场USB仍未完成。
+后续0039补齐上传日期解析：原42项加4项日期落盘共46项通过；直接MtpUtils80项与转移48项另记，见[MTP日期范围](MTP-ATOMIC-UPLOAD.md#upload-datetime)。原子上传覆盖、输出日期、完整元数据及现场USB仍未完成。
 
 ## 文件格式与筛选一致性（0071）
 

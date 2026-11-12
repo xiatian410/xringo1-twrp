@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "f48db5a09a33ee23dd79bd056755d01cedc1da011887dc0f1f2a4ba3d20466e1",
+    "sha256": "c38e8117585b752aec4c5bb76aa2535f97a99f2521eae8f7c301f8dbd8aa322f",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -32,7 +32,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "5058aa3f37218b01e2d0a3d567bf4599475aba2e49a6521f4b0dcabd11ae2b34",
+    "sha256": "eb6af556e0d203a6c7de9fc453a7e85decccc0b48a3a413ddd4dd76b2a8f99d8",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -44,7 +44,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "13849b6890b4bc16716d36ea042bc7d561e9f2d4b6711411f209accd64e2e2d3",
+    "sha256": "909890dd0d219167ab17dd8aab157134579bd6a42599edf01515d1872a99cf34",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -60,15 +60,11 @@
     "mode": "0o644"
   },
   "docs/BACKUP-SESSION-ADAPTATION.md": {
-    "sha256": "60d7a9de457d897c45ec04e1a9a6339251c968ecb1b5e16d4dbc7259bb88afe1",
+    "sha256": "7eb3ad255572fbb497f446303852c84b61a7b3a476dd3e81f8b0c49a813d610a",
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
     "sha256": "099a70b51e72c0a46a587c4f21aa840295444122a779d1c47a7239ec7775716d",
-    "mode": "0o644"
-  },
-  "docs/DIGEST-PUBLICATION.md": {
-    "sha256": "42ceae7884b2990aceff14316202abf2901f8472a254c519e39237ea212054c1",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -96,15 +92,11 @@
     "mode": "0o644"
   },
   "docs/MTP-ATOMIC-UPLOAD.md": {
-    "sha256": "2687a53a888cc4c29e6d9985d99ffdb02bc2eaf61ee17f82bf7427d085362d27",
+    "sha256": "81a2739cdbbef35bc7b725d3d760d96bb426cd14319181504c7276b6a160d679",
     "mode": "0o644"
   },
   "docs/MTP-CONTROL-ADAPTATION.md": {
     "sha256": "5c5d1fd8c625e9103cdecc41df0662010666febceb17134b7dbf0563dc34851b",
-    "mode": "0o644"
-  },
-  "docs/MTP-DATETIME-ADAPTATION.md": {
-    "sha256": "0a3920e95e50698f94b80b220e09dfd47162c1b830bbf7b4c1536938d4cbfca5",
     "mode": "0o644"
   },
   "docs/MTP-EVENTS-ADAPTATION.md": {
@@ -112,7 +104,7 @@
     "mode": "0o644"
   },
   "docs/MTP-OBJECTS-ADAPTATION.md": {
-    "sha256": "fa9190e4d279671c424792c5271a511d47d857c6b1cde05d66e89f95fa5f7503",
+    "sha256": "9c4d36ea4a9750c2c71baaaa66cf872601bf9a8bbb0a2a9d22ad344f414ea419",
     "mode": "0o644"
   },
   "docs/MTP-TRANSFERS-ADAPTATION.md": {
@@ -152,7 +144,7 @@
     "mode": "0o644"
   },
   "docs/README.md": {
-    "sha256": "5a5a206f085985521914ecefc2a9d02af6741d9d8979f0a157f58b98ddfe707e",
+    "sha256": "e42f9afe36bb86c3a69d7226538d00a76ff54a96eda96c71301562e984012240",
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
@@ -184,7 +176,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "681045d18a7a7f789c4bc5b7500e50ac95f826e110ab188812042b5c46e28f03",
+    "sha256": "9fe7d620ee02ef0923bde8eb16d2d26640da7297666ee7aca5c2539c84a9d55b",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1000,7 +992,7 @@
     "mode": "0o644"
   },
   "scripts/audit_digest_publication_delivery.py": {
-    "sha256": "ea3aacc9b47d12c2e52f41d565b1a93cc44f2c5a1784e4090ed7fd2c44b710da",
+    "sha256": "f25a5b3f38b543457e23eec36e1769b50d8884311e606a6bad5e70d994768f19",
     "mode": "0o644"
   },
   "scripts/audit_evidence_freshness.py": {
@@ -1172,7 +1164,7 @@
     "mode": "0o644"
   },
   "scripts/audit_mtp_datetime_delivery.py": {
-    "sha256": "b5699665a9dc06a2c25cd3536f5c1f5bb7255e765d54e736a19da0c6bf935bea",
+    "sha256": "a5709d1fd50adbfaf7461c4c0d5b7a825c62a30de00936f44ac1cf8db83c9411",
     "mode": "0o644"
   },
   "scripts/audit_mtp_directory_delivery.py": {
@@ -1192,7 +1184,7 @@
     "mode": "0o644"
   },
   "scripts/audit_mtp_upload_time_delivery.py": {
-    "sha256": "7169014819099442e39b75c8322da2847359b406834370ea0dec82fc6291e306",
+    "sha256": "d5fc3030bf7906bc8db647d26f401941f6f772172a23c88caa4e1a617633a88e",
     "mode": "0o644"
   },
   "scripts/audit_nv_mount_delivery.py": {
@@ -1364,7 +1356,7 @@
     "mode": "0o644"
   },
   "scripts/check_documentation.py": {
-    "sha256": "4c1bc673bdab2fe0e2432f2b9c581c99691b1f77295ea6441f5c56f398320e1a",
+    "sha256": "d28a90d846d9e86f0cdd50bad8c95e3b929f03104d36edd41a527431b2faa2c2",
     "mode": "0o644"
   },
   "scripts/check_public_tree.py": {

@@ -77,7 +77,7 @@ def main():
         checks=[c for c in index['checks']+index.get('additional_checks',[]) if c.get('evidence')==name]
         assert checks and all(c['evidence_sha256']==sha(ROOT/name) for c in checks),name
     assert index['status']=='in_progress' and len(index['not_yet_completed'])==12
-    docs=['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.md','simulation-report.json','docs/MTP-DATETIME-ADAPTATION.md','docs/MTP-ATOMIC-UPLOAD.md','FEATURE-USAGE.md']
+    docs=['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.md','simulation-report.json','docs/MTP-ATOMIC-UPLOAD.md','FEATURE-USAGE.md']
     out=dict(status='PASS',scope=__doc__,image=str(image),image_sha256=digest,production_sources=742,
              object_cases=94,new_timestamp_cases=16,old_failed=10,transfer_cases=48,profile_groups=9,module_groups=4,
              inherited_OTG_evidence={n:sha(ROOT/n) for n in inherited},evidence={n:sha(ROOT/n) for n in evidence},

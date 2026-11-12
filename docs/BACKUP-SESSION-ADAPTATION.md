@@ -1,8 +1,8 @@
-# 备份会话、取消和 tar 子进程
+# 备份会话、目录管理与摘要发布
 
 2026-11-12 补充：独立digest sidecar原子发布现由维护补丁0046实现；补丁0047增加新备份INCOMPLETE/COMPLETE文件清单以及恢复枚举/写入前校验。17项manifest检查、RunBackup55项、RunRestore56项通过；旧版无清单备份仍按legacy接受，不宣称有完整性证明。新镜像、构建和同镜像检查见[任务进度](../ADAPTATION-GOALS.md)。原始archive编码/真实断电和文件系统耐久性仍未验证。
 
-日期：2026-11-11。实现位于设备树固定补丁 [0019](../dtsrc/O1_asic_dual/0019-backup-session-cancellation.patch)。当前镜像、哈希与构建证据见[模拟报告](../simulation-report.md)。本轮没有连接手机。
+以下会话检查记录对应 2026-11-11 阶段；后续修正见本文各小节，历史未完成描述不覆盖后续交付。实现位于设备树固定补丁 [0019](../dtsrc/O1_asic_dual/0019-backup-session-cancellation.patch)。当前镜像、哈希与构建证据见[模拟报告](../simulation-report.md)。本轮没有连接手机。
 
 备份取消不再直接使用一个可能为 `-1`、已回收或属于旧任务的 PID。新的 `BackupProcess` 在互斥锁内建立并登记私有进程组；取消只向仍由当前备份拥有的组发信号。备份线程负责读管道、等待退出、回收 leader 并清除 PID。leader 保持未回收状态直到组信号发出，避免回收后 PID 被复用。失败或取消的压缩/加密 helper 也随组终止，取消线程不再循环等待 `kill(pid, 0)`。
 
@@ -35,10 +35,10 @@
 ## 保留边界
 
 - 内核不可中断 I/O 不能靠信号强制即时终止；取消入口返回不等于所有设备写入已完成。界面等待工作线程收尾。
-- recovery 进程被强杀、主机掉电、目录删除失败可能留下不完整目录；目前没有整份备份完成标记/可信分卷清单，也不保证断电原子提交。目录 inode 检查不抵御所有检查之后的外部路径替换。
+- recovery 进程被强杀、主机掉电、目录删除失败可能留下不完整目录；后续 0047 已增加完成标记与分卷校验，仍不保证断电原子提交。目录 inode 检查不抵御所有检查之后的外部路径替换。
 - tar/pigz/OAES 内容往返另由[编解码管道 46 项](ARCHIVE-PIPELINE-ADAPTATION.md)覆盖；完整管理器流程、稀疏空洞、真实进度条和可信卷清单/卷尾缺失检测仍待补；digest sidecar独立原子提交已由后续0046及独立真实文件检查覆盖，不等于整份备份原子提交。
 - 同步内核写入失败可能形成部分恢复；本次不会回滚已写分区。FlashImage/repacker 独立入口的取消残留仍待审计。
-- 震动物理效果和所有手机外设继续标为 U；本次不声称改善了电机硬件表现。
+- 本组会话检查不证明手机外设效果；震动已由用户确认正常，不属于当前待办。
 
 ## 备份目录重命名与删除（0067）
 
@@ -51,3 +51,31 @@
 候选 `recovery-dijun-unified-backup-manage.img`，SHA-256 `ecdab5945ca529e3b20049e79ea8799f18292c9b4883f6210055719be6527fe4`；installclean 后 `make -j$(nproc)` 30 并发构建，780 份生产来源和六份 profile 核对。相对 snapshot-map 只有 Recovery 主程序、构建属性与文件摘要变化。审计入口 `python3 scripts/audit_backup_manage_delivery.py`。
 
 范围限制：这是目录管理修复，不是完整备份/恢复或断电持久性验收。父 fd 防止根路径变化重定向，但不承诺消除外部并发替换子目录的全部竞争。删除中途失败可能已移除部分内容；不承诺回滚，也不改变其他命令工具或 TWRP 根目录改名入口。
+
+<a id="digest-publication"></a>
+
+## 摘要文件原子发布（0046）
+
+[0046 固定补丁](../dtsrc/O1_asic_dual/patches/0046-atomic-backup-digests.patch)避免截断正式 `.sha2` / `.md5` 后写入失败破坏原摘要。仍使用真实流式 BoringSSL MD5 / SHA-256，保持 `<hex>  <basename>\n` 格式和原有使用入口。
+
+1. 在同目录创建唯一 `.twrp-digest.XXXXXX` 临时文件并设置 CLOEXEC；固定短名称避免合法长目标名超出 NAME_MAX。
+2. 处理短写、EINTR 和零写，沿用尽力设置 Android 元数据的策略，检查文件同步及关闭。不重试失败的 close，避免误关已复用的 fd。
+3. 前序成功才 rename 替换并同步目录。发布前失败保留旧摘要并清理临时文件；正式摘要为符号链接时替换链接本身。
+4. rename 后目录同步失败返回 false，并记录 `Digest replaced but directory sync failed`。完整新文件已可见，不能声称回退到旧文件。
+5. 错误传回 `MakeDigest` 和 `BackupPartition`，性能状态按作用域收尾；摘要失败或之后取消不能让分区备份返回成功。
+
+临时文件不作为摘要或 archive part 读取。进程退出仍可能留下临时文件，没有自动清理；多卷逐文件发布，后一卷失败不回滚前卷。这不是整份备份的原子提交。后续 0047 的完成清单与恢复预检独立生效，完整 archive 持久性和断电恢复仍未验收。
+
+`tests/digest_publication_test.py` 编译完整生产 digest driver / TwrpDigest，并接入原 `BackupPartition` 方法；实际执行 BoringSSL、普通文件、rename、fork 与进程退出，启用 ASan / UBSan。Python hashlib 独立给出两种算法预期，输入跨越 256 KiB 读取块。
+
+54 项通过，旧实现同组 44 项失败。覆盖新建 / 覆盖、长名称、短写 / EINTR / 零写 / ENOSPC、创建 / 打开 / 同步 / 关闭 / rename 失败、链接与目录目标、源缺失、重试和分卷。三个进程退出边界检查发布前后可见内容，不能模拟突然掉电。恢复 54 项及备份会话 55 项为当时的相关回归；挂载、archive 创建、Android 元数据及 GUI 仍是边界，不可拼接为完整端到端验收。
+
+```bash
+python3 tests/digest_publication_test.py --output logs/digest-publication.json
+python3 tests/digest_publication_test.py --source backups/digest-atomic-pre-fix/digest --output logs/digest-publication-before.json
+python3 tests/restore_session_test.py --report logs/digest-atomic-restore.json
+python3 tests/backup_session_test.py --report logs/digest-atomic-backup.json
+python3 scripts/audit_digest_publication_delivery.py
+```
+
+负向对照预期非零，依赖本地旧源码。历史构建及来源哈希见本地 `logs/digest-atomic-delivery.json` 与机器索引；本文合并不改写旧证据。

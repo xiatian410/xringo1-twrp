@@ -69,3 +69,5 @@ README 负责项目入口；目标文档负责需求；工作队列负责下一�
 RTC 回调记录并入 `docs/STATUS-ADAPTATION.md`，MiTEE 静态组合比较并入 `docs/PROFILE-LINKER-ARM64.md`，MTP 启停与存储消息并入 `docs/MTP-ADAPTATION.md`。保留原有技术内容与复现命令，删除独立重复入口；脚本所需的资源 JSON 不随文档合并删除。
 
 已解决问题的独立调查和阶段性批次放入 `docs/archive/`，通过归档索引访问。GUI 点击反馈并入操作反馈主题，OS4 正式版增补并入固件选择主题，不再保留独立重复入口。移动时同步修改工具引用；历史证据哈希保留原值，不因此伪装为新验证。
+
+MTP 日期与上传说明统一维护在 `docs/MTP-ATOMIC-UPLOAD.md`，备份摘要发布并入 `docs/BACKUP-SESSION-ADAPTATION.md`。不保留重复短文或过时的当前状态；历史版本通过 Git 追溯，历史机器报告与来源哈希不重写。README 保持项目简介、状态、构建入口和导航，不逐批追加测试流水账。
