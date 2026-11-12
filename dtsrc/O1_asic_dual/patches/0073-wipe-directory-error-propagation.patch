@@ -1,0 +1,66 @@
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -1710,15 +1710,19 @@
+   if (!Mount(true)) return false;
+ 
+   gui2_console::info("wiping", backup_display_name_);
+-  TWFunc::RemoveDir(mount_point_ + "/.android_secure/", true);
+-  return true;
++  const std::string path = mount_point_ + "/.android_secure/";
++  std::error_code ec;
++  if (!fs::exists(path, ec)) return !ec;
++  return TWFunc::RemoveDir(path, true) == 0;
+ }
+ 
+ bool TWPartition::WipeDataCache() {
+   if (!Mount(true)) return false;
+   gui2_console::info("wiping", mount_point_ + "/cache/");
+-  TWFunc::RemoveDir(mount_point_ + "/cache/", true);
+-  return true;
++  const std::string path = mount_point_ + "/cache/";
++  std::error_code ec;
++  if (!fs::exists(path, ec)) return !ec;
++  return TWFunc::RemoveDir(path, true) == 0;
+ }
+ 
+ bool TWPartition::CanRepair() const {
+@@ -2194,7 +2198,7 @@
+   if (is_storage_) TWPartitionManager::RemoveMtpStorage(mtp_storage_id_);
+ 
+   gui2_console::info("remove_all", mount_point_);
+-  TWFunc::RemoveDir(mount_point_, true);
++  if (TWFunc::RemoveDir(mount_point_, true) != 0) return false;
+   RecreateAndSecFolder();
+   return true;
+ }
+--- a/twrp_functions.cpp
++++ b/twrp_functions.cpp
+@@ -637,11 +637,26 @@
+ 
+   if (skip_parent) {
+     // Keep path itself, remove everything below it
+-    for (const fs::directory_entry& entry : entries) {
+-      fs::remove_all(entry, ec);
++    // Keep the first failure: a later successful entry must not clear it.
++    // Advance with error_code too, so a directory read error cannot throw out
++    // of the wipe worker instead of publishing a failed result.
++    auto entry = entries;
++    const fs::directory_iterator end;
++    while (entry != end) {
++      fs::remove_all(entry->path(), ec);
++      if (ec) {
++        gui2_console::log_error("error_opening_strerr", entry->path().string(), ec.message());
++        return -1;
++      }
++      entry.increment(ec);
++      if (ec) {
++        gui2_console::log_error("error_opening_strerr", path, ec.message());
++        return -1;
++      }
+     }
+   } else {
+     fs::remove_all(path, ec);
++    if (ec) gui2_console::log_error("error_opening_strerr", path, ec.message());
+   }
+   return ec ? -1 : 0;
+ }

@@ -2,7 +2,7 @@
 
 设备：Xiaomi 15S Pro（dijun / XRING O1）。目标：OS3 / OS4 优先，同一镜像尽可能覆盖所列 OS2 样本。本文保留目标和验收要求，不再堆积逐轮进度；当前进度集中在 [工作队列](docs/WORK-QUEUE.md) 与 [验证报告](simulation-report.md)。
 
-本轮生产进展：0072 为备份/恢复/清除/侧载/fastbootd 补齐有界日志与页面首帧/删除门控，清理构建 787 来源 / 六 profile。业务 backend 与触摸脚本未改，见[操作反馈](docs/OPERATION-FEEDBACK-ADAPTATION.md#进度页日志生命周期补齐0072)。
+本轮生产进展：0073 修正目录清除错误被覆盖及三个清除入口忽略失败的问题；真实权限失败到后台终态 11 场景通过，旧实现 5 失败，共用备份目录删除回归 12 项通过。清理构建 788 来源 / 六 profile；完整文件系统生命周期仍未闭环，见[目录清除](docs/FILESYSTEM-TOOLS-EXECUTION.md#目录清除失败传播0073)。
 
 ## 执行约定
 

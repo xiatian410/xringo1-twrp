@@ -40,3 +40,25 @@ QEMU的uname暴露主机kernel版本；F2FS输出也记录无法读取/proc/vers
 新候选`recovery-dijun-unified-fsck-result.img`，SHA256 `e153160d5cb2c8f438a899847bff6714caee37ac32eeb136996ef1aa08395b11`，installclean后make -j$(nproc) recoveryimage构建成功，711来源指纹记录；包装与新二进制检查通过。没有修改震动、触摸或解密路径，完整GUI/内核挂载/硬件验证仍未完成。
 
 复现命令：`python3 tests/repair_exit_status_test.py`；格式化/真实修复工具：`python3 tests/filesystem_tools_image_test.py`。前者不运行实际工具，后者仅对程序新建的私有文件执行工具；这两层检查共同支持本次返回值修正，仍不是完整界面操作验收。
+
+## 目录清除失败传播（0073）
+
+`RemoveDir(path, true)` 原先在同一个 `error_code` 上反复调用 `remove_all`，早期失败会被后续成功清空；目录迭代递增还使用可能抛异常的接口。`WipeRmrf`、`WipeAndSec` 和 `WipeDataCache` 又忽略返回值，即使目标文件仍在，也会一路发布清除成功。
+
+[0073 固定补丁](../dtsrc/O1_asic_dual/patches/0073-wipe-directory-error-propagation.patch)在首个删除错误时记录并返回失败，迭代递增也使用 `error_code` 检查。三个清除入口传播删除返回值；整分区内容清除失败不再继续重建 android_secure 目录。缓存或 android_secure 子目录本来不存在时保持幂等成功，路径查询失败仍为失败。中途失败可能已删除其他内容，不承诺回滚。
+
+有限验证执行真实 `RemoveDir`、三个分区 helper、manager 路由及后台 `LIST/run/report_item`，在私有 chroot 内创建普通文件，降权至 uid/gid 65534 后用真实权限拒绝触发失败。11 场景通过，旧实现同组 5 失败：三个权限拒绝、整分区路径缺失，以及第一项失败被后续成功覆盖。另覆盖删除成功、挂载拒绝及不存在的两个子目录。共用删除函数改变后，原备份目录管理 12 场景必要回归通过。未重跑无关页面、profile 启动或震动测试。
+
+```bash
+python3 tests/wipe_errors_test.py
+# 需本地保存的旧源，预期五项失败：
+python3 tests/wipe_errors_test.py --before
+python3 tests/backup_manage_test.py --report logs/wipe-errors-backup-regression.json
+python3 scripts/audit_wipe_errors_delivery.py
+```
+
+挂载、设备解析、其他清除模式和操作呈现是明确替身；同步调用原 `run`，没有覆盖完整后台 start/thread、GUI 或真实文件系统挂载。`RecreateAndSecFolder` 是计数替身，仅验证失败不再调用它，不证明其内部重建正确。
+
+候选 `recovery-dijun-unified-wipe-errors.img`，SHA-256 `4be5c38595551ad48a5fc3ec09376431cfeed0ccf2c6dc77d97b73e89082ca78`。先 `installclean`，再 `make -j$(nproc)` 30 并发；788 份生产来源及六份 profile 封装核对。相对 progress-console 候选，只有 Recovery 主程序、构建属性和 ramdisk 摘要改变。
+
+剩余具体缺口：`WipeDataWithoutWipingMediaFunc` 仍有只记录 unlink 失败后返回成功的路径；Dalvik / 媒体清除的其他调用方也未在本批覆盖。它们需要分别考虑排除目录、部分删除和错误传播，不能用这 11 项结果宣称完整清除 / 格式化已验收。现场容量刷新故障不在本批修复范围内。

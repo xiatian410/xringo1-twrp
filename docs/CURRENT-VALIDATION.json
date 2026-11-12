@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-progress-console.img",
-  "image_sha256": "a29624a081b50c7b5c388c3d4f79695dfebd9791c83c48770fc267fe28721b9c",
-  "production_sources": 787,
+  "image_name": "recovery-dijun-unified-wipe-errors.img",
+  "image_sha256": "4be5c38595551ad48a5fc3ec09376431cfeed0ccf2c6dc77d97b73e89082ca78",
+  "production_sources": 788,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -725,12 +725,36 @@
       "failures": 0,
       "local_report_sha256": "f66f1b517cc5d8d32f8aac173cb04b072f09a660d244f0be25f64a63a8d278d7",
       "scope": "Bounded tool console + actual worker/progress LVGL, large history and reentry.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
+    },
+    {
+      "name": "wipe-errors",
+      "status": "PASS",
+      "cases": 11,
+      "failures": 0,
+      "local_report_sha256": "623ab85fdca0f97d247536a7a0fdcdb5ba59f586407c216b84648c1821768cd2",
+      "scope": "Real directory permission failures to production wipe result publication.\n\nPrivate chroots and unprivileged uid, ordinary files only. Execute RemoveDir,\nthree partition wipe helpers, real manager routing and backend LIST/run/report.\nMount/device resolution, remaining wipe modes and presentation are fixtures;\nrun is invoked synchronously, not a complete GUI or worker-start lifecycle.\n"
+    },
+    {
+      "name": "wipe-errors-before",
+      "status": "FAIL",
+      "cases": 11,
+      "failures": 5,
+      "local_report_sha256": "a11e0f798265d4025bb77a337b3e83c72b156ca46ea0022e4b780a1d23a9bfd8",
+      "scope": "Real directory permission failures to production wipe result publication.\n\nPrivate chroots and unprivileged uid, ordinary files only. Execute RemoveDir,\nthree partition wipe helpers, real manager routing and backend LIST/run/report.\nMount/device resolution, remaining wipe modes and presentation are fixtures;\nrun is invoked synchronously, not a complete GUI or worker-start lifecycle.\n"
+    },
+    {
+      "name": "wipe-errors-backup-regression",
+      "status": "PASS",
+      "cases": 12,
+      "failures": 0,
+      "local_report_sha256": "feb645b498cd01af99063d371e13ac163eab09fc96da09504e813b00c205e6cf",
+      "scope": "Execute production tool worker backup rename/delete against private files.\n\nReal threads, shell on old implementation, renameat2 and filesystem removal;\nDataManager and operation presentation are explicit boundaries. No GUI or device.\n"
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
   "current_batch_groups": [
-    12
+    6
   ],
-  "current_batch_document": "docs/OTA-OPERATION-COW.md",
-  "current_batch_groups_scope": "Exact OS4 current/stable otapreopt scripts executed with delivered ARM64 shell/getprop;8guard cases, explicit property/exec boundaries. No ART service change/new build."
+  "current_batch_document": "docs/FILESYSTEM-TOOLS-EXECUTION.md",
+  "current_batch_groups_scope": "Directory wipe failure propagation only; this batch selection does not restrict the full work queue. Remaining full filesystem lifecycle open."
 }

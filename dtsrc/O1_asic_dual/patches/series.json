@@ -270,6 +270,10 @@
         {
           "file": "0072-progress-console-bounded-lifecycle.patch",
           "sha256": "b5677c2369ec079ed99c1a37fd899e264fafc0464302463abb5e09765fb83b00"
+        },
+        {
+          "file": "0073-wipe-directory-error-propagation.patch",
+          "sha256": "62e112ad8c96bef3dfa58b0859562705cd3b44d60ea0869b9de8382cb3d44a30"
         }
       ],
       "result_files": {
@@ -277,7 +281,7 @@
         "etc/init/keystore2.rc": "aa28727dfc718c059b926215f1fcfa9917132265dc01fbd329dcb928a783768e",
         "gui2/app/screen_actions.cpp": "188556ece804fedc23d4d9c2214418de89f49caa4560405dc41e9bcfd5577da1",
         "gui2/gui2_input.cpp": "3504c83906edf8192d0ff717d35a6f6c38770282cba8fd56ec24ebcd55dbe625",
-        "partition.cpp": "68bf999f9759eaaecfe79560cdfeba7a7107294683b8b615dd0396b668f1af32",
+        "partition.cpp": "4d1c095fc7786f0b22dfa8eb1e012ef78d90742dd7dd0a9dc7ee085e3907bb9a",
         "twrpminui/force_feedback.cpp": "f7bdb5f50e5ef9d0ecd2ab161fa8f6143292c1207f064147a2db94b080d86f41",
         "twrpminui/graphics_drm.cpp": "61611757cc147b2f925ed52c6f73334acd7ae11d7fa3954d720cbeb8d47d0447",
         "mtp/MtpFfsHandle.cpp": "65f9c45e4cc3ac14dcf8c03aa96c94c59983a10d80bf29b38d2d1e3f15836fe3",
@@ -321,7 +325,7 @@
         "backup_process.hpp": "5d4a5d4973bba52d7a796dee1ed5e3d8258cebfb438dad33cfbcbb964b1ee225",
         "twrpRepacker.cpp": "4b95330ee0cff1df83da0231da203365121be14be2830fefbb4772b0b5c727c7",
         "tarWrite.cpp": "c7ae8b3f27403eb2df3b0ee697988b1542f44350c6f0adc7aa8a4bc86612130a",
-        "twrp_functions.cpp": "8f43500effe6634aa9328d116891080bacfcb7466272544ada26a3f97473d601",
+        "twrp_functions.cpp": "e032e50443e69e7f21dcc2d4b06120208b429e4eab001bd859a4d5a75b12862e",
         "twrp_functions.hpp": "0dec08d05f3ca3cabce444f0b67cec6a981c7808c8b924ac24c04ac51ffeb84c",
         "oaes/oaes.cpp": "306acbfddd40512ba8c0ad0b7ad8afc86533425625e6a875f95d0a3ae4e1e356",
         "oaes/oaes.hpp": "256c988afbd924a12db4bdaa4c9c35475dda92b53676cf7693f64e36de0ed3c4",

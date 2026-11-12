@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-progress-console.img",
-  "image_sha256": "a29624a081b50c7b5c388c3d4f79695dfebd9791c83c48770fc267fe28721b9c",
-  "image_status": "Clean-built patch0072: bounded backup/restore/wipe/sideload/fastbootd page logs and page-instance frame/reset lifecycle;787 sources/six profiles. Field refresh and full adaptation remain open.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-wipe-errors.img",
+  "image_sha256": "4be5c38595551ad48a5fc3ec09376431cfeed0ccf2c6dc77d97b73e89082ca78",
+  "image_status": "Clean-built patch0073: RemoveDir retains deletion/read errors; WipeRmrf/WipeAndSec/WipeDataCache propagate failure.788 sources/six profiles. Full adaptation remains open.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1936,7 +1936,7 @@
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
     "MTP remaining media metadata and final post-child directory date semantics (file epoch0/timestamp-error publication and directory SendObjectInfo time/completion16 cases covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
     "backup/restore real archive codec/GUI and sparse-hole/progress behavior, actual filesystem power-loss durability and content authenticity; new-backup completion manifests and restore rejection are covered by17 helper,55 RunBackup and56 RunRestore host cases but do not prove sudden power-loss behavior",
-    "full GUI/PartitionManager write/format/repair lifecycle and I/O faults; current-image tools17 historical cases, e2fsck result146 assertions and current-image wrapper/lookup/Repair/ExecCmd/ARM64 checker7 joined cases covered with explicit unmount/device/presentation fixtures; real mounts/full GUI still pending",
+    "full GUI/PartitionManager write/format/repair lifecycle and I/O faults; current-image tools17 historical cases, e2fsck result146 assertions and current-image wrapper/lookup/Repair/ExecCmd/ARM64 checker7 joined cases covered with explicit unmount/device/presentation fixtures; real mounts/full GUI still pending; patch0073 covers RemoveDir + WipeRmrf/AndSec/DataCache -> manager -> backend LIST/run terminal result with real private permission failures; media-preserving data wipe and full GUI/format lifecycle remain pending",
     "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
     "video target ARM64 codec/display-shadow sampling integration, real storage/codec fault behavior, hour-scale stability and seek/index performance (bounded12.5s multi-cluster/keyframe correctness covered), GUI player rendering and full-resolution performance; host frames/queue/failure recovery plus independent FFmpeg native decode and72 short input seeks covered",
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
@@ -3051,6 +3051,30 @@
       "evidence": "logs/tool-console.json",
       "evidence_sha256": "f66f1b517cc5d8d32f8aac173cb04b072f09a660d244f0be25f64a63a8d278d7",
       "scope": "Bounded tool console + actual worker/progress LVGL, large history and reentry.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
+    },
+    {
+      "name": "wipe-errors-0073",
+      "result": "pass",
+      "count": 11,
+      "evidence": "logs/wipe-errors.json",
+      "evidence_sha256": "623ab85fdca0f97d247536a7a0fdcdb5ba59f586407c216b84648c1821768cd2",
+      "scope": "Real directory permission failures to production wipe result publication.\n\nPrivate chroots and unprivileged uid, ordinary files only. Execute RemoveDir,\nthree partition wipe helpers, real manager routing and backend LIST/run/report.\nMount/device resolution, remaining wipe modes and presentation are fixtures;\nrun is invoked synchronously, not a complete GUI or worker-start lifecycle.\n"
+    },
+    {
+      "name": "wipe-errors-before-0073",
+      "result": "expected-failure",
+      "count": 11,
+      "evidence": "logs/wipe-errors-before.json",
+      "evidence_sha256": "a11e0f798265d4025bb77a337b3e83c72b156ca46ea0022e4b780a1d23a9bfd8",
+      "scope": "Real directory permission failures to production wipe result publication.\n\nPrivate chroots and unprivileged uid, ordinary files only. Execute RemoveDir,\nthree partition wipe helpers, real manager routing and backend LIST/run/report.\nMount/device resolution, remaining wipe modes and presentation are fixtures;\nrun is invoked synchronously, not a complete GUI or worker-start lifecycle.\n"
+    },
+    {
+      "name": "wipe-errors-backup-regression-0073",
+      "result": "pass",
+      "count": 12,
+      "evidence": "logs/wipe-errors-backup-regression.json",
+      "evidence_sha256": "feb645b498cd01af99063d371e13ac163eab09fc96da09504e813b00c205e6cf",
+      "scope": "Execute production tool worker backup rename/delete against private files.\n\nReal threads, shell on old implementation, renameat2 and filesystem removal;\nDataManager and operation presentation are explicit boundaries. No GUI or device.\n"
     }
   ],
   "source_review_followups": [
@@ -3366,8 +3390,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/progress-console-delivery.json",
-    "scope": "Patch0072; clean build;787 sources;six profiles;five page poller/frame/reset paths30 cases, old30 failures, shared tool6 regression. Backend operations unchanged.",
+    "evidence": "logs/wipe-errors-delivery.json",
+    "scope": "Patch0073; clean build;788 sources;six profiles;real permission failures through RemoveDir/partition/manager/backend LIST/run11 cases, old5 failures; shared backup deletion regression12. Mount/device/presentation boundaries, no full GUI/start or media-preserving wipe.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
