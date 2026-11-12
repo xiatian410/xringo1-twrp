@@ -205,3 +205,15 @@ python3 tests/ota_cow_roundtrip.py
 最初 BZ 选择了 48 字节的近全零编码块，后改为 odm 的约 900 KiB 实际压缩块，避免仅证明极简单内容。六项报告为 `logs/ota-stock-operation-cow.json`；旧选择的结果保留本地。共用测试入口修改后，原八项回归单独保存为 `logs/ota-operation-cow-after-stock-extension.json`，原始报告未覆盖。可用 `--report` 指定独立输出。
 
 六份 manifest 的操作清点均只有 REPLACE / BZ / XZ；两份 OS4 的 system 另声明可选 `system/bin/otapreopt_script`。这一静态观察不代替实际 postinstall 挂载或执行验收。此组六项只覆盖两份 OS4 的所选操作，**未将原厂完整 manifest 和全部数据交给 DeltaPerformer**，也未执行 SnapshotManager、postinstall、切槽或合并；此前完整接续仍使用合成 payload。没有发现本段需要改生产代码的问题，snapshot-map 镜像与 779 来源保持不变。
+
+## 完整本地 OS4 payload 输入
+
+入口 `python3 tests/ota_stock_payload.py` 使用本地 OS4 旧样本 ZIP 中未改动的 `payload.bin`，原始 CrAU 头、manifest、操作数据和尾部签名均不重建。输入大小 7,821,653,872 B，42 个分区、4,903 个操作，目标共 10,235,486,208 B。完整流与原最终校验器执行通过：全部 4,903 个操作完成，42 个目标哈希逐项匹配，完整 payload 长度与 FILE_HASH 匹配。不是完整设备 OTA 验收。
+
+原 DeltaPerformer 按 1 MiB 流式读取，真实分区工厂为静态分区选择原 PartitionWriter、为十个动态分区选择 VABCPartitionWriter。静态目标是临时普通文件；动态目标为原 COW writer，完成后通过 CompressedSnapshotReader 将视图落盘，再由原异步 FilesystemVerifierAction 检查原 manifest 的最终目标哈希。完整测试使用磁盘目录，避免 15 GiB 的 `/tmp` tmpfs 被完整目标与 COW 占满。
+
+PreparePartitionsForUpdate / BootControl 的路径和设备映射由明确替身实现；没有真实 LP、SnapshotManager、snapuserd、mount、槽位切换、postinstall 或物理设备操作。原厂 payload 中的 vbmeta 仅作为普通文件内容写入临时目录，不执行 AVB 修改。FakeHardware 时间与版本接口不能证明设备实际降级 / SPL 策略。生产 archive 只做测试时绑定，不升级为历史镜像来源证明。
+
+首次测试环境遗漏 `/system/etc/security/otacerts.zip`，mandatory 元数据检查在首块返回错误 25。原始失败报告保留为 `logs/ota-stock-payload-missing-cert.json`。随后从**同一交付镜像**提取该证书到原路径，保留 mandatory 配置，未引入测试公钥或修改签名策略；Recovery 内部密码学比较的既有编译边界仍然适用，不能据此宣称整包认证通过。
+
+本地 stdout / stderr 和结构化结果分别保存在 `logs/ota-stock-payload.stdout`、`logs/ota-stock-payload.stderr`、`logs/ota-stock-payload.json`。`python3 scripts/review_stock_payload.py` 复核来源、当前镜像库 / 证书、完整 payload 哈希、操作完成数和 42 个目标哈希，而不重跑耗时执行。本次复核通过；所有 42 个目标哈希与原 manifest 一致，十个动态分区 COW 视图正常读回。原链接器 / 缺失 proc / 普通文件 ioctl 警告保留，没有将这些替身提升为真实系统启动证据。

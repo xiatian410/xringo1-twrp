@@ -2901,6 +2901,15 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Run real ARM64 operation executor -> snapshot extent writer -> COW -> decompression.\n\nSynthetic payload operation data, real current build archives; no DeltaPerformer\nhash/signature validation, VABC Init/SnapshotManager, devices, merge or full OTA.\nDelivered linker/shared libraries are image-bound; archives are test-time bound,\nnot historically bound by the older image provenance manifest.\n"
+    },
+    {
+      "name": "ARM64-full-original-OS4-payload",
+      "evidence": "logs/ota-stock-payload.json",
+      "evidence_sha256": "4c4068f8c1ed5c83c36059fc6de730d23e42b545247326840580a708539cff81",
+      "count": 42,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Stream an unchanged locally available stock payload through the ARM64 engine.\n\nOrdinary target files and COWs replace device mapping; original full manifest,\noperation bytes and final partition hashes execute. No SnapshotManager, real\nmetadata, slot, postinstall, AVB or physical device. No signature-policy changes.\n"
     }
   ],
   "source_review_followups": [
@@ -3516,6 +3525,24 @@
       "snapshot_manager_executed": false,
       "production_change": false,
       "shared_harness_regression": "logs/ota-operation-cow-after-stock-extension.json"
+    },
+    "full_stock_payload": {
+      "document": "docs/OTA-OPERATION-COW.md",
+      "report": "logs/ota-stock-payload.json",
+      "report_sha256": "4c4068f8c1ed5c83c36059fc6de730d23e42b545247326840580a708539cff81",
+      "review": "logs/ota-stock-payload-review.json",
+      "sample": "os4-current",
+      "payload_bytes": 7821653872,
+      "partitions": 42,
+      "operations": 4903,
+      "target_bytes": 10235486208,
+      "original_payload_unmodified": true,
+      "full_payload_streamed": true,
+      "full_ota_install": false,
+      "snapshot_manager_executed": false,
+      "postinstall_executed": false,
+      "production_change": false,
+      "scope": "Stream an unchanged locally available stock payload through the ARM64 engine.\n\nOrdinary target files and COWs replace device mapping; original full manifest,\noperation bytes and final partition hashes execute. No SnapshotManager, real\nmetadata, slot, postinstall, AVB or physical device. No signature-policy changes.\n"
     }
   },
   "os4_haptics_user_confirmation": {

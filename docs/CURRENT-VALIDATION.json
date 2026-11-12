@@ -558,6 +558,20 @@
       "scope": "Run real ARM64 operation executor -> snapshot extent writer -> COW -> decompression.\n\nSynthetic payload operation data, real current build archives; no DeltaPerformer\nhash/signature validation, VABC Init/SnapshotManager, devices, merge or full OTA.\nDelivered linker/shared libraries are image-bound; archives are test-time bound,\nnot historically bound by the older image provenance manifest.\n",
       "full_ota_install": false,
       "production_change": false
+    },
+    {
+      "name": "ota-stock-payload",
+      "status": "PASS",
+      "partitions": 42,
+      "operations": 4903,
+      "payload_bytes": 7821653872,
+      "local_report_sha256": "4c4068f8c1ed5c83c36059fc6de730d23e42b545247326840580a708539cff81",
+      "scope": "Stream an unchanged locally available stock payload through the ARM64 engine.\n\nOrdinary target files and COWs replace device mapping; original full manifest,\noperation bytes and final partition hashes execute. No SnapshotManager, real\nmetadata, slot, postinstall, AVB or physical device. No signature-policy changes.\n",
+      "full_payload_streamed": true,
+      "full_ota_install": false,
+      "snapshot_manager_executed": false,
+      "postinstall_executed": false,
+      "production_change": false
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",

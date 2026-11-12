@@ -72,7 +72,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "6a704f4b6e7aeca12036b6fc43b8ab16b715a60232cdf4683429e543531fa7ce",
+    "sha256": "8b4b312065c55e50f5cdbde28dcdc9da75dfe64b2ded56ed776b33756dcb0e2d",
     "mode": "0o644"
   },
   "docs/DIGEST-PUBLICATION.md": {
@@ -216,7 +216,7 @@
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
-    "sha256": "97809196a13416475586745c1848120f71515378861a95018960b649400bc9e5",
+    "sha256": "177d96947203154888acb6b5691aaafe8cfe756024382f2c242fbc18ecf54aad",
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
@@ -296,7 +296,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "b50ce8ce04a52d2a8f9e97c80cbd39247f819620d80e6716ec84adb71b419a42",
+    "sha256": "b846cbf50889123b52e74e3cb060237a485623cb5c172241b0e7587947579f60",
     "mode": "0o644"
   },
   "docs/crypto-compatibility.json": {
@@ -1495,6 +1495,10 @@
     "sha256": "cd6f475f2df6f7852e30a0462277de439784b27ed370a4ec5dad03bf36fe3428",
     "mode": "0o644"
   },
+  "scripts/review_stock_payload.py": {
+    "sha256": "b529c799173ce1fc4adfabc6ce5f462cac5250b8a4176c6d40d9730b155cc232",
+    "mode": "0o644"
+  },
   "scripts/setup_haptics_emulator.py": {
     "sha256": "35c15446e7f6c0d477d775fe613b520db430b1dd4b9bfa9b22e013ddb2db9539",
     "mode": "0o644"
@@ -1576,11 +1580,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "515c3741753c8b1a8e833d4608185573608d44a9722b6e42ecfbd7070aa11e45",
+    "sha256": "f0a4518165cf91af043bc67f01e8eefa4d7415d246bbe17d213b0f168df57008",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "b6a158aff48fe5f7198134adeae9b7494beefa645a8a266bf85d299246f0266b",
+    "sha256": "a2973cdb432fc6ff0c680d90f69333ba2ec6e53e2d3010cb5e42b4c70254cd84",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2089,6 +2093,14 @@
   },
   "tests/ota_snapshot_map.py": {
     "sha256": "6748644ede80f2b309a29906bd26f43518a80127cc7bfb798894b3a0c3522545",
+    "mode": "0o644"
+  },
+  "tests/ota_stock_payload.cpp": {
+    "sha256": "bee4d18b133834dccb85e05fbf3a187a4008f57e56878946205b916aac7beb61",
+    "mode": "0o644"
+  },
+  "tests/ota_stock_payload.py": {
+    "sha256": "4f84ec581730db4c6f610902a64d7888bd5f7dd3696035ab45a8855b28c735f3",
     "mode": "0o644"
   },
   "tests/ota_vabc_session.cpp": {
