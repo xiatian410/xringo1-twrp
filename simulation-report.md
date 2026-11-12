@@ -65,3 +65,7 @@
 - 自动触摸启动、完整 OTA / 快照写入与合并、真实 TEE / CE、完整 USB / MTP、全流程备份恢复等边界仍在 [工作队列](docs/WORK-QUEUE.md) 中。
 
 代理没有执行手机或物理块设备操作。离线工具执行、主机替身、原始 ARM64 代码执行与历史用户设备结果分别记录，不互相替代。
+
+## 本轮实现决定
+
+Recovery metadata 不可用的直接回退执行了六个原 ARM64 控制器场景。调用方先检查 compression 模式，孤立映射失败不足以证明安装失败，因此撤回试验补丁，生产来源恢复为上述 log-export 候选。此处只有新增证据，无生产修复或新交付镜像；详见 [回退判断](docs/OTA-OPERATION-COW.md#recovery-缺失-metadata-时的回退判断)。实际 SnapshotManager 仍未执行，完整目标不据此关闭。

@@ -2946,6 +2946,15 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Production copylog and file writers in private chroot, no devices.\n\nMount/selection, klogctl, logcat capture, metadata and operation presentation\nare explicit fixtures; actual CopyFile/WriteToFile, worker thread and terminal\nstate run. No real kernel buffer, Android log service, GUI or power-loss proof.\n"
+    },
+    {
+      "name": "ARM64-recovery-metadata-fallback-decision",
+      "evidence": "logs/ota-recovery-fallback.json",
+      "evidence_sha256": "7331b80cf7304d8134583c3c80ca38775c80602c5e8093ae93a1d20a11b84632",
+      "count": 6,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Intact ARM64 DynamicPartitionControlAndroid metadata fallback and map gating.\n\nExisting friend injects ISnapshotManager with missing metadata and map results;\ndirect preparation and AVB footer effect are explicit no-op/return boundaries.\nChecks compression caller gate; isolated map rejection is not an install defect.\nNo actual SnapshotManager, metadata, device mapping, AVB access or full OTA.\n"
     }
   ],
   "source_review_followups": [
@@ -3599,6 +3608,17 @@
       "snapshot_manager_executed": false,
       "postinstall_executed": false,
       "production_change": false
+    },
+    "metadata_fallback_decision": {
+      "document": "docs/OTA-OPERATION-COW.md",
+      "report": "logs/ota-recovery-fallback.json",
+      "review": "logs/ota-recovery-fallback-review.json",
+      "report_sha256": "7331b80cf7304d8134583c3c80ca38775c80602c5e8093ae93a1d20a11b84632",
+      "cases": 6,
+      "production_fix": false,
+      "snapshot_manager_executed": false,
+      "caller_gate_source_review": true,
+      "decision": "Do not change mapping gate based on isolated MapAllPartitions failure; actual verifier/factory gate on compression mode. Real SnapshotManager integration remains open."
     }
   },
   "os4_haptics_user_confirmation": {

@@ -227,3 +227,15 @@ PreparePartitionsForUpdate / BootControl 的路径和设备映射由明确替身
 重组 ZIP 大小为 7,883,598,024 B，SHA-256 为 `a1dcfecccf4397943e6836539bea6573ade01c84ef9ee1e360df9c233493f04b`。payload 大小为 7,883,589,123 B，原 manifest 有 42 分区、4,933 操作，目标共 10,297,356,288 B。原始缓存与 ZIP 只保留本地；`logs/ota-stock-stable-materialization.json` 记录本次补块、分块哈希与最终输入摘要。旧 inventory 不被静默重写为新提取历史。
 
 正式版运行结果写入独立 `logs/ota-stock-stable-payload.json`、`.stdout`、`.stderr`，来源复核入口为 `python3 scripts/review_stock_payload.py --report logs/ota-stock-stable-payload.json`。完整流和来源复核均通过：4,933 个操作全部完成，42 个原 manifest 目标哈希逐项一致，十个动态分区 COW 视图全部正常读回。完整 FILE_SIZE / FILE_HASH 匹配；Prepare、设备映射、namespace 仍是上述离线边界，无实际 SnapshotManager / postinstall / 合并验收。未发现本段生产代码缺陷，无新增补丁或镜像。旧样本结果作为历史证据复用，不因脚本增加参数覆盖旧报告或伪称重新执行。
+
+## Recovery 缺失 metadata 时的回退判断
+
+本段检查一个具体实现决定：`PreparePartitionsForUpdate` 在 Recovery 的 `/metadata` 不可用时允许进入直接分区准备，但 `MapAllPartitions` 仍按目标的 snapshot 能力请求映射，是否会使最终校验误拒绝。不能单凭直接调用后者失败就增加补丁。
+
+`python3 tests/ota_recovery_fallback.py` 编译完整原 `DynamicPartitionControlAndroid` 翻译单元，以当前交付 linker / 库和固定 QEMU 运行六个 AArch64 场景。使用已有 friend 注入无 metadata 的 ISnapshotManager 边界，直接分区准备、Recovery 模式和 AVB footer effect 为明确替身；不会访问 AVB、metadata、挂载或物理设备。场景包括 Recovery 回退成功、直接准备失败、Android metadata 失败、独立映射成功 / 失败及无 snapshot 目标。实际控制器的准备、目标标志、metadata 条件、compression 查询和完成路径执行。
+
+观察到 Recovery 回退成功后，单独调用 MapAllPartitions 确实仍会请求映射并失败。但真实分区 writer 工厂与最终 verifier 先检查 `UpdateUsesSnapshotCompression()`。原 libsnapshot 在共享状态锁获取失败时返回 false；测试的无 metadata 边界也明确返回 false。**没有证据表明实际调用方会在这条回退路径请求映射，因此撤回“新增回退映射门控补丁”的假设。** 此处 caller gate 与 libsnapshot 实现为源码核对，控制器为实际执行；未把它们描述为一次完整 SnapshotManager / verifier 端到端运行。
+
+初次测试误将 `-UNDEBUG` 放在构建模板的 `-DNDEBUG` 之前，断言实际被关闭，所得初次 PASS 已作废、仅本地留档；最终夹具加入编译期 NDEBUG 拒绝，并在所有生产参数之后启用断言，六场景重新通过。负向断言运行显示孤立映射失败，随后按调用方条件修正测试预期，未将夹具假设误记为生产缺陷。
+
+当前生产来源恢复并核对为 log-export 候选的 781 份绑定，交付仍为 `recovery-dijun-unified-log-export.img`（`629f19792d41e1fbc4ec0ad0b7f38bed70ba9b51f234544de4f5cd53a551bf3c`）。试验补丁和试验镜像不交付，未重编无变化的正式候选。报告 `logs/ota-recovery-fallback.json`，范围复核入口 `python3 scripts/review_recovery_fallback.py`。这新增一条实现决定的证据，不是功能修复；真实 SnapshotManager / metadata / 映射和完整 OTA 仍待完成。

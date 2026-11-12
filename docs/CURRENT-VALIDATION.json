@@ -610,12 +610,21 @@
       "failures": 0,
       "local_report_sha256": "ca3f1b6f5fc4c5f92c1f5fff48150d3729ac0521b4901607b399dca91474292e",
       "scope": "Production copylog and file writers in private chroot, no devices.\n\nMount/selection, klogctl, logcat capture, metadata and operation presentation\nare explicit fixtures; actual CopyFile/WriteToFile, worker thread and terminal\nstate run. No real kernel buffer, Android log service, GUI or power-loss proof.\n"
+    },
+    {
+      "name": "ARM64-recovery-metadata-fallback-decision",
+      "status": "PASS",
+      "cases": 6,
+      "local_report_sha256": "7331b80cf7304d8134583c3c80ca38775c80602c5e8093ae93a1d20a11b84632",
+      "scope": "Intact ARM64 DynamicPartitionControlAndroid metadata fallback and map gating.\n\nExisting friend injects ISnapshotManager with missing metadata and map results;\ndirect preparation and AVB footer effect are explicit no-op/return boundaries.\nChecks compression caller gate; isolated map rejection is not an install defect.\nNo actual SnapshotManager, metadata, device mapping, AVB access or full OTA.\n",
+      "production_fix": false,
+      "snapshot_manager_executed": false
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
   "current_batch_groups": [
-    6
+    12
   ],
-  "current_batch_document": "docs/OPERATION-FEEDBACK-ADAPTATION.md",
-  "current_batch_groups_scope": "Log export storage/capture/write error propagation only; does not restrict full goal. Unchanged backup/refresh methods reused."
+  "current_batch_document": "docs/OTA-OPERATION-COW.md",
+  "current_batch_groups_scope": "Metadata-unavailable fallback implementation decision only; no production change or new delivered image, real SnapshotManager still pending."
 }
