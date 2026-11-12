@@ -472,6 +472,16 @@
       "stock_option_sets": 6,
       "full_ota_install": false,
       "archive_historically_bound_to_image": false
+    },
+    {
+      "name": "ota-operation-cow",
+      "status": "PASS",
+      "cases": 8,
+      "local_report_sha256": "d683e39515a2ac8ecd7a33fcb4452009fc3c8e04e1223dd8ef2cc50c06bd5985",
+      "scope": "Run real ARM64 operation executor -> snapshot extent writer -> COW -> decompression.\n\nSynthetic payload operation data, real current build archives; no DeltaPerformer\nhash/signature validation, VABC Init/SnapshotManager, devices, merge or full OTA.\nDelivered linker/shared libraries are image-bound; archives are test-time bound,\nnot historically bound by the older image provenance manifest.\n",
+      "short_input_complete": false,
+      "full_ota_install": false,
+      "upper_completion_hash_executed": false
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",

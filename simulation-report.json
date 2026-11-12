@@ -3344,6 +3344,17 @@
       "cases": 5,
       "stock_option_sets": 6,
       "scope": "Current ARM64 build archive COW3/LZ4/64KiB write/parse/decompress on private files; delivered linker/shared libraries; archive not historically bound by image provenance; not engine/SnapshotManager/merge."
+    },
+    "operation_to_cow_execution": {
+      "document": "docs/OTA-OPERATION-COW.md",
+      "report": "logs/ota-operation-cow.json",
+      "report_sha256": "d683e39515a2ac8ecd7a33fcb4452009fc3c8e04e1223dd8ef2cc50c06bd5985",
+      "status": "PASS",
+      "cases": 8,
+      "scope": "Run real ARM64 operation executor -> snapshot extent writer -> COW -> decompression.\n\nSynthetic payload operation data, real current build archives; no DeltaPerformer\nhash/signature validation, VABC Init/SnapshotManager, devices, merge or full OTA.\nDelivered linker/shared libraries are image-bound; archives are test-time bound,\nnot historically bound by the older image provenance manifest.\n",
+      "short_input_observation": "Operation true with zero stored blocks; upper completion/hash stages source-reviewed, not executed. Not installation success.",
+      "production_change": false,
+      "archive_historically_bound_to_image": false
     }
   },
   "os4_haptics_user_confirmation": {

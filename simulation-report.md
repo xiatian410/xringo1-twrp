@@ -39,6 +39,8 @@
 
 当前构建 ARM64 快照库的 COW v3 / LZ4 / 64 KiB 真实文件往返及四类拒绝通过，六份原厂参数一致。使用交付 linker / 共享库；archive 在测试时绑定，未被旧镜像来源清单历史绑定。不是 update_engine / SnapshotManager / 合并或完整 OTA 验收，详见 [范围](docs/OTA-COW-ROUNDTRIP.md)。无生产修正或重新构建。
 
+实际 ARM64 `InstallOperationExecutor → SnapshotExtentWriter → COW` 已接续 REPLACE / BZ / XZ，含分散目标与部分写入失败，共八场景。短输入可能返回true但目标不完整，完整最终哈希路径尚未执行；不等于OTA成功。见 [操作接续范围](docs/OTA-OPERATION-COW.md)。生产镜像仍未改变。
+
 ## 用户确认与未完成项
 
 - **OS4 震动已修好，用户确认正常**；退出例行检查。
