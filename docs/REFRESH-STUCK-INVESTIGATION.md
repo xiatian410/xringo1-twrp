@@ -16,6 +16,16 @@
 
 工具worker在refreshsizes返回后将state发布为DONE，再清running；GUI每100ms轮询 `refresh_tool_progress`，生产 `update_progress`据终态修改summary、停止动画并显示完成操作。`tests/refresh_progress_test.py`实际执行原状态映射与LVGL进度组件，分别覆盖RUNNING→DONE、RUNNING→FAILED、页面首次轮询已DONE，三个场景文字和隐藏进度条均通过。**worker状态为显式输入、字体/显示flush为主机替身；此测试不能证明现场worker发布、页面轮询或DRM扫描输出正常。** 没有复现的软件缺陷就不修改该组件。
 
+## 后台状态发布接续检查
+
+`tests/refresh_worker_chain_test.py/.cpp`补查了先前由状态替身提供的边界：使用原`tools_backend`接口/`twrp_tools_backend`类、start/run/refreshsizes/status/acknowledge/join/析构方法、真实std::thread/互斥锁和原状态到页面映射，再接实际LVGL进度组件。三种调度通过：扫描先保持运行再结束、后台在建页前完成、完成确认后再次刷新。运行中第二次start被拒绝，acknowledge不会清除RUNNING，完成后副标题更新且进度条隐藏。
+
+`UpdateSystemDetails`由条件变量控制的显式扫描边界替代；DataManager、operation_start/end与显示flush也是替身，未走的其他工具函数触达即失败。这是发布链范围的补充检查，不是完整GUI tick/页面路由、Android运行时或XRING DRM证明；原先三个状态输入场景证据保留，不重跑。没有据此修改生产或构建镜像。
+
+源码还显示完成不会自动离开工具页面：它更新副标题并显示完成操作，等待用户返回；console的初始运行文字作为历史记录保留。没有现场截图，不能断定这就是用户看到的现象，也不能把用户反馈判成误解。
+
+分析脚本同时修正PowerShell CRLF解析，原报告中的`main_drm_snapshot=null`现在能正确记录336主线程已有的DRM栈；这只修正分析输出，不改变原始日志或根因结论。
+
 ## 下一步与当前结论
 
 当前缺陷仍为“刷新已结束但页面看起来仍在运行”，根因未确定。下一项需要区分：实际显示的是否为console的历史起始行、GUI是否收到DONE、DRM提交是否长期等待；不是继续重复目录扫描测试。若现有现场仍在，应优先保留当前页面截图、重复主线程栈/各自uptime和用户态调用位置证据；不要求重做容量刷新。代理不连接手机或物理块设备。

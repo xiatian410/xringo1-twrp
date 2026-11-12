@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "e97728fe3789752edba58e765cdf6271ab5dde51f15c5a0c448d4c591bc5f399",
+    "sha256": "7d1dac0bb49dbd16ff6316cc6d112f05b43efd8e4ca764f7b951e7d0b8672e7e",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -28,7 +28,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "8ab1836dc7434673bf09529b0e9291a7d1ea05442d10d72df1c30decb56935a7",
+    "sha256": "42bac79e7a0009b7dc33e5e354b118ab5d2923781ca6cd5d91c67ed5c862f3e4",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -72,7 +72,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "daa817912560759ffafd089789b97be15ed0fa35c50df89d633d38b91e4d7dfb",
+    "sha256": "009e15e8afbaf7d610b33f9803c87b24462bc60c7406ea22b7fca24b8985b0d5",
     "mode": "0o644"
   },
   "docs/DELIVERY-EVIDENCE-STATUS.md": {
@@ -260,7 +260,7 @@
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
-    "sha256": "93360410c23c5869988efeebfe7c2b54a69cf4b5efbb5ea3c637681c23264609",
+    "sha256": "0203bdb6451b09e22ab48e6f62da39b46fbf8e5e8bd6d1ec44b9fa789beb702c",
     "mode": "0o644"
   },
   "docs/RESTORE-SESSION-ADAPTATION.md": {
@@ -308,7 +308,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "dbaaa4b0f0b86afd6eb23ceb91bcf146dbd273fb2343d61cfcf5a7b9604dedf4",
+    "sha256": "34f2863e7ee842fe8af0331af603c6a8116d948be80580fe609ddb3ceb49bb7b",
     "mode": "0o644"
   },
   "docs/ZIP-ARM64-EXECUTION.md": {
@@ -984,7 +984,7 @@
     "mode": "0o644"
   },
   "scripts/analyze_refresh_capture.py": {
-    "sha256": "c2e83823c8799cde544e6b8eb767c55f9be5bf4362e6e597c74cdac92f4beabd",
+    "sha256": "551469c2a4bbee091b1ec3d560fead46eeea2d880d5476868de0f40d672fed70",
     "mode": "0o644"
   },
   "scripts/analyze_touch_window.py": {
@@ -1564,11 +1564,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "4eb5d5c788bff76b268870690cee244723050f1f23119210e0ee154b5bb5d3e8",
+    "sha256": "428a2bb11ebc9daf81f9f4b6612f2806f623fb12d31ca98bda37bd2e90b36898",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "c5b21144ba0467456c714da1b7d2b0e2ce846141a96d23e364f8340c495a7ec9",
+    "sha256": "496455b04930689c168f35f4cd9fccdf6c1f0f1fcee8555ab8d3f7c598a53723",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2093,6 +2093,14 @@
   },
   "tests/refresh_progress_test.py": {
     "sha256": "89fd29ff4f7d5974578c6ff2a33ef5636b8c37e1b874e89e200328c7896ae30c",
+    "mode": "0o644"
+  },
+  "tests/refresh_worker_chain_test.cpp": {
+    "sha256": "f175494b3edb0e7bd535a606794cd19bcfcd600962aa1d12a3722710ba54b664",
+    "mode": "0o644"
+  },
+  "tests/refresh_worker_chain_test.py": {
+    "sha256": "11d9b9ae4700e664ce00e13492ea1644fa5d32483ec8241431cfdb0c43632f62",
     "mode": "0o644"
   },
   "tests/repair_exit_status_test.py": {

@@ -16,6 +16,9 @@ def main():
  before=[int(m.group(1)) for s in lines[:start] if (m:=re.search(r'monotonic_ms=(\d+)',s))];after=[int(m.group(1)) for s in lines[end+1:] if (m:=re.search(r'monotonic_ms=(\d+)',s))] if end else []
  tasks=[]
  for block in texts['recovery-stacks.txt'].split('=== THREAD ')[1:]:
+  # proc wchan has no trailing newline: the collector can emit
+  # "hrtimer_nanosleepSTACK". splitlines also normalizes PowerShell CRLF.
+  block='\n'.join(block.splitlines())
   task=re.search(r'/proc/(\d+)/task/(\d+)',block);stack=re.search(r'STACK\n(.*?)\nSYSCALL',block,re.S)
   if not task:continue
   tasks.append(dict(pid=int(task[1]),tid=int(task[2]),stack=stack[1] if stack else None))

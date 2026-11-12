@@ -2721,6 +2721,15 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Actual tool progress adapter + LVGL terminal transition; no Android worker/DRM."
+    },
+    {
+      "name": "refresh-worker-progress-chain",
+      "evidence": "logs/refresh-worker-chain.json",
+      "evidence_sha256": "6b18141e5427e92ec07f40a5131b3c274bdf0a0392fece0e393323d113024ea7",
+      "count": 3,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Real tools start/thread/refresh/status/ack -> original adapter -> actual LVGL.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
     }
   ],
   "source_review_followups": [
@@ -3306,6 +3315,8 @@
     "document": "docs/REFRESH-STUCK-INVESTIGATION.md",
     "local_analysis": "logs/refresh-capture-analysis.json",
     "production_fix": false,
-    "conclusion": "User logs show refresh successfully ended; non-atomic main-thread sample passes XRING DRM commit, not proof of sustained hang."
+    "conclusion": "User logs show refresh successfully ended; non-atomic main-thread sample passes XRING DRM commit, not proof of sustained hang.",
+    "worker_evidence": "logs/refresh-worker-chain.json",
+    "worker_scope": "Original worker state publication and LVGL adapter pass with scan/presentation doubles; full GUI tick and DRM unverified. No production fix."
   }
 }

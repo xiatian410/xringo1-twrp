@@ -1,5 +1,7 @@
 # 小米 15S Pro（dijun）TWRP 多版本适配目标与离线验收规范
 
+2026-11-13 刷新现场接续检查：原 tools 后台线程 start/run/status/acknowledge 与原进度映射、实际 LVGL 组件接续通过，覆盖运行后完成、页面建立前完成及任务复用。目录扫描、操作提示和显示输出为显式替身，不代表现场 GUI tick/DRM 已正常。未复现生产缺陷，没有刷新修复补丁或新镜像；调查继续需要当前画面与页面/提交证据，见 docs/REFRESH-STUCK-INVESTIGATION.md。已有镜像及未变化证据复用，完整12组仍进行中。
+
 2026-11-13 刷新现场分析：日志证明容量刷新在约5.15秒内已operation_end成功，非持续扫描；采样主线程经过XRING DRM提交，一组非原子采样不能认定驱动永久卡死。原进度组件终态3场景通过，现场页面/渲染问题仍未解决，无盲改或新刷新修复镜像。详见docs/REFRESH-STUCK-INVESTIGATION.md，优先继续该现场问题，OTA后续暂停。
 
 2026-11-13 紧急优先：备份页刷新容量一直停在“正在刷新分区信息”。暂停OTA后续工作，先分析现场日志。源码确认刷新会在存储锁下同步遍历已挂载/data，尚未证明是本次根因；只读超时采集器见tools/refresh-state-collector/README.md，未在Windows/设备运行。详细优先级见docs/WORK-QUEUE.md；不盲改、不以源码假设冒充现场结论。

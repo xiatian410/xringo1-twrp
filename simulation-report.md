@@ -1,5 +1,7 @@
 # 离线检查与模拟报告（进行中）
 
+2026-11-13 刷新现场接续检查：原 tools 后台线程 start/run/status/acknowledge 与原进度映射、实际 LVGL 组件接续通过，覆盖运行后完成、页面建立前完成及任务复用。目录扫描、操作提示和显示输出为显式替身，不代表现场 GUI tick/DRM 已正常。未复现生产缺陷，没有刷新修复补丁或新镜像；调查继续需要当前画面与页面/提交证据，见 docs/REFRESH-STUCK-INVESTIGATION.md。已有镜像及未变化证据复用，完整12组仍进行中。
+
 2026-11-13 A/B命令修正：0062 将payload_properties提取失败从成功码改为INSTALL_CORRUPT，拒绝空/NUL headers、压缩/空/越界payload，fork前防御空执行命令。真实ZIP/原命令与pipe/fork/wait接续21项通过，旧版同组8失败，普通ZIP36项回归通过。无害主机程序替代更新器，不执行真实OTA。installclean后30并发构建ab-command候选，SHA256 704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb，六profile封装通过；继承XRING O1及NV限制。见docs/AB-COMMAND-VALIDATION.md，完整12组保持进行中，源码文档同步GitHub、编译文件不上传。
 
 2026-11-13 加载页显示名：维护补丁0061支持仅供显示的 ro.twrp.device_label，设备树配置为 XRING O1，保留型号后缀及 O1_asic 产品/构建/OTA 标识。installclean 后 make -j$(nproc)30并发构建 recovery-dijun-unified-xring-label.img，SHA256 6f0c39e745f79b18e80657117f668d0d41a1af8ec97312883593f8f4f73e12f2；770来源/六profile封装、原显示方法 override/回退与镜像内属性/分区flags核对通过。继承0060刷入目标及NV限制，不重跑未改的功能链、不宣称实机验收。源码配置文档同步GitHub，镜像不上传。

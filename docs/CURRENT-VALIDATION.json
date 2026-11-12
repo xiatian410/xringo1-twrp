@@ -397,6 +397,14 @@
       "cases": 3,
       "local_report_sha256": "6535a364d053d70d16f83d9ef66eef22a76add748d4ff207dcfe275402cc1d2d",
       "scope": "Actual tool progress adapter + LVGL terminal transition; no Android worker/DRM."
+    },
+    {
+      "name": "refresh-worker-progress-chain",
+      "status": "PASS",
+      "cases": 3,
+      "failures": 0,
+      "local_report_sha256": "6b18141e5427e92ec07f40a5131b3c274bdf0a0392fece0e393323d113024ea7",
+      "scope": "Real tools start/thread/refresh/status/ack -> original adapter -> actual LVGL.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim."
