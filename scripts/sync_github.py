@@ -48,7 +48,9 @@ def export():
     for path in candidates():
         data=path.read_bytes();data.decode('utf-8')
         if b'\0' in data or SECRET.search(data):raise ValueError('Non-text/credential candidate: '+str(path.relative_to(ROOT)))
-        files[str(path.relative_to(ROOT))]=(data,path.stat().st_mode & 0o777)
+        # Git preserves the executable bit, not local group/world write bits.
+        mode=0o755 if path.stat().st_mode & 0o111 else 0o644
+        files[str(path.relative_to(ROOT))]=(data,mode)
     private=[]
     for path in sorted((ROOT/'dtsrc/O1_asic_dual').rglob('*')):
         if path.is_file() and not path.is_symlink() and str(path.relative_to(ROOT)) not in files:

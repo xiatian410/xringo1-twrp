@@ -84,7 +84,7 @@
     "mode": "0o644"
   },
   "docs/GITHUB-PUBLICATION.md": {
-    "sha256": "ac438d57b0945742b33c9519d044bfdae0b4356beeae74992af0db5887e5ea56",
+    "sha256": "b5c0721a416cd5380a4b1417a1f369952b40aa00da6227a00748f6073f8fd9d8",
     "mode": "0o644"
   },
   "docs/HAPTICS-ADAPTATION.md": {
@@ -397,19 +397,19 @@
   },
   "dtsrc/O1_asic_dual/Android.bp": {
     "sha256": "5dd5d640edc5cedd65471dacbe63f470d40a4c26cafe62a5646d3a98bac375c9",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/Android.mk": {
     "sha256": "49f7c9aaf7ad7a20b8303c9fc7360a93249a2c498b68ccff0917e90b44bbfda7",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/AndroidProducts.mk": {
     "sha256": "6b1cee94ad41a8802ee49ceb882e622e80f0eb493bf40fc0c1c912cff30da853",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/BoardConfig.mk": {
     "sha256": "256630593c19d66b2d6d958d3a8da096e0ff15c33088002f2a0f7190178f86df",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/CRYPTO-ADAPTATION.md": {
     "sha256": "1e6a1a0ee6546f939abbce5ef63ee8d791a13aced459cdf548d591cbd5370be2",
@@ -417,11 +417,11 @@
   },
   "dtsrc/O1_asic_dual/README.md": {
     "sha256": "104ddb6ef833f05c3befcf6ca34e7b9b3b9fe5eb64e47a5488c91ae01c2b4d91",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/device.mk": {
     "sha256": "d6a40cd40ffdbf4064f525ff502212cad41aaf6782d01cac8d5fa0a4bfcb4dfd",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/gen_loadrecovery.py": {
     "sha256": "253660d03c885203d2a1f8c098cc97e09da36ed5e283972b9bdeb9bfec99f5d7",
@@ -557,7 +557,7 @@
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
     "sha256": "c91c0d944386dd47355eab1558b723f5da7f9637e3d39377cb305917f01fde25",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/odm-firmware-inventory.json": {
     "sha256": "d7464ea917df428d96577ec25f29118924cbac0f96ae96f2c55b3a33ab5f787f",
@@ -789,27 +789,27 @@
   },
   "dtsrc/O1_asic_dual/recovery.fstab": {
     "sha256": "2ed9eb514ebadeff84a9eec0026a70f1bd353253940b014c325e9ed77f9c8254",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/recovery/root/android.hardware.boot-service.xring.recovery.rc": {
     "sha256": "a7502904766c2f4533b73b2e20a0fd099a0f7ae4cd212e525c7e1734e01d5ff3",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/recovery/root/android.hardware.fastboot-service.example_recovery.rc": {
     "sha256": "a8a6a6d89d14c941c13aae75d5844004d0952e09de7b9934c8ec4dd4a9141bf1",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/recovery/root/android.hardware.health-service.example_recovery.rc": {
     "sha256": "e5d645a4ca1167ba4c2ce1885febc93957e55de67fe8a1adfe95c9e90b44e1b1",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/recovery/root/init.recovery.O1_asic.rc": {
     "sha256": "1d58f65959050fec243b0d9c365a6cfa174d0767f12f7529143dda2149fa1b5e",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/recovery/root/init.recovery.hardware.rc": {
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/recovery/root/init.recovery.usb.rc": {
     "sha256": "60ae26208d16111cdf61a02186fec43a04f84ecdfcf10ebe2e6588f7a6f21011",
@@ -817,23 +817,23 @@
   },
   "dtsrc/O1_asic_dual/recovery/root/logd.rc": {
     "sha256": "26378c0ea5f8d424616760c16522d6c3f300daaca75929720dd6b8383cab6e56",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/recovery/root/miui.factoryreset.rc": {
     "sha256": "4dce42c443b3426c3d3e652c730d6dde6b07af5aa5bfb568a88ed44ed4c9dd50",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/recovery/root/recovery-persist.rc": {
     "sha256": "0c5e3bee4329907791a861067722bbea0d56ad6639cd796fba2526c26bc975fa",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/recovery/root/recovery-refresh.rc": {
     "sha256": "0f6e0fb90d9d9d964fcc29b299f60c292b56882b06676136758e015e849839fa",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/recovery/root/servicemanager.recovery.rc": {
     "sha256": "e957d6102b03909de2f9b91073911cedb16f28ed9df546038453abbe8de7d08b",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/recovery/root/system/etc/init/keystore2.rc": {
     "sha256": "aa28727dfc718c059b926215f1fcfa9917132265dc01fbd329dcb928a783768e",
@@ -841,11 +841,11 @@
   },
   "dtsrc/O1_asic_dual/recovery/root/system/etc/task_profiles.json": {
     "sha256": "0b3472e90991812c8a3c99548ef0d863d5010c0d7486de4365f47e27a09d51cd",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/recovery/root/system/etc/vintf/manifest/recovery-device.xml": {
     "sha256": "5bdc68f92de38d7465d5c09a54bff849bc1195b8a3be8826f01e9aa142ba3893",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/sepolicy/kernel.te": {
     "sha256": "df9effff1efa4feba8465e51fbf021fa1c06f8d7f0d5a55cc4ba52a15063bcdf",
@@ -861,27 +861,27 @@
   },
   "dtsrc/O1_asic_dual/system.prop": {
     "sha256": "b146ec60e7755f7bf4a47c668f3df1ac40dba96f7ed4002c51a96085c72fb6ef",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/system/etc/task_profiles.json": {
     "sha256": "0b3472e90991812c8a3c99548ef0d863d5010c0d7486de4365f47e27a09d51cd",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/twrp_dijun.mk": {
     "sha256": "35af5218b6b0606bd927e5947cfba476aebfb76562af66d44a06480db451b9c1",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/twrp_jinghu.mk": {
     "sha256": "3f93388c20f796d09191cc5fa0e8dd34f033c9813696724f2e554795b8b23041",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/twrp_violin.mk": {
     "sha256": "656fdf5ccc5ab476772fb87cb34a1e74488e6f09581025857c8f0795439c2309",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/vendorsetup.sh": {
     "sha256": "e390ddd8824fa641b457f926a282d567247e62b6a725b54efa7a3693378cc1b2",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "firmware-inventory.json": {
     "sha256": "ef1b36476f3697389aadc505e7ef071ca51a4b738728fea54df91283aeb006c9",
@@ -1333,11 +1333,11 @@
   },
   "scripts/parse_boot.py": {
     "sha256": "ee5b95841d62e81e749d012e2ac070f21b7139a27647464be75ba60d36694301",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "scripts/parse_payload_manifest.py": {
     "sha256": "87873543d88691295cce7241778431df615ebebf14eea5cb7c89d376cd554c15",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "scripts/prove_identical.py": {
     "sha256": "2a0fd4be1a2fa1c41f5b2145eb1aed6b92b5c1d0a46f82bd9cc1774e2ee006d1",
@@ -1392,7 +1392,7 @@
     "mode": "0o644"
   },
   "scripts/sync_github.py": {
-    "sha256": "a1cb23b2b8351e90eac35748a4c5b068ad815d1362f9c9f2bdf232e32f8b6afa",
+    "sha256": "500b817bf70c00f5c21676c54865fbe2f6c9ba04857aa3bbfcca91bc50117db6",
     "mode": "0o644"
   },
   "scripts/touch_stack.py": {
@@ -1401,7 +1401,7 @@
   },
   "scripts/unpack_ramdisk.py": {
     "sha256": "a2ab13e58bba2bdf1ece1e95ee7a466d59637df99ff8d728227f7f99d14511ee",
-    "mode": "0o666"
+    "mode": "0o644"
   },
   "scripts/vb_inventory.py": {
     "sha256": "f91362e5b515d3cae41a1790dcc2b15a0f2317463ce61a83bd658baf786f3d86",
