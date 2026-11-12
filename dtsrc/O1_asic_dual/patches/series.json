@@ -278,6 +278,10 @@
         {
           "file": "0074-media-preserving-wipe-errors.patch",
           "sha256": "e1c6bb3c693a2ccb1773dcf6adee5e7ade9b59172efeffe991494e58a35d3aa6"
+        },
+        {
+          "file": "0075-manager-cache-media-wipe-errors.patch",
+          "sha256": "a30b24fd5bef7990b721c9b3c3d6452e0e542ce1990139e1b2b5522d4db86948"
         }
       ],
       "result_files": {
@@ -293,7 +297,7 @@
         "mtp/MtpFfsCompatHandle.cpp": "cb07a57987f6d3933395e044ba095343074b53ed9fc22ecd342b6e11eb70c5e9",
         "mtp/MtpDescriptors.cpp": "7b24102682e809c455ed1ebcef0a2defdab37abefd1ba692485b650d87a77025",
         "kernel_module_loader.cpp": "c93c4ca499648217be225a165b37f506ea3e5f7165389b532621b5e4292a4af6",
-        "partitionmanager.cpp": "8c5d463b64afbd738efde535e0c91207acdd7bcfa8e797dc025a89f19690dc00",
+        "partitionmanager.cpp": "8e86da31afc8e6928fc02c06fb530be00305443757eaa003573c28a6473c840c",
         "infomanager.cpp": "7f1fe90502a85952125c67f2b4613329b19aa095ad649ba221331a48d171e495",
         "Android.bp": "1f705f027a005452faf679686a43d3900779c5aee98fc95ebdc2600202a6da2a",
         "gui2/backend/decrypt_backend.h": "a6ec26538be3ba26af9c449960752b4ad91bcdf6fa15a2027cfdb915c0fc7945",

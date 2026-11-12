@@ -2,7 +2,7 @@
 
 设备：Xiaomi 15S Pro（dijun / XRING O1）。目标：OS3 / OS4 优先，同一镜像尽可能覆盖所列 OS2 样本。本文保留目标和验收要求，不再堆积逐轮进度；当前进度集中在 [工作队列](docs/WORK-QUEUE.md) 与 [验证报告](simulation-report.md)。
 
-本轮生产进展：0074 修正保留媒体的数据清除忽略 unlink / rmdir 等错误，递归明确保留排除目录的状态。13 场景通过、旧 3 失败；复用未变的 0073 方法与备份目录证据，清理构建 789 来源 / 六 profile。完整文件系统生命周期仍未闭环，见[保留媒体清除](docs/FILESYSTEM-TOOLS-EXECUTION.md#保留媒体的数据清除0074)。
+本轮生产进展：0075 修正 Dalvik 挂载/查询/删除失败误成功，并让清除内部存储保留媒体根目录，传播内容删除错误。16 场景通过、旧 9 失败；复用未变的媒体递归/备份目录证据，清理构建 790 来源 / 六 profile。普通 inode/xattr 核对不是 fscrypt 验收，见[范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#dalvik-与内部存储清除0075)。
 
 ## 执行约定
 

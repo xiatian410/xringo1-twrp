@@ -1,0 +1,68 @@
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -1575,16 +1575,16 @@
+   if (cacheDir == CACHE_LOGS_DIR) {
+     if (!PartitionManager.MountByPath(CACHE_LOGS_DIR, false)) {
+       LOGINFO("Unable to mount %s for wiping cache.\n", CACHE_LOGS_DIR);
++      return false;
+     }
+     dir.push_back(cacheDir + "dalvik-cache");
+     dir.push_back(cacheDir + "/dc");
+   }
+ 
+   TWPartition* sdext = FindPartitionByPath("/sd-ext");
+-  if (sdext && sdext->is_present_ && sdext->Mount(false)) {
+-    if (TWFunc::IsPathExists("/sd-ext/dalvik-cache")) {
+-      dir.emplace_back("/sd-ext/dalvik-cache");
+-    }
++  if (sdext && sdext->is_present_) {
++    if (!sdext->Mount(false)) return false;
++    dir.emplace_back("/sd-ext/dalvik-cache");
+   }
+ 
+   if (cacheDir == CACHE_LOGS_DIR) {
+@@ -1593,10 +1593,15 @@
+     gui2_console::info("wiping_dalvik");
+   }
+   for (const auto& d : dir) {
+-    if (TWFunc::IsPathExists(d)) {
+-      TWFunc::RemoveDir(d, false);
+-      gui2_console::info("cleaned", d);
+-    }
++    std::error_code ec;
++    const auto status = fs::symlink_status(d, ec);
++    if (ec && ec != std::errc::no_such_file_or_directory) {
++      gui2_console::log_error("error_opening_strerr", d, ec.message());
++      return false;
++    }
++    if (status.type() == fs::file_type::not_found) continue;
++    if (TWFunc::RemoveDir(d, false) != 0) return false;
++    gui2_console::info("cleaned", d);
+   }
+ 
+   if (cacheDir == CACHE_LOGS_DIR) {
+@@ -1678,11 +1683,21 @@
+     if (!dat->Mount(true)) return false;
+ 
+     gui2_console::info("wiping_datamedia");
++    // Keep the media root, including its fscrypt policy and metadata. On FBE
++    // RecreateMediaFolder deliberately does nothing, so removing the root
++    // would leave internal storage unavailable after an otherwise valid wipe.
++    std::error_code ec;
++    const auto status = fs::symlink_status("/data/media", ec);
++    if (ec || status.type() != fs::file_type::directory) {
++      gui2_console::log_error("unable_to_wipe", "/data/media");
++      return false;
++    }
+     RemoveMtpStorage(dat->mtp_storage_id_);
+-    TWFunc::RemoveDir("/data/media", false);
+-    dat->RecreateMediaFolder();
++    const bool wiped = TWFunc::RemoveDir("/data/media", true) == 0;
++    // The root survives even a partial deletion failure. Restore the storage
++    // registration, but propagate that failure to the operation result.
+     AddMtpStorage(dat->mtp_storage_id_);
+-    return true;
++    return wiped;
+   }
+   gui2_console::log_error("unable_to_locate", "/data");
+   return false;

@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "089b4a500b3e7b62f7cfc776adf024848f5b02e1462baa0a23842f0ded5935f5",
+    "sha256": "590f436bdf930121eaff7de0c2d0064a8e303cb3ea1262959585ecf1d2045c98",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "5fe1a08c854cc5562c5866dd974931966a82fc453063511ea17e5a19e97d8e16",
+    "sha256": "84e975ea8ed072ad1232c62b4be760f9561aa89b9fc6378d8239fe0997fe1f34",
     "mode": "0o644"
   },
   "docs/DIGEST-PUBLICATION.md": {
@@ -72,7 +72,7 @@
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
-    "sha256": "bcdc8c3bf06c6a87928677914ffeee1da889295fbce78eb32f6000efc252c9b9",
+    "sha256": "8db7f18867178acec5b00a1e23ad661322061fed3cb52b39e41d716dfc4e064a",
     "mode": "0o644"
   },
   "docs/HAPTICS-ADAPTATION.md": {
@@ -184,7 +184,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "2565f6bf1e7a024cc3f46dc170d9ae9000e309642a93e8bc2fdb0fc68990f343",
+    "sha256": "51324b1066f2cc629d4f88307f52dde7004c3c6fde18e3a5f68731f222b7078f",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -595,8 +595,12 @@
     "sha256": "e1c6bb3c693a2ccb1773dcf6adee5e7ade9b59172efeffe991494e58a35d3aa6",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0075-manager-cache-media-wipe-errors.patch": {
+    "sha256": "a30b24fd5bef7990b721c9b3c3d6452e0e542ce1990139e1b2b5522d4db86948",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "27ef42c44fd41af3903a679e007dd205d71fdf4c6b42144aad18ba2962efcf16",
+    "sha256": "5f606355a0ffaefe254c567d3b68ecf5c7fd33f78fcca0d3e433fd3dc0a2543d",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -1139,6 +1143,10 @@
     "sha256": "f1aad590eaa9b47bf2b5f953aa94bc2a5d7e27a7616def1f749db5fe6c383136",
     "mode": "0o644"
   },
+  "scripts/audit_manager_wipe_delivery.py": {
+    "sha256": "22c2c5e1c811f41d31a156d84bb0375e48689092b458e4c899d16ce2672c0b7d",
+    "mode": "0o644"
+  },
   "scripts/audit_media_wipe_delivery.py": {
     "sha256": "ee0c0f0d3a62ba79e3393f5f4003e4009498bf790fa56959401636be4777064b",
     "mode": "0o644"
@@ -1604,11 +1612,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "c1c29de56b9219d09da7d0cf9243ad0f5bcee1265d6938ba23daa115db114bb9",
+    "sha256": "289dcc230ff22184f86c99839aa914e1c5df9e3952fa981a14065a83f636fb9f",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "b70ce2560f8c4683420a2980e40c244be5f0d43e2741ba612895bba8db991b35",
+    "sha256": "2dc87d0c74eeb2f5071fa9af3583a2fad692a0dc3323d21c1301cd51a448815c",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -1973,6 +1981,14 @@
   },
   "tests/install_target_interaction_test.py": {
     "sha256": "1dcc2b1971ea3180d6306d34d53e775455112308ca08074ae23c0b283a7f77e7",
+    "mode": "0o644"
+  },
+  "tests/manager_wipe_test.cpp": {
+    "sha256": "1b588d863f5fab7c03b3de60cf283f47d082406357be4d059f96f13309788c81",
+    "mode": "0o644"
+  },
+  "tests/manager_wipe_test.py": {
+    "sha256": "0da4a6f7c313778d3aa37119801695e018f9612996f2d8b9588452c4205f40b5",
     "mode": "0o644"
   },
   "tests/media_wipe_test.cpp": {

@@ -81,3 +81,24 @@ python3 scripts/audit_media_wipe_delivery.py
 挂载、设备解析、同文件系统的 Wipe 分派与操作展示为明确替身；未执行完整 Wipe 方法、worker start/thread 或 GUI。目录迭代错误走 error_code 路径，但没有注入真实内核 readdir / stat EIO，也未覆盖并发替换 / 写入者。0073 的三个分区方法与本次修改前字节一致，其余原绑定来源不变，因此复用目录清除 11 项和备份目录 12 项结果，不重复执行或改写旧报告。
 
 候选 `recovery-dijun-unified-media-wipe.img`，SHA-256 `d487215a5a604bdf1abad2007984e26f38ed8e5a7e9140059db4f90199f9a646`；先 installclean，再 `make -j$(nproc)` 30 并发，789 来源 / 六 profile。相对 wipe-errors 候选只改变主程序、构建属性与 ramdisk 摘要；GUI / MTP / updater / profile 字节不变。完整格式化 / 写入 / 修复、真实挂载及 Dalvik / 媒体清除的其他调用方仍未闭环。
+
+## Dalvik 与内部存储清除（0075）
+
+`WipeDalvikCache` 原先忽略删除结果，并在 cache 或已有 sd-ext 挂载失败时继续输出成功；路径存在性查询也把权限失败当作“不存在”。`WipeMediaFromData` 忽略删除失败，并删除 `/data/media` 根目录；FBE 下原 `RecreateMediaFolder` 直接返回，成功删除后也不恢复根目录。
+
+[0075 固定补丁](../dtsrc/O1_asic_dual/patches/0075-manager-cache-media-wipe-errors.patch)让 Dalvik 的所需挂载、路径查询与删除失败返回失败，只有实际完成对应删除才输出 cleaned，所有目标处理完才输出完成。不存在的缓存目录可跳过；存在且标记 present 的 sd-ext 挂载失败不再被静默跳过。
+
+内部存储清除先确认 `/data/media` 是真实目录，拒绝缺失 / 链接 / 非目录目标，再移除 MTP 登记、用 `RemoveDir(..., true)` 只删除内容。根目录的 inode、已有策略与元数据保持原位，不再走重建；部分删除失败也尝试恢复 MTP 登记，但操作结果仍失败。登记接口的实际 USB 结果不在本批验证范围内，失败可能已产生部分删除，不承诺回滚。此改动不代替完整用户媒体重建或 CE 密钥生命周期。
+
+```bash
+python3 tests/manager_wipe_test.py
+# 需要本地旧源，预期九项失败：
+python3 tests/manager_wipe_test.py --before
+python3 scripts/audit_manager_wipe_delivery.py
+```
+
+16 场景执行实际 manager / RemoveDir、原媒体重建方法（旧实现会调用）与后台 LIST/run/report；在私有 chroot 普通文件上降权制造真实权限拒绝。覆盖 Dalvik 正常 / 独立 cache / 缺失、删除 / 查询失败、data/cache/sd-ext 挂载拒绝；媒体 FBE/legacy 成功、删除失败、根目录缺失 / 符号链接、挂载拒绝、无媒体能力和缺 data。旧实现同组九项不符合预期。媒体成功及删除失败时核对根 inode 与 `user.wipe-root` 扩展属性；这是普通测试标记，**不是 fscrypt policy ioctl / 密钥验证**。链接目标外的文件保持不变。
+
+挂载、MTP、metadata 和操作展示为替身，未执行完整 GUI/start/thread、真实挂载、USB 或内核 I/O 错误。0074 使用的 manager lookup / WipeByPath 方法与本次前源码逐方法比较一致，其他绑定来源不变，复用其 13 项结果及备份目录 12 项，不改写旧报告或重复执行。
+
+候选 `recovery-dijun-unified-manager-wipe.img`，SHA-256 `bfe8bebdcfd4fbaf3fbb2b291239922b1bf089d527b7aeef3389342026e762e4`；先 installclean，再 `make -j$(nproc)` 30 并发，790 来源 / 六 profile。相对 media-wipe 候选只改变 Recovery 主程序、构建属性与 ramdisk 摘要，GUI/MTP/updater/profile 字节不变。完整格式化 / 写入 / 修复、真实 fscrypt/MTP 与断电仍未闭环；不将三批目录清除修正当作完整文件系统适配完成。

@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-media-wipe.img",
-  "image_sha256": "d487215a5a604bdf1abad2007984e26f38ed8e5a7e9140059db4f90199f9a646",
-  "production_sources": 789,
+  "image_name": "recovery-dijun-unified-manager-wipe.img",
+  "image_sha256": "bfe8bebdcfd4fbaf3fbb2b291239922b1bf089d527b7aeef3389342026e762e4",
+  "production_sources": 790,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -765,6 +765,22 @@
       "failures": 3,
       "local_report_sha256": "f8d2169d2ea3afb74da02696612d39e9d441f28a46cd914d8c750273dfc2170f",
       "scope": "Media-preserving wipe with original exclusion policy and real permission failures.\n\nProduction recursion/wrapper, exclusion matching, manager routing, LIST/run/report\nexecute in private chroots after dropping uid/gid. Mount/device resolution,\nsame-filesystem Wipe dispatch and presentation are fixtures; no actual filesystem\nmount, full worker start/GUI, concurrent writers, kernel faults or power-loss.\n"
+    },
+    {
+      "name": "manager-wipe",
+      "status": "PASS",
+      "cases": 16,
+      "failures": 0,
+      "local_report_sha256": "8e11475906214b4516adceb142ea0dc925d6e82e5a64cff04b0da9bef37acaa8",
+      "scope": "Dalvik and media manager wipe to production backend LIST/run terminal states.\n\nPrivate chroot ordinary files, uid/gid65534, actual filesystem permission errors,\nRemoveDir and manager methods; media root inode/user xattr readback. Mounts, MTP,\nmetadata and presentation are fixtures. User xattr is NOT real fscrypt policy.\nNo actual mount, phone, full GUI/start/thread, I/O kernel or power-loss test.\n"
+    },
+    {
+      "name": "manager-wipe-before",
+      "status": "FAIL",
+      "cases": 16,
+      "failures": 9,
+      "local_report_sha256": "3b271bb0391264529251f87380a1c9bf871f7164c0fd593609e849a4022e801c",
+      "scope": "Dalvik and media manager wipe to production backend LIST/run terminal states.\n\nPrivate chroot ordinary files, uid/gid65534, actual filesystem permission errors,\nRemoveDir and manager methods; media root inode/user xattr readback. Mounts, MTP,\nmetadata and presentation are fixtures. User xattr is NOT real fscrypt policy.\nNo actual mount, phone, full GUI/start/thread, I/O kernel or power-loss test.\n"
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
@@ -772,5 +788,5 @@
     6
   ],
   "current_batch_document": "docs/FILESYSTEM-TOOLS-EXECUTION.md",
-  "current_batch_groups_scope": "Media-preserving recursive wipe failure propagation; full goal remains unrestricted. Reuse unchanged 0073 executed methods and backup removal evidence."
+  "current_batch_groups_scope": "Dalvik and internal-media manager wipe correction; no restriction to full goal. Real ordinary file/inode/user xattr readback; mounts/MTP/metadata/presentation fixtures, not real fscrypt. Reuse unchanged media recursion and backup removal evidence."
 }
