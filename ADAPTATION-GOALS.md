@@ -1,5 +1,7 @@
 # 小米 15S Pro（dijun）TWRP 多版本适配目标与离线验收规范
 
+2026-11-12 sideload生命周期修正：维护补丁0056让核心统一终止/回收minadbd，USB失败等所有已fork出口收尾，waitpid处理中断，PID锁内清零；GUI取消仅请求所属token传输退出，fork前取消及跨会话隔离有覆盖。回复使用MSG_NOSIGNAL不改全进程SIGPIPE；命令要求8字节，EPOLLIN/HUP先消费缓冲。实际公开backend/worker与侧载核心接续33个私有进程/socket场景通过；旧源码可比31场景29失败（多数共享PID/SIGPIPE断言），新send专用零写/EIO两项不作旧路径对照。USB属性/FUSE/安装器/MTP/缓存为明确替身，完整USB包传输、同步安装中取消、缓存传播及脚本/重启收尾仍待完成。installclean及make -j$(nproc)30并发构建`recovery-dijun-unified-sideload-lifecycle.img`，SHA256 `a5e16b92da91202527714049200ae23c35d13ed2e2d79f6327d55ed2f8afbde3`，758份来源/六配置封装通过。定向交付审计logs/sideload-delivery.json，范围docs/SIDELOAD-LIFECYCLE.md。继承NV/OTG/ZIP修正，保留OS4震动调用正常与设置正常确认；完整12组目标及历史全量审计漂移继续进行中。源码按约定同步GitHub，镜像不上传。
+
 2026-11-12 ZIP队列收尾修正：真实公开backend/后台线程→flash_zip→TWinstall_zip→ZIP/摘要/提取→fork/exec/wait接续23项通过；修复前同组5失败，固定时间戳后各包SHA256完全相同。补丁0055累计各包wipe_cache请求，后包成功/失败均不丢弃前包请求；缓存清理失败发布FAILED并保留已完成包数，不回滚已安装内容。缓存/挂载/解锁/进度/操作反馈为替身，镜像安装独立40项回归通过。installclean及make -j$(nproc)（30并发）构建`recovery-dijun-unified-zip-queue.img`，SHA256 `4425846118c018b9a87b40c9bb549c6f9aa13af2c724973104c53ea013324a7f`，753来源/六配置封装/85份Recovery补丁结果核对通过；同镜像profile9组/102阶段、module4组/24调用通过。交付审计logs/zip-queue-delivery.json，范围docs/INSTALL-CHAIN-VALIDATION.md。继承NV/OTG修正；OS4震动调用正常及设置正常的用户确认保留。完整GUI、ARM updater、AB payload、sideload及12组整体目标仍未完成；本轮源码/文档按约定同步GitHub，镜像不上传。
 
 2026-11-12 GitHub交付已完成：公开仓库https://github.com/xiatian410/xringo1-twrp已使用用户CLI账户创建并推送，公开清单精确包含563个文本/元数据文件，无编译产物或原厂blob内容。权限规范化修正后的远端CI已通过（检查提交87101fa）。今后文件修改按AGENTS.md执行同步并核对远端HEAD；公开CI只检查来源/语法/补丁完整性。
@@ -202,7 +204,7 @@ v1调试采集脚本已增加开启/恢复等级读回与采集退出码检查�
 | --- | --- | --- |
 | OS4 正式版触摸 P0 | 现场raw0干预后坐标恢复，215事件/7组按下抬起；新启动策略已构建，自动恢复未验证 | 核对普通报告请求时序、冷启动/GUI/唤醒稳定性，定位raw开启来源 |
 | 震动 | 用户最新确认OS4震动调用正常；其余版本/物理效果不外推 | 不再作为当前排查主线，保留既有证据 |
-| 当前产物 | recovery-dijun-unified-zip-queue.img，SHA256 `4425846118c018b9a87b40c9bb549c6f9aa13af2c724973104c53ea013324a7f`；753份来源核对通过 | 23项ZIP后台队列及40项镜像路由已覆盖，GUI/ARM updater/AB payload/sideload仍待完成 |
+| 当前产物 | recovery-dijun-unified-sideload-lifecycle.img，SHA256 `a5e16b92da91202527714049200ae23c35d13ed2e2d79f6327d55ed2f8afbde3`；758份来源核对通过 | ZIP队列23、镜像路由40、侧载进程33已覆盖；完整GUI/ARM updater/AB payload/USB侧载仍待完成 |
 | 整体目标 | `in_progress`，12组整体功能仍未完成；当前定向交付通过，历史全量审计的来源漂移尚未收尾 | 按任务继续OS3/OS4统一镜像和OS2兼容，推进安装/侧载等其余功能；不要求实机测试 |
 
 本表汇总当前状态；下文保存历史证据，不表示早期“下一步”仍未开展。最新索引为[simulation-report.json](simulation-report.json)，安装进度见[安装验收](docs/INSTALL-CHAIN-VALIDATION.md)，旧证据刷新及各历史“当前”不得外推到新镜像。当前定向交付不等于完整12组验收通过。

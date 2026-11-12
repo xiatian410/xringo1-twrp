@@ -101,6 +101,46 @@
       "failures": 0,
       "local_report_sha256": "3acdebd9e8e57e4508f63c511004ec50ab652de5cd61dc6b47d3dcaf7dc61c3c",
       "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
+    },
+    {
+      "name": "sideload-lifecycle",
+      "status": "PASS",
+      "cases": 33,
+      "failures": 0,
+      "local_report_sha256": "e4c3fc3ee2b041421ce4d0b346d366d2216710e3f59fed4c473c68ea5c9ee94f",
+      "scope": "Original sideload core + GUI backend with private native minadbd subprocesses.\n\nReal socketpair/fork/exec/epoll/send/kill/wait; USB properties, FUSE stat,\nTWinstall_zip, MTP/cache/DataManager/operation feedback are explicit doubles.\nSyscall wrappers inject errors and forbid signalling non-owned PIDs. No phone,\nUSB endpoint, ZIP updater, physical storage, reboot or GUI clicks execute.\n"
+    },
+    {
+      "name": "sideload-lifecycle-before",
+      "status": "FAIL",
+      "cases": 31,
+      "failures": 29,
+      "local_report_sha256": "b8ecaa1e6c3dac6165ca5c8c07332feca5d5b750355161b303e86ba43d2b1c1e",
+      "scope": "Original sideload core + GUI backend with private native minadbd subprocesses.\n\nReal socketpair/fork/exec/epoll/send/kill/wait; USB properties, FUSE stat,\nTWinstall_zip, MTP/cache/DataManager/operation feedback are explicit doubles.\nSyscall wrappers inject errors and forbid signalling non-owned PIDs. No phone,\nUSB endpoint, ZIP updater, physical storage, reboot or GUI clicks execute.\n"
+    },
+    {
+      "name": "sideload-profile-runtime",
+      "status": "PASS",
+      "cases": 102,
+      "failures": 0,
+      "local_report_sha256": "5e4f8ed2be9fab047bfbf45e2cc30cd1ad18c2a0f36e4c9606d869d5a9e64660",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "sideload-module-state",
+      "status": "PASS",
+      "cases": 24,
+      "failures": 0,
+      "local_report_sha256": "74beb95ab54e5b23693801e80a438c56ce8847bb11d750b8d97ab7091c0bec4e",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
+    },
+    {
+      "name": "sideload-zip-queue-regression",
+      "status": "PASS",
+      "cases": 23,
+      "failures": 0,
+      "local_report_sha256": "d94806ebf638d3eadef86c4d93e8af5d05970b791afb09fbf20eccd9efd4bd69",
+      "scope": "Original public ZIP backend/worker -> real ZIP/digest/extraction/fork/exec.\n\nPrivate chroots and harmless native updaters only. DataManager, progress,\nmounts, cache wiping, block unlocking, size refresh, operation feedback and\nperformance are explicit doubles. Signature rejection without keys executes;\ncryptographic acceptance is covered separately by zip_install_chain_test.py.\nNo GUI pointer events, AB payload, OZIP, ARM updater, phone or block device run.\n"
     }
   ]
 }

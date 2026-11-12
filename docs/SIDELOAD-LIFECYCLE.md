@@ -1,0 +1,17 @@
+# ADB sideload 子进程与取消生命周期
+
+2026-11-12维护补丁0056修正原始侧载核心与GUI2 backend的进程所有权。USB切换失败时原路径直接返回并遗留子进程；GetMiniAdbdPid保留旧PID（fork失败为-1）；界面取消线程和核心均waitpid；SIGPIPE被全进程改为忽略并最终改回默认，覆盖原处理器。
+
+当前实现由侧载核心统一负责SIGKILL和EINTR可重试的waitpid回收，所有已fork出口经过scope guard；PID只在子进程仍归owner所有时发布，回收前在锁内清零。界面仅设置取消标志，并在锁内请求所属会话socket shutdown/SIGTERM，不等待或sleep，也不对FUSE退出文件做可能阻塞的stat。取消早于fork由原子token检查兜底，旧token不能终止新会话；全局session互斥拒绝GUI/脚本重叠使用USB。GetMiniAdbdPid保留给现有脚本调用者，完成时返回0，不能用于外部无锁kill。
+
+状态回复按完整8字节循环send，处理短写、EINTR、零写和错误，使用MSG_NOSIGNAL而非修改全进程SIGPIPE。命令解析要求精确8字节。EPOLLIN和HUP同时出现时先消费缓冲命令。USB SetProperty失败不再进入WaitForProperty；其他恢复语义保持原样。
+
+离线测试tests/sideload_lifecycle_test.py/.cpp从实际源码取完整侧载核心、公开backend头和所有backend方法。实际执行私有socketpair、fork、exec（自身模拟minadbd子进程）、epoll、send、shutdown、kill、wait；系统调用边界注入错误并禁止非本测试子进程PID的信号。USB属性服务、FUSE stat、TWinstall_zip、MTP/缓存/DataManager/操作反馈为明确替身。SIGPIPE处理器、waitid/WNOWAIT确认已缓冲并关闭的peer、waitpid/ECHILD确认已回收均有独立断言。
+
+33场景：安装成功/失败、FUSE缺失/EIO、socket/fork/exec/USB/property失败、wait EINTR、四类epoll失败/超时、错误/截断/未支持命令、重启命令返回、缓冲后关闭、取消、fork前取消、析构、重用、busy、其他token取消、SIGPIPE保留、断开peer回复、两种长度错误、回复EINTR/短写/零写/EIO。当前33通过；旧源码可比31场景29失败，两个正常完整回复测试仍通过。新send专用零写/EIO两项不对旧WriteFully路径注入，避免以未覆盖的边界制造失败；其结果只用于当前实现。多数旧路径共同失败于PID未清零和SIGPIPE处理器被覆盖，29不是29种独立缺陷。旧源码USB失败与wait EINTR另验证有未回收子进程，cancel另验证双wait；测试记录失败后只清理本夹具子进程。旧测试的其他token检查只在新API存在时执行，不能当作旧实现该项已比较。
+
+当前镜像recovery-dijun-unified-sideload-lifecycle.img，SHA256 a5e16b92da91202527714049200ae23c35d13ed2e2d79f6327d55ed2f8afbde3；installclean及make -j$(nproc)30并发，758份来源，六份配置封装核对。镜像仅本地保留，不上传GitHub。
+
+仍未完成：实际minadbd/ADB/FUSE/USB与ZIP updater接续，GUI完整页面交互，安装过程中同步TWinstall_zip或属性等待的有界取消，updater清缓存请求向外传递和缓存失败反馈，脚本路径重复安装及其收尾，重启请求向GUI统一重启入口传递、旧ADB版本错误的精确状态，以及真实USB恢复失败反馈。取消状态不承诺回滚已写内容；token只负责进程/传输退出，不能打断正在执行的同步安装器。保留全部12组整体目标，未连接设备。
+
+同镜像profile9组/102阶段及module-state4组/24调用通过（模块/挂载/属性服务仍为夹具）。公共adb_install头变化使历史ZIP队列报告的来源绑定过期，使用logs/sideload-zip-queue-regression.json重跑23项，保留历史报告而非改写旧摘要。当前范围由scripts/audit_sideload_delivery.py核对。

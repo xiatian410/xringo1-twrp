@@ -218,6 +218,10 @@
         {
           "file": "0055-zip-queue-cache-completion.patch",
           "sha256": "72b3cb9c4218adc56117a0e36921f3ea71ddc254cac5218bfec9665018c3381a"
+        },
+        {
+          "file": "0056-sideload-child-lifecycle.patch",
+          "sha256": "ffab03ec5fd11bbc38bf05d245b175a51c9d2c9a6961422c4e61278298bde3fb"
         }
       ],
       "result_files": {
@@ -305,7 +309,11 @@
         "gui2/backend/mount_backend.h": "4cc5e65d3baae879156e640672cc79b55f4abeeee2cd9b58b60af38361c68ebb",
         "sysfs_device_match.hpp": "66987f6f13e174bb22ce057d022006b1eb0fe2cfa3069046c51e30f72063e941",
         "twrpinstall/twinstall.cpp": "b78718bfbea5937d800deb975c5d915007606e29bcb7d5b63ed6fe093dd73c3a",
-        "gui2/backend/twrp_install_backend.cpp": "b6c25c2086dde47d2d08a6ed3e62780d18cce758cb5c4d1f44a411124f092da6"
+        "gui2/backend/twrp_install_backend.cpp": "b6c25c2086dde47d2d08a6ed3e62780d18cce758cb5c4d1f44a411124f092da6",
+        "twrpinstall/adb_install.cpp": "693f26011747b0f14968a77397fee92a710e5bbab46e4baf7ce5401ba58b8fe7",
+        "twrpinstall/include/twinstall/adb_install.h": "2338db95bf9ed43f829d3f602264a60d6db8179c8114e8e4eb89222c21246beb",
+        "gui2/backend/twrp_sideload_backend.cpp": "c3dcee7fa939b07172de3f2dad40c992d0fe037128d0ee380f16b8c6835d36ac",
+        "gui2/backend/twrp_sideload_backend.h": "df5ef8d68dd5e6101482ba26cb944bc822c8643e0656193227956a9085a1812e"
       }
     },
     "system/sepolicy": {

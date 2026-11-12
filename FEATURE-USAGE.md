@@ -1,5 +1,7 @@
 # 功能入口与当前使用边界
 
+当前本地候选`recovery-dijun-unified-sideload-lifecycle.img`包含侧载进程收尾修正。退出侧载时请求当前传输终止，后台统一回收；取消不会回滚已经安装的内容，也不保证立刻打断同步安装。完整USB/FUSE/安装器链路仍未验收，未连接设备。范围见docs/SIDELOAD-LIFECYCLE.md。
+
 当前候选`recovery-dijun-unified-zip-queue.img`，SHA256 `4425846118c018b9a87b40c9bb549c6f9aa13af2c724973104c53ea013324a7f`。多包ZIP安装中，任意已尝试包请求的清缓存会保留到队列结束；后续包失败也不会抹掉此前请求。清理失败时整体显示失败，已完成包数保留，不能据失败状态判断先前安装已撤销。继承NV挂载限制及OTG发现修正，新候选尚未实机验证。以下早期候选记录仅表示当时状态。
 
 当前候选`recovery-dijun-unified-nv-mount-policy.img`已去掉普通挂载页的NVData/NVCFG/protect选项；旧页面残留请求及手动backend调用也会拒绝挂载/卸载，内部服务仍使用原厂配置。不是通过删除fstab实现。SHA256 `0be46fb13091c4ebe663b5196ba22beadf5874990f7b811cb6d64c247195e5fe`，未实机验证。源码更新须同步[公开仓库](https://github.com/xiatian410/xringo1-twrp)，编译镜像留在本地。以下旧候选均为历史记录。

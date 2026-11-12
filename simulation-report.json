@@ -1,8 +1,8 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-zip-queue.img",
-  "image_sha256": "4425846118c018b9a87b40c9bb549c6f9aa13af2c724973104c53ea013324a7f",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-sideload-lifecycle.img",
+  "image_sha256": "a5e16b92da91202527714049200ae23c35d13ed2e2d79f6327d55ed2f8afbde3",
   "image_status": "Clean-built offline candidate: ZIP queue accumulates per-package cache requests and fails when requested cache cleanup fails. Includes existing NV/OTG/ABI fixes. Hardware/GUI/ARM updater/AB payload/sideload remain unverified.",
   "checks": [
     {
@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "full-page UI routes and complete ZIP/OTA payload/sideload paths; image worker/manager/sparse route40 host cases and updater command/fork/exec/progress/wait22 cases now covered separately, with discovery/slot/mount/progress boundaries. No full package verification, GUI click, target ARM64 updater or USB acceptance."
+    "Full-page GUI routes, ARM updater/OTA payload and complete ADB/minadbd/FUSE/ZIP sideload integration remain open. Host ZIP verification/extraction/fork36, queue23, image routes40 and updater protocol22 covered separately; sideload core/backend native private-process lifecycle33 covered with property/FUSE/install/MTP/cache doubles, not real USB or joined package execution."
   ],
   "hardware_unverified": [
     "motor output",
@@ -2379,6 +2379,51 @@
       "result": "pass",
       "grade": "S2",
       "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
+    },
+    {
+      "name": "sideload-lifecycle",
+      "evidence": "logs/sideload-lifecycle.json",
+      "evidence_sha256": "e4c3fc3ee2b041421ce4d0b346d366d2216710e3f59fed4c473c68ea5c9ee94f",
+      "count": 33,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Private subprocess/socket tests and same-image shell regression; no real USB, updater or device."
+    },
+    {
+      "name": "sideload-lifecycle-before",
+      "evidence": "logs/sideload-lifecycle-before.json",
+      "evidence_sha256": "b8ecaa1e6c3dac6165ca5c8c07332feca5d5b750355161b303e86ba43d2b1c1e",
+      "count": 31,
+      "result": "expected_failures",
+      "grade": "S2",
+      "scope": "Private subprocess/socket tests and same-image shell regression; no real USB, updater or device."
+    },
+    {
+      "name": "sideload-profile-runtime",
+      "evidence": "logs/sideload-profile-runtime.json",
+      "evidence_sha256": "5e4f8ed2be9fab047bfbf45e2cc30cd1ad18c2a0f36e4c9606d869d5a9e64660",
+      "count": 9,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Private subprocess/socket tests and same-image shell regression; no real USB, updater or device."
+    },
+    {
+      "name": "sideload-module-state",
+      "evidence": "logs/sideload-module-state.json",
+      "evidence_sha256": "74beb95ab54e5b23693801e80a438c56ce8847bb11d750b8d97ab7091c0bec4e",
+      "count": 4,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Private subprocess/socket tests and same-image shell regression; no real USB, updater or device."
+    },
+    {
+      "name": "sideload-zip-queue-regression",
+      "evidence": "logs/sideload-zip-queue-regression.json",
+      "evidence_sha256": "d94806ebf638d3eadef86c4d93e8af5d05970b791afb09fbf20eccd9efd4bd69",
+      "count": 23,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Original public ZIP backend/worker -> real ZIP/digest/extraction/fork/exec.\n\nPrivate chroots and harmless native updaters only. DataManager, progress,\nmounts, cache wiping, block unlocking, size refresh, operation feedback and\nperformance are explicit doubles. Signature rejection without keys executes;\ncryptographic acceptance is covered separately by zip_install_chain_test.py.\nNo GUI pointer events, AB payload, OZIP, ARM updater, phone or block device run.\n"
     }
   ],
   "source_review_followups": [
@@ -2694,8 +2739,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/zip-queue-delivery.json",
-    "scope": "ZIP queue23/old5 failures;image-route40;753 build sources;six-profile packaging;same-image shell runtime9/module4. Full12-group goal and historical full-audit drift remain open.",
+    "evidence": "logs/sideload-delivery.json",
+    "scope": "Sideload native process/socket33;old comparable31/29failed;758 sources;six profiles;same-image shell9/module4. Full12 and historical audit drift open.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -2901,5 +2946,14 @@
     "policy": "User-authorized public source publication and synchronization after each coherent future change batch; no compiled artifacts/blobs/private keys/raw logs.",
     "workflow": "scripts/sync_github.py --push",
     "documentation": "docs/GITHUB-PUBLICATION.md"
+  },
+  "sideload_lifecycle": {
+    "patch": "0056-sideload-child-lifecycle.patch",
+    "evidence": "logs/sideload-lifecycle.json",
+    "cases": 33,
+    "old_failures": 29,
+    "scope": "Private native minadbd fixture; actual core/backend process and socket lifecycle. USB properties/FUSE/install/MTP/cache remain doubles.",
+    "remaining": "Full minadbd/FUSE/ZIP/USB, bounded synchronous install/property cancellation, cache propagation, ORS duplicate install, reboot handoff and precise old-ADB status remain open.",
+    "old_comparable_cases": 31
   }
 }

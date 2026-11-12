@@ -1,0 +1,350 @@
+diff --git a/gui2/backend/twrp_sideload_backend.cpp b/gui2/backend/twrp_sideload_backend.cpp
+index 52a04ca..0afd5ef 100644
+--- a/gui2/backend/twrp_sideload_backend.cpp
++++ b/gui2/backend/twrp_sideload_backend.cpp
+@@ -1,15 +1,9 @@
+ #include "twrp_sideload_backend.h"
+ 
+-#include <signal.h>
+-#include <sys/stat.h>
+-#include <sys/wait.h>
+-#include <unistd.h>
+-
+ #include <algorithm>
+ #include <cstdlib>
+ 
+ #include "data.hpp"
+-#include "fuse_sideload.h"
+ #include "gui2/console/stdio_adapter.h"
+ #include "partitions.hpp"
+ #include "twcommon.h"
+@@ -20,15 +14,13 @@
+ namespace gui2_backend {
+ 
+ twrp_sideload_backend::~twrp_sideload_backend() {
+-  if (running_.load()) stop_child();
++  cancel();
+   if (worker_.joinable()) worker_.join();
+-  if (canceller_.joinable()) canceller_.join();
+ }
+ 
+ void twrp_sideload_backend::join_threads() {
+   if (running_.load()) return;
+   if (worker_.joinable()) worker_.join();
+-  if (canceller_.joinable()) canceller_.join();
+ }
+ 
+ bool twrp_sideload_backend::start(bool wipe_dalvik, bool wipe_cache) {
+@@ -55,7 +47,7 @@ void twrp_sideload_backend::run() {
+ 
+   // wait for the adb connection
+   Device::BuiltinAction reboot_action = Device::REBOOT_BOOTLOADER;
+-  int ret = twrp_sideload("/", &reboot_action);
++  int ret = twrp_sideload("/", &reboot_action, &cancelled_);
+ 
+   if (ret != 0) {
+     if (ret == -2) gui2_console::info("need_new_adb");
+@@ -82,30 +74,14 @@ void twrp_sideload_backend::run() {
+ 
+ // GUIAction::adbsideloadcancel
+ void twrp_sideload_backend::stop_child() {
+-  struct stat st;
+   gui2_console::info("cancel_sideload");
+   LOGINFO("Signaling child sideload process to exit.\n");
+-  // Calling stat() on this magic filename signals the minadbd
+-  // subprocess to shut down.
+-  stat(FUSE_SIDELOAD_HOST_EXIT_PATHNAME, &st);
+-  const pid_t sideload_child_pid = GetMiniAdbdPid();
+-  if (!sideload_child_pid) {
+-    LOGERR("Unable to get child ID\n");
+-    return;
+-  }
+-  ::sleep(1);
+-  LOGINFO("Killing child sideload process.\n");
+-  kill(sideload_child_pid, SIGTERM);
+-  int status;
+-  LOGINFO("Waiting for child sideload process to exit.\n");
+-  waitpid(sideload_child_pid, &status, 0);
+-  DataManager::SetValue("tw_page_done", "1");  // For OpenRecoveryScript support
++  RequestMiniAdbdExit(&cancelled_);
+ }
+ 
+ void twrp_sideload_backend::cancel() {
+   if (!running_.load() || cancelled_.exchange(true)) return;
+-  // It sleeps and waits for the child; keep that off the UI thread.
+-  canceller_ = std::thread(&twrp_sideload_backend::stop_child, this);
++  stop_child();
+ }
+ 
+ sideload_status twrp_sideload_backend::status() {
+diff --git a/gui2/backend/twrp_sideload_backend.h b/gui2/backend/twrp_sideload_backend.h
+index ee031ae..e634bdc 100644
+--- a/gui2/backend/twrp_sideload_backend.h
++++ b/gui2/backend/twrp_sideload_backend.h
+@@ -24,7 +24,6 @@ class twrp_sideload_backend final : public sideload_backend {
+   void join_threads();
+ 
+   std::thread worker_;
+-  std::thread canceller_;
+   std::atomic<bool> running_{ false };
+   std::atomic<bool> cancelled_{ false };
+   std::mutex mutex_;
+diff --git a/twrpinstall/adb_install.cpp b/twrpinstall/adb_install.cpp
+index 5486b7e..e798c67 100644
+--- a/twrpinstall/adb_install.cpp
++++ b/twrpinstall/adb_install.cpp
+@@ -31,6 +31,7 @@
+ #include <atomic>
+ #include <functional>
+ #include <map>
++#include <mutex>
+ #include <utility>
+ #include <vector>
+ 
+@@ -38,6 +39,7 @@
+ #include <android-base/logging.h>
+ #include <android-base/memory.h>
+ #include <android-base/properties.h>
++#include <android-base/scopeguard.h>
+ #include <android-base/strings.h>
+ #include <android-base/unique_fd.h>
+ 
+@@ -55,20 +57,34 @@
+ // always be sent to the minadbd side.
+ using CommandFunction = std::function<std::pair<bool, bool>()>;
+ 
+-pid_t child;
++// The service owner alone reaps. Cancellation holds this lock while signalling,
++// so it cannot target a PID after the owner has cleared/reaped it.
++static std::mutex child_mutex;
++static pid_t child = 0;
++static int child_socket = -1;
++static const std::atomic<bool>* child_cancellation = nullptr;
+ 
+ pid_t GetMiniAdbdPid() {
++  std::lock_guard<std::mutex> lock(child_mutex);
+   return child;
+ }
+ 
++void RequestMiniAdbdExit(const std::atomic<bool>* cancelled) {
++  std::lock_guard<std::mutex> lock(child_mutex);
++  if (child <= 0 || child_cancellation != cancelled) return;
++  if (child_socket >= 0) shutdown(child_socket, SHUT_RDWR);
++  kill(child, SIGTERM);
++}
++
+ static bool SetUsbConfig(const std::string& state) {
+-  android::base::SetProperty("sys.usb.config", state);
+-  return android::base::WaitForProperty("sys.usb.state", state);
++  return android::base::SetProperty("sys.usb.config", state) &&
++         android::base::WaitForProperty("sys.usb.state", state);
+ }
+ 
+ // Parses the minadbd command in |message|; returns MinadbdCommand::kError upon errors.
+ static MinadbdCommand ParseMinadbdCommand(const std::string& message) {
+-  if (!android::base::StartsWith(message, kMinadbdCommandPrefix)) {
++  if (message.size() != kMinadbdMessageSize ||
++      !android::base::StartsWith(message, kMinadbdCommandPrefix)) {
+     LOG(ERROR) << "Failed to parse command in message " << message;
+     return MinadbdCommand::kError;
+   }
+@@ -88,9 +104,15 @@ static bool WriteStatusToFd(MinadbdCommandStatus status, int fd) {
+   memcpy(message, kMinadbdStatusPrefix, strlen(kMinadbdStatusPrefix));
+   android::base::put_unaligned(message + strlen(kMinadbdStatusPrefix), status);
+ 
+-  if (!android::base::WriteFully(fd, message, kMinadbdMessageSize)) {
+-    PLOG(ERROR) << "Failed to write message " << message;
+-    return false;
++  // Avoid changing the process-wide SIGPIPE disposition in this worker.
++  size_t sent = 0;
++  while (sent < sizeof(message)) {
++    ssize_t n = TEMP_FAILURE_RETRY(send(fd, message + sent, sizeof(message) - sent, MSG_NOSIGNAL));
++    if (n <= 0) {
++      PLOG(ERROR) << "Failed to write minadbd status";
++      return false;
++    }
++    sent += n;
+   }
+   return true;
+ }
+@@ -188,14 +210,12 @@ static bool HandleMessageFromMinadbd(int socket_fd,
+   return should_continue;
+ }
+ 
+-// TODO(xunchang) add a wrapper function and kill the minadbd service there.
+ static void ListenAndExecuteMinadbdCommands(
+-    pid_t minadbd_pid, android::base::unique_fd&& socket_fd,
++    android::base::unique_fd&& socket_fd,
+     const std::map<MinadbdCommand, CommandFunction>& command_map) {
+   android::base::unique_fd epoll_fd(epoll_create1(O_CLOEXEC));
+   if (epoll_fd == -1) {
+     PLOG(ERROR) << "Failed to create epoll";
+-    kill(minadbd_pid, SIGKILL);
+     return;
+   }
+ 
+@@ -206,7 +226,6 @@ static void ListenAndExecuteMinadbdCommands(
+   struct epoll_event events[EPOLL_MAX_EVENTS];
+   if (epoll_ctl(epoll_fd.get(), EPOLL_CTL_ADD, socket_fd.get(), &ev) == -1) {
+     PLOG(ERROR) << "Failed to add socket fd to epoll";
+-    kill(minadbd_pid, SIGKILL);
+     return;
+   }
+ 
+@@ -219,23 +238,19 @@ static void ListenAndExecuteMinadbdCommands(
+         TEMP_FAILURE_RETRY(epoll_wait(epoll_fd.get(), events, EPOLL_MAX_EVENTS, TIMEOUT_MILLIS));
+     if (event_count == -1) {
+       PLOG(ERROR) << "Failed to wait for epoll events";
+-      kill(minadbd_pid, SIGKILL);
+       return;
+     }
+     if (event_count == 0) {
+       LOG(ERROR) << "Timeout waiting for messages from minadbd";
+-      kill(minadbd_pid, SIGKILL);
+       return;
+     }
+ 
+     for (int n = 0; n < event_count; n++) {
+-      if (events[n].events & EPOLLHUP) {
++      // Consume buffered commands even when the peer has also closed.
++      if (events[n].events & EPOLLIN) {
++        if (!HandleMessageFromMinadbd(socket_fd.get(), command_map)) return;
++      } else if (events[n].events & (EPOLLHUP | EPOLLERR)) {
+         LOG(INFO) << "Socket has been closed";
+-        kill(minadbd_pid, SIGKILL);
+-        return;
+-      }
+-      if (!HandleMessageFromMinadbd(socket_fd.get(), command_map)) {
+-        kill(minadbd_pid, SIGKILL);
+         return;
+       }
+     }
+@@ -277,8 +292,9 @@ static void ListenAndExecuteMinadbdCommands(
+ //
+ static void CreateMinadbdServiceAndExecuteCommands(
+     const std::map<MinadbdCommand, CommandFunction>& command_map,
+-    bool rescue_mode __unused, std::string install_file __unused) {
+-  signal(SIGPIPE, SIG_IGN);
++    bool rescue_mode __unused, std::string install_file __unused,
++    const std::atomic<bool>* cancelled) {
++  if (cancelled && cancelled->load()) return;
+ 
+   android::base::unique_fd recovery_socket;
+   android::base::unique_fd minadbd_socket;
+@@ -287,12 +303,12 @@ static void CreateMinadbdServiceAndExecuteCommands(
+     return;
+   }
+ 
+-  child = fork();
+-  if (child == -1) {
++  pid_t service_pid = fork();
++  if (service_pid == -1) {
+     PLOG(ERROR) << "Failed to fork child process";
+     return;
+   }
+-  if (child == 0) {
++  if (service_pid == 0) {
+     recovery_socket.reset();
+     std::vector<std::string> minadbd_commands = {
+       "/system/bin/minadbd",
+@@ -308,6 +324,32 @@ static void CreateMinadbdServiceAndExecuteCommands(
+   }
+ 
+   minadbd_socket.reset();
++  {
++    std::lock_guard<std::mutex> lock(child_mutex);
++    child = service_pid;
++    child_socket = recovery_socket.get();
++    child_cancellation = cancelled;
++  }
++  const auto cleanup = android::base::make_scope_guard([&] {
++    {
++      std::lock_guard<std::mutex> lock(child_mutex);
++      kill(service_pid, SIGKILL);
++      child = 0;
++      child_socket = -1;
++      child_cancellation = nullptr;
++    }
++    int status = 0;
++    if (TEMP_FAILURE_RETRY(waitpid(service_pid, &status, 0)) != service_pid) {
++      PLOG(ERROR) << "Failed to reap minadbd";
++    } else if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
++      if (WEXITSTATUS(status) == MinadbdErrorCode::kMinadbdAdbVersionError) {
++        LOG(ERROR) << "You need adb 1.0.32 or newer to sideload to this device.";
++      } else {
++        LOG(ERROR) << "adbd status " << WEXITSTATUS(status);
++      }
++    }
++  });
++  if (cancelled && cancelled->load()) return;
+ 
+   // We need to call SetUsbConfig() after forking minadbd service. Because the function waits for
+   // the usb state to be updated, which depends on sys.usb.ffs.ready=1 set in the adb daemon.
+@@ -316,26 +358,17 @@ static void CreateMinadbdServiceAndExecuteCommands(
+     return;
+   }
+ 
+-  std::thread listener_thread(ListenAndExecuteMinadbdCommands, child,
+-                              std::move(recovery_socket), std::ref(command_map));
+-  if (listener_thread.joinable()) {
+-    listener_thread.join();
+-  }
+-
+-  int status;
+-  waitpid(child, &status, 0);
+-  if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+-    if (WEXITSTATUS(status) == MinadbdErrorCode::kMinadbdAdbVersionError) {
+-      LOG(ERROR) << "\nYou need adb 1.0.32 or newer to sideload\nto this device.\n";
+-    } else if (!WIFSIGNALED(status)) {
+-      LOG(ERROR) << "\n(adbd status " << WEXITSTATUS(status) << ")";
+-    }
+-  }
+-
+-  signal(SIGPIPE, SIG_DFL);
++  if (cancelled && cancelled->load()) return;
++  // Already called on the sideload worker; no second waiter/thread is needed.
++  ListenAndExecuteMinadbdCommands(std::move(recovery_socket), command_map);
+ }
+ 
+-  int twrp_sideload(const char* install_file, Device::BuiltinAction* reboot_action) {
++int twrp_sideload(const char* install_file, Device::BuiltinAction* reboot_action,
++                  const std::atomic<bool>* cancelled) {
++  // GUI and script callers share the one USB transport and minadbd owner.
++  static std::mutex session_mutex;
++  std::unique_lock<std::mutex> session(session_mutex, std::try_to_lock);
++  if (!session.owns_lock() || (cancelled && cancelled->load())) return INSTALL_ERROR;
+ 
+   // Save the usb state to restore after the sideload operation.
+   std::string usb_state = android::base::GetProperty("sys.usb.state", "none");
+@@ -361,7 +394,7 @@ static void CreateMinadbdServiceAndExecuteCommands(
+     std::bind(&AdbRebootHandler, MinadbdCommand::kRebootRescue, &install_result, reboot_action) },
+ };
+ 
+-  CreateMinadbdServiceAndExecuteCommands(command_map, false, install_file);
++  CreateMinadbdServiceAndExecuteCommands(command_map, false, install_file, cancelled);
+ 
+   // Clean up before switching to the older state, for example setting the state
+   // to none sets sys/class/android_usb/android0/enable to 0.
+diff --git a/twrpinstall/include/twinstall/adb_install.h b/twrpinstall/include/twinstall/adb_install.h
+index 42321d4..15c6a01 100644
+--- a/twrpinstall/include/twinstall/adb_install.h
++++ b/twrpinstall/include/twinstall/adb_install.h
+@@ -16,10 +16,15 @@
+ 
+ #pragma once
+ 
++#include <atomic>
+ #include <recovery_ui/device.h>
+ 
+ // Applies a package via `adb sideload` or `adb rescue`. Returns the install result (in `enum
+ // InstallResult`). When a reboot has been requested, INSTALL_REBOOT will be the return value, with
+ // the reboot target set in reboot_action.
+-int twrp_sideload(const char* install_file, Device::BuiltinAction* reboot_action);
+-pid_t GetMiniAdbdPid();
+\ No newline at end of file
++int twrp_sideload(const char* install_file, Device::BuiltinAction* reboot_action,
++                  const std::atomic<bool>* cancelled = nullptr);
++pid_t GetMiniAdbdPid();
++// Requests transport shutdown for this cancellation token only. The service
++// owner kills/reaps; stale/other sessions cannot cancel the current owner.
++void RequestMiniAdbdExit(const std::atomic<bool>* cancelled = nullptr);
