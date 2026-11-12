@@ -1,5 +1,7 @@
 # 小米 15S Pro（dijun）TWRP 多版本适配目标与离线验收规范
 
+2026-11-12 GitHub交付已完成：公开仓库https://github.com/xiatian410/xringo1-twrp已使用用户CLI账户创建并推送，公开清单精确包含563个文本/元数据文件，无编译产物或原厂blob内容。权限规范化修正后的远端CI已通过（检查提交87101fa）。今后文件修改按AGENTS.md执行同步并核对远端HEAD；公开CI只检查来源/语法/补丁完整性。
+
 2026-11-12 NV挂载与公开源码要求：用户明确NV不应在普通界面提供挂载操作，维护补丁0054隐藏NVData/NVCFG/protect及对应别名，并在backend拒绝挂载/卸载；保留原厂fstab和内部核心访问，不将其当作用户存储。26项后台策略检查通过，旧实现同组17失败；真实LVGL列表六场景通过，正常夹具20行减为16行。同镜像profile9组/102阶段、module4组/24阶段调用通过。installclean及make -j$(nproc)30并发构建`recovery-dijun-unified-nv-mount-policy.img`，SHA256 `0be46fb13091c4ebe663b5196ba22beadf5874990f7b811cb6d64c247195e5fe`，751来源/六配置封装/维护补丁核对通过；交付审计logs/nv-mount-policy-delivery.json。用户确认OS4震动调用正常，继续其他功能而非围绕震动排查。用户授权通过GitHub CLI账户xiatian410创建公开源码仓库`https://github.com/xiatian410/xringo1-twrp`；以后每个连贯文件修改批次完成后必须执行scripts/sync_github.py --push并核对远端HEAD。编译产物、原厂blob、私钥、原始实机日志不上传。流程见docs/GITHUB-PUBLICATION.md及AGENTS.md。完整12组目标仍进行中。
 
 2026-11-12 用户更新：OS4的震动调用正常。保留这一用户确认，不再以震动调用链为当前排查主线；继续安装/侧载及其余任务文档要求。此确认不外推为所有版本、全部波形或物理效果已验收。
