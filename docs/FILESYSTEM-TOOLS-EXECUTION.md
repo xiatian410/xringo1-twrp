@@ -123,3 +123,20 @@ python3 scripts/audit_format_transition_delivery.py
 0074/0075 的相关执行方法未变：逐方法对比保存的旧源，核对其他绑定来源，复用媒体递归13项与 manager清除16项，不重跑已修正目录清除。它们当时明确替代 Wipe 分派，不能与本批拼成一次完整设备调用。
 
 候选 `recovery-dijun-unified-format-transition.img`，SHA-256 `f0a1ff30d0735eafdc6cc1822351a8cd34d01745b51c767b33fbf808ad1b0ba7`；先 installclean，再 `make -j$(nproc)` 30 并发，791 来源 / 六 profile。相对 manager-wipe 只改变 Recovery 主程序、构建属性与 ramdisk 摘要，其他业务库和 profile 不变。下一明确边界是实际目标格式化工具与读回/修复接续及 GUI/挂载生命周期，不继续扩增等价命令夹具。
+
+## 实际格式化工具与调用链接续
+
+0076 的命令替身边界现由 `tests/format_tool_chain_test.py` 补充六个实际执行场景。镜像仍为 format-transition，SHA-256 `f0a1ff30d0735eafdc6cc1822351a8cd34d01745b51c767b33fbf808ad1b0ba7`，791 生产来源未变。本批没有新增生产修正或构建。
+
+主机 C++ 执行原完整 Wipe 分派、格式化 helpers、manager lookup/WipeByPath、changefilesystem 包装、Repair 与两个 ExecCmd / WaitForChild 重载。实际 fork/exec/wait 在私有 chroot 内通过 host shell 启动兼容 launcher，原工具 argv 不改写；launcher 以 QEMU 和同镜像 linker / 共享库运行 ARM64 mke2fs/make_f2fs/sload_f2fs/e2fsck/fsck.f2fs。块大小 ioctl 明确由目标普通文件 stat 大小替代；卸载、设备探测、属性、metadata 与展示继续是边界。
+
+六场景：ext4→F2FS、F2FS→ext4、全局/分区 rm-rf 开启时仍真正转换、4MiB 小卷实际 make_f2fs 拒绝、缺 make_f2fs 时没有执行命令且整个文件哈希不变。成功场景随即调用原 Repair，F2FS 走 fsck.f2fs -a，ext4 走 e2fsck -fp。实际盘面 magic 与变化哈希核对；ext4 后续 e2fsdroid 填充、e2fsck -fn、独立 host debugfs 读回 payload 一致。F2FS 后续 sload 填充、fsck dry-run 结构检查通过且哈希未变，尚无独立 payload 读回。
+
+```bash
+python3 tests/format_tool_chain_test.py
+python3 scripts/audit_format_tool_chain.py
+```
+
+隔离环境提供普通空文件 `/proc/mounts`，明确代表无挂载，不挂载 procfs、不读取主机挂载表。初次缺少该文件使 F2FS regular-file 检查在 getmntent(NULL) 退出；随后一次 launcher PATH 未包含 `/system/bin`，造成 sload 找不到，均为夹具问题。编译缺少 fs 别名也已补齐，失败日志保留，没有据此修改生产模块。linker 缺 `/proc/self/fd` / linkerconfig 的警告保留，不声称生产 namespace 已验证。
+
+selinux_handle 为空，原 WipeExtfs 的 e2fsdroid 标签初始化分支未执行；后续显式内容填充不是该分支的替代证明。sload_f2fs 使用原 `-t /data`，没有接入真实 Android 属性、标签或加密密钥。父 Recovery 调用者为主机程序，不是完整 ARM64 Recovery/GUI，MTP与真实挂载、fscrypt、discard、并发和断电仍未覆盖。测试只允许脚本新建普通文件；没有操作手机或物理块设备。

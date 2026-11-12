@@ -80,6 +80,8 @@
 
 两份 OS4 的真实 RAW / BZ / XZ 操作各一个，共六项已执行原 ARM64 操作到 COW / 读回，逐字节匹配独立校验的原分区切片。共用入口原八项回归通过，无生产修正或重编。后续已执行 OS4 旧样本完整原始 payload（7,821,653,872 B），4,903 操作、42 分区最终哈希通过。使用同镜像证书，保留 Recovery 签名编译边界；正式版完整 payload（7,883,589,123 B）亦已执行，4,933 操作与 42 目标哈希通过。设备映射和 Prepare 仍为替身，无实际 SnapshotManager / postinstall 或整包 OTA 验收。无生产修正或新镜像，见同一 OTA 主题。
 
+实际工具证据补充：当前同镜像原 Wipe/helper/manager/changefilesystem/Repair/ExecCmd 已在私有 chroot 接到真实 ARM64 格式化/检查工具，六场景通过，ext4 独立 payload 读回一致，F2FS 填充后结构检查通过；设备解析/卸载/容量/属性与 metadata 是明确替身，父调用者为主机程序。无生产修改或重新构建，见[范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#实际格式化工具与调用链接续)。
+
 ## 用户确认与未完成项
 
 - **OS4 震动已修好，用户确认正常**；退出例行检查。

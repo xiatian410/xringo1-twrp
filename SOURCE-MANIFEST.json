@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "9d9ec9123a4526ee91178da03e49e5c2e3d7643541505c3409c4d9b019b63139",
+    "sha256": "f48db5a09a33ee23dd79bd056755d01cedc1da011887dc0f1f2a4ba3d20466e1",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "534da8fa45e42c69979ebc2cce90d14e95c3f4442d9a5ce3bb6d7dd1986d980a",
+    "sha256": "099a70b51e72c0a46a587c4f21aa840295444122a779d1c47a7239ec7775716d",
     "mode": "0o644"
   },
   "docs/DIGEST-PUBLICATION.md": {
@@ -72,7 +72,7 @@
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
-    "sha256": "79b8e8d8bf5823817fd2f3721e161cec418cef308caf725b54b903057f4af3af",
+    "sha256": "de9905d9058130bd94b9a1831d576eff6e7d17a0496177c2a6ced10798be8736",
     "mode": "0o644"
   },
   "docs/HAPTICS-ADAPTATION.md": {
@@ -184,7 +184,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "6cf618285261e592380bcbca2ce08daf766d34860b6cf4f7a2f85fd8c2794b5c",
+    "sha256": "681045d18a7a7f789c4bc5b7500e50ac95f826e110ab188812042b5c46e28f03",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1007,6 +1007,10 @@
     "sha256": "61000104b5b1b539744bd9d1be3686a9ef41202e75ff7734dfa605fccf60429e",
     "mode": "0o644"
   },
+  "scripts/audit_format_tool_chain.py": {
+    "sha256": "be199ca5487425ff221be656c371db3a37c202763a711d8d8485c142ddaac324",
+    "mode": "0o644"
+  },
   "scripts/audit_format_transition_delivery.py": {
     "sha256": "3df2af67daecd0422c83a087e6efe49337eafb8ca12fd23144f73a25076124f5",
     "mode": "0o644"
@@ -1620,11 +1624,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "4b89f598cef5a3f2a42872f92630d21f00743e8b64ddae0e0db87048ab340731",
+    "sha256": "40b7aa9d526fffcb45847dea0849d73d58383e80052e3a7a599040b2f67e913c",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "ec8c1b849938119f212ac7683d85d9b287796ff67df8f04c979ea80ba358f730",
+    "sha256": "7e8ab5f4b44ab8df81c2bb14c65552b7f86fe3e0e69d41db74ed05a010103f78",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -1729,6 +1733,14 @@
   },
   "tests/fixtures/devicefix-force-feedback.cpp": {
     "sha256": "55c9dc30606f4b674453115b82c2600bbb3623973694ac2dd8dbfda3c59c1990",
+    "mode": "0o644"
+  },
+  "tests/format_tool_chain_test.cpp": {
+    "sha256": "cde9c99ef3b300e51372d67cffaffd4b77e6981f2c8640e635c59232525dae1a",
+    "mode": "0o644"
+  },
+  "tests/format_tool_chain_test.py": {
+    "sha256": "9ca1906f0086d033247d77eb409cfe7d2949380f8dff3efae106b11f51433b05",
     "mode": "0o644"
   },
   "tests/format_transition_test.cpp": {
