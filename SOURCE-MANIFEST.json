@@ -8,11 +8,11 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "729ff311394954dd8432fc0d886f873278787735ded382b44588a3fbd5871156",
+    "sha256": "13d6f7aac8c82ec4a6072ba6ee0f55f6f931c03fbfa555202074b5ff7ea5585d",
     "mode": "0o644"
   },
   "AGENTS.md": {
-    "sha256": "8af3fa145e432ee8bf9491b515df13b0c3c5ed633d122f9a59f9b462b3a15e22",
+    "sha256": "2e69a9e2e61adf4fdf016dbe08e7d775177bc8691e05701f2217d39b8d78db7f",
     "mode": "0o644"
   },
   "BUILD-AND-TEST.md": {
@@ -28,7 +28,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "567b5f56e775dc1a76e3a6698f8fd37c98ddbb9822ad3943fa52ed57e41bbe75",
+    "sha256": "36ff67c8ca8930a1593b8363b51e4ce4ee38fb66389255f3e77049460516674f",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -312,7 +312,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "2e90865f7e9b4b62f682083f75441f6e3291db60fa88c2a30a01cd4af7cfaca1",
+    "sha256": "c184fd017c9402f5c5304810c0f374343678a6493b7b61e1fab4b0968e404916",
     "mode": "0o644"
   },
   "docs/ZIP-ARM64-EXECUTION.md": {
