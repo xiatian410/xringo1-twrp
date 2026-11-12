@@ -62,3 +62,22 @@ python3 scripts/audit_wipe_errors_delivery.py
 候选 `recovery-dijun-unified-wipe-errors.img`，SHA-256 `4be5c38595551ad48a5fc3ec09376431cfeed0ccf2c6dc77d97b73e89082ca78`。先 `installclean`，再 `make -j$(nproc)` 30 并发；788 份生产来源及六份 profile 封装核对。相对 progress-console 候选，只有 Recovery 主程序、构建属性和 ramdisk 摘要改变。
 
 剩余具体缺口：`WipeDataWithoutWipingMediaFunc` 仍有只记录 unlink 失败后返回成功的路径；Dalvik / 媒体清除的其他调用方也未在本批覆盖。它们需要分别考虑排除目录、部分删除和错误传播，不能用这 11 项结果宣称完整清除 / 格式化已验收。现场容量刷新故障不在本批修复范围内。
+
+## 保留媒体的数据清除（0074）
+
+0073 未覆盖的 `WipeDataWithoutWipingMediaFunc` 会在 unlink 失败时只输出日志，目录删除失败也一律忽略，最后仍发布成功。[0074 固定补丁](../dtsrc/O1_asic_dual/patches/0074-media-preserving-wipe-errors.patch)让递归中的类型读取、删除和目录迭代错误返回失败，阻止 wrapper 的“完成”消息，并通过 manager / 清除后台发布 FAILED。
+
+递归新增可选的 `retained` 输出，明确向父级报告是否留下排除内容。只有实际保留排除内容时，才接受删除父目录的 ENOTEMPTY；权限及 I/O 错误仍失败。继续使用原 `TWExclude` 的相对 / 绝对排除匹配，并以 symlink_status 检查条目，删除链接本身而不进入其目标。`TW_WORKAROUND_BACKUP_BUG` 保留 `/data/data` 的既有行为；本设备未启用该宏，但单独编译该分支检查兼容性。清除可能已部分完成，失败不提供回滚。
+
+```bash
+python3 tests/media_wipe_test.py
+# 需要本地旧源，预期三项失败：
+python3 tests/media_wipe_test.py --before
+python3 scripts/audit_media_wipe_delivery.py
+```
+
+13 场景执行原始递归与 wrapper、真实排除匹配和路径规范化、manager 路由及后台 LIST/run/report。覆盖媒体保留、嵌套绝对排除、相对 lost+found 排除、指向媒体 / 外部目录的链接及悬空链接、unlink / opendir / rmdir 权限拒绝、排除目录同级删除拒绝、不可读但已排除的媒体、挂载拒绝、根目录缺失及 workaround 两个编译分支。真实权限错误来自私有 chroot 中普通文件和降权 uid/gid，不操作物理设备。旧实现同组三项误成功。首次两项夹具父目录默认 0755 导致额外权限拒绝，已修正为显式创建可写父目录，原失败记录保留为 `logs/media-wipe-first-attempt.json`。
+
+挂载、设备解析、同文件系统的 Wipe 分派与操作展示为明确替身；未执行完整 Wipe 方法、worker start/thread 或 GUI。目录迭代错误走 error_code 路径，但没有注入真实内核 readdir / stat EIO，也未覆盖并发替换 / 写入者。0073 的三个分区方法与本次修改前字节一致，其余原绑定来源不变，因此复用目录清除 11 项和备份目录 12 项结果，不重复执行或改写旧报告。
+
+候选 `recovery-dijun-unified-media-wipe.img`，SHA-256 `d487215a5a604bdf1abad2007984e26f38ed8e5a7e9140059db4f90199f9a646`；先 installclean，再 `make -j$(nproc)` 30 并发，789 来源 / 六 profile。相对 wipe-errors 候选只改变主程序、构建属性与 ramdisk 摘要；GUI / MTP / updater / profile 字节不变。完整格式化 / 写入 / 修复、真实挂载及 Dalvik / 媒体清除的其他调用方仍未闭环。

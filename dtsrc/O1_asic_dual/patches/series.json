@@ -274,6 +274,10 @@
         {
           "file": "0073-wipe-directory-error-propagation.patch",
           "sha256": "62e112ad8c96bef3dfa58b0859562705cd3b44d60ea0869b9de8382cb3d44a30"
+        },
+        {
+          "file": "0074-media-preserving-wipe-errors.patch",
+          "sha256": "e1c6bb3c693a2ccb1773dcf6adee5e7ade9b59172efeffe991494e58a35d3aa6"
         }
       ],
       "result_files": {
@@ -281,7 +285,7 @@
         "etc/init/keystore2.rc": "aa28727dfc718c059b926215f1fcfa9917132265dc01fbd329dcb928a783768e",
         "gui2/app/screen_actions.cpp": "188556ece804fedc23d4d9c2214418de89f49caa4560405dc41e9bcfd5577da1",
         "gui2/gui2_input.cpp": "3504c83906edf8192d0ff717d35a6f6c38770282cba8fd56ec24ebcd55dbe625",
-        "partition.cpp": "4d1c095fc7786f0b22dfa8eb1e012ef78d90742dd7dd0a9dc7ee085e3907bb9a",
+        "partition.cpp": "3f9f6c60ad3f5e525a822ca1f09b4beb97f5a2982cf597b9d901afc645b919b4",
         "twrpminui/force_feedback.cpp": "f7bdb5f50e5ef9d0ecd2ab161fa8f6143292c1207f064147a2db94b080d86f41",
         "twrpminui/graphics_drm.cpp": "61611757cc147b2f925ed52c6f73334acd7ae11d7fa3954d720cbeb8d47d0447",
         "mtp/MtpFfsHandle.cpp": "65f9c45e4cc3ac14dcf8c03aa96c94c59983a10d80bf29b38d2d1e3f15836fe3",
@@ -316,7 +320,7 @@
         "libtar/block.c": "73f7891968ed29ea41d8831009ce2e0331e088635cf99e5f2243d48982472f4a",
         "libtar/extract.c": "dd3766a00afcd2168d209f2d9001e8577b54145bc8b278c4d46078b2f96a28f5",
         "gui2/backend/twrp_operation.cpp": "a2aaa78468023cd7a2024334ef995838702a5b6904686ec0665c12f142cd1ace",
-        "partitions.hpp": "0af825b63f8a247ce7a5b2cffd34d22ccff5b3b965595694cbe5d04349433944",
+        "partitions.hpp": "fb5d64ac5cff9a352d75ff59edd58e379c8b9098e10ba4a521e116966dddd068",
         "digest/twrp_digest_driver.cpp": "6e2e62e3fdf570be857ac5b62c6befcd8474633f736dcca5a8f2a2ad5ec55ab5",
         "digest/twrp_digest_driver.hpp": "266f16b28f4d3ace274a5ea42253ee993fd6790ce323a8e5b79e885f2e9a6fa4",
         "twrpTar.cpp": "c21fd4a2a6621b23b215265f0434f90e17221b5d21cd6c5e3601bc19d91cf149",

@@ -1,0 +1,101 @@
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -2287,38 +2287,60 @@
+   return ret;
+ }
+ 
+-bool TWPartition::WipeDataWithoutWipingMediaFunc(const std::filesystem::path& parent) {
+-  std::error_code it_ec;
+-  fs::directory_iterator it(parent, it_ec);
+-  if (it_ec) {
+-    gui2_console::log_error("error_opening_strerr", mount_point_, it_ec.message());
+-    return false;
+-  }
+-  for (const auto& entry : it) {
+-    const fs::path& path = entry.path();
++bool TWPartition::WipeDataWithoutWipingMediaFunc(const std::filesystem::path& parent,
++                                                bool* retained) {
++  if (retained) *retained = false;
++  std::error_code ec;
++  fs::directory_iterator it(parent, ec);
++  if (ec) {
++    gui2_console::log_error("error_opening_strerr", parent.string(), ec.message());
++    return false;
++  }
++  const fs::directory_iterator end;
++  while (it != end) {
++    // Copy before advancing the single-pass iterator.
++    const fs::path path = it->path();
+     if (wipe_exclusions.check_skip_dirs(path.string())) {
+       LOGINFO("skipped '%s'\n", path.c_str());
+-      continue;
+-    }
+-
+-    // symlink_status (lstat) matches the old DT_DIR d_type test: is_directory() would
+-    // follow symlinks and wipe through a link into an excluded tree.
+-    if (std::error_code type_ec; fs::symlink_status(path, type_ec).type() == fs::file_type::directory) {
+-      if (!WipeDataWithoutWipingMediaFunc(path)) {
++      if (retained) *retained = true;
++    } else {
++      // Never follow symlinks into media or another excluded tree.
++      const auto type = fs::symlink_status(path, ec).type();
++      if (ec) {
++        gui2_console::log_error("error_opening_strerr", path.string(), ec.message());
+         return false;
+       }
++      if (type == fs::file_type::directory) {
++        bool child_retained = false;
++        if (!WipeDataWithoutWipingMediaFunc(path, &child_retained)) return false;
+ #ifdef TW_WORKAROUND_BACKUP_BUG
+-      if (path == "/data/data")
+-        // temporary workaround for error 255 when restoring data backups in 16 branch builds
+-        LOGINFO("DEBUG: TWRP: skipped /data/data/\n");
+-      else
++        if (path == "/data/data") {
++          LOGINFO("DEBUG: TWRP: skipped /data/data/\n");
++          child_retained = true;
++        } else
+ #endif
+-      fs::remove(path, type_ec);  // rmdir; ENOTEMPTY expected when excluded children remain
+-    } else {
+-      // unlink every non-directory entry (files, symlinks, fifos, sockets; DT_UNKNOWN
+-      // resolved by the lstat above)
+-      if (!fs::remove(path, type_ec))
+-        LOGINFO("Unable to unlink '%s': %s\n", path.c_str(), type_ec.message().c_str());
++        {
++          fs::remove(path, ec);
++          // ENOTEMPTY is expected only when recursion actually kept an
++          // exclusion. Permission/I/O errors must still fail the wipe.
++          if (ec && !(child_retained && ec == std::errc::directory_not_empty)) {
++            gui2_console::log_error("error_opening_strerr", path.string(), ec.message());
++            return false;
++          }
++        }
++        if (retained && child_retained) *retained = true;
++      } else {
++        fs::remove(path, ec);
++        if (ec) {
++          gui2_console::log_error("error_opening_strerr", path.string(), ec.message());
++          return false;
++        }
++      }
++    }
++    it.increment(ec);
++    if (ec) {
++      gui2_console::log_error("error_opening_strerr", parent.string(), ec.message());
++      return false;
+     }
+   }
+   return true;
+--- a/partitions.hpp
++++ b/partitions.hpp
+@@ -450,7 +450,8 @@
+   bool WipeDataWithoutWipingMedia();
+ 
+   // Uses rm -rf to wipe but does not wipe /data/media
+-  bool WipeDataWithoutWipingMediaFunc(const std::filesystem::path& parent);
++  bool WipeDataWithoutWipingMediaFunc(const std::filesystem::path& parent,
++                                      bool* retained = nullptr);
+ 
+   // Backs up using tar for file systems
+   bool BackupTar(PartitionSettings* part_settings, BackupProcess* backup_process);
