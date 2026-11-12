@@ -65,3 +65,5 @@ README 负责项目入口；目标文档负责需求；工作队列负责下一�
 短篇说明按安装、挂载和 MTP 等主题合并，并保留小节锚点。生成的逐符号固件比较报告 `docs/firmware-compatibility.json` 只留本地；公开结论和生成脚本保留，构建所需的其他 JSON 清单不受影响。公开导出不改写已发布的 Git 历史。
 
 安全服务的依赖查找、重定位与 namespace 说明统一维护在 `docs/PROFILE-LINKER-ARM64.md`；嵌套分区路由与普通 GUI 策略统一维护在 `docs/PARTITION-ACTIONS.md`。不再为这些主题创建独立重复入口。构建依赖使用的 JSON、历史证据索引和验证源码继续保留，不能仅按文件大小或当前任务是否使用判断删除。
+
+RTC 回调记录并入 `docs/STATUS-ADAPTATION.md`，MiTEE 静态组合比较并入 `docs/PROFILE-LINKER-ARM64.md`，MTP 启停与存储消息并入 `docs/MTP-ADAPTATION.md`。保留原有技术内容与复现命令，删除独立重复入口；脚本所需的资源 JSON 不随文档合并删除。

@@ -19,10 +19,9 @@
 - [模块初始化状态：依赖就绪判断修正](MODULE-STATE-ADAPTATION.md)
 - [OS4.0.4.0 正式版增补记录](OS4-STABLE-ADAPTATION.md)
 - [OS4 正式版无法触摸：反馈、离线排查与顺序修正候选](OS4-TOUCH-FAILURE.md)
-- [安全服务依赖、ARM64 重定位与运行时库搜索](PROFILE-LINKER-ARM64.md)
+- [安全服务组合、依赖与 ARM64 运行时](PROFILE-LINKER-ARM64.md)
 - [多用户发现与解锁入口](MULTIUSER-ADAPTATION.md)
 - [固件兼容性分析（离线阶段）](firmware-compatibility.md)
-- [MiTEE 组合比较（静态候选）](crypto-compatibility.md)
 
 ## 备份与恢复
 
@@ -35,9 +34,8 @@
 
 ## USB 与 MTP
 
-- [MTP 离线修正与传输验证](MTP-ADAPTATION.md)
+- [MTP 传输、启停与存储消息](MTP-ADAPTATION.md)
 - [MTP 上传原子发布与目录元数据](MTP-ATOMIC-UPLOAD.md)
-- [MTP 启停、状态与存储消息离线适配](MTP-CALLER-ADAPTATION.md)
 - [MTP 控制报文、事务取消与 Reset](MTP-CONTROL-ADAPTATION.md)
 - [MTP 上传日期解析](MTP-DATETIME-ADAPTATION.md)
 - [MTP 事件请求、退出与重连](MTP-EVENTS-ADAPTATION.md)
@@ -48,8 +46,7 @@
 ## 界面、设置与状态
 
 - [设置保存、点击与时区失败回退](SETTINGS-ADAPTATION.md)
-- [电量、温度与时钟读取及失败处理](STATUS-ADAPTATION.md)
-- [原厂 RTC 回调离线验证](RTC-DRIVER-EMULATION.md)
+- [电量、温度、时钟与 RTC 回调](STATUS-ADAPTATION.md)
 - [GUI2 反馈次数与取消操作的离线验证](UI-FEEDBACK-ADAPTATION.md)
 - [操作完成反馈的离线验证](OPERATION-FEEDBACK-ADAPTATION.md)
 - [录屏帧与时间轴离线验证](VIDEO-FRAMES-VALIDATION.md)

@@ -1,4 +1,4 @@
-# 安全服务加载与 ARM64 运行时验证
+# 安全服务组合、加载与 ARM64 运行时验证
 
 六份固件的安全服务依次验证依赖查找、服务本体重定位与 namespace 配置。下列镜像、数量及状态属于各阶段的历史输入；当前候选和剩余边界以 [交付报告](../simulation-report.md) 与 [工作队列](WORK-QUEUE.md) 为准。三个阶段均不等于服务启动或解密验收。
 
@@ -74,3 +74,35 @@ python3 scripts/audit_profile_service_relocation.py
 本地报告为`logs/profile-service-namespace.json`与对应`-audit.json`，公开摘要在`docs/CURRENT-VALIDATION.json`。生产代码未修改，沿用mtp-directory镜像`215914df1f8768bf00272f5c10c03b90fa8e624e9b1337fa6801a0ef3e5155b0`、765来源，本轮无新构建。
 
 本证据确认私有chroot中该构建、该文件布局下的实际namespace配置；它不证明真实init、mount namespace、APEX、Android属性区或proc realpath行为。生成linkerconfig缺失警告仍保留，不能据此称配置未使用，也不能据测试成功称完整启动通过。服务初始化、TEE/硬件密钥和合成加密卷仍待完成，完整12组目标继续进行中；OS4震动调用正常确认保持。
+
+## MiTEE 静态组合比较
+
+本节保留 profile 建立阶段的静态结果；后续重定位与 namespace 范围见上文，不将静态结果等同于服务启动或解密验收。
+
+服务、TA、私有库按原厂来源整理；本表记录静态依赖；多版本启动已接入统一候选，未执行真实解密。
+
+| 样本 | system release / SPL | vendor SPL | 私有 DSO 数 | 静态 ELF 结果 |
+|---|---|---|---:|---|
+| os2-final | 15/2025-08-01 | 2025-08-01 | 24 | S1 dependency/symbol checks passed |
+| os2-initial | 15/2025-04-01 | 2025-03-01 | 24 | S1 dependency/symbol checks passed |
+| os3-final | 16/2026-09-01 | 2026-09-01 | 24 | S1 dependency/symbol checks passed |
+| os3-initial | 16/2025-09-01 | 2025-09-01 | 24 | S1 dependency/symbol checks passed |
+| os4-current | 17/2026-09-01 | 2026-09-01 | 26 | S1 dependency/symbol checks passed |
+| os4-stable | 17/2026-10-01 | 2026-09-01 | 26 | S1 dependency/symbol checks passed |
+
+OS3 初末版的 41 个安全服务/TA/私有库资产中，40 个字节一致，但一个 TA 不同，系统与 vendor 的 SPL 也不同；仍保留独立档案。OS4 还更换了 tee-supplicant、KeyMint、libteecli 及多项 TA。
+
+OS2 初版 system SPL 为 2025-04-01，vendor SPL 为 2025-03-01，必须分别保留。OS3 的 vendor/ODM 构建 release 仍为 Android 15，不能拿它替代 system 的 Android 16 身份。
+
+DSO 依赖比较采用当前 recovery 配套的 libbinder/libbinder_ndk；其余优先匹配 vendor 私有库，再检查 recovery 共享库。每个进程闭包的强符号差集为零时只记 S1，实际 namespace/服务启动/硬件密钥仍待验证。
+
+[机器报告](crypto-compatibility.json) 保留全部源路径、SHA-256、依赖与符号结果。
+[档案清单](../dtsrc/O1_asic_dual/profiles/inventory.json) 下的 profiles 与 content-addressed blobs 已接入 PRODUCT_COPY_FILES；实际镜像脚本模拟见 [启动说明](PROFILE-SELECTION.md)，不等于真实 TEE 成功。
+
+同名 firmware 不自动去重：原厂 ODM 的 cs40l26-a2h.bin、cs40l26-dbc.bin 与 vendor 内容不同，保留两份原路径。ODM 中的触摸固件保留原路径记录，并将其与优先的 ODM Cirrus 固件映射到稳定 RAM 目录 `/lib/firmware`；统一候选在加载匹配的额外模块之前发布该 profile 的固件。
+
+六个档案的资源按内容去重后为 78 份、40,184,830 B；实际压缩镜像容量已单独检查，见 [模拟报告](../simulation-report.md)。
+
+六份 system/build.prop 的 release/SPL 现已从经过分区哈希检查的原文件取得，与 OTA 元数据一致；报告保留文件哈希和全部属性。只读选择组件的 77 场景结果见 [预检说明](PROFILE-SELECTION.md)，HAL 激活和服务启动顺序已接入，实际镜像的 77 次阶段调用通过模拟；后续真实硬件密钥操作仍未验证。
+
+正式版独立使用新 tee-supplicant 和一项 TA，26 个私有 DSO 与旧 OS4 相同。system/vendor SPL 分别为 2026-10-01/2026-09-01，保留原身份。完整差异见[正式版记录](OS4-STABLE-ADAPTATION.md)。

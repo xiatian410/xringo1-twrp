@@ -19,6 +19,7 @@ ENTRY_POINTS = (
     'docs/OTA-OPERATION-COW.md', 'docs/MOUNT-LIST-EXPLANATION.md',
     'docs/PROFILE-LINKER-ARM64.md', 'docs/PARTITION-ACTIONS.md',
     'docs/MTP-ATOMIC-UPLOAD.md', 'docs/MTP-CONTROL-ADAPTATION.md',
+    'docs/MTP-ADAPTATION.md',
     'docs/firmware-compatibility.md',
 )
 

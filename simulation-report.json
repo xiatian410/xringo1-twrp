@@ -3822,7 +3822,7 @@
   "rtc_driver_callbacks": {
     "evidence": "logs/rtc-driver-emulation.json",
     "audit": "logs/rtc-driver-emulation-audit.json",
-    "documentation": "docs/RTC-DRIVER-EMULATION.md",
+    "documentation": "docs/STATUS-ADAPTATION.md",
     "count": 56,
     "original_vendor_boot_origins": 6,
     "production_changes": false,

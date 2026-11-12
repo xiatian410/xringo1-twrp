@@ -32,7 +32,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "8c1d0c67468c7d8b4ad349b978a67ddf4887a2f520eade450907074f4fa01a54",
+    "sha256": "aeeac9d68b9279f15c8f08d57324211ae7d582be696190eb91e746e91bb85b3c",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -44,7 +44,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "ca1ab4eabc9883e3caa9e25b7311c9bea0baf760bb4fed3ba01eeb3c32e62ce2",
+    "sha256": "fa0e6b23fdf24d28d98ce521007c2cb461b6eec293e1ecf201272b9c29379219",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -148,15 +148,11 @@
     "mode": "0o644"
   },
   "docs/MTP-ADAPTATION.md": {
-    "sha256": "507121b62d0797a738245814acba2b50ec13c8991c94661e0139eaf472f1cd23",
+    "sha256": "d7546157dbbb3eaa66ac5509f9ce7a07cd2738c026e77a8c54c248ea645c2913",
     "mode": "0o644"
   },
   "docs/MTP-ATOMIC-UPLOAD.md": {
     "sha256": "2687a53a888cc4c29e6d9985d99ffdb02bc2eaf61ee17f82bf7427d085362d27",
-    "mode": "0o644"
-  },
-  "docs/MTP-CALLER-ADAPTATION.md": {
-    "sha256": "10121967446277c6adf353f7de8553c8a64263729c78e0ba33c14bba66b9f6ba",
     "mode": "0o644"
   },
   "docs/MTP-CONTROL-ADAPTATION.md": {
@@ -204,7 +200,7 @@
     "mode": "0o644"
   },
   "docs/PROFILE-LINKER-ARM64.md": {
-    "sha256": "ccda2a16ff289a142391a784bf7f5e127d43b8404faf0fdeb372742c7479344c",
+    "sha256": "30b1af7fbb74e3a5b7d4fe19fb3747ca66b9653e2c367ecfc506e047f5766305",
     "mode": "0o644"
   },
   "docs/PROFILE-SELECTION.md": {
@@ -216,7 +212,7 @@
     "mode": "0o644"
   },
   "docs/README.md": {
-    "sha256": "301485d8ae011324e907b9e0867a7b3b070a2c2195b88b5c63ae716848d49f64",
+    "sha256": "62164982bd915d529969998923b5e3238f30a183dd4932fc8e92a88e51535d37",
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
@@ -225,10 +221,6 @@
   },
   "docs/RESTORE-SESSION-ADAPTATION.md": {
     "sha256": "1cad042ca46b858f45507d2e66b24ad605ad9bf0369600b811978c7eabbd2c3e",
-    "mode": "0o644"
-  },
-  "docs/RTC-DRIVER-EMULATION.md": {
-    "sha256": "a98433603c666c2cf15801e6b83e6c73918f6c474e04135918df9bb7278fa676",
     "mode": "0o644"
   },
   "docs/SETTINGS-ADAPTATION.md": {
@@ -240,7 +232,7 @@
     "mode": "0o644"
   },
   "docs/STATUS-ADAPTATION.md": {
-    "sha256": "70fcecae68405ee257b829a073d3bc9ede0c4ef028a78e0de2fcb51677fe3b98",
+    "sha256": "9b4b794f47b0016d4e55c41eff842dbda4482b68439d3124a07d22d4d363c9f4",
     "mode": "0o644"
   },
   "docs/UI-FEEDBACK-ADAPTATION.md": {
@@ -256,15 +248,11 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "98a707628372e1e28dd2669cfb1979173e34aef94a9e5b14cb2ae846e41fac2a",
+    "sha256": "4bf38c5958dcb0d33c7b802da810f39aa4e2021ce2b15313b2fef95d7892c1e0",
     "mode": "0o644"
   },
   "docs/crypto-compatibility.json": {
     "sha256": "295dcca3d17d1ae715808c02de7401e0002d4340531e1f1f784f61b8e09e7595",
-    "mode": "0o644"
-  },
-  "docs/crypto-compatibility.md": {
-    "sha256": "40dbfc36490a33a202aad92a2d39cf70c8832c5f1502ee9675b13c91057a4843",
     "mode": "0o644"
   },
   "docs/firmware-compatibility.md": {
@@ -1272,7 +1260,7 @@
     "mode": "0o644"
   },
   "scripts/audit_unified_delivery.py": {
-    "sha256": "f4402544c6667af2834ff87177afe1154ffe1d2c8c5d886b6b1f28e9d0614602",
+    "sha256": "a13a4ddc45276e5e3e6fb6b9e191d5438b0830d2157ba2c314be19767b7a470a",
     "mode": "0o644"
   },
   "scripts/audit_updater_protocol_delivery.py": {
@@ -1320,7 +1308,7 @@
     "mode": "0o644"
   },
   "scripts/check_documentation.py": {
-    "sha256": "85bbf6c99b983834eedfd1a2dbce6e1339b7ddc342a239c3f4edb32615f6ef83",
+    "sha256": "5cd0651d6980d874a45744ad48c7328959ce9dcd36015d6e80acdbd24d53ca89",
     "mode": "0o644"
   },
   "scripts/check_public_tree.py": {
@@ -1580,7 +1568,7 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "c8c7ebcbe84411c0a67d083b94cafa7d9c15d793803a6333292f18627562d510",
+    "sha256": "e2826cd580c629666c7a55f7853d6a91677fe4dd368bf64eb125a71a52323c9b",
     "mode": "0o644"
   },
   "simulation-report.md": {
