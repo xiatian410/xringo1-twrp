@@ -18,7 +18,7 @@
 
 ## minadbd 重启交接
 
-补丁0058让minadbd协议中的Android、bootloader、fastboot和recovery请求，在成功回复命令并成功恢复USB配置后才进入待交接状态。GUI backend在UI线程消费请求，并等启动流程、后台命令及侧载worker空闲后，写入现有`tw_reboot_arg`并使用`twrp.cpp`已有统一退出路由（实际字段为`tw_reboot_arg`；最终执行者仍是`Reboot()`）。ORS不再在核心安装完成后重复刷包，收到重启结果时停止解析脚本，由同一GUI流程处理。
+补丁0058让minadbd协议中的Android、bootloader、fastboot和recovery请求，在成功回复命令并成功恢复USB配置后才进入待交接状态。GUI backend在UI线程消费请求，等启动流程、后台命令及侧载worker空闲后，写入`tw_reboot_arg`并使用`twrp.cpp`的统一`Reboot()`路由。ORS不再在核心安装完成后重复刷包，收到重启结果时停止解析脚本，由同一GUI流程处理。
 
 完成状态与running标志在同一mutex下发布，cancel也在该锁内检查状态，防止观察到DONE后的析构取消已经完成的交接。当前回归使用私有进程/socket fixture；最终竞态修复后19项通过，结果见`logs/sideload-reboot.json`，修复前同组15项失败。ACK失败、USB恢复失败、未支持目标、token取消和队列门控均覆盖。Rescue须设置BCB `boot-rescue`，没有映射为普通重启而是明确拒绝。属性、DataManager、sync和最终TwReboot为替身；未验证真实USB、Android minadbd、BCB、完整ORS进程或实体重启。
 

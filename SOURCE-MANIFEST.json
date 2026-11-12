@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "20e78c5924fcf434253231043c38e6976592c2fdf60c4e4aa0c02a0dd79b6a26",
+    "sha256": "6341b2ef2d6a9eb2addeee8bfaa4ad02c73b9b857b2547306809d71f59d8455d",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -244,7 +244,7 @@
     "mode": "0o644"
   },
   "docs/SIDELOAD-LIFECYCLE.md": {
-    "sha256": "db0499eace53552cf0d98b9e63db727c63bdda7682882efb1981ad5d5d990342",
+    "sha256": "ac32945f133cdc403bfbe9d68c4964d1987a08ada2e7e72fe68747b0845fc49c",
     "mode": "0o644"
   },
   "docs/SPARSE-IMAGE-FLASH.md": {
