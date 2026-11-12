@@ -8,7 +8,7 @@
 
 - OTG：完整匹配 USB 控制器路径，修复把内置 UFS 分区列成大量 0 B OTG 存储的缺陷。
 - 挂载：NVData、NVCFG、protect 等内部维护目标不再列入普通挂载页面，后台也拒绝手动挂载/卸载请求；保留原厂 fstab 和内部服务使用能力。
-- ZIP：通用 updater 优先，否则按设备公布的 ABI 顺序选择；校验进度协议，正确处理子进程和 I/O 失败。
+- ZIP：通用 updater 优先，否则按设备公布的 ABI 顺序选择；校验进度协议，正确处理子进程和 I/O 失败。 多包清缓存请求累计保留，清理失败正确反馈整体失败。
 - sparse：检查展开容量及写入完成状态。MTP 上传日期和 CE 解密失败清理等范围见文档。
 
 当前候选、校验和、验证边界以 [simulation-report.json](simulation-report.json) 和 [任务文档](ADAPTATION-GOALS.md) 为准。**仓库不提供编译镜像或 Releases 二进制。**

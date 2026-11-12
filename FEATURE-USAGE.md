@@ -1,5 +1,7 @@
 # 功能入口与当前使用边界
 
+当前候选`recovery-dijun-unified-zip-queue.img`，SHA256 `4425846118c018b9a87b40c9bb549c6f9aa13af2c724973104c53ea013324a7f`。多包ZIP安装中，任意已尝试包请求的清缓存会保留到队列结束；后续包失败也不会抹掉此前请求。清理失败时整体显示失败，已完成包数保留，不能据失败状态判断先前安装已撤销。继承NV挂载限制及OTG发现修正，新候选尚未实机验证。以下早期候选记录仅表示当时状态。
+
 当前候选`recovery-dijun-unified-nv-mount-policy.img`已去掉普通挂载页的NVData/NVCFG/protect选项；旧页面残留请求及手动backend调用也会拒绝挂载/卸载，内部服务仍使用原厂配置。不是通过删除fstab实现。SHA256 `0be46fb13091c4ebe663b5196ba22beadf5874990f7b811cb6d64c247195e5fe`，未实机验证。源码更新须同步[公开仓库](https://github.com/xiatian410/xringo1-twrp)，编译镜像留在本地。以下旧候选均为历史记录。
 
 当前统一候选为`recovery-dijun-unified-zip-selection.img`，SHA256 `c6d2d09d50f3a1fda0f19164bc6204d4b911be6417efe18553af429bbfe3c3c6`。挂载页的假OTG修正已继承：发现按完整USB控制器路径匹配，避免把内置UFS分区列成0B的usbotg存储。NV/protect仍为原厂维护分区，与用户共享存储不同；设置沿用用户已确认正常的实现。新候选尚未实机验证。
@@ -45,9 +47,9 @@
 | 解密 | 启动解密页面或存储中的“解密 Data” → 用户凭据 → 查看解锁结果 | OS4 用户 0 有历史证据；服务缺失/错误凭据不可转成自动格式化；五版身份/启动顺序已模拟；未知组合或服务失败保持加密，新增逐用户选择、状态隔离和损坏资料处理；工作资料绑定密钥仍未验证，见 [多用户说明](docs/MULTIUSER-ADAPTATION.md) |
 | 挂载 | 挂载 → 对应分区 → 挂载/卸载；选择存储切换访问目标 | system/vendor模式切换失败会返回错误并尝试恢复原状态，见[范围](docs/MOUNT-MODE-ADAPTATION.md)；EROFS 按只读处理；OS2/OS3 没有 mi_product，不能据其缺失判断整个 super 损坏 |
 | MTP | 挂载/存储页面 → 启用 MTP；关闭后回到普通 USB 配置 | 内部媒体需解密并挂载；FunctionFS 的 ADB/MTP 两端须准备好；原生/兼容传输、42 项对象/会话及 [48 项移动/复制/重建](docs/MTP-TRANSFERS-ADAPTATION.md)回放通过；[62 项事件生命周期](docs/MTP-EVENTS-ADAPTATION.md)通过；[42 项 init/configfs 调度](docs/USB-CONFIGFS-ADAPTATION.md)通过；[66 项控制报文回放](docs/MTP-CONTROL-ADAPTATION.md)通过，[40+11 项调用层/消息回放](docs/MTP-CALLER-ADAPTATION.md)通过；取消/复位整合、解密后发布及完整联调待补，Windows 枚举 U |
-| OTG | 挂载后在“选择存储”中选 USB OTG，再浏览或作为备份目标 | 选择失败不提交新目标，本次新挂载尝试撤销；已挂载设备也刷新容量，满盘但可读仍可选择。15项选择故障模拟通过；USB发现/写入中拔除尚未覆盖，见[范围](docs/STORAGE-SELECTION-ADAPTATION.md) |
-| 安装 ZIP | 安装 → 刷机包 → 选择文件 → 确认 → 查看安装日志 | 目标文件须可读；尚未完成合成包往返与中断模拟 |
-| 刷写镜像 | 安装 → 镜像 → 文件 → 目标分区/槽位 → 确认 | 明确镜像类型、容量和目标；本轮仅允许后续临时分区夹具验证，不执行实际刷写 |
+| OTG | 挂载后在“选择存储”中选USB OTG，再浏览或作为备份目标 | 完整控制器模式发现12项、存储选择15项通过，修复内置UFS误枚举；实际USB/写入中拔除未验证，见[挂载说明](docs/MOUNT-LIST-EXPLANATION.md) |
+| 安装 ZIP | 安装 → 刷机包 → 选择文件/队列 → 确认 → 查看结果与日志 | 主机传统ZIP核心36项及真实后台队列23项通过；清缓存失败使整体失败，保留已完成包数；GUI点击/ARM updater/AB payload未验收，见[安装范围](docs/INSTALL-CHAIN-VALIDATION.md) |
+| 刷写镜像 | 安装 → 镜像 → 文件 → 目标分区/槽位 → 确认 | 主机后台/目标路由/真实libsparse接续40项通过；展开容量和同步错误会失败，已有写入不保证撤销；实际boot-control/物理分区仍未验证 |
 | sideload | 高级 → ADB Sideload → 开始传输 → 查看结果/取消 | 是独立传输入口；协议中断与状态恢复待模拟 |
 | fastbootd/重启 | 快捷操作 → 重启 → Fastbootd、Bootloader、Recovery、系统或关机 | Fastbootd 与 Bootloader 是不同入口；当前槽位、退出路由待完整模拟 |
 | 备份 | 备份 → 目标存储 → 分区/压缩等选项 → 开始 | Data 文件备份不自动包含内部媒体；未解密用户的内容不承诺可恢复；归档层 30 项、原始镜像复制 65 项回放通过；取消和收尾 55 项回放通过，已有同名目录拒绝覆盖；压缩/加密/分卷管道 46 项通过，完整管理器与断电完整性仍待补；[编解码范围](docs/ARCHIVE-PIPELINE-ADAPTATION.md)；[备份会话](docs/BACKUP-SESSION-ADAPTATION.md)、[原始镜像边界](docs/RAW-IMAGE-ADAPTATION.md) |

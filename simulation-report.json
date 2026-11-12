@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-nv-mount-policy.img",
-  "image_sha256": "0be46fb13091c4ebe663b5196ba22beadf5874990f7b811cb6d64c247195e5fe",
-  "image_status": "Clean-built offline candidate: ordinary GUI hides NV/protection targets and rejects manual mount/unmount, including resolved aliases. Original fstab/core access retained. Inherits OTG/ZIP fixes. Hardware unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-zip-queue.img",
+  "image_sha256": "4425846118c018b9a87b40c9bb549c6f9aa13af2c724973104c53ea013324a7f",
+  "image_status": "Clean-built offline candidate: ZIP queue accumulates per-package cache requests and fails when requested cache cleanup fails. Includes existing NV/OTG/ABI fixes. Hardware/GUI/ARM updater/AB payload/sideload remain unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -2334,6 +2334,51 @@
       "result": "pass",
       "grade": "S2",
       "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
+    },
+    {
+      "name": "zip-queue-chain",
+      "evidence": "logs/zip-queue-chain.json",
+      "evidence_sha256": "c8f6a4d57318047cc9f9299e636cbc0ff04f6ae23767dd0c0741ddc43428227b",
+      "count": 23,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Original public ZIP backend/worker -> real ZIP/digest/extraction/fork/exec.\n\nPrivate chroots and harmless native updaters only. DataManager, progress,\nmounts, cache wiping, block unlocking, size refresh, operation feedback and\nperformance are explicit doubles. Signature rejection without keys executes;\ncryptographic acceptance is covered separately by zip_install_chain_test.py.\nNo GUI pointer events, AB payload, OZIP, ARM updater, phone or block device run.\n"
+    },
+    {
+      "name": "zip-queue-before",
+      "evidence": "logs/zip-queue-before.json",
+      "evidence_sha256": "bfb58b2395f9e7002da4f4d64a5ce87497946c3ada3852edee1bce6c4188569e",
+      "count": 5,
+      "result": "expected_failures",
+      "grade": "S2",
+      "scope": "Original public ZIP backend/worker -> real ZIP/digest/extraction/fork/exec.\n\nPrivate chroots and harmless native updaters only. DataManager, progress,\nmounts, cache wiping, block unlocking, size refresh, operation feedback and\nperformance are explicit doubles. Signature rejection without keys executes;\ncryptographic acceptance is covered separately by zip_install_chain_test.py.\nNo GUI pointer events, AB payload, OZIP, ARM updater, phone or block device run.\n"
+    },
+    {
+      "name": "zip-queue-image-regression",
+      "evidence": "logs/zip-queue-image-regression.json",
+      "evidence_sha256": "973c39cfdbcac1a8d07b516b038f2a8ae1ba8de9234f0a988ac1b164b3d38bdd",
+      "count": 40,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run actual image-install worker/thread -> manager -> partition -> libsparse.\n\nUses production public backend header, lifecycle, filename routing, manager\ntarget lookup and slot override. Real sparse parser/writer and private file\ncontents execute. DataManager, progress/console, source mounts, target capacity,\npartition size/device resolution and UpdateSystemDetails are explicit doubles.\nNo ZIP, raw transfer, repacker, GUI widgets, boot-control service, physical block\ndevice, USB, target ARM64 or power-loss execution. A/B resolution is a fixture.\n"
+    },
+    {
+      "name": "zip-queue-profile-runtime",
+      "evidence": "logs/zip-queue-profile-runtime.json",
+      "evidence_sha256": "bb307d95e523c6b18c90e35dcba34c701ce7ab0d53d03b05d2d3e6c4a31827ee",
+      "count": 9,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "zip-queue-module-state",
+      "evidence": "logs/zip-queue-module-state.json",
+      "evidence_sha256": "3acdebd9e8e57e4508f63c511004ec50ab652de5cd61dc6b47d3dcaf7dc61c3c",
+      "count": 4,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
     }
   ],
   "source_review_followups": [
@@ -2649,8 +2694,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/nv-mount-policy-delivery.json",
-    "scope": "NV manual mount policy26/old17failures, list6, 751 build sources and same-image script replay. Full12-group goal remains active.",
+    "evidence": "logs/zip-queue-delivery.json",
+    "scope": "ZIP queue23/old5 failures;image-route40;753 build sources;six-profile packaging;same-image shell runtime9/module4. Full12-group goal and historical full-audit drift remain open.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -2822,16 +2867,20 @@
     "boundaries": "private host files, block-stat/capacity/discard doubles; full manager/GUI/slots, ZIP/update-binary/sideload, CRC/authenticity and physical persistence remain unverified"
   },
   "installation_chain": {
-    "status": "host-zip-chain-and-ABI-selection-covered-offline",
+    "status": "host-ZIP-backend-queue-and-completion-covered-offline",
     "patch": "dtsrc/O1_asic_dual/patches/0052-updater-protocol-validation.patch",
     "image_route": "logs/image-install-chain.json",
     "updater": "logs/zip-updater.json",
     "before": "logs/zip-updater-before.json",
-    "boundaries": "Native host traditional ZIP chain includes current package/signature/digest/extraction/fork/exec; ABI-named updater is host code. DataManager/progress/property/unmount are fixtures. Separate image-route suite. No ARM updater, AB payload/update_engine, full backend/GUI queue, sideload/FUSE or physical writes.",
+    "boundaries": "Actual public ZIP backend and worker join native TWinstall_zip/package/digest/extraction/fork/exec; mounts/cache wipe/block unlock/progress/DataManager/operation/performance doubles. Independent signature-acceptance and image-route checks. No GUI clicks, ARM updater, OZIP, AB payload/update_engine, sideload/FUSE or physical writes.",
     "selection_patch": "dtsrc/O1_asic_dual/patches/0053-zip-updater-abi-selection.patch",
     "zip_chain": "logs/zip-install-chain.json",
     "zip_chain_before": "logs/zip-install-chain-before.json",
-    "updater_current_regression": "logs/zip-selection-updater-regression.json"
+    "updater_current_regression": "logs/zip-selection-updater-regression.json",
+    "queue_patch": "dtsrc/O1_asic_dual/patches/0055-zip-queue-cache-completion.patch",
+    "queue": "logs/zip-queue-chain.json",
+    "queue_before": "logs/zip-queue-before.json",
+    "image_route_current": "logs/zip-queue-image-regression.json"
   },
   "os4_haptics_user_confirmation": {
     "date": "2026-11-12",

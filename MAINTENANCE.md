@@ -1,5 +1,7 @@
 # dijun 维护与离线验证
 
+2026-11-12 ZIP队列收尾修正：真实公开backend/后台线程→flash_zip→TWinstall_zip→ZIP/摘要/提取→fork/exec/wait接续23项通过；修复前同组5失败，固定时间戳后各包SHA256完全相同。补丁0055累计各包wipe_cache请求，后包成功/失败均不丢弃前包请求；缓存清理失败发布FAILED并保留已完成包数，不回滚已安装内容。缓存/挂载/解锁/进度/操作反馈为替身，镜像安装独立40项回归通过。installclean及make -j$(nproc)（30并发）构建`recovery-dijun-unified-zip-queue.img`，SHA256 `4425846118c018b9a87b40c9bb549c6f9aa13af2c724973104c53ea013324a7f`，753来源/六配置封装/85份Recovery补丁结果核对通过；同镜像profile9组/102阶段、module4组/24调用通过。交付审计logs/zip-queue-delivery.json，范围docs/INSTALL-CHAIN-VALIDATION.md。继承NV/OTG修正；OS4震动调用正常及设置正常的用户确认保留。完整GUI、ARM updater、AB payload、sideload及12组整体目标仍未完成；本轮源码/文档按约定同步GitHub，镜像不上传。
+
 2026-11-12 GitHub交付已完成：公开仓库https://github.com/xiatian410/xringo1-twrp已使用用户CLI账户创建并推送，公开清单精确包含563个文本/元数据文件，无编译产物或原厂blob内容。权限规范化修正后的远端CI已通过（检查提交87101fa）。今后文件修改按AGENTS.md执行同步并核对远端HEAD；公开CI只检查来源/语法/补丁完整性。
 
 2026-11-12 NV挂载与公开源码要求：用户明确NV不应在普通界面提供挂载操作，维护补丁0054隐藏NVData/NVCFG/protect及对应别名，并在backend拒绝挂载/卸载；保留原厂fstab和内部核心访问，不将其当作用户存储。26项后台策略检查通过，旧实现同组17失败；真实LVGL列表六场景通过，正常夹具20行减为16行。同镜像profile9组/102阶段、module4组/24阶段调用通过。installclean及make -j$(nproc)30并发构建`recovery-dijun-unified-nv-mount-policy.img`，SHA256 `0be46fb13091c4ebe663b5196ba22beadf5874990f7b811cb6d64c247195e5fe`，751来源/六配置封装/维护补丁核对通过；交付审计logs/nv-mount-policy-delivery.json。用户确认OS4震动调用正常，继续其他功能而非围绕震动排查。用户授权通过GitHub CLI账户xiatian410创建公开源码仓库`https://github.com/xiatian410/xringo1-twrp`；以后每个连贯文件修改批次完成后必须执行scripts/sync_github.py --push并核对远端HEAD。编译产物、原厂blob、私钥、原始实机日志不上传。流程见docs/GITHUB-PUBLICATION.md及AGENTS.md。完整12组目标仍进行中。

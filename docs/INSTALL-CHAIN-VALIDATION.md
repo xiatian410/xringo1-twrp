@@ -1,5 +1,17 @@
 # 镜像路由与 ZIP 安装链离线验收
 
+2026-11-12 ZIP 队列接续：`tests/zip_queue_chain_test.py`从真实公开 backend 的 `start_zip`进入后台线程，运行 `run_zip → flash_zip → TWinstall_zip → 实际 ZIP/摘要/提取 → fork/exec/wait`，随后读取状态、acknowledge 和析构/join。23 项通过，固定 ZIP 时间戳后的修复前/后输入 SHA256 映射完全一致；旧 backend 同组有 5 项失败，报告为 `logs/zip-queue-chain.json`及`logs/zip-queue-before.json`。
+
+复现的两个缺陷是：每次 updater 都会重置传出的 wipe_cache，导致前一个包请求清缓存而后一个包未请求时丢失；WipeByPath 返回失败也没有改变最终 DONE 状态。维护补丁0055为每包使用独立输出并累计请求，队列退出时统一清理；清理失败通过现有 `unable_to_wipe`本地化消息记录，并发布 FAILED。已完成包数保留，不将完成缓存清理当作回滚或重新执行包。
+
+覆盖单/双包、首包/末包/双包清理请求、后包退出失败或非法进度、缺 updater、清理失败、缺文件/空路径、摘要拒绝及显式跳过、签名开启但缺证书拒绝、忙时重复启动/acknowledge、失败后重用、空队列及析构等待。除状态外核对无害 updater 真实写出的执行顺序，失败后后续包不能执行；保留来自失败包的已提交清理请求，与原有语义一致。首次夹具构建遇到标准库 ends 名称冲突和临时文件重名，已修正，不能把这些夹具错误当作生产失败。
+
+DataManager、进度、源文件挂载、缓存清理、块设备解锁、容量刷新、性能与操作反馈是明确替身；缓存marker是清理请求的夹具回执，不证明真实文件系统清理。使用实际公有 backend 头文件，镜像安装虚函数在此套件中为不可调用边界；独立的镜像路由40项回归见`logs/zip-queue-image-regression.json`。本套件是主机原生执行，未启用sanitizer，未定义AB_OTA_UPDATER或TW_OZIP_DECRYPT_KEY；ARM updater、GUI点击、A/B payload/update_engine、OZIP和sideload仍未覆盖。签名正确包的密码学接受由下方独立36项套件证明，不能把两个套件说成同一GUI全链。
+
+当前候选为`recovery-dijun-unified-zip-queue.img`，清理构建和来源核对见`logs/zip-queue-delivery.json`。以下为此前检查点，“尚未连接backend队列”仅指当时。
+
+---
+
 2026-11-12 补充完整传统 ZIP 软件路径：`tests/zip_install_chain_test.py`执行当前 `TWinstall_zip`、实际映射包、ZIP 查询/提取、签名验证、sidecar 摘要、updater 参数构造、fork/exec 和进程回收。使用当前 TWRP 的 package/verifier/asn1 实现、AOSP libziparchive 和真实主机 BoringSSL；私有 chroot 中全部为临时普通文件，无设备或真实分区操作。
 
 36 项全部通过。包括 stored/deflated 包、本地 RSA2048/SHA256 签名接受、错误密钥/篡改/必须签名的无签包/缺证书拒绝、MD5/SHA256 sidecar 核验、损坏/缺失/重复条目、兼容性嵌套 ZIP 读取、提取打开失败、updater 错误退出及非法进度。兼容性用例仅证明当前代码能够读取或拒绝嵌套 ZIP，不是完整 VINTF 验证。密钥只用于本地测试，未写入生产镜像。

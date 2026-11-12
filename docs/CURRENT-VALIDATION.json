@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-nv-mount-policy.img",
-  "image_sha256": "0be46fb13091c4ebe663b5196ba22beadf5874990f7b811cb6d64c247195e5fe",
-  "production_sources": 751,
+  "image_name": "recovery-dijun-unified-zip-queue.img",
+  "image_sha256": "4425846118c018b9a87b40c9bb549c6f9aa13af2c724973104c53ea013324a7f",
+  "production_sources": 753,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "User confirms invocation is normal.",
   "checks": [
@@ -61,6 +61,46 @@
       "failures": 0,
       "local_report_sha256": "99cdec236ca6fd238a1f74f2c1ecbd49dc0914a4503f0928bde366660ae0a02c",
       "scope": "Execute production ZIP updater command, fork/exec pipe parser and child wait.\n\nThe compiled host updater only emits protocol/creates a private marker. Real\nfork, execve, pipe, stdio and waitpid execute; pipe/fork/fdopen failure injection\nis explicit. Progress sink is checked, logs are captured. No package extraction,\nZIP signature/digest verification, payload/OTA engine, device or USB execution.\n"
+    },
+    {
+      "name": "zip-queue-chain",
+      "status": "PASS",
+      "cases": 23,
+      "failures": 0,
+      "local_report_sha256": "c8f6a4d57318047cc9f9299e636cbc0ff04f6ae23767dd0c0741ddc43428227b",
+      "scope": "Original public ZIP backend/worker -> real ZIP/digest/extraction/fork/exec.\n\nPrivate chroots and harmless native updaters only. DataManager, progress,\nmounts, cache wiping, block unlocking, size refresh, operation feedback and\nperformance are explicit doubles. Signature rejection without keys executes;\ncryptographic acceptance is covered separately by zip_install_chain_test.py.\nNo GUI pointer events, AB payload, OZIP, ARM updater, phone or block device run.\n"
+    },
+    {
+      "name": "zip-queue-before",
+      "status": "FAIL",
+      "cases": 23,
+      "failures": 5,
+      "local_report_sha256": "bfb58b2395f9e7002da4f4d64a5ce87497946c3ada3852edee1bce6c4188569e",
+      "scope": "Original public ZIP backend/worker -> real ZIP/digest/extraction/fork/exec.\n\nPrivate chroots and harmless native updaters only. DataManager, progress,\nmounts, cache wiping, block unlocking, size refresh, operation feedback and\nperformance are explicit doubles. Signature rejection without keys executes;\ncryptographic acceptance is covered separately by zip_install_chain_test.py.\nNo GUI pointer events, AB payload, OZIP, ARM updater, phone or block device run.\n"
+    },
+    {
+      "name": "zip-queue-image-regression",
+      "status": "PASS",
+      "cases": 40,
+      "failures": 0,
+      "local_report_sha256": "973c39cfdbcac1a8d07b516b038f2a8ae1ba8de9234f0a988ac1b164b3d38bdd",
+      "scope": "Run actual image-install worker/thread -> manager -> partition -> libsparse.\n\nUses production public backend header, lifecycle, filename routing, manager\ntarget lookup and slot override. Real sparse parser/writer and private file\ncontents execute. DataManager, progress/console, source mounts, target capacity,\npartition size/device resolution and UpdateSystemDetails are explicit doubles.\nNo ZIP, raw transfer, repacker, GUI widgets, boot-control service, physical block\ndevice, USB, target ARM64 or power-loss execution. A/B resolution is a fixture.\n"
+    },
+    {
+      "name": "zip-queue-profile-runtime",
+      "status": "PASS",
+      "cases": 102,
+      "failures": 0,
+      "local_report_sha256": "bb307d95e523c6b18c90e35dcba34c701ce7ab0d53d03b05d2d3e6c4a31827ee",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "zip-queue-module-state",
+      "status": "PASS",
+      "cases": 24,
+      "failures": 0,
+      "local_report_sha256": "3acdebd9e8e57e4508f63c511004ec50ab652de5cd61dc6b47d3dcaf7dc61c3c",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
     }
   ]
 }

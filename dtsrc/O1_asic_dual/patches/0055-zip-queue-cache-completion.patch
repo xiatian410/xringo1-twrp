@@ -1,0 +1,27 @@
+--- a/gui2/backend/twrp_install_backend.cpp
++++ b/gui2/backend/twrp_install_backend.cpp
+@@ -145,7 +145,11 @@
+     DataManager::SetValue(TW_ZIP_INDEX, (i + 1));
+ 
+     TWFunc::SetPerformanceMode(true);
+-    ret_val = flash_zip(zip_path, &wipe_cache);
++    // Each updater initializes its output flag. Retain requests from all
++    // attempted packages, including when a later package fails.
++    int package_wipe_cache = 0;
++    ret_val = flash_zip(zip_path, &package_wipe_cache);
++    wipe_cache |= package_wipe_cache;
+     TWFunc::SetPerformanceMode(false);
+     if (ret_val != 0) {
+       gui2_console::log_error("zip_err", zip_path);
+@@ -160,7 +164,10 @@
+ 
+   if (wipe_cache) {
+     gui2_console::info("zip_wipe_cache");
+-    PartitionManager.WipeByPath("/cache");
++    if (!PartitionManager.WipeByPath("/cache")) {
++      gui2_console::log_error("unable_to_wipe", "/cache");
++      ret_val = 1;
++    }
+   }
+ 
+   // Defer the size walk; installation itself has finished.

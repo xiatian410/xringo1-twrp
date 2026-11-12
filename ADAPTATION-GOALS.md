@@ -1,5 +1,7 @@
 # 小米 15S Pro（dijun）TWRP 多版本适配目标与离线验收规范
 
+2026-11-12 ZIP队列收尾修正：真实公开backend/后台线程→flash_zip→TWinstall_zip→ZIP/摘要/提取→fork/exec/wait接续23项通过；修复前同组5失败，固定时间戳后各包SHA256完全相同。补丁0055累计各包wipe_cache请求，后包成功/失败均不丢弃前包请求；缓存清理失败发布FAILED并保留已完成包数，不回滚已安装内容。缓存/挂载/解锁/进度/操作反馈为替身，镜像安装独立40项回归通过。installclean及make -j$(nproc)（30并发）构建`recovery-dijun-unified-zip-queue.img`，SHA256 `4425846118c018b9a87b40c9bb549c6f9aa13af2c724973104c53ea013324a7f`，753来源/六配置封装/85份Recovery补丁结果核对通过；同镜像profile9组/102阶段、module4组/24调用通过。交付审计logs/zip-queue-delivery.json，范围docs/INSTALL-CHAIN-VALIDATION.md。继承NV/OTG修正；OS4震动调用正常及设置正常的用户确认保留。完整GUI、ARM updater、AB payload、sideload及12组整体目标仍未完成；本轮源码/文档按约定同步GitHub，镜像不上传。
+
 2026-11-12 GitHub交付已完成：公开仓库https://github.com/xiatian410/xringo1-twrp已使用用户CLI账户创建并推送，公开清单精确包含563个文本/元数据文件，无编译产物或原厂blob内容。权限规范化修正后的远端CI已通过（检查提交87101fa）。今后文件修改按AGENTS.md执行同步并核对远端HEAD；公开CI只检查来源/语法/补丁完整性。
 
 2026-11-12 NV挂载与公开源码要求：用户明确NV不应在普通界面提供挂载操作，维护补丁0054隐藏NVData/NVCFG/protect及对应别名，并在backend拒绝挂载/卸载；保留原厂fstab和内部核心访问，不将其当作用户存储。26项后台策略检查通过，旧实现同组17失败；真实LVGL列表六场景通过，正常夹具20行减为16行。同镜像profile9组/102阶段、module4组/24阶段调用通过。installclean及make -j$(nproc)30并发构建`recovery-dijun-unified-nv-mount-policy.img`，SHA256 `0be46fb13091c4ebe663b5196ba22beadf5874990f7b811cb6d64c247195e5fe`，751来源/六配置封装/维护补丁核对通过；交付审计logs/nv-mount-policy-delivery.json。用户确认OS4震动调用正常，继续其他功能而非围绕震动排查。用户授权通过GitHub CLI账户xiatian410创建公开源码仓库`https://github.com/xiatian410/xringo1-twrp`；以后每个连贯文件修改批次完成后必须执行scripts/sync_github.py --push并核对远端HEAD。编译产物、原厂blob、私钥、原始实机日志不上传。流程见docs/GITHUB-PUBLICATION.md及AGENTS.md。完整12组目标仍进行中。
@@ -199,11 +201,11 @@ v1调试采集脚本已增加开启/恢复等级读回与采集退出码检查�
 | 项目 | 当前结论 | 下一工作 |
 | --- | --- | --- |
 | OS4 正式版触摸 P0 | 现场raw0干预后坐标恢复，215事件/7组按下抬起；新启动策略已构建，自动恢复未验证 | 核对普通报告请求时序、冷启动/GUI/唤醒稳定性，定位raw开启来源 |
-| 震动 | raw-off现场dmesg有43次真实SINE upload0/start/mailbox完成；6次VBST欠压后解除、5次mailbox首次写失败；物理输出仍未知 | 核对实际增益/校准/供电与原厂初始化，不再将模块注册或请求未提交作为主要假设；没有调用者/GUI动作关联 |
-| 当前产物 | recovery-dijun-unified-digest-atomic.img，SHA256 `7f4c42935ff34c01ce85cec049c94b60ebd072400255cf299aedaca10dacafff`；继承既有修正并新增备份摘要原子发布 | 当前镜像profile/模块/策略/init已重跑；自动触摸/设置/震动和完整功能仍未确认，详见docs/DIGEST-PUBLICATION.md |
-| 整体目标 | `in_progress`，12 组待完成；736份生产来源一致；224项索引仍有78项绑定漂移、20项无充分绑定，不称全量验收通过 | 继续维护 OS3/OS4 统一镜像和 OS2 可行性；触摸 P0、震动和其余功能逐项验收，不刷机 |
+| 震动 | 用户最新确认OS4震动调用正常；其余版本/物理效果不外推 | 不再作为当前排查主线，保留既有证据 |
+| 当前产物 | recovery-dijun-unified-zip-queue.img，SHA256 `4425846118c018b9a87b40c9bb549c6f9aa13af2c724973104c53ea013324a7f`；753份来源核对通过 | 23项ZIP后台队列及40项镜像路由已覆盖，GUI/ARM updater/AB payload/sideload仍待完成 |
+| 整体目标 | `in_progress`，12组整体功能仍未完成；当前定向交付通过，历史全量审计的来源漂移尚未收尾 | 按任务继续OS3/OS4统一镜像和OS2兼容，推进安装/侧载等其余功能；不要求实机测试 |
 
-本表汇总当前状态；下文保存历史证据，不表示早期“下一步”仍未开展。最新索引为[simulation-report.json](simulation-report.json)，本轮状态见[摘要发布交付](docs/DIGEST-PUBLICATION.md)，前一检查点的[证据刷新](docs/DELIVERY-EVIDENCE-STATUS.md)保留为历史。早期[haptics-service-request审计](logs/haptics-service-request-delivery-audit.log)仅对应当时检查点，不得继续将其“所有已索引证据一致”结论套用当前源码/镜像/文档，也不把事后重建来源清单升级为构建时证明。
+本表汇总当前状态；下文保存历史证据，不表示早期“下一步”仍未开展。最新索引为[simulation-report.json](simulation-report.json)，安装进度见[安装验收](docs/INSTALL-CHAIN-VALIDATION.md)，旧证据刷新及各历史“当前”不得外推到新镜像。当前定向交付不等于完整12组验收通过。
 
 构建输出内原始 c282f 镜像已恢复至交付目录并核验；此前“整个工作区已无镜像”的描述不准确，原始构建时来源档案仍未找回，本次清单是当前源码事后重建。OS4正式版触摸和震动均没有根因证据或功能验证，保持未解决。
 

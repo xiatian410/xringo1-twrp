@@ -214,6 +214,10 @@
         {
           "file": "0054-restrict-manual-nv-mounts.patch",
           "sha256": "05adb303f4b48a442771aad9a59c9e7cbf0988a480a892a47df73de6e1f83741"
+        },
+        {
+          "file": "0055-zip-queue-cache-completion.patch",
+          "sha256": "72b3cb9c4218adc56117a0e36921f3ea71ddc254cac5218bfec9665018c3381a"
         }
       ],
       "result_files": {
@@ -300,7 +304,8 @@
         "backup_manifest.hpp": "220b34f93914e59c06a20e91876afcfbadca7aca3f254ca1dbb7988d30f39f22",
         "gui2/backend/mount_backend.h": "4cc5e65d3baae879156e640672cc79b55f4abeeee2cd9b58b60af38361c68ebb",
         "sysfs_device_match.hpp": "66987f6f13e174bb22ce057d022006b1eb0fe2cfa3069046c51e30f72063e941",
-        "twrpinstall/twinstall.cpp": "b78718bfbea5937d800deb975c5d915007606e29bcb7d5b63ed6fe093dd73c3a"
+        "twrpinstall/twinstall.cpp": "b78718bfbea5937d800deb975c5d915007606e29bcb7d5b63ed6fe093dd73c3a",
+        "gui2/backend/twrp_install_backend.cpp": "b6c25c2086dde47d2d08a6ed3e62780d18cce758cb5c4d1f44a411124f092da6"
       }
     },
     "system/sepolicy": {
