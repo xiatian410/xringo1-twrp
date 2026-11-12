@@ -1,3 +1,5 @@
+> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](WORK-QUEUE.md)。
+
 # 原厂震动驱动函数离线模拟
 
 2026-11-11，六份固件完成 120 项主机模拟，报告为 [JSON](../logs/haptics-driver-emulation.json)、[日志](../logs/haptics-driver-emulation.log)。本次没有改动 recovery 生产源码或重新构建镜像；当前镜像及其来源见[震动适配记录](HAPTICS-ADAPTATION.md)。

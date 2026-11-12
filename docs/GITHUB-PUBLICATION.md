@@ -1,5 +1,7 @@
 # 公开仓库维护约定
 
+仓库入口由根README、构建指南、维护指南、功能说明、验证报告和docs/README.md分类索引组成。不再复制逐轮进度；过时内容可合并或删除，历史通过Git追溯。无关构建机运维及旧通用功能表已移出公开内容。每次导出与CI同时检查维护入口的本地链接，不把历史报告中未公开的logs/imgs链接伪称有效。
+
 用户于2026-11-12授权使用现有GitHub CLI账户创建公开仓库，并要求以后每次文件修改更新同步GitHub，编译文件不上传。
 
 仓库：`https://github.com/xiatian410/xringo1-twrp`。本地维护工作区为`/root/AAA/xringo1-twrp`，公开Git镜像为`/root/AAA/xringo1-twrp-public`。源码维护仍以工作区及其固定平台补丁为准。

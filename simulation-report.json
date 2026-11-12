@@ -3339,9 +3339,9 @@
   },
   "os4_haptics_user_confirmation": {
     "date": "2026-11-12",
-    "observation": "User states OS4 haptics invocation is normal.",
+    "observation": "User confirms OS4 vibration is fixed and normal.",
     "scope": "User confirmation of OS4 invocation; not all-profile/physical acceptance.",
-    "priority": "Not the current investigation focus"
+    "priority": "Resolved; excluded from routine checks. Reopen only for a new user fault or direct regression evidence."
   },
   "manual_nv_mount_policy": {
     "patch": "dtsrc/O1_asic_dual/patches/0054-restrict-manual-nv-mounts.patch",
@@ -3439,8 +3439,15 @@
       "0064-sideload-synchronous-rejection.patch"
     ],
     "full_group_acceptance": false,
-    "other_groups": "Outside current maintenance batch; historical outstanding items retained.",
+    "other_groups": "Historical six-group batch delivered; user has lifted the six-group restriction. Prioritize concrete defects without exhaustive repeat checks.",
     "refresh_incident_fixed": false,
     "audit": "logs/bounded-maintenance-delivery.json"
+  },
+  "maintenance_policy": {
+    "scope": "All adaptation groups; finite defect-driven work.",
+    "reuse": "Reuse unchanged source/input/scope evidence; stop necessary checks when they pass.",
+    "vibration": "Resolved by user confirmation; no routine rechecks.",
+    "current_queue": "docs/WORK-QUEUE.md",
+    "documentation": "README and topic index replace repeated progress diaries; historical reports retain their original scope."
   }
 }

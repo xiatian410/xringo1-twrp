@@ -1,3 +1,5 @@
+> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](WORK-QUEUE.md)。
+
 # FF能力查询中断处理
 
 震动能力查询中断修正：补丁0043让已有FF描述符的只读能力查询遇EINTR/EAGAIN时保留描述符与缓存能力，等待下一轮查询；避免关闭触发input core清理效果，不做无限重试。ENODEV/EBADF仍关闭并重新探测。28项路由/6项后台FF通过，旧代码同组EINTR/EAGAIN两项失败；14项日志ABI通过，8种时长effect字节不变。installclean后make -j$(nproc)30并发构建recovery-dijun-unified-haptics-probe.img，SHA256 `e64e796370ad7983d27692ce22827ab03f72999e68881a1b4fe507247ec48f73`，732来源/封装核对通过；同镜像回放另记。现场没有能力查询EINTR证据，不能认定持续无震动根因或物理修复；设置现场及完整12组继续进行中。

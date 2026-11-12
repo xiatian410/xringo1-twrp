@@ -25,7 +25,7 @@ SECRET = re.compile(rb'-----BEGIN (?:RSA |EC |OPENSSH |ENCRYPTED )?PRIVATE KEY--
 def digest(data):return hashlib.sha256(data).hexdigest()
 
 def candidates():
-    for name in ['AGENTS.md', 'README.md', '.gitignore', 'ADAPTATION-GOALS.md', 'MAINTENANCE.md',
+    for name in ['AGENTS.md', 'README.md', 'CONTRIBUTING.md', '.gitignore', 'ADAPTATION-GOALS.md', 'MAINTENANCE.md',
                  'FEATURE-USAGE.md', 'BUILD-AND-TEST.md', 'FIRMWARE-MAP.md', 'compatibility-matrix.md',
                  'simulation-report.md', 'simulation-report.json', 'firmware-inventory.json', 'NOTICE']:
         path=ROOT/name
@@ -75,6 +75,7 @@ def export():
         if dest.is_symlink():raise ValueError('Refuse exported symlink: '+name)
         dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data);dest.chmod(mode)
     subprocess.run(['python3',str(MIRROR/'scripts/check_public_tree.py')],cwd=MIRROR,check=True)
+    subprocess.run(['python3',str(MIRROR/'scripts/check_documentation.py')],cwd=MIRROR,check=True)
     print('Exported',len(files),'text source/configuration files;',len(private),'private asset metadata records.',flush=True)
     return sorted(files)
 

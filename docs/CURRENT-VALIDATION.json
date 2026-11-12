@@ -4,7 +4,7 @@
   "image_sha256": "218c5edd28c4e458464fc035a73b68808b016598c51e50877b2c0a1b055da3c3",
   "production_sources": 775,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
-  "os4_haptics": "User confirms invocation is normal.",
+  "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
     {
       "name": "nv-mount-policy",
@@ -473,5 +473,6 @@
     11,
     12
   ],
-  "current_batch_document": "BOUNDED-MAINTENANCE.md"
+  "current_batch_document": "BOUNDED-MAINTENANCE.md",
+  "current_batch_groups_scope": "Historical delivered batch, not a current restriction; user lifted six-group limit."
 }

@@ -1,3 +1,5 @@
+> 历史技术记录：OS4 震动现已由用户确认正常，已解决，不属于当前排查或例行检查。以下旧状态只对应当时的记录。当前进度见 [工作队列](WORK-QUEUE.md)。
+
 # 原厂震动注册、效果生命周期与 DTBO 离线复核
 
 2026-11-11，六份固件的原厂 ARM64 函数完成 **90 项模拟**，原始 DTBO 完成 **48 次合并检查**。报告分别为[生命周期 JSON](../logs/haptics-lifecycle-emulation.json)、[执行日志](../logs/haptics-lifecycle-emulation.log)、[DTBO JSON](../logs/haptics-devicetree-audit.json)、[合并日志](../logs/haptics-devicetree-audit.log)。六份模块的原始 `cs40l26_input_init` 均观测到相同 input 名称、PERIODIC/CUSTOM/SINE/GAIN 能力、96 个效果槽及四个非空回调地址。该契约已写入逐样本报告并由交付审计核验。本轮没有修改生产驱动源码、重编译 recovery 或访问手机；物理震动仍为 U。

@@ -1,6 +1,6 @@
 {
   ".github/workflows/source-check.yml": {
-    "sha256": "aab5e10a89f6e7d7b320540629bb41610355fca187bdeb9e14b952c8ef0d7032",
+    "sha256": "a76fa07b4984b061be7c9f53a516e1785ec4d19dc3766fdeeda4b5d0239a1a2e",
     "mode": "0o644"
   },
   ".gitignore": {
@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "13d6f7aac8c82ec4a6072ba6ee0f55f6f931c03fbfa555202074b5ff7ea5585d",
+    "sha256": "c38e8117585b752aec4c5bb76aa2535f97a99f2521eae8f7c301f8dbd8aa322f",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -16,19 +16,23 @@
     "mode": "0o644"
   },
   "BUILD-AND-TEST.md": {
-    "sha256": "00f0b9879824b3e9beae3f545802c3da0bf50e91131ba26f3260275fc78713b7",
+    "sha256": "ea90be260cae4eb430169cfda042f70c416a99069e66f6ca190861c6104c8f48",
+    "mode": "0o644"
+  },
+  "CONTRIBUTING.md": {
+    "sha256": "fccddd70d0fbd61c7ac53ad693a683e06b2b952e07cd861a772950f660eacabe",
     "mode": "0o644"
   },
   "FEATURE-USAGE.md": {
-    "sha256": "60feb3eecff2f21cafdfcf8d5978052737d87dd4357660dff00a099381d8b61f",
+    "sha256": "4044d428f2a4a0ac327381dc1ffd22e32bcf9fc4f9a4e565855f664d261cd7c3",
     "mode": "0o644"
   },
   "FIRMWARE-MAP.md": {
-    "sha256": "0ebe277f5e5f90c3e222d92eb7d3d092569c21425423a2f0e2798f958faa77d8",
+    "sha256": "7d9ad89ce2d8e43ac40e83f8c346580c3e0b0842a9010027ea402fc85be112a6",
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "36ff67c8ca8930a1593b8363b51e4ce4ee38fb66389255f3e77049460516674f",
+    "sha256": "48ee12e0857e6932fa9545829ca177ba7b293cb573a96ddef0addde768bfe7b3",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -40,11 +44,11 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "6208199180347b678b88c50c960f846848b1f49b972ee48e628197a25e547c90",
+    "sha256": "eff9a95a190fc481b87d85955773b3802ad6466951272cd6b71137531dd46990",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
-    "sha256": "88b66a9cb1f6d747bc2034ee52ad94bcc024f20b5c94b4449b59b70ca747e705",
+    "sha256": "ea2ff2b70416b2c899c99c1025c431ca2d3e847d62274f73c126ca884818baeb",
     "mode": "0o644"
   },
   "docs/AB-COMMAND-VALIDATION.md": {
@@ -67,16 +71,12 @@
     "sha256": "de6583741e0cf87d6d04dfc9cf380134dac520dd8f4cd2e3c031abfb51c83849",
     "mode": "0o644"
   },
-  "docs/BUILD-ENV-DISK-TUNING.md": {
-    "sha256": "99a0f9ff29a61726b852b54b0f9d0d67edbe8b961a51bbc6dc4a1aaa79b3898a",
-    "mode": "0o644"
-  },
   "docs/CLOCK-FAILURE-ADAPTATION.md": {
     "sha256": "2f8f3c2a5f33d1259c1e63119bc132ddc546f77d72a10944e990686191af7895",
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "fdd26dc0b74b81b0a97e3b99b842fd7f9d922275d2cf356caa0712d99b6a4d01",
+    "sha256": "707f8542411a9a058c47d5927fcbf0e53347d9f03a3b69cd8544e3fb22565c2c",
     "mode": "0o644"
   },
   "docs/DELIVERY-EVIDENCE-STATUS.md": {
@@ -96,67 +96,67 @@
     "mode": "0o644"
   },
   "docs/GITHUB-PUBLICATION.md": {
-    "sha256": "b5c0721a416cd5380a4b1417a1f369952b40aa00da6227a00748f6073f8fd9d8",
+    "sha256": "b68f4ef962689dc44bd8854ac98cd192c9069de6cc7321f1c212a72f3aad259b",
     "mode": "0o644"
   },
   "docs/HAPTICS-ADAPTATION.md": {
-    "sha256": "cd1df6848b3f523341d63b993b8491d9ad12337602e03c687ea64c9c7d82d85c",
+    "sha256": "0c8dd1df0ec1fcbf809ab2f649efb59427a2cbe7ce5e2489a83b88e22e65b6a3",
     "mode": "0o644"
   },
   "docs/HAPTICS-ASP-FF-STATE.md": {
-    "sha256": "88816839e0cb06a05d8821b278846b0265c8295767b47eb510c8524617b41191",
+    "sha256": "c0d26107aa4a63fd6746bad0d7ab2fcb962dbf1b51a094a894f83ee0a0aa0b52",
     "mode": "0o644"
   },
   "docs/HAPTICS-AUDIO-SOCKET-PEER.md": {
-    "sha256": "824ffa74cdee1d7df92d77053ffb4bb45eed5039b7d1fb2bb68bdfb0014d5d3b",
+    "sha256": "0042c12e0ae5b2ee91b147fb0f0f3fd1fa05157900f475bea783ed017e1ccbbd",
     "mode": "0o644"
   },
   "docs/HAPTICS-DRIVER-EMULATION.md": {
-    "sha256": "d00ab2ee8ef3a777593ddc2ccb5fdc23f960b5bda1d1936b2a34b2234791131a",
+    "sha256": "b068108e69745ae7b7f2f9987b776f6729fdb9c0245218f96787a81f2791d2fa",
     "mode": "0o644"
   },
   "docs/HAPTICS-FIRMWARE-EMULATION.md": {
-    "sha256": "a10de98a46ca33ec081683e236af8d777f76fa9dea791ec472ef8f62ec007235",
+    "sha256": "74c00265984cecddc4077663bfe68eb89f04fb7818f010eda36736d0f24d1ab2",
     "mode": "0o644"
   },
   "docs/HAPTICS-LIFECYCLE-EMULATION.md": {
-    "sha256": "2244b219f075027f870149a3161b7e2fd211d7b733d9d000d48a08654f7cedd8",
+    "sha256": "a3909a7060c84b210656591899e13223e695ccc377162c17ff48df72ce69f113",
     "mode": "0o644"
   },
   "docs/HAPTICS-OS4-HISTORY.md": {
-    "sha256": "1091c0ca1c8bdead779e1e941488139041887eb1418f908fcdf9948824a335c5",
+    "sha256": "4da7e8adc0954b717b99926294f0aa5fc087b48cd50a2cd7e7adc0625cf7b408",
     "mode": "0o644"
   },
   "docs/HAPTICS-PCM-FF-STATE.md": {
-    "sha256": "0b310b8e2f00b07922c0fe793b4082b06efc4d4b580e70e0563b3a2a93258b71",
+    "sha256": "7190e6f5d834fcd39c7814690ec653990534645168e2cb42d2ca5d3a29b108d5",
     "mode": "0o644"
   },
   "docs/HAPTICS-PCM-INITIALIZATION.md": {
-    "sha256": "c9d45b7f9f02f088be433f80bba053bdab03b6a86bb76d7feceb2e7158da2beb",
+    "sha256": "f7d090283b21e3854a7a0cde38d1a03e6d5d723ae7b224f20e4211220b92c424",
     "mode": "0o644"
   },
   "docs/HAPTICS-PLAYBACK-EMULATION.md": {
-    "sha256": "ae0d1a6c54752f5308de9593524b4e70112a4f39eb1ae9eb8ba0960a5cf756dd",
+    "sha256": "076d102c83c5bc60b41243e353d1d6fb5c178f1af7eb71448365d31e73ae5940",
     "mode": "0o644"
   },
   "docs/HAPTICS-PROBE-ADAPTATION.md": {
-    "sha256": "7065be0b4ce3298004500a88022b80fa6b91fc66da8871b7bca3f23d11143127",
+    "sha256": "8763dd03439e293b807b89e11c2bbb4ce10aca1a5cad410c9fe30c6a3ae05eec",
     "mode": "0o644"
   },
   "docs/HAPTICS-REQUEST-TRACE.md": {
-    "sha256": "a3b35afb2eb9aaf7c4039a53ec10aba592ccec61e76719e35bbc825605a4f87e",
+    "sha256": "8e9a46e19c56a64b5731d057105394dbf4f08b3999a3a6c8abe717d768d48ad4",
     "mode": "0o644"
   },
   "docs/HAPTICS-SERVICE-THREAD-XML.md": {
-    "sha256": "92d0d3eafa973a4514c76a479cc85cb8e276f405e3ac6b6ced0dd87ce261a3a1",
+    "sha256": "d5e4766266d5c5ee12cd0c319ae9d685112f35b8d544b4d87c7e6b1ed5a98c94",
     "mode": "0o644"
   },
   "docs/HAPTICS-STATE-COLLECTION.md": {
-    "sha256": "6bf5fb2ed924030e6eacea956f209d68fc47fd40d682c05e2025f53a5cf372ec",
+    "sha256": "f4e83cb7a187590ce4eff532f8b53b3503d2f4000e58da052256c967e66c82b3",
     "mode": "0o644"
   },
   "docs/HAPTICS-WORKER-ADAPTATION.md": {
-    "sha256": "534b312200690783006b1c7bdf19fcbdabd4f10419607e2320d58d38bce95e97",
+    "sha256": "fcaab1f2aea437714850b6a100994a30dd732ee223307b343a10baccc0788d53",
     "mode": "0o644"
   },
   "docs/INSTALL-CHAIN-VALIDATION.md": {
@@ -263,6 +263,10 @@
     "sha256": "e522dbd867a4659d3a9301905de13b994f7d908ddf97be350b882aad370672ed",
     "mode": "0o644"
   },
+  "docs/README.md": {
+    "sha256": "6cbc3736d371b8fc56acce8c14b9795b2c4ae277bf087e70e1895a4ec3fcd140",
+    "mode": "0o644"
+  },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
     "sha256": "a3522f2ba2ad7218a680b56c7b3777bb478db85968df3e70fc3c96696da66db4",
     "mode": "0o644"
@@ -312,15 +316,11 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "c184fd017c9402f5c5304810c0f374343678a6493b7b61e1fab4b0968e404916",
+    "sha256": "ca169b9a3d49f13fe36c766a111b604650a9d59b9414ddac444f0ae6bd5cb7d3",
     "mode": "0o644"
   },
   "docs/ZIP-ARM64-EXECUTION.md": {
     "sha256": "f38b06cddba920628a899cabcfd0c672ea59648565b177669311c7f4320f376b",
-    "mode": "0o644"
-  },
-  "docs/archive/device-tree-readme-before-profile-audit.md": {
-    "sha256": "13c196414cd77a3b98a57327a10c85afaf4a7fcf8c58fbb99413c73bca79783a",
     "mode": "0o644"
   },
   "docs/crypto-compatibility.json": {
@@ -464,7 +464,7 @@
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/README.md": {
-    "sha256": "104ddb6ef833f05c3befcf6ca34e7b9b3b9fe5eb64e47a5488c91ae01c2b4d91",
+    "sha256": "aef133d7d9f3e971d4004e9a14989d4afd4ce736f121692be967e808ddd04352",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/device.mk": {
@@ -1347,6 +1347,10 @@
     "sha256": "5f974f3e104a3bcdaf69c0b2e4cf0e2dfc2b3e4da30c9c98289000a76a5e3673",
     "mode": "0o644"
   },
+  "scripts/check_documentation.py": {
+    "sha256": "3fd4e894929bf8d5feed99718e89f6320a9bc58e93ed7257a88f562871020e0a",
+    "mode": "0o644"
+  },
   "scripts/check_public_tree.py": {
     "sha256": "066b0c224c11315d29f7118afe8bf899379fa4336426e1f2b08e8591bed452f5",
     "mode": "0o644"
@@ -1532,7 +1536,7 @@
     "mode": "0o644"
   },
   "scripts/sync_github.py": {
-    "sha256": "712a73ca9e2be629dcafedc23cb903c0ea2ee19ac3b189ccff50693c3abe0e87",
+    "sha256": "7fadaaaf7d0b762897c3fb7382d4a86d6c8452fc34bb82a273ae64afaf09617c",
     "mode": "0o644"
   },
   "scripts/touch_stack.py": {
@@ -1580,11 +1584,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "7847b1ba38150410dd91252244acb9595439e662c66cf41151e122a3f08559f3",
+    "sha256": "308ef91693dd524ef41ab20fa14cc5c9b0f54971800c55eecd4821ff7e4f2a73",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "6b9e121661fea8973d114758fb4e065bb770d135298bd13e487f2ceaf71f2882",
+    "sha256": "13a7f7f231d65c6a72e2ca94520187a77ddeee83562e47faba20225788fe6a8f",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
