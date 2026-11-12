@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-tool-console.img",
-  "image_sha256": "93a36568316d6b0acba348d63c524db8b424953acfbfae9154d09d9b89d79b90",
-  "image_status": "Clean-built patch0070: bounded tool progress console, first-frame gate and terminal status before log polling;785 sources/six profiles. Field refresh incident remains unresolved.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-format.img",
+  "image_sha256": "117d67ba178c1a66739571436287d7a01e975fea169fddb7e28706d55bada9fe",
+  "image_status": "Clean-built patch0071: filename-based MTP formats consistent across info/properties/list/filter/rename;786 sources/six profiles. Full adaptation remains in progress.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -3003,6 +3003,30 @@
       "evidence": "logs/tool-console-before.json",
       "evidence_sha256": "4471d1003121b2dcd05fa0661fc9b79b9aeb58d50181ffd557b087680406192c",
       "scope": "Bounded tool console + actual worker/progress LVGL, large history and reentry.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
+    },
+    {
+      "name": "mtp-format-objects",
+      "result": "pass",
+      "count": 114,
+      "evidence": "logs/mtp-format-objects.json",
+      "evidence_sha256": "92865648a32128c8083fe0002ebd46c3e34803f3a55f543b48fc3ea93e1439c0",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "mtp-format-before",
+      "result": "expected-failure",
+      "count": 4,
+      "evidence": "logs/mtp-format-before.json",
+      "evidence_sha256": "23f2b5356231862a9b721947904c700d4f2d2eb7b81dd0373baf32060636e5a2",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "mtp-format-transfers",
+      "result": "pass",
+      "count": 48,
+      "evidence": "logs/mtp-format-transfers.json",
+      "evidence_sha256": "f7a03a8de5d83f400c61cda43330ffdbc5dc4436c89522a78e137aabb064a2c7",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
     }
   ],
   "source_review_followups": [
@@ -3318,8 +3342,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/tool-console-delivery.json",
-    "scope": "Patch0070; clean build;785 sources;six profiles;six bounded-console LVGL scenarios. Same-image libgui2 verified; unchanged worker, update_engine and profile assets reused.",
+    "evidence": "logs/mtp-format-delivery.json",
+    "scope": "Patch0071; clean build;786 sources;six profiles;objects114/transfers48;four old format scenario failures. Unchanged GUI/updater/profile bytes reused.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -3910,5 +3934,12 @@
     "acquisition_failure_preserves_old_file": true,
     "atomic_file_replacement": false,
     "power_loss_verified": false
+  },
+  "mtp_object_formats": {
+    "document": "docs/MTP-OBJECTS-ADAPTATION.md",
+    "patch": "0071-mtp-object-format-consistency.patch",
+    "evidence": "logs/mtp-format-objects.json",
+    "content_validation": false,
+    "scope": "Filename extension classification only; no EXIF/media tags/codecs/USB/Windows or full MTP validation."
   }
 }

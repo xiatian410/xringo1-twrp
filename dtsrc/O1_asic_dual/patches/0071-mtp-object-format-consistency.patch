@@ -1,0 +1,101 @@
+diff --git a/mtp/twrp/TwrpMtpStorage.cpp b/mtp/twrp/TwrpMtpStorage.cpp
+--- a/mtp/twrp/TwrpMtpStorage.cpp
++++ b/mtp/twrp/TwrpMtpStorage.cpp
+@@ -75,6 +75,38 @@
+     });
+ }
+ 
++// Recovery has no MediaProvider. Match common advertised formats by the final
++// ASCII extension, as Android's MTP storage manager does via MediaFile. This
++// describes the filename, not validated codec contents or extracted media tags.
++MtpObjectFormat ObjectFormat(const std::string& name, bool directory) {
++    if (directory) return MTP_FORMAT_ASSOCIATION;
++    const auto dot = name.find_last_of('.');
++    if (dot == std::string::npos || dot == 0 || dot + 1 == name.size())
++        return MTP_FORMAT_UNDEFINED;
++    std::string extension = name.substr(dot + 1);
++    for (char& c : extension) {
++        if (c >= 'A' && c <= 'Z') c += 'a' - 'A';
++    }
++    static constexpr std::pair<const char*, MtpObjectFormat> formats[] = {
++        {"txt", MTP_FORMAT_TEXT}, {"html", MTP_FORMAT_HTML}, {"htm", MTP_FORMAT_HTML},
++        {"wav", MTP_FORMAT_WAV}, {"mp3", MTP_FORMAT_MP3},
++        {"mpeg", MTP_FORMAT_MPEG}, {"mpg", MTP_FORMAT_MPEG},
++        {"jpg", MTP_FORMAT_EXIF_JPEG}, {"jpeg", MTP_FORMAT_EXIF_JPEG},
++        {"bmp", MTP_FORMAT_BMP}, {"gif", MTP_FORMAT_GIF}, {"jfif", MTP_FORMAT_JFIF},
++        {"png", MTP_FORMAT_PNG}, {"tif", MTP_FORMAT_TIFF}, {"tiff", MTP_FORMAT_TIFF},
++        {"wma", MTP_FORMAT_WMA}, {"ogg", MTP_FORMAT_OGG}, {"aac", MTP_FORMAT_AAC},
++        {"mp4", MTP_FORMAT_MP4_CONTAINER}, {"mp2", MTP_FORMAT_MP2},
++        {"3gp", MTP_FORMAT_3GP_CONTAINER}, {"3gpp", MTP_FORMAT_3GP_CONTAINER},
++        {"wpl", MTP_FORMAT_WPL_PLAYLIST}, {"m3u", MTP_FORMAT_M3U_PLAYLIST},
++        {"pls", MTP_FORMAT_PLS_PLAYLIST}, {"xml", MTP_FORMAT_XML_DOCUMENT},
++        {"flac", MTP_FORMAT_FLAC},
++    };
++    for (const auto& [suffix, format] : formats) {
++        if (extension == suffix) return format;
++    }
++    return MTP_FORMAT_UNDEFINED;
++}
++
+ void AddProperties(MtpEntry* entry, const std::string& path, const MtpStorageID storageID) {
+     MTPD("addProperties: handle: %u, filename: '%s'\n", entry->handle, entry->name.c_str());
+     // The properties are a complete snapshot of the entry, so a re-read of the
+@@ -85,12 +117,11 @@
+         (static_cast<uint64_t>(storageID) << 32) + entry->handle;
+     entry->properties.clear();
+     struct stat st{};
+-    int mFormat = MTP_FORMAT_UNDEFINED; // file
++    MtpObjectFormat mFormat = ObjectFormat(entry->name, entry->is_dir);
+     off_t file_size = 0;
+ 
+     if (lstat(path.c_str(), &st) == 0) {
+         file_size = st.st_size;
+-        if (S_ISDIR(st.st_mode)) mFormat = MTP_FORMAT_ASSOCIATION; // folder
+     }
+ 
+ 
+@@ -134,6 +165,8 @@
+ 
+ void RenameEntry(MtpEntry* entry, const std::string& new_name) {
+     entry->name = new_name;
++    UpdateProperty(entry, MTP_PROPERTY_OBJECT_FORMAT, ObjectFormat(entry->name, entry->is_dir),
++                   "", MTP_TYPE_UINT16);
+     UpdateProperty(entry, MTP_PROPERTY_OBJECT_FILE_NAME, 0, entry->name, MTP_TYPE_STR);
+     UpdateProperty(entry, MTP_PROPERTY_NAME, 0, entry->name, MTP_TYPE_STR);
+     UpdateProperty(entry, MTP_PROPERTY_DISPLAY_NAME, 0, entry->name, MTP_TYPE_STR);
+@@ -535,7 +568,7 @@
+     auto collect = [&](auto&& self, MtpEntry* dir, bool recursive) -> void {
+         if (!dir->already_read && ReadDir(GetNodePath(dir), dir) != 0) return;
+         for (const auto& [handle, child] : dir->children) {
+-            const auto type = child->is_dir ? MTP_FORMAT_ASSOCIATION : MTP_FORMAT_UNDEFINED;
++            const auto type = ObjectFormat(child->name, child->is_dir);
+             if (format == 0 || format == type) list->push_back(handle);
+             if (recursive && child->is_dir) self(self, child.get(), true);
+         }
+@@ -902,7 +935,7 @@
+     if (format != 0) {
+         results.erase(std::remove_if(results.begin() + first_result, results.end(), [&](const PropEntry& prop) {
+             const auto* entry = FindNode(prop.handle);
+-            return !entry || format != static_cast<uint32_t>(entry->is_dir ? MTP_FORMAT_ASSOCIATION : MTP_FORMAT_UNDEFINED);
++            return !entry || format != static_cast<uint32_t>(ObjectFormat(entry->name, entry->is_dir));
+         }), results.end());
+     }
+     return 0;
+@@ -977,7 +1010,7 @@
+ 
+     info.mStorageID = getStorageID();
+     info.mParent = entry->parent;
+-    info.mFormat = entry->is_dir ? MTP_FORMAT_ASSOCIATION : MTP_FORMAT_UNDEFINED;
++    info.mFormat = ObjectFormat(entry->name, entry->is_dir);
+     const uint64_t size = st.st_size > 0 ? st.st_size : 0;
+     info.mCompressedSize = static_cast<uint32_t>(std::min<uint64_t>(size, 0xFFFFFFFF));
+     info.mDateModified = st.st_mtime;
+@@ -1006,7 +1039,7 @@
+     out_file_length = entry->is_dir ? 0 : st.st_size;
+     out_file_path.set(GetNodePath(entry).c_str());
+     MTPD("outFilePath: %s\n", static_cast<const char*>(out_file_path));
+-    out_format = entry->is_dir ? MTP_FORMAT_ASSOCIATION : MTP_FORMAT_UNDEFINED;
++    out_format = ObjectFormat(entry->name, entry->is_dir);
+     return 0;
+ }
+ 

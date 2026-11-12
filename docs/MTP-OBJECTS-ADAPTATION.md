@@ -52,3 +52,27 @@ python3 tests/mtp_objects_test.py --source backups/mtp-objects-pre-fix --report 
 后续 [USB configfs 与服务交接](USB-CONFIGFS-ADAPTATION.md)使用真实 init 调度和生产 helper 完成 42 项回放；实际 USB 控制器、Windows、完整旁加载和 MTP 调用者确认仍不由此证明。
 
 后续0039补齐上传日期解析：原42项加4项日期落盘共46项通过；直接MtpUtils80项与转移48项另记，见[MTP日期范围](MTP-DATETIME-ADAPTATION.md)。原子上传覆盖、输出日期、完整元数据及现场USB仍未完成。
+
+## 文件格式与筛选一致性（0071）
+
+数据库声明支持多种媒体格式，但此前所有普通文件在对象信息、属性和枚举中一律为 `UNDEFINED`，按 JPEG / PNG / MP3 等查询会得到空列表。0071 在 storage 内使用同一个扩展名映射，接通 `GetObjectInfo`、`GetObjectFilePath`、`ObjectFormat` 属性、对象列表与属性列表的格式过滤；重命名立即更新缓存格式属性。
+
+映射覆盖已声明支持的常见文本、图片、音频、视频和播放列表扩展名；最后一个扩展名使用 ASCII 大小写折叠。目录始终为 `ASSOCIATION`。无扩展名、仅 `.jpg` 这样的隐藏名、末尾点及未知扩展名保持 `UNDEFINED`。上传完成后按最终文件名识别，不采信主机任意传入的格式码。Android 原始 `MtpStorageManager.getFormat()` 也以 MediaFile 的文件名识别作为后备；Recovery 使用明确的小型表，不引入 MediaProvider。
+
+这是文件名分类，不验证内容、解码能力或真实 MIME，也没有提取 EXIF、尺寸、时长、艺术家和封面。扩展名不能证明媒体内容有效；创建日期和媒体属性全流程仍未完成。
+
+现有对象链路新增四个场景：33 种扩展名/边界与带扩展名目录、两次跨格式重命名、上传后识别、跨目录格式筛选及计数。逐项检查真实 MTP 包响应、数据库属性和路径格式；旧实现四场景均失败。当前对象链路 114 项与复制/移动 48 项通过，ASan/UBSan 启用。原 server/database/storage、真实私有文件、inotify 与线程执行；USB、属性和日志为替身，未执行 ARM64 MTP、真实 USB / Windows。
+
+```bash
+python3 tests/mtp_objects_test.py --report logs/mtp-format-objects.json
+python3 tests/mtp_transfers_test.py --report logs/mtp-format-transfers.json
+# 需本地旧源码；预期四项失败：
+python3 tests/mtp_objects_test.py --source backups/mtp-format-pre-fix \
+  --cases media-format-inventory media-format-rename media-format-upload media-format-filter \
+  --report logs/mtp-format-before.json
+python3 scripts/audit_mtp_format_delivery.py
+```
+
+首次测试把两字节 UINT16 响应误用四字节读取，报告保留在本地 `logs/mtp-format-first-attempt.json`；修正测试包读取后再执行，没有将夹具错误计为生产缺陷。
+
+清理构建候选 `recovery-dijun-unified-mtp-format.img`，SHA-256 `117d67ba178c1a66739571436287d7a01e975fea169fddb7e28706d55bada9fe`，786 项生产来源及六份 profile。与 tool-console 候选相比仅 MTP 库、构建属性与 ramdisk 摘要变化；GUI / updater / profile 字节不变，复用对应既有证据。

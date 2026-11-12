@@ -24,6 +24,7 @@ CASES += ['reset-'+kind for kind in ['idle','pending-new','pending-overwrite','d
 CASES += ['upload-time-'+kind+'-'+case for kind in ['overwrite','new'] for case in
           ['epoch-zero','epoch-offset','pre-epoch','missing','invalid','time-error','receive-error','sync-error']]
 CASES += ['directory-time-'+case for case in ['epoch-zero','offset','pre-epoch','missing','invalid','existing','time-error','close-error','unexpected-data','next-file','next-command','retry','open-error','existing-time-error','missing-unexpected-data','existing-close-error']]
+CASES += ['media-format-'+case for case in ['inventory','rename','upload','filter']]
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 
 def main():

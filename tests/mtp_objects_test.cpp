@@ -104,7 +104,49 @@ int main(int argc,char** argv){
  auto session=make_unique<Session>();auto& s=*session;
  auto* one=s.add(0x10001,"/one");s.add(0x20001,"/two");s.start();s.open();
  auto a=find(s.db,0x10001,"a.txt"),dir=find(s.db,0x10001,"dir");REQUIRE(a&&dir);
- if(test=="reset-disconnect"){
+ if(test.starts_with("media-format-")){
+  const vector<pair<string,uint16_t>> samples={
+   {"note.txt",MTP_FORMAT_TEXT},{"index.HTML",MTP_FORMAT_HTML},{"index.htm",MTP_FORMAT_HTML},
+   {"sound.WAV",MTP_FORMAT_WAV},{"song.mp3",MTP_FORMAT_MP3},{"movie.mpeg",MTP_FORMAT_MPEG},{"clip.mpg",MTP_FORMAT_MPEG},
+   {"photo.JPG",MTP_FORMAT_EXIF_JPEG},{"photo.jpeg",MTP_FORMAT_EXIF_JPEG},{"scan.bmp",MTP_FORMAT_BMP},
+   {"anim.gif",MTP_FORMAT_GIF},{"photo.jfif",MTP_FORMAT_JFIF},{"image.png",MTP_FORMAT_PNG},
+   {"scan.tif",MTP_FORMAT_TIFF},{"scan.tiff",MTP_FORMAT_TIFF},{"song.wma",MTP_FORMAT_WMA},
+   {"song.ogg",MTP_FORMAT_OGG},{"song.aac",MTP_FORMAT_AAC},{"clip.mp4",MTP_FORMAT_MP4_CONTAINER},
+   {"song.mp2",MTP_FORMAT_MP2},{"clip.3gp",MTP_FORMAT_3GP_CONTAINER},{"clip.3gpp",MTP_FORMAT_3GP_CONTAINER},
+   {"list.wpl",MTP_FORMAT_WPL_PLAYLIST},{"list.m3u",MTP_FORMAT_M3U_PLAYLIST},{"list.pls",MTP_FORMAT_PLS_PLAYLIST},
+   {"data.xml",MTP_FORMAT_XML_DOCUMENT},{"song.flac",MTP_FORMAT_FLAC},
+   {"noext",MTP_FORMAT_UNDEFINED},{".jpg",MTP_FORMAT_UNDEFINED},{"end.",MTP_FORMAT_UNDEFINED},
+   {"image.jpg.zip",MTP_FORMAT_UNDEFINED},{"fake.jpgx",MTP_FORMAT_UNDEFINED},{"firmware.img",MTP_FORMAT_UNDEFINED}};
+  auto check=[&](uint32_t h,const string& name,uint16_t expected){
+   MtpObjectInfo entry(h);REQUIRE(s.db.getObjectInfo(h,entry)==MTP_RESPONSE_OK&&entry.mFormat==expected);
+   TwrpMtpStorage::PropEntry prop;REQUIRE(one->GetObjectPropertyValue(h,MTP_PROPERTY_OBJECT_FORMAT,prop)==0&&prop.int_value==expected);
+   MtpStringBuffer path;int64_t len=0;MtpObjectFormat format=0;
+   REQUIRE(s.db.getObjectFilePath(h,path,len,format)==MTP_RESPONSE_OK&&format==expected);
+   auto r=s.call(MTP_OPERATION_GET_OBJECT_INFO,{h});REQUIRE(r.code==MTP_RESPONSE_OK&&(word(r.data,16)&0xffff)==expected);
+   r=s.call(MTP_OPERATION_GET_OBJECT_PROP_VALUE,{h,MTP_PROPERTY_OBJECT_FORMAT});REQUIRE(r.code==MTP_RESPONSE_OK&&(uint16_t(r.data.at(12))|(uint16_t(r.data.at(13))<<8))==expected);
+   r=s.call(MTP_OPERATION_GET_OBJECT_HANDLES,{0x10001,expected,0});REQUIRE(r.code==MTP_RESPONSE_OK);
+   bool found=false;for(size_t i=0;i<word(r.data,12);++i)found|=word(r.data,16+4*i)==h;REQUIRE(found);
+   r=s.call(MTP_OPERATION_GET_OBJECT_PROP_LIST,{h,expected,MTP_PROPERTY_OBJECT_FORMAT,0,0});
+   REQUIRE(r.code==MTP_RESPONSE_OK&&word(r.data,12)==1&&(uint16_t(r.data.at(24))|(uint16_t(r.data.at(25))<<8))==expected);
+   const auto other=expected==MTP_FORMAT_MP3?MTP_FORMAT_PNG:MTP_FORMAT_MP3;
+   r=s.call(MTP_OPERATION_GET_OBJECT_PROP_LIST,{h,static_cast<uint32_t>(other),MTP_PROPERTY_OBJECT_FORMAT,0,0});REQUIRE(r.code==MTP_RESPONSE_OK&&word(r.data,12)==0);
+   REQUIRE(name==entry.mName);
+  };
+  if(test=="media-format-inventory"){
+   for(const auto&[name,format]:samples){writefile("/one/"+name,"opaque bytes");REQUIRE(until([&]{return find(s.db,0x10001,name)!=0;}));check(find(s.db,0x10001,name),name,format);}
+   fs::create_directory("/one/folder.mp3");REQUIRE(until([&]{return find(s.db,0x10001,"folder.mp3")!=0;}));check(find(s.db,0x10001,"folder.mp3"),"folder.mp3",MTP_FORMAT_ASSOCIATION);
+  }else if(test=="media-format-rename"){
+   Bytes data;str(data,"photo.JPG");REQUIRE(s.call(MTP_OPERATION_SET_OBJECT_PROP_VALUE,{a,MTP_PROPERTY_OBJECT_FILE_NAME},&data).code==MTP_RESPONSE_OK);check(a,"photo.JPG",MTP_FORMAT_EXIF_JPEG);
+   data.clear();str(data,"opaque.bin");REQUIRE(s.call(MTP_OPERATION_SET_OBJECT_PROP_VALUE,{a,MTP_PROPERTY_OBJECT_FILE_NAME},&data).code==MTP_RESPONSE_OK);check(a,"opaque.bin",MTP_FORMAT_UNDEFINED);
+  }else if(test=="media-format-upload"){
+   auto data=info("new.PNG",3,MTP_FORMAT_UNDEFINED);auto r=s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data);REQUIRE(r.code==MTP_RESPONSE_OK);auto h=word(r.response,20);
+   Bytes payload{'a','b','c'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&payload).code==MTP_RESPONSE_OK);check(h,"new.PNG",MTP_FORMAT_PNG);
+  }else if(test=="media-format-filter"){
+   writefile("/one/dir/sub/nested.MP3","sound");REQUIRE(until([&]{return find(s.db,0x10001,"nested.MP3",0)!=0;}));
+   auto r=s.call(MTP_OPERATION_GET_OBJECT_HANDLES,{0xffffffff,MTP_FORMAT_MP3,0});REQUIRE(r.code==MTP_RESPONSE_OK&&word(r.data,12)==1);
+   r=s.call(MTP_OPERATION_GET_NUM_OBJECTS,{0xffffffff,MTP_FORMAT_MP3,0});REQUIRE(r.code==MTP_RESPONSE_OK&&word(r.response,12)==1);
+  }else REQUIRE(false);
+ }else if(test=="reset-disconnect"){
   {unique_lock l(peer.mutex);peer.reset_disconnect=true;peer.input.push_back({});peer.cv.notify_all();
    REQUIRE(peer.cv.wait_for(l,2s,[]{return peer.closes==1;}));
   }

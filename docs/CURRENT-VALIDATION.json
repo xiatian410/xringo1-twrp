@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-tool-console.img",
-  "image_sha256": "93a36568316d6b0acba348d63c524db8b424953acfbfae9154d09d9b89d79b90",
-  "production_sources": 785,
+  "image_name": "recovery-dijun-unified-mtp-format.img",
+  "image_sha256": "117d67ba178c1a66739571436287d7a01e975fea169fddb7e28706d55bada9fe",
+  "production_sources": 786,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -677,6 +677,30 @@
       "failures": 6,
       "local_report_sha256": "4471d1003121b2dcd05fa0661fc9b79b9aeb58d50181ffd557b087680406192c",
       "scope": "Bounded tool console + actual worker/progress LVGL, large history and reentry.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
+    },
+    {
+      "name": "mtp-format-objects",
+      "status": "PASS",
+      "cases": 114,
+      "failures": 0,
+      "local_report_sha256": "92865648a32128c8083fe0002ebd46c3e34803f3a55f543b48fc3ea93e1439c0",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "mtp-format-before",
+      "status": "FAIL",
+      "cases": 4,
+      "failures": 4,
+      "local_report_sha256": "23f2b5356231862a9b721947904c700d4f2d2eb7b81dd0373baf32060636e5a2",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "mtp-format-transfers",
+      "status": "PASS",
+      "cases": 48,
+      "failures": 0,
+      "local_report_sha256": "f7a03a8de5d83f400c61cda43330ffdbc5dc4436c89522a78e137aabb064a2c7",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
