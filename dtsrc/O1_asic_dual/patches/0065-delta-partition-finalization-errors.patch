@@ -1,0 +1,32 @@
+diff --git a/payload_consumer/delta_performer.cc b/payload_consumer/delta_performer.cc
+index bd4859b..4f6a087 100644
+--- a/payload_consumer/delta_performer.cc
++++ b/payload_consumer/delta_performer.cc
+@@ -487,6 +487,7 @@ bool DeltaPerformer::Write(const void* bytes, size_t count, ErrorCode* error) {
+         LOG(ERROR) << "Failed to close partition "
+                    << partitions_[current_partition_].partition_name() << " "
+                    << strerror(-err);
++        *error = ErrorCode::kDownloadWriteError;
+         return false;
+       }
+       // Skip until there are operations for current_partition_.
+@@ -519,10 +520,16 @@ bool DeltaPerformer::Write(const void* bytes, size_t count, ErrorCode* error) {
+     CheckpointUpdateProgress(false);
+   }
+ 
+-  if (partition_writer_) {
+-    TEST_AND_RETURN_FALSE(partition_writer_->FinishedInstallOps());
++  if (partition_writer_ && !partition_writer_->FinishedInstallOps()) {
++    *error = ErrorCode::kDownloadWriteError;
++    return false;
++  }
++  const auto close_error = CloseCurrentPartition();
++  if (close_error < 0) {
++    LOG(ERROR) << "Failed to close final partition: " << strerror(-close_error);
++    *error = ErrorCode::kDownloadWriteError;
++    return false;
+   }
+-  CloseCurrentPartition();
+ 
+   // In major version 2, we don't add unused operation to the payload.
+   // If we already extracted the signature we should skip this step.

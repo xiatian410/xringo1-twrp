@@ -387,10 +387,15 @@
         {
           "file": "0064-sideload-synchronous-rejection.patch",
           "sha256": "fb82439d1587e1156d2b6162c1e1fc5638d9bdca5dcd9ac0969e1897a06b28f3"
+        },
+        {
+          "file": "0065-delta-partition-finalization-errors.patch",
+          "sha256": "ee9ba1e389d89d0f416526fa753f25af5ebf4b85c9e5f07ab884a773001c3e82"
         }
       ],
       "result_files": {
-        "aosp/sideload_main.cc": "5a6621e7c30f02c6335d2b12de982d957ada5ad170d8b23719a9c18b08f0cfc0"
+        "aosp/sideload_main.cc": "5a6621e7c30f02c6335d2b12de982d957ada5ad170d8b23719a9c18b08f0cfc0",
+        "payload_consumer/delta_performer.cc": "27dae8d768409874f614a10e14253297fecf5219a1430ed7aee1949ee42d0a9f"
       }
     }
   }

@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-bounded-maintenance.img",
-  "image_sha256": "218c5edd28c4e458464fc035a73b68808b016598c51e50877b2c0a1b055da3c3",
-  "production_sources": 775,
+  "image_name": "recovery-dijun-unified-delta-finalization.img",
+  "image_sha256": "ff01192e210a94a915f2b8e6d421479dcb09cb76d131dad561805e94421d88a2",
+  "production_sources": 777,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -493,6 +493,15 @@
       "short_input_verifier_code": 15,
       "full_ota_install": false,
       "archive_historically_bound_to_image": false
+    },
+    {
+      "name": "ota-delta-finalization",
+      "status": "PASS",
+      "cases": 8,
+      "old_failures": 3,
+      "local_report_sha256": "102c076c7c852ee95bc23f70ac0726fe2f4c93b634586496fbf79fd0bd458680",
+      "scope": "Run intact ARM64 DeltaPerformer::Write with explicit writer failures.\n\nExisting test friend seeds the already-parsed manifest boundary. Real operation\nhashing, chunk buffering, dispatch, progress, completion and close paths execute.\nPartition writer I/O is an observing failure boundary; not payload authentication\nor full installation. No phone, mount, or physical block device.\n",
+      "full_payload_install": false
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",

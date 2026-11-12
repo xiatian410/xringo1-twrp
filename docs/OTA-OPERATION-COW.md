@@ -64,3 +64,17 @@
 `FileControl` 是明确的设备控制替身：创建普通 COW 文件，记录 Map / Unmap 各一次，其他未使用接口拒绝调用。真实快照读取器按 7013 字节分段读取，覆盖未对齐边界；未写区间从普通 source 文件读取。设备映射处把视图落盘，**没有运行 SnapshotManager、dm-user、snapuserd 或 UBLK**。实际校验器对普通文件设置块设备只读的 ioctl 返回 ENOTTY，警告原样保留，不屏蔽或替换返回值。
 
 此处关闭 verity 写入，没有构建 FEC / hash tree，不涉及 AVB。未覆盖断点恢复、COPY / XOR / diff、真实签名 payload 输入、槽位切换或合并。完整 OTA 仍未验收，下一步应定位完整输入和失败传播的具体缺口，不重复运行本组。archive 依旧只有测试时摘要绑定，不能冒称已由旧交付来源清单历史绑定。
+
+## DeltaPerformer 完成与关闭错误修正（0065）
+
+沿 `DeltaPerformer::Write` 向上检查，确认最后一个分区的 `FinishedInstallOps` 失败只返回 false、错误码仍为成功；最后一次 `CloseCurrentPartition` 返回值被忽略，甚至可能返回 true。分区切换的 Close 失败也未设置错误码。`DownloadAction::ReceivedBytes` 会把 false + 成功码转换为通用写入错误，所以前两种“缺错误码”不能直接称为整个安装误成功；最后关闭被忽略仍是独立缺陷。
+
+[0065 固定补丁](../dtsrc/O1_asic_dual/patches/0065-delta-partition-finalization-errors.patch) 让这些路径返回 false 并设置 `kDownloadWriteError`（14），在签名数据继续处理之前停止。不自动重试，不清除已经写入的数据。
+
+`python3 tests/ota_delta_finalization.py --image /path/to/recovery.img` 编译原始完整 `delta_performer.cc` 并执行 AArch64 `Write()`。使用既有测试 friend 设置“manifest 已解析”的输入边界；原始分块缓冲、操作哈希、分发、进度、完成与关闭执行，分区 writer 只观察调用并注入失败。
+
+八场景包括正常 / 分块输入、操作失败、强制哈希不匹配、最后完成失败、最后关闭失败、切换完成失败、切换关闭失败。修正前后三个缺陷准确复现，其余五项保持通过。旧源码留本地 `backups/delta-finalization-pre-fix/delta_performer.cc`；公开历史和补丁可重建旧实现，不上传编译产物。
+
+当前镜像为 `recovery-dijun-unified-delta-finalization.img`，SHA-256 `ff01192e210a94a915f2b8e6d421479dcb09cb76d131dad561805e94421d88a2`。先 installclean，再 `make -j$(nproc)` 清理构建，777 份生产来源、六份 profile 与编译更新器逐字节核对。相对前候选仅更新器、构建属性和文件摘要清单改变，未重跑字节未变的 GUI / runtime 功能。
+
+交付检查入口 `python3 scripts/audit_delta_finalization_delivery.py`；本地报告 `logs/delta-finalization-delivery.json`。这是生产修复及其必要回归，仍未执行完整签名 payload 输入、SnapshotManager、槽位切换或合并，不扩大为 OTA 全链验收。
