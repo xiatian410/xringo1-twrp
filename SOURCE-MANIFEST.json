@@ -1,0 +1,2250 @@
+{
+  ".github/workflows/source-check.yml": {
+    "sha256": "aab5e10a89f6e7d7b320540629bb41610355fca187bdeb9e14b952c8ef0d7032",
+    "mode": "0o644"
+  },
+  ".gitignore": {
+    "sha256": "6e3a4d2e1c9b7af0ab7d7dc43381d83a349f5da12a7cfc7cbbd94da8ccf80430",
+    "mode": "0o644"
+  },
+  "ADAPTATION-GOALS.md": {
+    "sha256": "26e1f333a4c159eceac823f44da9a4bf633aa6b7143221d0b9d946d299e2aae9",
+    "mode": "0o644"
+  },
+  "AGENTS.md": {
+    "sha256": "2cb4ae5d713c0df91264411d6b7215cc8ac28fb6ae3529bb64153c5619468f48",
+    "mode": "0o644"
+  },
+  "BUILD-AND-TEST.md": {
+    "sha256": "00f0b9879824b3e9beae3f545802c3da0bf50e91131ba26f3260275fc78713b7",
+    "mode": "0o644"
+  },
+  "FEATURE-USAGE.md": {
+    "sha256": "0193b4b75bccf7719b7c7752415a0db8ad05fe8b51bc35641ac71f73929e97df",
+    "mode": "0o644"
+  },
+  "FIRMWARE-MAP.md": {
+    "sha256": "0ebe277f5e5f90c3e222d92eb7d3d092569c21425423a2f0e2798f958faa77d8",
+    "mode": "0o644"
+  },
+  "MAINTENANCE.md": {
+    "sha256": "3dcb91c74c76fb26c1c2d13feaa6c471447d0c070ec5beea2cb5332a5d80004c",
+    "mode": "0o644"
+  },
+  "NOTICE": {
+    "sha256": "3a4150a102482d764d4d39e0e63289176b71759dc3f1841d1b1566a0f12a72bb",
+    "mode": "0o644"
+  },
+  "PRIVATE-ASSETS.json": {
+    "sha256": "1dae9eb2f2ef7c862efa65ed509d1c6623e0cfefaa46d97cc2604a1a5a157748",
+    "mode": "0o644"
+  },
+  "README.md": {
+    "sha256": "9683894ff100af7661703941b935d2e572516e516fc7e969f7f4e9a3c185a350",
+    "mode": "0o644"
+  },
+  "compatibility-matrix.md": {
+    "sha256": "88b66a9cb1f6d747bc2034ee52ad94bcc024f20b5c94b4449b59b70ca747e705",
+    "mode": "0o644"
+  },
+  "docs/ARCHIVE-PIPELINE-ADAPTATION.md": {
+    "sha256": "75033b40f89bb2f7e4f5a978b9d58bf31ac6763b1d1dc84562b851cba9c7b42a",
+    "mode": "0o644"
+  },
+  "docs/ARCHIVE-RESTORE-ADAPTATION.md": {
+    "sha256": "0dcc81ad2b9dcdc189cb5d1fbd0f0977dbc9862e5adbc23313d78e2b07e6aa05",
+    "mode": "0o644"
+  },
+  "docs/BACKUP-SESSION-ADAPTATION.md": {
+    "sha256": "a29c8589d6117ef15d330443716388330dcc672b6d9ea5a2a78753122b11ca5e",
+    "mode": "0o644"
+  },
+  "docs/CLOCK-FAILURE-ADAPTATION.md": {
+    "sha256": "2f8f3c2a5f33d1259c1e63119bc132ddc546f77d72a10944e990686191af7895",
+    "mode": "0o644"
+  },
+  "docs/CURRENT-VALIDATION.json": {
+    "sha256": "e84f5ad24ba8aaf56cb042a0a56dba083a013e41fb3b62ddf1846813d55ef5bd",
+    "mode": "0o644"
+  },
+  "docs/DELIVERY-EVIDENCE-STATUS.md": {
+    "sha256": "7b13598f97ca541a4dec63c35cb19331a5064ccc54a9e7ed0270645eb2cc9084",
+    "mode": "0o644"
+  },
+  "docs/DIGEST-PUBLICATION.md": {
+    "sha256": "42ceae7884b2990aceff14316202abf2901f8472a254c519e39237ea212054c1",
+    "mode": "0o644"
+  },
+  "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
+    "sha256": "3f947200483aa21bca8f3c81ab11deb9c198e76d9c1e63710fb2159765993b2d",
+    "mode": "0o644"
+  },
+  "docs/FSCK-RESULT-ADAPTATION.md": {
+    "sha256": "43c1ee979c4c5c02ecf15edb78fda143140294d28b0c612fdc5718eeab4d2841",
+    "mode": "0o644"
+  },
+  "docs/GITHUB-PUBLICATION.md": {
+    "sha256": "ac438d57b0945742b33c9519d044bfdae0b4356beeae74992af0db5887e5ea56",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-ADAPTATION.md": {
+    "sha256": "cd1df6848b3f523341d63b993b8491d9ad12337602e03c687ea64c9c7d82d85c",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-ASP-FF-STATE.md": {
+    "sha256": "88816839e0cb06a05d8821b278846b0265c8295767b47eb510c8524617b41191",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-AUDIO-SOCKET-PEER.md": {
+    "sha256": "824ffa74cdee1d7df92d77053ffb4bb45eed5039b7d1fb2bb68bdfb0014d5d3b",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-DRIVER-EMULATION.md": {
+    "sha256": "d00ab2ee8ef3a777593ddc2ccb5fdc23f960b5bda1d1936b2a34b2234791131a",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-FIRMWARE-EMULATION.md": {
+    "sha256": "a10de98a46ca33ec081683e236af8d777f76fa9dea791ec472ef8f62ec007235",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-LIFECYCLE-EMULATION.md": {
+    "sha256": "2244b219f075027f870149a3161b7e2fd211d7b733d9d000d48a08654f7cedd8",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-OS4-HISTORY.md": {
+    "sha256": "1091c0ca1c8bdead779e1e941488139041887eb1418f908fcdf9948824a335c5",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-PCM-FF-STATE.md": {
+    "sha256": "0b310b8e2f00b07922c0fe793b4082b06efc4d4b580e70e0563b3a2a93258b71",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-PCM-INITIALIZATION.md": {
+    "sha256": "c9d45b7f9f02f088be433f80bba053bdab03b6a86bb76d7feceb2e7158da2beb",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-PLAYBACK-EMULATION.md": {
+    "sha256": "ae0d1a6c54752f5308de9593524b4e70112a4f39eb1ae9eb8ba0960a5cf756dd",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-PROBE-ADAPTATION.md": {
+    "sha256": "7065be0b4ce3298004500a88022b80fa6b91fc66da8871b7bca3f23d11143127",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-REQUEST-TRACE.md": {
+    "sha256": "a3b35afb2eb9aaf7c4039a53ec10aba592ccec61e76719e35bbc825605a4f87e",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-SERVICE-THREAD-XML.md": {
+    "sha256": "92d0d3eafa973a4514c76a479cc85cb8e276f405e3ac6b6ced0dd87ce261a3a1",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-STATE-COLLECTION.md": {
+    "sha256": "6bf5fb2ed924030e6eacea956f209d68fc47fd40d682c05e2025f53a5cf372ec",
+    "mode": "0o644"
+  },
+  "docs/HAPTICS-WORKER-ADAPTATION.md": {
+    "sha256": "534b312200690783006b1c7bdf19fcbdabd4f10419607e2320d58d38bce95e97",
+    "mode": "0o644"
+  },
+  "docs/INSTALL-CHAIN-VALIDATION.md": {
+    "sha256": "9c8e92613e9bfcef98387701415b8796b8504df598d7f73f1a932a0313b156ba",
+    "mode": "0o644"
+  },
+  "docs/MODULE-STATE-ADAPTATION.md": {
+    "sha256": "244f531a98c04fe3e11daee756b7f85b012c9b4ece404f1a05512c0b43e21417",
+    "mode": "0o644"
+  },
+  "docs/MOUNT-LIST-EXPLANATION.md": {
+    "sha256": "31c0e6ffa892a11260310babe7616379988aef39ec74881810c12afbff6bd70d",
+    "mode": "0o644"
+  },
+  "docs/MOUNT-MODE-ADAPTATION.md": {
+    "sha256": "e731780968cbeb8fa09cc036d7581babc64db87c921846c30d3a438f519b6b5a",
+    "mode": "0o644"
+  },
+  "docs/MTP-ADAPTATION.md": {
+    "sha256": "507121b62d0797a738245814acba2b50ec13c8991c94661e0139eaf472f1cd23",
+    "mode": "0o644"
+  },
+  "docs/MTP-ATOMIC-UPLOAD.md": {
+    "sha256": "281d1390c31260c6cc79bcd854c8f0b715ae94ea82cd1cfac3ce7cdcda265c8e",
+    "mode": "0o644"
+  },
+  "docs/MTP-CALLER-ADAPTATION.md": {
+    "sha256": "10121967446277c6adf353f7de8553c8a64263729c78e0ba33c14bba66b9f6ba",
+    "mode": "0o644"
+  },
+  "docs/MTP-CONTROL-ADAPTATION.md": {
+    "sha256": "f92e1507b9d9304fa0ccee22c355fa0c9a1c7d75618fefdf39c8f48e407ad737",
+    "mode": "0o644"
+  },
+  "docs/MTP-DATETIME-ADAPTATION.md": {
+    "sha256": "0a3920e95e50698f94b80b220e09dfd47162c1b830bbf7b4c1536938d4cbfca5",
+    "mode": "0o644"
+  },
+  "docs/MTP-EVENTS-ADAPTATION.md": {
+    "sha256": "35d73aaf9f3350d9ad6e1e70a1369ce3375192f7f32509823ce15289e0c750b5",
+    "mode": "0o644"
+  },
+  "docs/MTP-OBJECTS-ADAPTATION.md": {
+    "sha256": "fe78a1ae8310ba55c7a0fdde54433d3c685d5a691fa835790084a6762dc6d106",
+    "mode": "0o644"
+  },
+  "docs/MTP-RESET-SESSION.md": {
+    "sha256": "708b4ac6bb15052f82686c064946d5f75e2e37dec7a8f99c3c54f8e36270aee8",
+    "mode": "0o644"
+  },
+  "docs/MTP-TRANSACTION-CANCEL.md": {
+    "sha256": "abab4465f89eaec7e9aa0fd708d75bb8af13698095631048f6dccb86e2d4192f",
+    "mode": "0o644"
+  },
+  "docs/MTP-TRANSFERS-ADAPTATION.md": {
+    "sha256": "41405d49449966796e8542527d935dca06fc8b15cf42e4c7a9566353cbb03ace",
+    "mode": "0o644"
+  },
+  "docs/MULTIUSER-ADAPTATION.md": {
+    "sha256": "674f993d2891cb0e2ddea817781f8ea2e60b6c7cde1db8d56bbff4ae18e4acdc",
+    "mode": "0o644"
+  },
+  "docs/OPERATION-FEEDBACK-ADAPTATION.md": {
+    "sha256": "6ef6f14cd243620cc0b8893e4e1c17bc85547f488f3d36b46fc298911b64a6de",
+    "mode": "0o644"
+  },
+  "docs/OS4-STABLE-ADAPTATION.md": {
+    "sha256": "dddd7b0da60b785373a1c0c98d49da3d6543e03b728d501376088cf110293794",
+    "mode": "0o644"
+  },
+  "docs/OS4-TOUCH-FAILURE.md": {
+    "sha256": "596a7a5dcb08f47822e91a5f02f5afa8f248eefa6734bcbc5afe789480d9d065",
+    "mode": "0o644"
+  },
+  "docs/PARTITION-OPERATION-PATHS.md": {
+    "sha256": "956c87b3ca493ad21aa4c6e7c48280ff87eebaefe21a0d9fcfc641f0a5c5ef71",
+    "mode": "0o644"
+  },
+  "docs/PROFILE-LINKER-ARM64.md": {
+    "sha256": "b90478f060187f732c6c4549e5f2dcddfdcc1951ac49ba52b9d2eb1c43b9567f",
+    "mode": "0o644"
+  },
+  "docs/PROFILE-SELECTION.md": {
+    "sha256": "5cb45811a3d342f890e532cf07d735cf9d7d547641dde7acdbd43164cdf85457",
+    "mode": "0o644"
+  },
+  "docs/RAW-IMAGE-ADAPTATION.md": {
+    "sha256": "e522dbd867a4659d3a9301905de13b994f7d908ddf97be350b882aad370672ed",
+    "mode": "0o644"
+  },
+  "docs/RESTORE-SESSION-ADAPTATION.md": {
+    "sha256": "1cad042ca46b858f45507d2e66b24ad605ad9bf0369600b811978c7eabbd2c3e",
+    "mode": "0o644"
+  },
+  "docs/SETTINGS-ADAPTATION.md": {
+    "sha256": "597b0001dd6a2c15ccfa533d21f89388254ee593a0158fe8a1ca45dc6e07ed43",
+    "mode": "0o644"
+  },
+  "docs/SPARSE-IMAGE-FLASH.md": {
+    "sha256": "6f1cf0a15690141ea8c51364b8f2ce163fa197bf659193f01d6494bf136cb258",
+    "mode": "0o644"
+  },
+  "docs/STATUS-ADAPTATION.md": {
+    "sha256": "5f91f7c087a17cf1034fc5dafabf43548b113bcfa97b89aa19c488acc10b3bb2",
+    "mode": "0o644"
+  },
+  "docs/STORAGE-SELECTION-ADAPTATION.md": {
+    "sha256": "22fda6dc3c3fa39d4da1ccbfe0205751da37d05bf6b5c88e53621c3e39ddf90a",
+    "mode": "0o644"
+  },
+  "docs/TIMEZONE-SAVE-ADAPTATION.md": {
+    "sha256": "34e4f84a440ba45c6ae03945175ba83db5eb9afa1c1c1a49a2affec28d628052",
+    "mode": "0o644"
+  },
+  "docs/UI-FEEDBACK-ADAPTATION.md": {
+    "sha256": "e16b5fa73fb6f152e80e4ed1ac746ecca62ee5c32a3cc7c3792828546fd3f0da",
+    "mode": "0o644"
+  },
+  "docs/USB-CONFIGFS-ADAPTATION.md": {
+    "sha256": "bbffc907f12ef25ae16a7a4adac578b7bfc6b194ab67c5a5243911c24e3e12b0",
+    "mode": "0o644"
+  },
+  "docs/VIDEO-FRAMES-VALIDATION.md": {
+    "sha256": "a9127c663febb22a2bb88082a56ba83eef0f61e58610db3991739419cdf38840",
+    "mode": "0o644"
+  },
+  "docs/archive/device-tree-readme-before-profile-audit.md": {
+    "sha256": "13c196414cd77a3b98a57327a10c85afaf4a7fcf8c58fbb99413c73bca79783a",
+    "mode": "0o644"
+  },
+  "docs/crypto-compatibility.json": {
+    "sha256": "295dcca3d17d1ae715808c02de7401e0002d4340531e1f1f784f61b8e09e7595",
+    "mode": "0o644"
+  },
+  "docs/crypto-compatibility.md": {
+    "sha256": "40dbfc36490a33a202aad92a2d39cf70c8832c5f1502ee9675b13c91057a4843",
+    "mode": "0o644"
+  },
+  "docs/firmware-compatibility.json": {
+    "sha256": "c7bcd13f2149d525521c381bc415ab9498085c406217cabdb4a3932ec0d8b26b",
+    "mode": "0o644"
+  },
+  "docs/firmware-compatibility.md": {
+    "sha256": "122f214c891f4143eded00b53d4ff5cf6cc64edda23c4e8a8d9e8c081c370cce",
+    "mode": "0o644"
+  },
+  "docs/system-resource-inventory.json": {
+    "sha256": "1c2f0573022217cf6d6dcf528a6af90fe79924e22bc9f1798367f67b73421511",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0001-generic-kms-plane-selection.patch": {
+    "sha256": "2465686a330441d7b8e7068f9400700f66798bbfa693e862b79a7e2501cfefe1",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0002-preserve-preexisting-persist-mount.patch": {
+    "sha256": "60d8ff92e1f5d8d6958793ce4c9f4cb41f2299dbbd8ef428bc5d9097548c6861",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0003-device-timezone-default.patch": {
+    "sha256": "ee9c8101ba844adf41c29811cd9769c6e84ad1cb69fd28407d67d4f81aa3a93d",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0004-rapid-power-screen-toggle.patch": {
+    "sha256": "53f2e3f6e65d54abe3641e1d80f1e97ce6c563f568afe705db0912c989582910",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0005-cirrus-sine-haptics.patch": {
+    "sha256": "0047987292dbaef0e94cb6ddcc58c083b47bc9c5624bf801426ff69a83549c9b",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0006-kernel-firmware-permission.patch": {
+    "sha256": "9c10c5b8cbd51e033057eb1e62a9612e8c09c2e38a367609f16304c781be4c1b",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0007-noncritical-keystore.patch": {
+    "sha256": "8fa4c2e4a4ca740cd1ccf892788140dd56387e6859908d5680e85249bd8df59a",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0008-mtp-ffs-readiness.patch": {
+    "sha256": "96290ee8213f6698ec4fc88a4a7160692d1a6b3ea6e71f6815ee8cc18ccdd439",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0009-exact-profile-runtime.patch": {
+    "sha256": "75b091cd62423c47c1e8c03d60e359355372e8252fc081b5651f87c539cd7f47",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0010-atomic-settings-persistence.patch": {
+    "sha256": "e51f253dcc3e790620cba569e23a6f05ae7e2fc5c3e23e570c722caf099a2205",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0011-multiuser-discovery-and-selection.patch": {
+    "sha256": "8f0593b24b3cf8f9caae01fdb1e46ecfdaf8419a5b7188ee0aed3ba1a9cf3885",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0012-status-reading-validation.patch": {
+    "sha256": "975071201bad091d856b1f8ee247f36352d90a3a30b78eeb19625a734c3942f0",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0013-haptics-runtime-routing.patch": {
+    "sha256": "174062d174361eceb63a402ae17d390c97a930954db170bb0ad4e7a8ce2a4fd6",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0014-ui-feedback-and-cancel.patch": {
+    "sha256": "f3854c3a5f3f99801b14b42777fcf18dd10244205307fce2631bdba71b5b2dd8",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0015-archive-restore-validation.patch": {
+    "sha256": "cbb5a93e1182f6632d73010f44d3342f5bcb2dbcc60bf0f70338a1c5ff7adf18",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0016-raw-image-transfer-validation.patch": {
+    "sha256": "8b3552d17f100a6e032ad2b449e7200b1ef396e13a6cad343237eb6ee1bff8f4",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0017-operation-completion-feedback.patch": {
+    "sha256": "bc044a782ea82f9768065dac65f28dd56ae3a96fbce0b3d40884f96f56a0cca9",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0018-restore-session-preflight.patch": {
+    "sha256": "a63d187ff9a7067d5a7629150db8717a8d31d9539edce82226b3a584f84abb00",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0019-backup-session-cancellation.patch": {
+    "sha256": "36a970bdb5c834f722f8f6ace2fa09b15b03b4e79f641124aa0c1022a9ea3c1e",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0020-archive-codec-pipelines.patch": {
+    "sha256": "3add11cb2569ce19006b7d5a8d1ac7095b599f47c853549a07181b47c79138b0",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0021-mtp-object-lifecycle.patch": {
+    "sha256": "4ffb1fdee078f397f48328f8de1486f89196599bd5ed244b22f2b013f6541aa8",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0022-mtp-transfer-reconciliation.patch": {
+    "sha256": "a4d48e004afd52fbf36000c798fa3c1d3d1aa194b2222509759d5699c5e29fe8",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0023-mtp-event-lifecycle.patch": {
+    "sha256": "facd931b5e6b17b951365265e6bd2d4b4d879b3dbed6aedee22bda11d9cb6ddf",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0024-usb-configfs-reconciliation.patch": {
+    "sha256": "83fcc98787dda2d2d07aa4dd32a8289836e654317b7087a51aa34eab85561fac",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/0025-mtp-control-framing.patch": {
+    "sha256": "cd2e3da4c798130d9267eec9c17500b653b3516773dba39482e14dbd84aa4471",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/Android.bp": {
+    "sha256": "5dd5d640edc5cedd65471dacbe63f470d40a4c26cafe62a5646d3a98bac375c9",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/Android.mk": {
+    "sha256": "49f7c9aaf7ad7a20b8303c9fc7360a93249a2c498b68ccff0917e90b44bbfda7",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/AndroidProducts.mk": {
+    "sha256": "6b1cee94ad41a8802ee49ceb882e622e80f0eb493bf40fc0c1c912cff30da853",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/BoardConfig.mk": {
+    "sha256": "256630593c19d66b2d6d958d3a8da096e0ff15c33088002f2a0f7190178f86df",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/CRYPTO-ADAPTATION.md": {
+    "sha256": "1e6a1a0ee6546f939abbce5ef63ee8d791a13aced459cdf548d591cbd5370be2",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/README.md": {
+    "sha256": "104ddb6ef833f05c3befcf6ca34e7b9b3b9fe5eb64e47a5488c91ae01c2b4d91",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/device.mk": {
+    "sha256": "d6a40cd40ffdbf4064f525ff502212cad41aaf6782d01cac8d5fa0a4bfcb4dfd",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/gen_loadrecovery.py": {
+    "sha256": "253660d03c885203d2a1f8c098cc97e09da36ed5e283972b9bdeb9bfec99f5d7",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/mitee-build-profile.json": {
+    "sha256": "c7257f88c656eed66c47fd113e5c0680a58c210c833290a3bb5a07fcf9e87f3c",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/mitee-inventory.json": {
+    "sha256": "02598d8f327638b3343b150a31e8fb61b116e94e72afa0194db926adc5b72d72",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0026-mtp-caller-lifecycle.patch": {
+    "sha256": "59f78551d1f256b6fac5481f3cd602645da3c7803ed4b9b98e7357072d699e9a",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0027-gui-haptics-worker.patch": {
+    "sha256": "4162f84f05a6f91ec7ac843b4c8965fde309fe526caa6c48ec79fe385a020550",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0028-nested-partition-paths.patch": {
+    "sha256": "7db166928c1cec18fd881dab6503b773d54a860f4cb80f8c87c194e251fe5d93",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0029-nested-partition-operations.patch": {
+    "sha256": "4cf91656727d1fb5b58a98d0c084719e2434511632612e1f04088993c60c8b3a",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0030-e2fsck-corrected-result.patch": {
+    "sha256": "d7c42e2e625786d46da9e38fa585e9c53caf29cf39bdbf229f2ad2e980b36bc5",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0031-clock-read-failure.patch": {
+    "sha256": "d0fe4d005d405e18718b8dbad1e841f169dfb5bba59c13d1ad89ceb9024cc6f9",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0032-recording-close-result.patch": {
+    "sha256": "045fbb57baa401a3c44978da3dfe18eeb5123392e7140590a8cdfb1266e88652",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0033-settings-row-hit-area.patch": {
+    "sha256": "7bc58e3fb4a1809218e8bfffcfa4738c4b0b2999781dec1498c6b3b245385559",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0034-mount-mode-transaction.patch": {
+    "sha256": "1c3ce388c6314407203c74f7e33bcba43b987a705af1a9d1d82b37af5317c6c7",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0035-storage-selection-failure.patch": {
+    "sha256": "8f876ac5fe7472211ad75274321ac3fa82c11ed689721e6759fc279d66acdeb9",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0036-cpu-thermal-identity.patch": {
+    "sha256": "b8347c72e44e6939d8c2e4c64285e040627e5204b031f7d05da204ebe1be2922",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0037-status-temperature-ui.patch": {
+    "sha256": "16b33b63179fc10b260d17ea3e6083e8d2f1524ee55193d045189cd136e83b0b",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0038-settings-failed-apply-retry.patch": {
+    "sha256": "e23599dd7680af0ed6decbc04f9ffa2db06c7f0278d064f02adb8e8dd8c5bf51",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0039-mtp-datetime-offset-validation.patch": {
+    "sha256": "d4b728721ca5f9ebfb8d313716c293f8c5c9016bcadd6f66f8e201ac34a14e6e",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0040-haptics-request-trace.patch": {
+    "sha256": "9944a6b5ae8fbd4dcf01437d71b1d81627e4b568c759653b1a6704e74e57a2fe",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0041-mtp-atomic-upload.patch": {
+    "sha256": "d6c05b053efa852ff5c9f08d97038df0adf23542441b597c6eb95ca739e58fcf",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0042-timezone-failed-save-rollback.patch": {
+    "sha256": "0b263a3266015ee7b9fe0d1f0ac4d9a6533833119beace234d36db9ea7ef86b6",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0043-haptics-preserve-fd-on-probe-interrupt.patch": {
+    "sha256": "d5a36cf3807fa4c44d78a8cde67ed32677bac59c2b3a8d7e3a3cb0f1c2fbeb21",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0044-mtp-transaction-cancel.patch": {
+    "sha256": "0a8272c8fe0ef8a34154c7af1e348adf2264322faf1a837fff082d93ac9ee12e",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0045-mtp-reset-session.patch": {
+    "sha256": "7f0c7c2c4e5f3cdc2b28f9917f1b8561ad94a5ab9f647f25e066aab3413458db",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0046-atomic-backup-digests.patch": {
+    "sha256": "54c394d5262c75e9aa253c68a7dbd6bd52a2c06d9ad5a579a8fdcc8ea5968917",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0047-backup-completion-manifest.patch": {
+    "sha256": "8f9a7e1a75711556619c39e88ecafc4ebef833c882f43a6425a1e739f1beb761",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0048-otg-controller-discovery.patch": {
+    "sha256": "e640ee0951d0e8e24e4fb19ae0686ac930383c0b1d270928c9ec46022f74f83f",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0049-mtp-upload-timestamp.patch": {
+    "sha256": "8ec283a9ceea3a8122ab2ca61c62e1c1829fffd234e1de30f3657c3a8d31b5c1",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0050-decrypt-failure-ce-cleanup.patch": {
+    "sha256": "fc8279ff1d3671380616470d6a8747cbf8f5624c84e560773cef737fce11c758",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0051-sparse-image-capacity-and-commit.patch": {
+    "sha256": "f3af6ee50b343ac73c4cb9296cd8c8841c99cf60f3f6c7bda9c071845fa212dd",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0052-updater-protocol-validation.patch": {
+    "sha256": "4ac299862c160851837d87689b8a8e6cef96c6267c19ccb983c76d90a7270d29",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0053-zip-updater-abi-selection.patch": {
+    "sha256": "cff7772e66b3dd06295b30e0abb2fe0b602f7ff4e496de5322f26f45a657bd96",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/0054-restrict-manual-nv-mounts.patch": {
+    "sha256": "05adb303f4b48a442771aad9a59c9e7cbf0988a480a892a47df73de6e1f83741",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/patches/series.json": {
+    "sha256": "c31686be7d00ba80979347cecb6637b1946f14cccce14305252c48ba68f602d3",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
+    "sha256": "c91c0d944386dd47355eab1558b723f5da7f9637e3d39377cb305917f01fde25",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/odm-firmware-inventory.json": {
+    "sha256": "d7464ea917df428d96577ec25f29118924cbac0f96ae96f2c55b3a33ab5f787f",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/common/root/system/etc/init/android.hardware.boot-service.xring.recovery.rc": {
+    "sha256": "239aec2f6288443894b066448bcbdaedefa95fc1300b98a95ec26787bcd9a22b",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/common/root/system/etc/init/dijun-mitee.rc": {
+    "sha256": "e8aa6ea24fa35c5b12a24a9274fb1d9e71d609eda7bf45d3ebab678c9cdf26d9",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/common/root/system/etc/vintf/manifest/android.hardware.gatekeeper-service.mitee.xml": {
+    "sha256": "12ed2cac5fcacacafdcd5ca680a540b2fa43c78e2b98380c231a041c421e7491",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/common/root/system/etc/vintf/manifest/android.hardware.security.keymint-service.mitee.xml": {
+    "sha256": "ccfa191314c67997ba33e6b8e779e7cb75a29e452cc4361884ee6ac1f42911a6",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/common/root/system/etc/vintf/manifest/android.hardware.security.secureclock-service.mitee.xml": {
+    "sha256": "3a88fb9e7f58e2161be3b9a29622560e01e0f4f691a7e2539cc8288e82863daa",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/common/root/system/etc/vintf/manifest/android.hardware.security.sharedsecret-service.mitee.xml": {
+    "sha256": "1cb0dec8b5fd48a4d13534122574eaa2cc68560b7f9d0ee3dc370979c45a6657",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/inventory.json": {
+    "sha256": "361a7dcea9283ec35b246497748ef3c8b51bb603ba4e0da1ae81acd8072db5e9",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-final/crypto.prop": {
+    "sha256": "aae38305764115fa914b5d76cb3a0c21bcedab6b569a2cf9291e871385fdf649",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-final/module-sources.json": {
+    "sha256": "2460b3d80c66812486cb93bcee9719a1e306abec56a851860cc6853ecbcadfdf",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-final/modules.plan": {
+    "sha256": "d92334cec4d736bc067018b69b44fd57d1250b194999a6ef3f2886b6bab0d27f",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-final/profile.json": {
+    "sha256": "4bed100094a4ee89c5e42fc5cd943c21a0fa38b457215583fd034ca010665a9f",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-final/runtime-files.list": {
+    "sha256": "e3fbae1496e59077cd57269ed1f23f553eb41dfea5c54b41d2f630ac81d74b5a",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-final/selection-sources.json": {
+    "sha256": "5d63db924652ad57e9d77b7879944daeadc757123101a16bd42dd2f1b7f4b56a",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-final/selection.conf": {
+    "sha256": "ec675bb621602da75d2065769616b5ad7bc7a2b57d889ee087a8cecea5d94aaf",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-initial/crypto.prop": {
+    "sha256": "bf825549e6ffd1ca7283a9ddd370e7607107bf71040af5b94de5c7bb897fc247",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-initial/module-sources.json": {
+    "sha256": "a654e0c22efba5711ee3b7770674e5768551eb8899741edee0bb2afcbde4205c",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-initial/modules.plan": {
+    "sha256": "48bd43540748113a14f275153cc4b55ae94e7ec527af84ed71d87ddf65be0fb6",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-initial/profile.json": {
+    "sha256": "77909f061f5a72de44bfbdbb81a7f1f5affd9e65d70269abf8a9af66bbff8bf5",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-initial/runtime-files.list": {
+    "sha256": "543cdb4a541fee3c842607a5651e3933fd04e86e4acc8586f2a76ada3c44904e",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-initial/selection-sources.json": {
+    "sha256": "a0fb4fc22f7a334efbd04a5a825c6383d1cad4e1605c8905649abaac78ff56ea",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-initial/selection.conf": {
+    "sha256": "7f4b04cb0f73848db4cda12d5b4099b5e297e5b694cc13a26dacdc6bca9476fe",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-final/crypto.prop": {
+    "sha256": "b719ff45d5e85ac5dd9c63631fa8304d2b5763bbb6528870d0cc113b5ebfc0f9",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-final/module-sources.json": {
+    "sha256": "bdf8c46de759e87844a5309461c687ca50b7a95527dc8d13a467b1fc38485666",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-final/modules.plan": {
+    "sha256": "b3b19c5193864010f7b48daedd6b16813f5f4c1c78db63ea28faddfdce95ac4a",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-final/profile.json": {
+    "sha256": "d3cf599bfe87116498ae22694b4f1fb07139ad0bddb5c65662b2496f9d6f43b8",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-final/runtime-files.list": {
+    "sha256": "afa0c6f5bab665bf5420e2a2020df1d9dbfec53c4956ae7c41cf831808da3884",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-final/selection-sources.json": {
+    "sha256": "986ae93847b9582d94770664969a0c73fff69841cba1906edfc6c7c19cf06b67",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-final/selection.conf": {
+    "sha256": "40c6956c16df44ffb09b977fdcfc06a07ef162e645e22f9a66e3c4041fa6f456",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-initial/crypto.prop": {
+    "sha256": "9d7acca1655d13a6c19f6ff8e1c39441d82830bf5b4cbaf07e4334f6c0d6cb09",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-initial/module-sources.json": {
+    "sha256": "9253a7b56ae0c05ff6be7883ecf743ddc70be19f7523401855f8362d79275599",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-initial/modules.plan": {
+    "sha256": "d010965625f5127a2763cf54b93c281f9e78d1d6a4bbbcd87a51ca2ccec94084",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-initial/profile.json": {
+    "sha256": "353ca77d3d8776e52f99b883f35026b93db60cfb40b36d3b534f37f667c03a90",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-initial/runtime-files.list": {
+    "sha256": "373b17f7117a9f4ed5fbe9916ea24ad09626a2b433f817eadd9928ef1bd61f42",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-initial/selection-sources.json": {
+    "sha256": "cda71ffe65fdc25dfee10637719409f618c1b00003ee4129805271c7b066aff3",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-initial/selection.conf": {
+    "sha256": "23eda3869bc12ccd6a8115339eba615c1fb1e5b80259e4a078b536def7cf0237",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-current/crypto.prop": {
+    "sha256": "5400d2e239067eec5ad22d0b1291ee3b108db9678bf017ade67c78d3a570a54f",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-current/module-sources.json": {
+    "sha256": "cd95ecefe61ce369a1a44f89ce4a4123f34c5e8a7242c88bc0ddaff0f24f3537",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-current/modules.plan": {
+    "sha256": "f0530376823d8b9e55365da5a2c12a9239802c3e8567d5f245eaaafca705b325",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-current/profile.json": {
+    "sha256": "bd6447351139a80c44379c1bd6d43de889aa775497223490e90ea63b8efffc08",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-current/runtime-files.list": {
+    "sha256": "486d220c7a2dc662c61612d20f3d96015d77cb23136198c665977e543c631f71",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-current/selection-sources.json": {
+    "sha256": "debba7a243b34a5e287c454af5acc2da62de8ae0302fb7cd6e28e5c2b93c1d97",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-current/selection.conf": {
+    "sha256": "824369c34a1a03e3060e888e20a09e37e0a37e7bdc0d8e852d1ac273677225b9",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-stable/crypto.prop": {
+    "sha256": "0c06093827623466d263ec3642a0cdb319b10a29a818a0ad457211b1a3fb4a8d",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-stable/module-sources.json": {
+    "sha256": "5771e8ebebd34b844aae44c7c48b0334a2c162da106420f6b2d7f1f2fb97d7bb",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-stable/modules.plan": {
+    "sha256": "eda667491a70af7ada2521a97c9d395b7826e4c945824835d467de32dc30243d",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-stable/profile.json": {
+    "sha256": "e8c8337188e867640df3836e5479d7a9a05a28285cf3555b5edef6713faffc9b",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-stable/runtime-files.list": {
+    "sha256": "b99dcb4b6062e8ebbcfb66f35dc3f2e32967ddce404d07d0220bbee92a4bb7f2",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-stable/selection-sources.json": {
+    "sha256": "e2e1df69c6211267a03a58a8b22e53957954423697efebeb1e7b5e949fa9f50f",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-stable/selection.conf": {
+    "sha256": "afc5433468a56d84a78ecb4fc74bad995eaca066291652c83a847ac26192e800",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/runtime/dijun-prepare-mitee.sh": {
+    "sha256": "b8cc562f6ce66fb139aee9014804b3540775ec13af1d20b944fb2c2a97ef8d01",
+    "mode": "0o755"
+  },
+  "dtsrc/O1_asic_dual/profiles/runtime/dijun-runtime.sh": {
+    "sha256": "09a2bbd828f8d58061c3859ff862eb2cb95a702bf20f7b373ccc26ee712e5209",
+    "mode": "0o755"
+  },
+  "dtsrc/O1_asic_dual/profiles/runtime/dijun-select-profile.sh": {
+    "sha256": "ced4dc8c78fc7994b89ad4c2ce99fe06ba261dfbf54597bb8cfca7af3dd0d8da",
+    "mode": "0o755"
+  },
+  "dtsrc/O1_asic_dual/profiles/runtime/dijun-touch-reports.sh": {
+    "sha256": "34184d59730f18b7cecdc7132d1df9d0a37fa006efbf32adf6b763cabb689f24",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/runtime/usb_config.cpp": {
+    "sha256": "3f78814ddd91c816f4477f2b4f9e88802ad0cdefa369f255b2555d34a49ff8cb",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/runtime/usb_config.hpp": {
+    "sha256": "6a3ff67a0e594d4a75fe8af89d7414ea5d8705d7e3f212c75b3f627e330abcfc",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/runtime/wait_services.cpp": {
+    "sha256": "20e6328c4d68df8f3b7926521c1e4a08c1e3059866ec9e888fd955812b5c0938",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/recovery.fstab": {
+    "sha256": "2ed9eb514ebadeff84a9eec0026a70f1bd353253940b014c325e9ed77f9c8254",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/android.hardware.boot-service.xring.recovery.rc": {
+    "sha256": "a7502904766c2f4533b73b2e20a0fd099a0f7ae4cd212e525c7e1734e01d5ff3",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/android.hardware.fastboot-service.example_recovery.rc": {
+    "sha256": "a8a6a6d89d14c941c13aae75d5844004d0952e09de7b9934c8ec4dd4a9141bf1",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/android.hardware.health-service.example_recovery.rc": {
+    "sha256": "e5d645a4ca1167ba4c2ce1885febc93957e55de67fe8a1adfe95c9e90b44e1b1",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/init.recovery.O1_asic.rc": {
+    "sha256": "1d58f65959050fec243b0d9c365a6cfa174d0767f12f7529143dda2149fa1b5e",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/init.recovery.hardware.rc": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/init.recovery.usb.rc": {
+    "sha256": "60ae26208d16111cdf61a02186fec43a04f84ecdfcf10ebe2e6588f7a6f21011",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/logd.rc": {
+    "sha256": "26378c0ea5f8d424616760c16522d6c3f300daaca75929720dd6b8383cab6e56",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/miui.factoryreset.rc": {
+    "sha256": "4dce42c443b3426c3d3e652c730d6dde6b07af5aa5bfb568a88ed44ed4c9dd50",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/recovery-persist.rc": {
+    "sha256": "0c5e3bee4329907791a861067722bbea0d56ad6639cd796fba2526c26bc975fa",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/recovery-refresh.rc": {
+    "sha256": "0f6e0fb90d9d9d964fcc29b299f60c292b56882b06676136758e015e849839fa",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/servicemanager.recovery.rc": {
+    "sha256": "e957d6102b03909de2f9b91073911cedb16f28ed9df546038453abbe8de7d08b",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/system/etc/init/keystore2.rc": {
+    "sha256": "aa28727dfc718c059b926215f1fcfa9917132265dc01fbd329dcb928a783768e",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/system/etc/task_profiles.json": {
+    "sha256": "0b3472e90991812c8a3c99548ef0d863d5010c0d7486de4365f47e27a09d51cd",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/recovery/root/system/etc/vintf/manifest/recovery-device.xml": {
+    "sha256": "5bdc68f92de38d7465d5c09a54bff849bc1195b8a3be8826f01e9aa142ba3893",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/sepolicy/kernel.te": {
+    "sha256": "df9effff1efa4feba8465e51fbf021fa1c06f8d7f0d5a55cc4ba52a15063bcdf",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/sepolicy/system_ext/dijun_usb.te": {
+    "sha256": "404d4f3201dd02fbb1397a45e45d562b32c1c77ad3eb6871be848a7f29ceaea4",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/sepolicy/system_ext/property_contexts": {
+    "sha256": "332ca87a422a0874d6ce1c55d5819a39da319d453ce8f6734a343ab2eb688180",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/system.prop": {
+    "sha256": "b146ec60e7755f7bf4a47c668f3df1ac40dba96f7ed4002c51a96085c72fb6ef",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/system/etc/task_profiles.json": {
+    "sha256": "0b3472e90991812c8a3c99548ef0d863d5010c0d7486de4365f47e27a09d51cd",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/twrp_dijun.mk": {
+    "sha256": "35af5218b6b0606bd927e5947cfba476aebfb76562af66d44a06480db451b9c1",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/twrp_jinghu.mk": {
+    "sha256": "3f93388c20f796d09191cc5fa0e8dd34f033c9813696724f2e554795b8b23041",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/twrp_violin.mk": {
+    "sha256": "656fdf5ccc5ab476772fb87cb34a1e74488e6f09581025857c8f0795439c2309",
+    "mode": "0o666"
+  },
+  "dtsrc/O1_asic_dual/vendorsetup.sh": {
+    "sha256": "e390ddd8824fa641b457f926a282d567247e62b6a725b54efa7a3693378cc1b2",
+    "mode": "0o666"
+  },
+  "firmware-inventory.json": {
+    "sha256": "ef1b36476f3697389aadc505e7ef071ca51a4b738728fea54df91283aeb006c9",
+    "mode": "0o644"
+  },
+  "manifests/pinned.xml": {
+    "sha256": "414c76e9b5b8301892a6f27b74529726bdf14c9341d4168c738c1ea47571181c",
+    "mode": "0o644"
+  },
+  "scripts/abi_check.py": {
+    "sha256": "936cdfa498c9fd3e235a4111eaf42f760d398da7ed5fac3c1f614789fdbf0b2e",
+    "mode": "0o644"
+  },
+  "scripts/acquire_firmware.py": {
+    "sha256": "73709570d8d342e54479d14e45cafeb6410618d375acdea8e2ace94ebf851e3d",
+    "mode": "0o644"
+  },
+  "scripts/acquire_os4_stable.py": {
+    "sha256": "acb0e60ab1753bbd69a36547e64a3dff0efd0891883ef06437f40ad10ca5acde",
+    "mode": "0o644"
+  },
+  "scripts/analyze_touch_window.py": {
+    "sha256": "33dfc7a181a2a715b01b36432cb35841e421c38e4bcee6749a97928b43902012",
+    "mode": "0o644"
+  },
+  "scripts/audit_ce_lifecycle_delivery.py": {
+    "sha256": "ccd1415de3972e7a1a6c444ba09da02f9062c40225d429eac960f8b2e3a2849e",
+    "mode": "0o644"
+  },
+  "scripts/audit_clock_failure_delivery.py": {
+    "sha256": "dba3ff90bb5ad786d8dbac0e0fb9045d90958097f8c6e179a5f9dc9c86e08bf7",
+    "mode": "0o644"
+  },
+  "scripts/audit_current_offline_paths.py": {
+    "sha256": "455a3a85f0fcf5266b2944745d9df70e6aa5706c015e42b378d108d7fdd205bb",
+    "mode": "0o644"
+  },
+  "scripts/audit_digest_publication_delivery.py": {
+    "sha256": "75d82818e3f9400f8bfdcca631f80e4c991d4dd1ea76d04ddf2113a93944b763",
+    "mode": "0o644"
+  },
+  "scripts/audit_evidence_freshness.py": {
+    "sha256": "61000104b5b1b539744bd9d1be3686a9ef41202e75ff7734dfa605fccf60429e",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_a1_joined_review.py": {
+    "sha256": "4974a06dc201b580677c5698da6ef3ae65a64520d03bcba7f216952c81fec8f1",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_asp_ff_join_review.py": {
+    "sha256": "e55b13bf17d6b166ee3bc78cfa585d7d289247af0d69b9b59b8ebcd2fd54f5a8",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_audio_peer_review.py": {
+    "sha256": "c23a918a8af612aca77b784e499a510ca55e71ebd8a078d2eccc1db81591bff7",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_config_boundaries.py": {
+    "sha256": "80e0b8e64ae7b2e1c4b620e1ac1fc9aeb08d4f0ef2dab36a97519b4a21d0e2e5",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_custom_callback_review.py": {
+    "sha256": "84824f425a0a8e8f21c5b0166cfc2fd0fd5e7df4c11250c2994a37bc5c088583",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_dapm_route_review.py": {
+    "sha256": "4b306301c648a8c15233189c859a485b0f61b76ee006f0f9d616adf5c8b309b7",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_devicetree.py": {
+    "sha256": "9067a0448b3c51e211bd8a43c9aa3a00454cd9343b6c28bca113ce8408de1643",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_diagnostic_matrix.py": {
+    "sha256": "24c206b0a1cc445130a72c03182b5c003735ed9f0631ccbe95b110741242c1c0",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_erase_observation.py": {
+    "sha256": "040910c25abf5fce693f913a61c74e634a542c18bf0a0ca459650c5687e530a6",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_ff_core_review.py": {
+    "sha256": "06a834006824bc9ec0ec8a676947d8f5766e40a9b68bed7b7f985851cd1d34b2",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_firmware_cross_version.py": {
+    "sha256": "b8cdbe25de5565af4f87e9e7b4e3cf5a7a4c3d762b958eebf2c9c226e70c5c76",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_firmware_publication.py": {
+    "sha256": "e48743c4ee57aad789d5550567dea35e7efc0ee390bd7901bfb74a498db50b55",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_legacy_config_input_join.py": {
+    "sha256": "a78fa44c8100cde37906f1896a72dc2f265b97a5409f45386cc7711a2890f817",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_legacy_firmware_join.py": {
+    "sha256": "6efb46f534058cd00e7299d074dfca7dcc52386e19bdcb0d84392917d0f1f450",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_legacy_parameters_join.py": {
+    "sha256": "e15df427ba65198830e422684c0403ef154de3ca376b27f067a2e7f4600b71fb",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_legacy_probe_prefix.py": {
+    "sha256": "030fe1c97f2a9756788778a91bb85adc5fbb5a51f2d8fc784bbd4f3df93ef14b",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_legacy_probe_upload_join.py": {
+    "sha256": "ddd0fc2560b3cb7bb45e7843f7afadb4985cf629a25df33ac0e280e4c04b7d27",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_lifecycle_report.py": {
+    "sha256": "deafb2770ede95edb806c0edc8b9e532e1b2ec1f79d23aa37b19d9214488c2b2",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_mailbox_error_review.py": {
+    "sha256": "631e07fae3d462734b550ad2eed90f0119c0ba147fde1823ac317a226f595fb1",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_pcm_ff_join_review.py": {
+    "sha256": "ecf5390ec8307ee931145e20b0b29ac49eaf0ecf0a50614164ab52dcd3ff7fe5",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_pcm_init_review.py": {
+    "sha256": "2cb7db61754aa30eb64c8fde395fc3a23a4199581a219d056b74c8c399ba86c8",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_playback_observation.py": {
+    "sha256": "04a0bc450ecea3cf68550f972e832b9e27f27bf2309d3b04d3f02504811c7698",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_power_topology.py": {
+    "sha256": "008e29eecfc9d1da24e47cc934354a0b988c7fb8cfe6adc57e2b434d1fe1cbe1",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_probe_callgraph.py": {
+    "sha256": "a86e60eaed9b118d1764f753e0082e1e4a898a1c826b5e2f829da1bf95804e10",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_probe_delivery.py": {
+    "sha256": "d9472d135824cc8d6e81460dccf59e0f3cc50d3522b0887474365fe1b33c4775",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_profiles.py": {
+    "sha256": "3abdfc7ea314495eee52580f2f0bcf669e2fdb6fb1515d1c693544c18b6d46f3",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_protection_irq_review.py": {
+    "sha256": "734ca96d21af6dbc9443db358a6d2b9f03efe2da4a98b893f6ac4a1869fb9bc4",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_request_trace_delivery.py": {
+    "sha256": "e48056fa9df2f2f4f3aea0d23a7a127e82d0c47ffbca5fd3817596e0dd1cbdcb",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_restore_joined_review.py": {
+    "sha256": "7ffd4c7b87bb84f5f345d51d228b85a483f87641000ac4c3ee4d23b9df097f57",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_runtime_observation.py": {
+    "sha256": "db95f5d293d399feb3cbbb867d30df855025e8f6f3fa9663fdc1527c18204848",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_service_init_review.py": {
+    "sha256": "024ac411a5d2bd2fcf8c026682eef8188ec9ab34e6ae7859422307e25d57f59e",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_service_route_review.py": {
+    "sha256": "42eb23b73c04c735a94e772c123c3eea202e417328ae5a2b4c05bab45a7805ab",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_service_tail_review.py": {
+    "sha256": "0d46894da1c3e82fc03faf22007a7b43a67727abd2657a9b858027b8e8f87d7b",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_sine_coefficients_review.py": {
+    "sha256": "98dc906af479e2b944e69de6b962fe1257f0aab98a049f614b91b961633fe71c",
+    "mode": "0o644"
+  },
+  "scripts/audit_haptics_stock_wave_review.py": {
+    "sha256": "f1aad590eaa9b47bf2b5f953aa94bc2a5d7e27a7616def1f749db5fe6c383136",
+    "mode": "0o644"
+  },
+  "scripts/audit_mount_mode_delivery.py": {
+    "sha256": "adf4e2ac006226913afd622a152d17501e0b4ae19bd498b989f2d9a848d1ce94",
+    "mode": "0o644"
+  },
+  "scripts/audit_mtp_atomic_upload.py": {
+    "sha256": "fe207789cadabd7a90cca95a853c30b877f2109657b80af3f3e6ade3b6587570",
+    "mode": "0o644"
+  },
+  "scripts/audit_mtp_datetime_delivery.py": {
+    "sha256": "b5699665a9dc06a2c25cd3536f5c1f5bb7255e765d54e736a19da0c6bf935bea",
+    "mode": "0o644"
+  },
+  "scripts/audit_mtp_reset_delivery.py": {
+    "sha256": "08ddc2db5360c09f6047ba9b5eb9ce444fc57122cbd450f2328e0b5ce90f909d",
+    "mode": "0o644"
+  },
+  "scripts/audit_mtp_transaction_delivery.py": {
+    "sha256": "886d03cad46eaf7de017471c55508e13d253572b95791f900b9b70d820b953b5",
+    "mode": "0o644"
+  },
+  "scripts/audit_mtp_upload_time_delivery.py": {
+    "sha256": "7169014819099442e39b75c8322da2847359b406834370ea0dec82fc6291e306",
+    "mode": "0o644"
+  },
+  "scripts/audit_nv_mount_delivery.py": {
+    "sha256": "04a2e8df302253be9b40e008d163e01eb8efe7759f1e2648ef6859687ad9fc51",
+    "mode": "0o644"
+  },
+  "scripts/audit_otg_discovery_delivery.py": {
+    "sha256": "1c593ff88d5269aed11e6d47f3a91c47d6928b577f516b387858b5b58874747a",
+    "mode": "0o644"
+  },
+  "scripts/audit_otg_selection_delivery.py": {
+    "sha256": "254336e4d63d9a84523a2c4162954544f44e3a33e6fffd3340d924a95e6f20d9",
+    "mode": "0o644"
+  },
+  "scripts/audit_recording_close_delivery.py": {
+    "sha256": "dee210066b3d3e97be001bd6812843e331903fabab97641b21c04b41eab89222",
+    "mode": "0o644"
+  },
+  "scripts/audit_settings_joined.py": {
+    "sha256": "f09d50ba1f9d613aa35bee36947537649a1ced6bdf4aac8e0100f279190326ca",
+    "mode": "0o644"
+  },
+  "scripts/audit_settings_retry_delivery.py": {
+    "sha256": "d63611d7127cbd179d4a643e17d487c4b418312dde6dd3a0512b37ffbc812b9c",
+    "mode": "0o644"
+  },
+  "scripts/audit_settings_row_delivery.py": {
+    "sha256": "9dd2701ec67146d43544164fc33ecdc85a51ae0f8b805cdefa797bacbda453e5",
+    "mode": "0o644"
+  },
+  "scripts/audit_sparse_flash_delivery.py": {
+    "sha256": "e7e1702c6358f6a0157cb6e819c525f7788a765d921d31cb4cbb13db99263b2b",
+    "mode": "0o644"
+  },
+  "scripts/audit_stock_nv_fstab.py": {
+    "sha256": "3c4519ba23ef483ba1650788470fb3b25a20268c8b4cec9396f367bc772c593e",
+    "mode": "0o644"
+  },
+  "scripts/audit_temperature_ui_delivery.py": {
+    "sha256": "ecb254cabee2c1f5f4a54c15edf64a82ac26ffc625d15884a1e652e4e50c5dfc",
+    "mode": "0o644"
+  },
+  "scripts/audit_thermal_identity_delivery.py": {
+    "sha256": "dc9ecd8ab3053d4e0d9b8269b16b16e2354dda24805ce5f6aad53a98b04344de",
+    "mode": "0o644"
+  },
+  "scripts/audit_thermal_topology.py": {
+    "sha256": "9780a754c8047a4cedd17fa5f64b41be0f2a4878c5844c34d4426676b73c73c5",
+    "mode": "0o644"
+  },
+  "scripts/audit_timezone_retry_delivery.py": {
+    "sha256": "98d56aab5d6b18ba24339e9722d1fa50cf63d822b4e4097ffce2aea6ab4332e0",
+    "mode": "0o644"
+  },
+  "scripts/audit_touch_action_observation.py": {
+    "sha256": "ee5c7f7d37c88a5298d7b4d9048115e9e000c6d8940c5df52113141ad8341171",
+    "mode": "0o644"
+  },
+  "scripts/audit_touch_cached_info.py": {
+    "sha256": "e460fb2a19af50eafb351831012d5509b0a9d4cb1cd36e3a70e4df15b47ad355",
+    "mode": "0o644"
+  },
+  "scripts/audit_touch_devicetree.py": {
+    "sha256": "a8e1963cd54e4236bd7b43bd35c34413dd4f8f5ed6c675d7fdf430cf5c9924a8",
+    "mode": "0o644"
+  },
+  "scripts/audit_touch_load_order.py": {
+    "sha256": "2012dbec137706a62b486333b9af1deba263b7c55b92e418c4de0e6d7aca3148",
+    "mode": "0o644"
+  },
+  "scripts/audit_touch_raw_off_observation.py": {
+    "sha256": "de89bb11770edd849ce8d6a72fd12cf721ccac78a3463bf12d3c510ed577c17d",
+    "mode": "0o644"
+  },
+  "scripts/audit_touch_v1_debug_observation.py": {
+    "sha256": "b8cfa2bdd4f9a822442c9c81fc818ba9062136a6c8efbd677c8c92dbc9ab04a0",
+    "mode": "0o644"
+  },
+  "scripts/audit_unified_delivery.py": {
+    "sha256": "f4402544c6667af2834ff87177afe1154ffe1d2c8c5d886b6b1f28e9d0614602",
+    "mode": "0o644"
+  },
+  "scripts/audit_updater_protocol_delivery.py": {
+    "sha256": "412126a34c1b1f0f4b2883165d54b26f811f32022882655018c6d35342c8e413",
+    "mode": "0o644"
+  },
+  "scripts/audit_video_ffmpeg_delivery.py": {
+    "sha256": "67a11d392b7c5b694811af52bb65e9ca093d9efee8ae0050f5d839f3967025b8",
+    "mode": "0o644"
+  },
+  "scripts/audit_video_frames_delivery.py": {
+    "sha256": "2b184d98524ecc720711c65ba1df17cf7469007654430b8fb27a277c2341d353",
+    "mode": "0o644"
+  },
+  "scripts/audit_video_timeline_delivery.py": {
+    "sha256": "c6942d09d046819615aa6eb3735718b25e343ae0aa4e69b240128a4af7dcfde0",
+    "mode": "0o644"
+  },
+  "scripts/audit_zip_selection_delivery.py": {
+    "sha256": "055272d1a77ae2c7a27aa55328e0bf9c07d08f9aeeb969ea7d4dbb8903db8bb8",
+    "mode": "0o644"
+  },
+  "scripts/build_halfix.py": {
+    "sha256": "7d2b0cd3a2738e5f560020ca4110f3863561a659afde69937ec8a0dd4ad53ce8",
+    "mode": "0o644"
+  },
+  "scripts/build_keystorefix.py": {
+    "sha256": "de81cb7feec8a1136f67a74a985b615cc93e0bdb42c33fb94f8fc6fd64cb7ab8",
+    "mode": "0o644"
+  },
+  "scripts/build_mitee.py": {
+    "sha256": "7e46b18646cc63fc7ae2fbd7fc0191bc7db6faff931dcc4eb77cf768b8d2c55e",
+    "mode": "0o644"
+  },
+  "scripts/build_moddeps.py": {
+    "sha256": "5f974f3e104a3bcdaf69c0b2e4cf0e2dfc2b3e4da30c9c98289000a76a5e3673",
+    "mode": "0o644"
+  },
+  "scripts/check_public_tree.py": {
+    "sha256": "066b0c224c11315d29f7118afe8bf899379fa4336426e1f2b08e8591bed452f5",
+    "mode": "0o644"
+  },
+  "scripts/check_vermagic.py": {
+    "sha256": "6079663f88d4607ec168200ba77555596060dc9afedc6f39d344916b9b0138cb",
+    "mode": "0o644"
+  },
+  "scripts/check_versions.py": {
+    "sha256": "133bfc7a5969979173c311e11d0026e6640b9853139def31ac622aee66cf7c72",
+    "mode": "0o644"
+  },
+  "scripts/cmp_imgs.py": {
+    "sha256": "19649ba3507f136d14ccd1599d567be8601337dd32b204fa795d4d741faf4267",
+    "mode": "0o644"
+  },
+  "scripts/collect-haptics-state.ps1": {
+    "sha256": "f60434fcba11d3a853f8bf192374cef9f3b90b4f260d3dbd9710ff988c21267b",
+    "mode": "0o644"
+  },
+  "scripts/collect-haptics-state.sh": {
+    "sha256": "0c8f7bfd8ab5f3e85458c440a6a4984ea4714f7f419ca0e30c778b7cbad1920e",
+    "mode": "0o644"
+  },
+  "scripts/collect-settings-state.ps1": {
+    "sha256": "95ab44e36744b1a302ac1d183fab17f1657db7bab14364ab8b275ae312165d2d",
+    "mode": "0o644"
+  },
+  "scripts/collect-settings-state.sh": {
+    "sha256": "24e62d56d0bf76844d5b9159984be0742f0d8acc4d1213b958775487cd66cd0f",
+    "mode": "0o644"
+  },
+  "scripts/collect-touch-no-events.ps1": {
+    "sha256": "c8372a062a6e1ed78c0e9eee00ff6e6f856094e254076a9fb7a7026007ed52f5",
+    "mode": "0o644"
+  },
+  "scripts/collect-touch-no-events.sh": {
+    "sha256": "798e4122f7da8dc757e80cfc33f224a1b9be2aba9ecb89e46cd148998c7fe9db",
+    "mode": "0o644"
+  },
+  "scripts/collect-touch-v1-debug.ps1": {
+    "sha256": "7c59c1d09339c124cb4347a98bfa0ea6178de5f349003f97e60bbe4a07c2e1d3",
+    "mode": "0o644"
+  },
+  "scripts/collect-touch-v1-debug.sh": {
+    "sha256": "d000610dc7362ce4d733cc46c24fd08f1fc0c6027423974936b49c45521c2ee8",
+    "mode": "0o644"
+  },
+  "scripts/compare_firmware.py": {
+    "sha256": "16c9bac6bf13f0a74887db94eb01c94f83d42709fb1e74bd779e9b84edb41bb9",
+    "mode": "0o644"
+  },
+  "scripts/compare_os4_stable.py": {
+    "sha256": "f80387dac6e176cb2d3eebe058d377364f469052fcd8a1e08ee3a46581b1fdfa",
+    "mode": "0o644"
+  },
+  "scripts/compile_recovery.sh": {
+    "sha256": "bf2c976f6f148d9e03c3f51678469d39ac90fe83b424d7cb9f0af2c4f5de1bc9",
+    "mode": "0o644"
+  },
+  "scripts/crypto_inventory.py": {
+    "sha256": "48ccc7e79b7cd2436361a6353b50d7661cd265ed291cea14721772dc72a47012",
+    "mode": "0o644"
+  },
+  "scripts/dbg_tail.py": {
+    "sha256": "f8c910691ec50c8f0f545f06a0bf2c454bf7b3d1c8dacb58f91225b08fc6fc7b",
+    "mode": "0o644"
+  },
+  "scripts/dump_hdr.py": {
+    "sha256": "58a0e74553be01baee1ad8ed7d0cd08aa8def8a16682fd6f4aa3d745a2b78b41",
+    "mode": "0o644"
+  },
+  "scripts/extract_payload_partition.py": {
+    "sha256": "de76c9be96524a8fb8c5c338e9a2c7a41e4251178583392cef86ec3d6a01a335",
+    "mode": "0o644"
+  },
+  "scripts/find_avb.py": {
+    "sha256": "e20cd2225908b2b1d6ff4d7dd7d6c330bf562e5ff0b29f398e8f6c056927c09c",
+    "mode": "0o644"
+  },
+  "scripts/find_literal.py": {
+    "sha256": "8e8668932b885dc7789e9412ab01f702e62729fb2d9270da233023e0fa1805f1",
+    "mode": "0o644"
+  },
+  "scripts/firmware_facts.py": {
+    "sha256": "2f9e58646036e4b9fcc174d524f07333daa194db76c1409c1601785baabe67d6",
+    "mode": "0o644"
+  },
+  "scripts/firmware_map.py": {
+    "sha256": "a4e957d134a44c8e26443598c441d5d9d5acfaa2ae86bd8988ad51262ad9778f",
+    "mode": "0o644"
+  },
+  "scripts/gen_loadrecovery.py": {
+    "sha256": "253660d03c885203d2a1f8c098cc97e09da36ed5e283972b9bdeb9bfec99f5d7",
+    "mode": "0o644"
+  },
+  "scripts/gen_moddep.py": {
+    "sha256": "6361d4204cc865d69d22cf187d930cdc625245cc2788e00a86d6cf2e21045143",
+    "mode": "0o644"
+  },
+  "scripts/generate_profile_runtime.py": {
+    "sha256": "1f92be20343cbea3fd3ef096d8bf3820d2d1f8b209b3955fe135a455198b84c3",
+    "mode": "0o644"
+  },
+  "scripts/generate_profile_selection.py": {
+    "sha256": "350b9d74e89e53124a7b65437ddc015130d71ef62aa90e4b23f80cadea4ec591",
+    "mode": "0o644"
+  },
+  "scripts/inspect_mount_inventory.py": {
+    "sha256": "668b48269b855968d30981cd4a9794bccc1e7ec4bf07108534b53df20def315f",
+    "mode": "0o644"
+  },
+  "scripts/inspect_system_partitions.py": {
+    "sha256": "43d181cd15cb114205b63524ecd17262737f0da9e0f71dc0c18e9e69e5c0ec16",
+    "mode": "0o644"
+  },
+  "scripts/lz4legacy.py": {
+    "sha256": "b557d5a2a26771b8c4184b2930e6d6fb95eb59697406b5d4272469e615ac8bc2",
+    "mode": "0o644"
+  },
+  "scripts/make_fix_images.py": {
+    "sha256": "5dcc5504e16d14da7f1b7d1c19a12b22e320cc977f4c88b7a902ac49c383117e",
+    "mode": "0o644"
+  },
+  "scripts/parse_boot.py": {
+    "sha256": "ee5b95841d62e81e749d012e2ac070f21b7139a27647464be75ba60d36694301",
+    "mode": "0o666"
+  },
+  "scripts/parse_payload_manifest.py": {
+    "sha256": "87873543d88691295cce7241778431df615ebebf14eea5cb7c89d376cd554c15",
+    "mode": "0o666"
+  },
+  "scripts/prove_identical.py": {
+    "sha256": "2a0fd4be1a2fa1c41f5b2145eb1aed6b92b5c1d0a46f82bd9cc1774e2ee006d1",
+    "mode": "0o644"
+  },
+  "scripts/record_build_sources.py": {
+    "sha256": "bab2f13cc4fc959a4912100b3a680f65291793da3a43febf3b54e12ffe779181",
+    "mode": "0o644"
+  },
+  "scripts/repack_ramdisk.py": {
+    "sha256": "dfb6a18bb1bd025a718d3f6cd7b57444d087f71df2df7ed124949eb03ee517a3",
+    "mode": "0o644"
+  },
+  "scripts/restore_private_assets.py": {
+    "sha256": "a39f143ceaa350292ca5d0dd9d2c59fde77e21e03d1c6ebe51a3efed1f85ec07",
+    "mode": "0o644"
+  },
+  "scripts/review_module_state_reference.py": {
+    "sha256": "cd6f475f2df6f7852e30a0462277de439784b27ed370a4ec5dad03bf36fe3428",
+    "mode": "0o644"
+  },
+  "scripts/setup_haptics_emulator.py": {
+    "sha256": "35c15446e7f6c0d477d775fe613b520db430b1dd4b9bfa9b22e013ddb2db9539",
+    "mode": "0o644"
+  },
+  "scripts/show_fstab.py": {
+    "sha256": "73f28a4f78470b2770941f564966be2bd6ec9cd7831d5a0f937ea8af2fe88118",
+    "mode": "0o644"
+  },
+  "scripts/show_list.py": {
+    "sha256": "9216b5450f8bb0cd1ce3b09f569e598603579bdba87f6f0e3775d3a0a3d09506",
+    "mode": "0o644"
+  },
+  "scripts/show_stock_fstab.py": {
+    "sha256": "ce750fbc7d0b47565c9781e181dcf94a90cbb7e92823b99ba7e3427fab4a2643",
+    "mode": "0o644"
+  },
+  "scripts/simulate_loader.py": {
+    "sha256": "efed51536266bc9fdc6972d0a67d5c5b1053cb95b1283930938bbbf1cc9fc3b3",
+    "mode": "0o644"
+  },
+  "scripts/stage_mitee.py": {
+    "sha256": "9b4f668229c2b8bfe597120c13f7120a42176ab4ef4a61f6b342cdcd73ffc032",
+    "mode": "0o644"
+  },
+  "scripts/stage_profiles.py": {
+    "sha256": "0b56162a3f1607c8ccbdb43c9d70c6657aebd68d86665ba7206f0c56218281be",
+    "mode": "0o644"
+  },
+  "scripts/sync_device_tree.py": {
+    "sha256": "ded98715b8b3bbf8024a5f38de873a9dad56c2be9596c16883b1ba9c4cf7399b",
+    "mode": "0o644"
+  },
+  "scripts/sync_github.py": {
+    "sha256": "a1cb23b2b8351e90eac35748a4c5b068ad815d1362f9c9f2bdf232e32f8b6afa",
+    "mode": "0o644"
+  },
+  "scripts/touch_stack.py": {
+    "sha256": "e821c24b98ea76c176dd3f6c1ddf924672c6115276732cf927ee82f0b9e35e7d",
+    "mode": "0o644"
+  },
+  "scripts/unpack_ramdisk.py": {
+    "sha256": "a2ab13e58bba2bdf1ece1e95ee7a466d59637df99ff8d728227f7f99d14511ee",
+    "mode": "0o666"
+  },
+  "scripts/vb_inventory.py": {
+    "sha256": "f91362e5b515d3cae41a1790dcc2b15a0f2317463ce61a83bd658baf786f3d86",
+    "mode": "0o644"
+  },
+  "scripts/verify_devicefix.py": {
+    "sha256": "b7badb46adb53ebce2413fea02591f75d66956056ed33d8332d155c64bfc3a6b",
+    "mode": "0o644"
+  },
+  "scripts/verify_haptics_power_topology.py": {
+    "sha256": "bb43e379b818b80d96c15943800e07714abbbd37b50d9b0d9024f4ebfc8ce866",
+    "mode": "0o644"
+  },
+  "scripts/verify_img.py": {
+    "sha256": "4fd0fd71f643a4b15802ba9a25ae7560bf2a51cc05e31584c48f3a6f926d06fc",
+    "mode": "0o644"
+  },
+  "scripts/verify_profile_init.py": {
+    "sha256": "f76edee459149d992cd382a959aa3610c0b66462daed6b8788cef1892ea5dd66",
+    "mode": "0o644"
+  },
+  "scripts/verify_source_recovery.py": {
+    "sha256": "1b0eb81446c2633e61c6e5675cf4cc699d0c16aa7c15b2b0426e9e0ce9a381e8",
+    "mode": "0o644"
+  },
+  "scripts/verify_thermal_topology.py": {
+    "sha256": "3a7e70e4149a8486a7393666c369936e0543cb14984cc62f3de73d15965c52a7",
+    "mode": "0o644"
+  },
+  "scripts/verify_tree.py": {
+    "sha256": "10030c439491523072f472d88aee6d13973a0ab0484fd764af63c05ffcdfffe2",
+    "mode": "0o644"
+  },
+  "scripts/verify_unified_recovery.py": {
+    "sha256": "1aa5c07b1ff96b8dd20c0601d45fac437fa1a1e0bc2b9a627300a88660741b38",
+    "mode": "0o644"
+  },
+  "simulation-report.json": {
+    "sha256": "620a36d39f0b0bf2f3ea9b46cdd892fc5e9a3e7b2ab1ae631b9255596dc22331",
+    "mode": "0o644"
+  },
+  "simulation-report.md": {
+    "sha256": "8ef6ba0e50ebe9858c82b4e479287e5420240c42c3d5e7c95118e346fb8d223a",
+    "mode": "0o644"
+  },
+  "tests/archive_pipeline_stubs.json": {
+    "sha256": "2b499f43b5864a03728fbec91c6e4882cae4b066754fa38013a62119b7f1db25",
+    "mode": "0o644"
+  },
+  "tests/archive_pipeline_test.cpp": {
+    "sha256": "77a5dc80478ce286141b35fe4b3b95fae902ad8c14aa33bad2c50dabf652658a",
+    "mode": "0o644"
+  },
+  "tests/archive_pipeline_test.py": {
+    "sha256": "f80aa5ac22d08ed769e2c4d3749d7a7179218943ebf034e70227fcdbf1fbc78d",
+    "mode": "0o644"
+  },
+  "tests/archive_restore_test.c": {
+    "sha256": "08aa95e30563fd8f9d4cd5dfd6d2a54071c0c2eefded293cfbdcd417273d6b0a",
+    "mode": "0o644"
+  },
+  "tests/archive_restore_test.py": {
+    "sha256": "88f5dab69bb043256a80118bac009ffdecc3958e2921e1ff6f8bd16de89fc536",
+    "mode": "0o644"
+  },
+  "tests/backup_manifest_test.cpp": {
+    "sha256": "576453a2adba9c08c02a44dad2bb34b0959714e12c46bd5fbbd819eb123c1d70",
+    "mode": "0o644"
+  },
+  "tests/backup_manifest_test.py": {
+    "sha256": "9894fe8c577966bfbfe2a4b93efb7b7b13551ae4d406b5eda64208370941583b",
+    "mode": "0o644"
+  },
+  "tests/backup_session_test.cpp": {
+    "sha256": "a7da6680225650d8c7db04824187aef21e37bf1b63f5e68e6526634eb779c614",
+    "mode": "0o644"
+  },
+  "tests/backup_session_test.py": {
+    "sha256": "a59f7f68c4404948fdc6bb17a2edde9eb872b08c2dcf36ea67b1872b6e7e2b29",
+    "mode": "0o644"
+  },
+  "tests/ce_lifecycle_test.cpp": {
+    "sha256": "c1a77e6965621f2a803e6d132b9c1e417cf558f9d4fcfb5a0dc03e127cd86a39",
+    "mode": "0o644"
+  },
+  "tests/ce_lifecycle_test.py": {
+    "sha256": "17528ac453ccc7862313d97cdde5328cda8e1eaaaf104e1f657acf30fb413780",
+    "mode": "0o644"
+  },
+  "tests/devicefix_regression.py": {
+    "sha256": "bfb5ba859a29a7f62a14ada3bcf9e501f494c353d043f2c3ad6d8e51910d7cc2",
+    "mode": "0o644"
+  },
+  "tests/digest_publication_test.cpp": {
+    "sha256": "69fe93a8036068c9349bcc972f22e51571c6df300f9aa97af1c4f50350bbe94a",
+    "mode": "0o644"
+  },
+  "tests/digest_publication_test.py": {
+    "sha256": "c00866da44f3f04d049b6f4ed9e43ad056537877638cbac41182a873b282b41f",
+    "mode": "0o644"
+  },
+  "tests/dijun_touch_test.cpp": {
+    "sha256": "0bcca92eb99dc6301faa358aa85cae602a68729ab35ea088bf230db4ce530910",
+    "mode": "0o644"
+  },
+  "tests/evidence_freshness_test.py": {
+    "sha256": "b7fd6e12fd5b0c798077a6c9154662b6544d4395b9ddb97aefddcd876be215f1",
+    "mode": "0o644"
+  },
+  "tests/filesystem_tools_image_test.py": {
+    "sha256": "3ccfd615fdeb4ff6a00174eab7e6cbc0f243b809a8eff318dcc96cf6247f6411",
+    "mode": "0o644"
+  },
+  "tests/firmware_acquire_test.py": {
+    "sha256": "107f5ba41607b208fa23a59ae252084de4f85f4940caede4ed9cb0c5a2ade3a9",
+    "mode": "0o644"
+  },
+  "tests/firmware_facts_test.py": {
+    "sha256": "406c31a4bddb0b6473dce0c151765eef0624412c13fac36fde5eacbcca21473e",
+    "mode": "0o644"
+  },
+  "tests/fixtures/devicefix-force-feedback.cpp": {
+    "sha256": "55c9dc30606f4b674453115b82c2600bbb3623973694ac2dd8dbfda3c59c1990",
+    "mode": "0o644"
+  },
+  "tests/haptics-emulator-dependencies.json": {
+    "sha256": "d6848678271d230b32972bf8aa5219266c9b1538de950e2178083c4c5e9dc708",
+    "mode": "0o644"
+  },
+  "tests/haptics_a1_calibration_review.py": {
+    "sha256": "60d18b15bc13287af62b35094aebcba51327822fe471f67902ee245f4105b10e",
+    "mode": "0o644"
+  },
+  "tests/haptics_a1_joined_review.py": {
+    "sha256": "bd0e10e99eb471b122a5d9f7ce8f12f99e5854e395c20fa9a0cffe98aa83cacd",
+    "mode": "0o644"
+  },
+  "tests/haptics_active_erase_emulation.py": {
+    "sha256": "1144c5b162a04a14411f95728fdb9b71b65c1d8358e731e6558da1faa6fd3755",
+    "mode": "0o644"
+  },
+  "tests/haptics_algorithm_defaults_review.py": {
+    "sha256": "e8f2a3337768d6351796d04a638c65786b87c569f84bd3eb8a4969feb4315eb9",
+    "mode": "0o644"
+  },
+  "tests/haptics_asp_ff_join_review.py": {
+    "sha256": "0f0d9d74d84f70de9ef467e9bd10fe6a8d0fdc687f0556dcfa58635648f5ace2",
+    "mode": "0o644"
+  },
+  "tests/haptics_audio_peer_review.py": {
+    "sha256": "c892bbc95cc3213e26b5a51100c75da5cc65b115f66488c5a3020d93305a0f57",
+    "mode": "0o644"
+  },
+  "tests/haptics_calibration_coefficients_emulation.py": {
+    "sha256": "3749842da3e67857596fae152231b9b9dea5fcae0e550cdd5fb89438894f1615",
+    "mode": "0o644"
+  },
+  "tests/haptics_calibration_restore_emulation.py": {
+    "sha256": "286fa9676974369cd8d7c8ba4fe19a3508910026f1be2946cb4d173bacabf4b8",
+    "mode": "0o644"
+  },
+  "tests/haptics_coefficients_emulation.py": {
+    "sha256": "0911fa9d64ef203ef458b0be9c377626a8ef82fb212e1578bdff2558b428f066",
+    "mode": "0o644"
+  },
+  "tests/haptics_config_emulation.py": {
+    "sha256": "c6a4a5e272623a1a4eb6c1e108e10d0ab5abacbc94f935de5bff1d5b3a4ed682",
+    "mode": "0o644"
+  },
+  "tests/haptics_custom_callback_review.py": {
+    "sha256": "b93d989b43b5cd7866e1794a362636fa8a826f222c2d64c2e05625b06983b00b",
+    "mode": "0o644"
+  },
+  "tests/haptics_dapm_route_review.py": {
+    "sha256": "27466fd3c4a36d84828afb1f9e9fd20f06772583d2f93957e8f4fc2e616f8a43",
+    "mode": "0o644"
+  },
+  "tests/haptics_diagnostic_arm64_test.py": {
+    "sha256": "846c8910396b4f1e0ef6b496a0fbe43684dd721e2df681897786203f892e2611",
+    "mode": "0o644"
+  },
+  "tests/haptics_diagnostic_fixture.c": {
+    "sha256": "b5da55dc308ce34d6d05942b4ec7c18834ab273c02845f5d3da8d56da40f7cf6",
+    "mode": "0o644"
+  },
+  "tests/haptics_diagnostic_test.py": {
+    "sha256": "4e9da630ec993c72e5d4c636203e7f90c2747b99470e69e2f2352428435e2174",
+    "mode": "0o644"
+  },
+  "tests/haptics_driver_capture.cpp": {
+    "sha256": "64fc76833becab4236a91b81772fe36d06eff5d0a58cc832b9879457faf65fb1",
+    "mode": "0o644"
+  },
+  "tests/haptics_driver_emulation.py": {
+    "sha256": "6b9e80d210027839c95fb67e012000742c9e2c15b30bf03a7b7129364bdc5086",
+    "mode": "0o644"
+  },
+  "tests/haptics_ff_core_review.py": {
+    "sha256": "a7d24d39787e29e926f7e9e0685010a94f0706611ba19dac2f6aac3928f66808",
+    "mode": "0o644"
+  },
+  "tests/haptics_firmware_cross_version_audit.py": {
+    "sha256": "529ba35d4bf4f7172c2f065b5e2370c8d3f20b596a6de16e5cd29b508d82b5f4",
+    "mode": "0o644"
+  },
+  "tests/haptics_firmware_emulation.py": {
+    "sha256": "4d93a32f7d99e83bfbe9c72037aec9ba226ece3197f7d8001ee1cd21a495fac3",
+    "mode": "0o644"
+  },
+  "tests/haptics_firmware_publication_test.py": {
+    "sha256": "6e7690c17f81dfc052202e44083f1611ac0d13a20053b078f93178f53855ec97",
+    "mode": "0o644"
+  },
+  "tests/haptics_gain_emulation.py": {
+    "sha256": "7dec597d32dd2092e468c30601755e7c3a85c75c2e669b93a8116f47b8252d5e",
+    "mode": "0o644"
+  },
+  "tests/haptics_irq_completion_emulation.py": {
+    "sha256": "7a16b9db8547ac28940158fac6cff743e8ec4fd5022c1d9fea42f3f5c765847c",
+    "mode": "0o644"
+  },
+  "tests/haptics_legacy_config_input_join.py": {
+    "sha256": "a985294d7b34c0b473d5b9316183ec1038c49502c9c63db74d4445dcf81f13c8",
+    "mode": "0o644"
+  },
+  "tests/haptics_legacy_firmware_join.py": {
+    "sha256": "0b99f31c52b79a3dbcd3af38754da95e15c63262e01f71f92e726341f74e8e1f",
+    "mode": "0o644"
+  },
+  "tests/haptics_legacy_parameters_join.py": {
+    "sha256": "533117d00b51c62618bd6963def3b37f7b95e8acb943c3adb5c49369260b04e9",
+    "mode": "0o644"
+  },
+  "tests/haptics_legacy_probe_prefix.py": {
+    "sha256": "06154f718fe14eda2151b3790f11bfc1ca44c404faa20167f20b76854c573e70",
+    "mode": "0o644"
+  },
+  "tests/haptics_legacy_probe_upload_join.py": {
+    "sha256": "92be3da6dcd53141e484b5c328afa1272a4c878873fa1d2521370d2d970f30d0",
+    "mode": "0o644"
+  },
+  "tests/haptics_lifecycle_emulation.py": {
+    "sha256": "17d4e7b9b68c1b151f89ec2427a93b6faabc558d80493ce11696ad57434bf73d",
+    "mode": "0o644"
+  },
+  "tests/haptics_mailbox_error_review.py": {
+    "sha256": "e3a601ed39736654d016e95475a45bc29584681391c3a056082e53208f578878",
+    "mode": "0o644"
+  },
+  "tests/haptics_pcm_ff_join_review.py": {
+    "sha256": "63222b9b9a903e5a446ecfcb906c87cd2434190484eb2e5d8afab7334dd7f984",
+    "mode": "0o644"
+  },
+  "tests/haptics_pcm_init_review.py": {
+    "sha256": "2b32a47872ee7da30f4add79c2c11f2c403b375a71ff5886fa5dcb6273e9c8ac",
+    "mode": "0o644"
+  },
+  "tests/haptics_playback_emulation.py": {
+    "sha256": "7cdec292fcdf84f17b0fc25bb445856d580af48d3f8efe35a60930803733bb28",
+    "mode": "0o644"
+  },
+  "tests/haptics_pll_emulation.py": {
+    "sha256": "042ed18b26a1b2264a4644c481aeb7bd81a8d28f5c6623e0724a491c1dbe0a72",
+    "mode": "0o644"
+  },
+  "tests/haptics_policy_regression.py": {
+    "sha256": "3a87c73c6399986d0362f0cd953d6c4ad1c721a1c1098edb114cbe63ae288e70",
+    "mode": "0o644"
+  },
+  "tests/haptics_postboost_emulation.py": {
+    "sha256": "ae794e4ac17a10da9bcf03608cfa6982f1e8b91d8eb777f819af90cdfa41d662",
+    "mode": "0o644"
+  },
+  "tests/haptics_pre_irq_emulation.py": {
+    "sha256": "18ea35fd9e5ab1151eb71942e08c58133635b1cf83b6f7e3c683a0046a081ca0",
+    "mode": "0o644"
+  },
+  "tests/haptics_probe_callgraph.py": {
+    "sha256": "04447ab22d92876420cba548371a0e686f2e470066124cfa39b59b79b862e97a",
+    "mode": "0o644"
+  },
+  "tests/haptics_probe_emulation.py": {
+    "sha256": "adad6cb7cedcccd0adec207716487232bca3d96eddf8a7bf0dc0e538b25ef9b2",
+    "mode": "0o644"
+  },
+  "tests/haptics_probe_selftest_emulation.py": {
+    "sha256": "3523722de26f6369cc0953a66c605a3599db3aa96be0b3024073fe652d6cfe90",
+    "mode": "0o644"
+  },
+  "tests/haptics_probe_upload_emulation.py": {
+    "sha256": "6857f5f6620e05fc13eb6bf1d813bf1a17e5480082baa3ae6c9fa856cab98f2f",
+    "mode": "0o644"
+  },
+  "tests/haptics_protection_irq_review.py": {
+    "sha256": "60ac270ef4afed1493e115b249f288d9515072142c47ccb2114494e96e8f9170",
+    "mode": "0o644"
+  },
+  "tests/haptics_request_trace_test.py": {
+    "sha256": "f09a28314486b3aba256878b6f3ff4c630de93462fdb7835179c9d09d0c3f173",
+    "mode": "0o644"
+  },
+  "tests/haptics_restore_joined_review.py": {
+    "sha256": "ece698b6d9c6a15afdadd7be16459ff677ef8d482d445dd15f66a5c814807787",
+    "mode": "0o644"
+  },
+  "tests/haptics_route_test.cpp": {
+    "sha256": "872d15e465b2c9714da6350dd20160ba7abbe465f4fc10d9f68f4177ef83ce6c",
+    "mode": "0o644"
+  },
+  "tests/haptics_route_test.py": {
+    "sha256": "c8de2656c86b60047a2ba71011c89707d86f861b1e99021b3cbc14eceefa28e9",
+    "mode": "0o644"
+  },
+  "tests/haptics_runtime_config_emulation.py": {
+    "sha256": "f6225dabf38bfea09291973a023b59e5c52bfc476d559455ebd40841d59ce6d9",
+    "mode": "0o644"
+  },
+  "tests/haptics_service_init_review.py": {
+    "sha256": "339297b55cdf68743f632c98d700a10e69bb771cac30723247dc68f1fb7d9f91",
+    "mode": "0o644"
+  },
+  "tests/haptics_service_request_emulation.py": {
+    "sha256": "44c3f66bae550bd4da2cbbb47840aa2f4a3c77a2efc586ad6baa4756b9614c3a",
+    "mode": "0o644"
+  },
+  "tests/haptics_service_route_review.py": {
+    "sha256": "d8848258c89d352506ab37fc54f29d2facd92cef8857b7292d3af6f3010ac661",
+    "mode": "0o644"
+  },
+  "tests/haptics_service_tail_review.py": {
+    "sha256": "62eedd46b295203bbd646de8b9e6c269fe3952a1933ceb51614e9e894c7bab2d",
+    "mode": "0o644"
+  },
+  "tests/haptics_sine_coefficients_review.py": {
+    "sha256": "0361972b33988d0fd0774a1e889e4a82dd99a6a1b788034cecff54476f98c1c5",
+    "mode": "0o644"
+  },
+  "tests/haptics_state_collector_test.py": {
+    "sha256": "322b27747179b642c61eece0ac56a5a155f546dc17edba25bed2a91945990068",
+    "mode": "0o644"
+  },
+  "tests/haptics_stock_wave_review.py": {
+    "sha256": "72114529fe8ac9f8abfe61932b9177e734f33a1fa7aaa09e62954d6fb1a1ae40",
+    "mode": "0o644"
+  },
+  "tests/haptics_ui_test.cpp": {
+    "sha256": "448906e5a94daac9672abd6ef5611ded361db18dd478ed3e55c8784c11e7f275",
+    "mode": "0o644"
+  },
+  "tests/haptics_ui_test.py": {
+    "sha256": "2526f5a8e8bcc74dd870e235eef36a5134b7d7e2dd63753462a70e4429cc63a5",
+    "mode": "0o644"
+  },
+  "tests/haptics_upload_emulation.py": {
+    "sha256": "56def9fe8de89f62b63379ec0a3ad45087989812f6796fec4003a1438f4bd722",
+    "mode": "0o644"
+  },
+  "tests/haptics_wave_irq_emulation.py": {
+    "sha256": "d5acc428f7ba0c542976c6bfa84c4dec3282d95f8bdf46f5639dc507ffa70dec",
+    "mode": "0o644"
+  },
+  "tests/haptics_worker_test.cpp": {
+    "sha256": "7cf15f39c14294b6a67831dc9e5c41664ed72759b687f2d4fceee52cb055beeb",
+    "mode": "0o644"
+  },
+  "tests/haptics_worker_test.py": {
+    "sha256": "805798cd793e0341909df89dfe9f7e12e4b8f09afac11eecef996b2c6ff68b06",
+    "mode": "0o644"
+  },
+  "tests/image_install_chain_test.cpp": {
+    "sha256": "c5697f1b8998729e35cf4d9572c6b19695f9c3b7692f1c0639eb3eac3959e917",
+    "mode": "0o644"
+  },
+  "tests/image_install_chain_test.py": {
+    "sha256": "cd00ae0fa717cc9704ae2c09e13435e877526b81fec0ef16196b0c9610f77a06",
+    "mode": "0o644"
+  },
+  "tests/module_state_test.py": {
+    "sha256": "8e42a21bf341126f659b8bde0bff7016942a28f8651f89c61b75bca8423e8879",
+    "mode": "0o644"
+  },
+  "tests/mount_list_chain_test.cpp": {
+    "sha256": "06d1d5a78d2ecb89ed4b8bd6635d40b3c87a628ff13db69242917b5068f03aad",
+    "mode": "0o644"
+  },
+  "tests/mount_list_chain_test.py": {
+    "sha256": "fa0e369311038d7627c1eb6c56062f3a7ec11aabcd5d5304fffa682f8d8c3afd",
+    "mode": "0o644"
+  },
+  "tests/mount_mode_test.py": {
+    "sha256": "04994b47142ba126cf800bc8f695a1b0bdb1759544ed8a363e9f1b92f5626319",
+    "mode": "0o644"
+  },
+  "tests/mtp_caller_test.cpp": {
+    "sha256": "7cce5153314e47c7abb130609386008781856db43064569fbdf495599dab924f",
+    "mode": "0o644"
+  },
+  "tests/mtp_caller_test.py": {
+    "sha256": "6af3b05f4ea869788f1ce7fd0929ea6e0c0aae7eb466783983a8a2714564b819",
+    "mode": "0o644"
+  },
+  "tests/mtp_control_test.cpp": {
+    "sha256": "ba8e30484165ed4d93db2f323a910220bad632a9aaff0e08726299c2a354ddae",
+    "mode": "0o644"
+  },
+  "tests/mtp_control_test.py": {
+    "sha256": "9cae158ec4993b2a348c32ff3639c98022c8d3d75f9b4c5da609e779beeffe8c",
+    "mode": "0o644"
+  },
+  "tests/mtp_datetime_test.py": {
+    "sha256": "7fd955b173c19a3e5e0b3e3b8ecc6344cc75438d80af59d46e2c16277da838c3",
+    "mode": "0o644"
+  },
+  "tests/mtp_events_test.cpp": {
+    "sha256": "4241a6ddec1793ed3d995f859e48d49ef64c1c721b5fe1eff6091eeec5bfad30",
+    "mode": "0o644"
+  },
+  "tests/mtp_events_test.py": {
+    "sha256": "d65655f341379911c978ad5080c332d2516084c8186bb620cf0ff0694db1dd94",
+    "mode": "0o644"
+  },
+  "tests/mtp_objects_peer.hpp": {
+    "sha256": "331aca3d9474743218ca58b2633db61dcbd6c226afb91c70a822fd398fff8080",
+    "mode": "0o644"
+  },
+  "tests/mtp_objects_test.cpp": {
+    "sha256": "702a6aa255e92e9a3c688772c9b72d94b909798a93a5dfdf456a69aa62d0b5c6",
+    "mode": "0o644"
+  },
+  "tests/mtp_objects_test.py": {
+    "sha256": "ec8e9be8e5b774468a60a4961bc6d00c80a851b45cb8c0a3c834af35baba64c2",
+    "mode": "0o644"
+  },
+  "tests/mtp_receiver_test.cpp": {
+    "sha256": "d7b51ed7abc8d020784044829f94d2568107678dad2909f2a5dfcf417b2ef9d9",
+    "mode": "0o644"
+  },
+  "tests/mtp_receiver_test.py": {
+    "sha256": "4d4e98ffcd584987b66d3f0687238bfa08f2892db6dda51eef0cfd393df21e01",
+    "mode": "0o644"
+  },
+  "tests/mtp_transfers_test.cpp": {
+    "sha256": "db26dfc16ecf87262bedd6b2ff03fee7ba47d0e632f95138a1c4a241b197e96e",
+    "mode": "0o644"
+  },
+  "tests/mtp_transfers_test.py": {
+    "sha256": "ac9000062b4eb0c04d92f4ed8e55cbf3124c3e6b052eac2c5de8b9a3067980de",
+    "mode": "0o644"
+  },
+  "tests/mtp_transport_test.cpp": {
+    "sha256": "bac5a33819e048702b0f67363fda1824176ef982d23007919a9f4a35e4afb3e2",
+    "mode": "0o644"
+  },
+  "tests/multiuser_backend_test.py": {
+    "sha256": "df575dca9575be5afe4fc1dfa98df178db3ae586e615ebd32b436ab2b4495f5a",
+    "mode": "0o644"
+  },
+  "tests/multiuser_core_test.cpp": {
+    "sha256": "22f795570af3504023ab30e6ba31a185b8c37922ec8e7b94b063c91b761534b5",
+    "mode": "0o644"
+  },
+  "tests/multiuser_core_test.py": {
+    "sha256": "3ebbaa1a072f49bad610b6b807480c12fb3fd8bc3dc257de7b8d4ce055db9289",
+    "mode": "0o644"
+  },
+  "tests/multiuser_routes_test.py": {
+    "sha256": "3ca7f6ca612960dbd42c45308252bf0b6366fdb344dc0ec42e31a4f3f093579a",
+    "mode": "0o644"
+  },
+  "tests/nested_partition_path_test.py": {
+    "sha256": "d0669ffb239525beeb4472ad87c20fa7421672967a64680c64a83bf1fc38cb1f",
+    "mode": "0o644"
+  },
+  "tests/nv_mount_policy_test.cpp": {
+    "sha256": "7e4eb560e9a8ac92ad78b4bfc1d07270d908f2fe172df5c5093aa43c600a6633",
+    "mode": "0o644"
+  },
+  "tests/nv_mount_policy_test.py": {
+    "sha256": "ceecffd49c02fbdb00ca7ff78e1611cd4d0c4e5f74ef55aba334391db755cebf",
+    "mode": "0o644"
+  },
+  "tests/operation_feedback_test.cpp": {
+    "sha256": "fea08e40926369266629ad88a6ddfe38302b38cbf145521072dd6fd78196830b",
+    "mode": "0o644"
+  },
+  "tests/operation_feedback_test.py": {
+    "sha256": "e0f874587e4750a4fb858bfd99853c24d11a3a7ff2652206f0c9bf4abf36a30f",
+    "mode": "0o644"
+  },
+  "tests/otg_discovery_test.cpp": {
+    "sha256": "f55ad2ec04971504ca0a5601177ff1a670945204338d79e86db9990506e45de9",
+    "mode": "0o644"
+  },
+  "tests/otg_discovery_test.py": {
+    "sha256": "bad2ee32022c73a45329baffc2ceb8a112b15894d6e8637d2c133a0be22086e1",
+    "mode": "0o644"
+  },
+  "tests/otg_selection_test.py": {
+    "sha256": "f9a306353fb028ade6e723e7790d2fffafbad1cc480bd0bf5139a38b3a3bec4d",
+    "mode": "0o644"
+  },
+  "tests/partition_operation_path_test.py": {
+    "sha256": "750fa367c96e4a36896f61f13e45761170f16331e76fce4bd09791dd094d436d",
+    "mode": "0o644"
+  },
+  "tests/policy_access.c": {
+    "sha256": "04375d3878c25962ebb8264c744abeda324f820ecec28c5e51de7d25d69ffa9d",
+    "mode": "0o644"
+  },
+  "tests/profile_core_test.py": {
+    "sha256": "fe0586c397c0d509ed65ba4074bf089f8868d4b687e26c8530b2609212109647",
+    "mode": "0o644"
+  },
+  "tests/profile_linker_arm64_test.py": {
+    "sha256": "d91dd6f3d8a922237b2f96f5763ddb05240813ab2d17c8440566f7f3d9a969f0",
+    "mode": "0o644"
+  },
+  "tests/profile_runtime_test.py": {
+    "sha256": "9de9cf8102f323f1bf53bd079e5b72897b01f725392777cd732b0a0bd7404d7f",
+    "mode": "0o644"
+  },
+  "tests/profile_selection_test.py": {
+    "sha256": "78e06a184cb86bf375f8ca964708f6e0c2307c9d22ab53dfb85caede3af79d04",
+    "mode": "0o644"
+  },
+  "tests/raw_image_test.cpp": {
+    "sha256": "404a03ceabd6598a288fbb81bc49fe97c0a80d5818c5a4b2e7e15ff0ce84a699",
+    "mode": "0o644"
+  },
+  "tests/raw_image_test.py": {
+    "sha256": "399abfef910ac2ee1a2fd45a577bd380b912889365744ffeb74b788c2b15f12b",
+    "mode": "0o644"
+  },
+  "tests/repair_exit_status_test.py": {
+    "sha256": "6faf038144bdbf2c48fb8e400b4865d590fd140509e2b8eb29605bc448006a52",
+    "mode": "0o644"
+  },
+  "tests/repair_tool_chain_test.cpp": {
+    "sha256": "7cbb160fbca1874f03f4d31a0a3c42c54b1256c18dedb0929559e936670d246a",
+    "mode": "0o644"
+  },
+  "tests/repair_tool_chain_test.py": {
+    "sha256": "3ca4579e614f7ba642b159b0fccf2fdee04ab58dac01ba29c05d208152d365e1",
+    "mode": "0o644"
+  },
+  "tests/restore_session_test.cpp": {
+    "sha256": "2ce9bf15323474d6a770ee3b6a5c62c1d464eba97bd1333d3230005da7d605dd",
+    "mode": "0o644"
+  },
+  "tests/restore_session_test.py": {
+    "sha256": "717cf6df0bfbc56c2f9f3d1d10a029f2973348e8b02bfe051f1279ba94b8236a",
+    "mode": "0o644"
+  },
+  "tests/run_dijun_touch.py": {
+    "sha256": "21df2b0da3fcb0c1bc6a8cef329ebfd52280f3faf3583032639046391250c056",
+    "mode": "0o644"
+  },
+  "tests/run_mtp_transport.py": {
+    "sha256": "88e1a21f46ad6920fdba0081efffaaf5732d3dd1a6edb04194ac621f7ace9507",
+    "mode": "0o644"
+  },
+  "tests/settings_joined_test.cpp": {
+    "sha256": "101f385df2de77948b34c94147fba2f3df4d48007683406214fcee6dec8df8aa",
+    "mode": "0o644"
+  },
+  "tests/settings_joined_test.py": {
+    "sha256": "e2e9b9f8839918fac3c044f405226d8d42f782b8708af2f993f777c7a4c7d9b7",
+    "mode": "0o644"
+  },
+  "tests/settings_navigation_test.cpp": {
+    "sha256": "6abeafa9b35f5fe0456e74b327d31b73e3b29e3532af366245557c865032afea",
+    "mode": "0o644"
+  },
+  "tests/settings_navigation_test.py": {
+    "sha256": "11b3b88ccdc06feb1c2850df9616b7d73670d8d01ef41f797222241835dfc2d8",
+    "mode": "0o644"
+  },
+  "tests/settings_persistence_test.cpp": {
+    "sha256": "3d17e68e604c89a261f1e3e83848e14c63950a557f5b394d17ddac1dcc2d1276",
+    "mode": "0o644"
+  },
+  "tests/settings_persistence_test.py": {
+    "sha256": "e199ae3c401e2be6f10280efcad38aa234a71d26c2716420eaddb4662e3a0fc5",
+    "mode": "0o644"
+  },
+  "tests/settings_retry_test.cpp": {
+    "sha256": "db22f1d16222ef85d970d440112ff3610722386e3e2d1ab533fbdfde72642182",
+    "mode": "0o644"
+  },
+  "tests/settings_retry_test.py": {
+    "sha256": "09053688265dbfda2b8a0329ad0860dc2181b1140e1190602dc6f04f568182de",
+    "mode": "0o644"
+  },
+  "tests/settings_row_test.cpp": {
+    "sha256": "89b7896c37f8f566e16481c3661c2e7405e113d1af92bbb9e4f70746e1923ccb",
+    "mode": "0o644"
+  },
+  "tests/settings_row_test.py": {
+    "sha256": "569e121989bfb9644f25b00974151ce0ed00081ca83cbd2d7a9248238d51eceb",
+    "mode": "0o644"
+  },
+  "tests/sparse_flash_test.cpp": {
+    "sha256": "40484529666a410f0cbf9d14343498f21e810a82dc338326c07ba6d46132ce88",
+    "mode": "0o644"
+  },
+  "tests/sparse_flash_test.py": {
+    "sha256": "32946d7efd4b8ef767cd19b1cfdcdb475d9f7a2fb3cf58f8174e1776cac5523d",
+    "mode": "0o644"
+  },
+  "tests/status_readings_test.cpp": {
+    "sha256": "a9f3ce56a1fd90010c3ee30f209483e62d460fad31e6f4fca85522a399e8b952",
+    "mode": "0o644"
+  },
+  "tests/status_readings_test.py": {
+    "sha256": "46a992f6f7d459d13c5690f15f81ddabc337ed46f35a05ffd72fbdea8c0b891a",
+    "mode": "0o644"
+  },
+  "tests/system_resources_test.py": {
+    "sha256": "66e165a096aa6cd7428e94c8ed389b80b44fc8223f984b77e512ea1b70970ece",
+    "mode": "0o644"
+  },
+  "tests/temperature_ui_test.cpp": {
+    "sha256": "fcf7bc0db3b998de1cf08b4ed9b20abb15f5f29d1f11493c0d50977b42718a9a",
+    "mode": "0o644"
+  },
+  "tests/temperature_ui_test.py": {
+    "sha256": "51d122cca722b0f95e7aed60bb4d8f12fce61d6c207e3bb76a665ccb015d6d3a",
+    "mode": "0o644"
+  },
+  "tests/thermal_identity_test.py": {
+    "sha256": "c63fbe4e8e699450ce3dfe5fab605f74f3a66de2c6e61f959fee63a57071f50b",
+    "mode": "0o644"
+  },
+  "tests/timezone_retry_test.cpp": {
+    "sha256": "2720824c99dcf2ff1d8337b6f1277a55cf12265a3f20a60cd5b51da978ed267d",
+    "mode": "0o644"
+  },
+  "tests/timezone_retry_test.py": {
+    "sha256": "fc19b8d9042213a04abed8419d329601490da0ab8c59ade5f692dfe0dd917466",
+    "mode": "0o644"
+  },
+  "tests/touch_configuration_emulation.py": {
+    "sha256": "d6f765a063f58d5deb65b6a930eb45cbb801e586bff9080fa83371ff238975e0",
+    "mode": "0o644"
+  },
+  "tests/touch_debug_collector_test.py": {
+    "sha256": "7558444839b34248e93ca9eeb19c153d6001024442c997a0efe756e02534631d",
+    "mode": "0o644"
+  },
+  "tests/touch_delivery_test.cpp": {
+    "sha256": "bae61bdd3fa5d93b7e0652dda9fd1095027621a70c4dd716b0b5a5b72ce01107",
+    "mode": "0o644"
+  },
+  "tests/touch_delivery_test.py": {
+    "sha256": "56ce0cf525ac66cf7d79e5a539b9412f38c92d4a5e5a48946235a39f65ff7c2d",
+    "mode": "0o644"
+  },
+  "tests/touch_display_resume_emulation.py": {
+    "sha256": "e2f53252c887235c7f210ccb95cf83c7a72252925c116529b0c36430ac244e86",
+    "mode": "0o644"
+  },
+  "tests/touch_firmware_emulation.py": {
+    "sha256": "d7e2b4c715cfeab5d33f3aa4e84d994f68b731bae4e9457aebad1b9783239d5d",
+    "mode": "0o644"
+  },
+  "tests/touch_flash_complete_emulation.py": {
+    "sha256": "f6f783dad8ffc1edcc9c85bee1d87e63ae070bc4d87459e0cbbf09d10e4c2f95",
+    "mode": "0o644"
+  },
+  "tests/touch_flash_failure_emulation.py": {
+    "sha256": "298588b8de50250b7fda0ac7c5d2ffb84ed8c07f116b8141fb5f369c58794de2",
+    "mode": "0o644"
+  },
+  "tests/touch_ic_mode_emulation.py": {
+    "sha256": "c110e2faf4031007a99f7586e79d2448c2b60656ed67bd788edbcdec52022e8c",
+    "mode": "0o644"
+  },
+  "tests/touch_identification_emulation.py": {
+    "sha256": "9df067fb219fabc40b7cba86a2ba0a0af9d143a10deb3b4359c4d0e2cc992008",
+    "mode": "0o644"
+  },
+  "tests/touch_irq_emulation.py": {
+    "sha256": "f10b22d11beb94d72d0cbd17064ca9bdd7a8857ed0dc564900406257596e45c7",
+    "mode": "0o644"
+  },
+  "tests/touch_joined_registration_emulation.py": {
+    "sha256": "31d1f14822575f90400e1c2c7519653c9b8e47a3925f8a32e0eaa90abf69fc0f",
+    "mode": "0o644"
+  },
+  "tests/touch_message_emulation.py": {
+    "sha256": "ac6f8919c3c5a971a2cc2e7183da839b8e4370386f8c68ead1510421c035141e",
+    "mode": "0o644"
+  },
+  "tests/touch_notifier_emulation.py": {
+    "sha256": "7b26083dc34039d3e686893557f8d35dbf5666a6cec57d603db61bec213e0ba5",
+    "mode": "0o644"
+  },
+  "tests/touch_panel_emulation.py": {
+    "sha256": "a1e8180ebfbe7ed37b8311826b82092b4e8ee0acc617353b386b24b9a249be46",
+    "mode": "0o644"
+  },
+  "tests/touch_pending_flush_emulation.py": {
+    "sha256": "1a6487dfccb25425487dc73b026fc22898e8607e18c59751eca2e2ef885755fe",
+    "mode": "0o644"
+  },
+  "tests/touch_priority_plan_test.py": {
+    "sha256": "3ad2c1b746df90abe89fe0fb7ac9e2f1f3940d59c707f5fc4b20896ca44159bf",
+    "mode": "0o644"
+  },
+  "tests/touch_report_policy_test.py": {
+    "sha256": "637555bf64609ab29a60ddbab86850971088c746a929e20675bef2f4a832e4ef",
+    "mode": "0o644"
+  },
+  "tests/touch_spi_emulation.py": {
+    "sha256": "82f8e3812513133d7f310d7c3b98fec0cd4c06991d43ead07674980b400b0c89",
+    "mode": "0o644"
+  },
+  "tests/touch_startup_emulation.py": {
+    "sha256": "8b60aafc8a2eb0b1d242211eac9e9fdad4483e4f85a6855a8ed70f559da8a1a2",
+    "mode": "0o644"
+  },
+  "tests/touch_transport_emulation.py": {
+    "sha256": "a751e16d03733aa0e3df2d0f18d78c619c700123e1445912d6285a7f7e87a192",
+    "mode": "0o644"
+  },
+  "tests/touch_v2_command_emulation.py": {
+    "sha256": "b15d9a268b477d338d37ae10381cd059ce35406f16baa1ff249282891e846ba3",
+    "mode": "0o644"
+  },
+  "tests/touch_v2_panel_startup_emulation.py": {
+    "sha256": "5ba2adac3110c586aea5c45997b2392460c7b2d4c545e14d829133c04805c985",
+    "mode": "0o644"
+  },
+  "tests/touch_v2_startup_emulation.py": {
+    "sha256": "33505cf439a7675eb3ddddc09563757a3d1db76ce4df080f0c7b9b558a20623e",
+    "mode": "0o644"
+  },
+  "tests/touch_window_analysis_test.py": {
+    "sha256": "f080ee6263184910da012f33a492da23f9263ee8898434f29879a65b97728946",
+    "mode": "0o644"
+  },
+  "tests/touch_wrapper_emulation.py": {
+    "sha256": "9efa5741dd958819ba3070a71116e0bac1059ae4ced6c3b9801dd9ec55821ba8",
+    "mode": "0o644"
+  },
+  "tests/unified_init_test.py": {
+    "sha256": "244b7ff520fa80ba8756bb3143ac9c49657a49c3e261fa17f60cf9be8dac3371",
+    "mode": "0o644"
+  },
+  "tests/usb_init_test.cpp": {
+    "sha256": "f9f9526e7e8479b0c9491271952d961d77935e7a3bf7762e8e1098b056787a32",
+    "mode": "0o644"
+  },
+  "tests/usb_init_test.py": {
+    "sha256": "68ea30585c083c2d00485d02fb1a296b65ed6e178b50f455e5994865cf350c68",
+    "mode": "0o644"
+  },
+  "tests/usb_policy_access.c": {
+    "sha256": "58b96e8729c53861d597c2bb1b88f497ad077092fb33fb51e9a4d06a87bb3789",
+    "mode": "0o644"
+  },
+  "tests/usb_policy_test.py": {
+    "sha256": "bbe0b3c3fca396090dffcdbede238d65b0b647c187b3c27865abbd2e6848e31d",
+    "mode": "0o644"
+  },
+  "tests/video_failure_test.cpp": {
+    "sha256": "421ec35ddff2160421b3012167d2f13f36c87344fa09012985a43311d8dae264",
+    "mode": "0o644"
+  },
+  "tests/video_failure_test.py": {
+    "sha256": "6ac6af28aa27796dd809a7dfea7f0e4e9e41f8bed23292ae1c2f22d64d0451b1",
+    "mode": "0o644"
+  },
+  "tests/video_ffmpeg_test.py": {
+    "sha256": "e992824244061352846813d3c6a9f0696326e0ddb388aa3ba978894b1692c567",
+    "mode": "0o644"
+  },
+  "tests/video_frames_test.cpp": {
+    "sha256": "11e0ac95e6d0752bf3b63d76b4c8b4ea9a95fc5dc4ae4b3aa08fdde9c019f706",
+    "mode": "0o644"
+  },
+  "tests/video_frames_test.py": {
+    "sha256": "70a98b81e9c1f055b94bb2b1bb0f964344c89a6c8bafd16c92e857b095082957",
+    "mode": "0o644"
+  },
+  "tests/video_timeline_capture.cpp": {
+    "sha256": "0bb03267562838f0b97a5c8d4ebd40abdf0dbff8cdaba064b0023ea8a5e3056e",
+    "mode": "0o644"
+  },
+  "tests/video_timeline_test.py": {
+    "sha256": "77d4ea73bb501a65bf1e37a5cbe2665f2605bdbf9a0c3b7f9af8c56e610f94c5",
+    "mode": "0o644"
+  },
+  "tests/wait_services_test.py": {
+    "sha256": "4e74b28fe234551789d6f9af38fb85dd091b7f6d2fbec6c74fe49f554477de32",
+    "mode": "0o644"
+  },
+  "tests/zip_install_chain_test.cpp": {
+    "sha256": "8dc2d3df6a701c993264acccb52b0a13d590d2b943bcfe522e8911b4d8d99573",
+    "mode": "0o644"
+  },
+  "tests/zip_install_chain_test.py": {
+    "sha256": "a34b6e9b7873e16dacdff1557d7918ac607f0e0f6088dbed33a29ca6b9ad11c4",
+    "mode": "0o644"
+  },
+  "tests/zip_install_fixture.cpp": {
+    "sha256": "4805aa7e30bcd83777288fb23515e9adadd22877fefd49e3446636c3d15a1d44",
+    "mode": "0o644"
+  },
+  "tests/zip_updater_fixture.cpp": {
+    "sha256": "cdb6e549d09b0603bd524b6f749daabdee09d76443612166fd363837cdb9204f",
+    "mode": "0o644"
+  },
+  "tests/zip_updater_test.cpp": {
+    "sha256": "80995e3c06c4353ab042abd00119a6b62c48250b47cd1b391872fe2bdd149a29",
+    "mode": "0o644"
+  },
+  "tests/zip_updater_test.py": {
+    "sha256": "b098881ff4b06920eebcce74919b8d5d8048f5b8f2b0b8456cadac4f8899fb57",
+    "mode": "0o644"
+  },
+  "tools/haptics-diagnostic/README.md": {
+    "sha256": "5b59914f8335952d4676ce333c8d8b55a7432b9e17615be6c5272f31a89eb71c",
+    "mode": "0o644"
+  },
+  "tools/haptics-diagnostic/build.py": {
+    "sha256": "1425abb0f48f31491a24ab41e0988b8f184535fb50f249022aae8d901ee7c314",
+    "mode": "0o644"
+  },
+  "tools/haptics-diagnostic/haptics-diagnostic-arm64.json": {
+    "sha256": "7a1eb19319b43c3822a910dae3b655338abe795d09ec6b67391f515829af4417",
+    "mode": "0o644"
+  },
+  "tools/haptics-diagnostic/haptics-diagnostic.c": {
+    "sha256": "98143fe14edeb092330d29e848fe3686adba5f2093ef0ba322b84469fdfcd5df",
+    "mode": "0o644"
+  },
+  "tools/settings-state-collector/collect-settings-state.ps1": {
+    "sha256": "95ab44e36744b1a302ac1d183fab17f1657db7bab14364ab8b275ae312165d2d",
+    "mode": "0o644"
+  },
+  "tools/settings-state-collector/collect-settings-state.sh": {
+    "sha256": "24e62d56d0bf76844d5b9159984be0742f0d8acc4d1213b958775487cd66cd0f",
+    "mode": "0o644"
+  }
+}

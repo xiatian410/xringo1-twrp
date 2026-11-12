@@ -1,0 +1,31 @@
+# ADB
+ro.adb.secure=0
+ro.boot.dynamic_partitions=true
+
+# Battery Property
+ro.charger.enable_suspend=1
+
+# Gatekeeper
+vendor.gatekeeper.disable_spu=true
+vendor.gatekeeper.is_security_level_spu=0
+
+# USB
+vendor.usb.configfs=1
+vendor.usb.rps_mask=0
+vendor.usb.uvc.function.init=1
+
+# Display
+ro.sf.lcd_density=480
+ro.minui.pixel_format=BGBX_8888
+ro.minui.overscan_percent=0
+
+# USB recovery identifiers
+ro.recovery.usb.vid=18D1
+ro.recovery.usb.adb.pid=D001
+
+# China Standard Time; RTC already supplies correct UTC.
+ro.twrp.default_timezone=CST-8
+ro.twrp.default_timezone_selection=TAIST-8;TAIDT
+
+# Resolve the stock physical CPU sensor by type, independently of zone numbering.
+ro.twrp.cpu_temp_type=cpu-crg

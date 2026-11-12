@@ -1,0 +1,23 @@
+# Checked USB configfs reconciler. No general shell or arbitrary service control.
+type dijun_usb, domain, coredomain;
+system_internal_prop(dijun_usb_prop)
+system_internal_prop(dijun_usb_ctl_prop)
+
+recovery_only(`
+    # Recovery ramdisk executables keep rootfs labels, matching the platform
+    # adbd/fastbootd transitions. The rc supplies the explicit process label.
+    domain_trans(init, rootfs, dijun_usb)
+    allow dijun_usb configfs:dir { search read open getattr write add_name remove_name };
+    allow dijun_usb configfs:file { open read write getattr };
+    allow dijun_usb configfs:lnk_file { create read getattr unlink };
+    get_prop(dijun_usb, init_service_status_prop)
+    get_prop(dijun_usb, init_service_status_private_prop)
+    get_prop(dijun_usb, recovery_usb_config_prop)
+    set_prop(dijun_usb, usb_control_prop)
+    set_prop(dijun_usb, ffs_control_prop)
+    set_prop(dijun_usb, dijun_usb_prop)
+    set_prop(dijun_usb, ctl_adbd_prop)
+    set_prop(dijun_usb, dijun_usb_ctl_prop)
+    set_prop(init, dijun_usb_prop)
+    get_prop(recovery, dijun_usb_prop)
+')

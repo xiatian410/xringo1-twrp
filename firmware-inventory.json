@@ -1,0 +1,2668 @@
+{
+  "os2-final": {
+    "sample": "os2-final",
+    "source": "https://bkt-sgp-miui-ota-update-alisgp.oss-ap-southeast-1.aliyuncs.com/OS2.0.209.0.VODCNXM/dijun-ota_full-OS2.0.209.0.VODCNXM-user-15.0-b8b8e6c29b.zip",
+    "source_kind": "http-ranges",
+    "zip_size": 7022419158,
+    "etag": "\"C57BB80FE20C406F9F56B6C9AF6783E5-400\"",
+    "zip_sha256": null,
+    "metadata_files": [
+      {
+        "name": "META-INF/com/android/metadata",
+        "sha256": "6bd01ca152c654fc2b26c2c0577794eb4a63cfd738c76db90d52780602f706af"
+      },
+      {
+        "name": "payload_properties.txt",
+        "sha256": "3f2f85c56b9d4644c9d2cc1bde7dff29ab59fda6d4f1714b90f27e009af6529d"
+      }
+    ],
+    "manifest_sha256": "dd40990cc5618cad4314aa5c42dfd5b886d4d8436f9da5b80321882ef28a5955",
+    "payload_metadata_hash_verified": true,
+    "ota_identity": {
+      "ota-type": "AB",
+      "post-build": "Xiaomi/dijun/dijun:15/AP3A.240905.015.A2/OS2.0.209.0.VODCNXM:user/release-keys",
+      "post-build-incremental": "OS2.0.209.0.VODCNXM",
+      "post-sdk-level": "35",
+      "post-security-patch-level": "2025-08-01",
+      "post-timestamp": "1756734393",
+      "pre-device": "dijun"
+    },
+    "payload_version": 2,
+    "block_size": 4096,
+    "payload_data_zip_offset": 261428,
+    "groups": [
+      {
+        "partitions": [
+          "odm",
+          "odm_dlkm",
+          "product",
+          "system",
+          "system_dlkm",
+          "system_ext",
+          "vendor",
+          "vendor_dlkm",
+          "mi_ext"
+        ],
+        "name": "xring_dynamic_partitions",
+        "size": 11263803392
+      }
+    ],
+    "partitions": {
+      "adsp": {
+        "size": 10493952,
+        "sha256": "7d3ca22dadd7b451e01fe0d49caafa4d2707c3e069c97dfa5c133dff79ddc004",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 4
+        }
+      },
+      "bl2": {
+        "size": 212992,
+        "sha256": "e8c5282de81f5074e8dbe2a4612186437b4be6f5614107666d678264b3f7ab02",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "bl31": {
+        "size": 217088,
+        "sha256": "ff1ee565235b97993eea1261852e1db16bb859233e32f97ea967700633195c4c",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "boot": {
+        "size": 100663296,
+        "sha256": "0b029e1315f57d3b16f91db6ae16ec304ce6b4eb0bc4db006ed7174969b223fd",
+        "operation_counts": {
+          "REPLACE_XZ": 18,
+          "REPLACE_BZ": 30
+        }
+      },
+      "boot_logo": {
+        "size": 6291456,
+        "sha256": "ddd05493a359f7f4b752e539667d57a9c39e233351b918d712936c737e00b7e8",
+        "operation_counts": {
+          "REPLACE_XZ": 1,
+          "REPLACE_BZ": 2
+        }
+      },
+      "ddr_param": {
+        "size": 1839104,
+        "sha256": "1e3bd833c6d66e278c71de42ea83fb2ea36c1a90d11e6d5c39c00b69605d6ddb",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "dtbo": {
+        "size": 25165824,
+        "sha256": "c276e5714210d358518eab69ab7481147fe67aa464afc52e5545f07b92c2cada",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE_BZ": 10
+        }
+      },
+      "hdcp": {
+        "size": 233472,
+        "sha256": "8560bc65495d78c14322a9446c58ef5a68e9a5f82cda28cd2df996168b1b5b44",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "init_boot": {
+        "size": 16777216,
+        "sha256": "41d5cb815739dad17057d5358d63ed4aa24e25b3d58ecc505e696c569caeaca3",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE_BZ": 6
+        }
+      },
+      "isp": {
+        "size": 3993600,
+        "sha256": "29544b830da369667829311d83d591248fec94798ee1608bb1676ffebfd92efe",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "lpctrl": {
+        "size": 458752,
+        "sha256": "8bd2697336927c283f75803f317124c3c66ef47a7c19119cfd9508f9aa040f09",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mcf_ota": {
+        "size": 33554432,
+        "sha256": "14e7c57d2a3fef284d166d6e344cf9baec23e7ac4ab06dd98adfc7668ecc99ef",
+        "operation_counts": {
+          "REPLACE_XZ": 6,
+          "REPLACE_BZ": 10
+        }
+      },
+      "modem": {
+        "size": 209715200,
+        "sha256": "c3eb8f5985dc780e9042c67fabcb6fc88d967fe8718163b0bdfcd8dcad8904dc",
+        "operation_counts": {
+          "REPLACE_BZ": 71,
+          "REPLACE_XZ": 24,
+          "REPLACE": 5
+        }
+      },
+      "npu": {
+        "size": 417792,
+        "sha256": "908c18426c65c13b19c7f10b3369ae385f04fecdf28fdaaba883d4682c82f063",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "odm": {
+        "size": 1992466432,
+        "sha256": "7dc76bf4cc0e262461f66b3bd49fa8692139763556d14311677b63670bb7c027",
+        "operation_counts": {
+          "REPLACE_XZ": 658,
+          "REPLACE_BZ": 33,
+          "REPLACE": 260
+        }
+      },
+      "odm_dlkm": {
+        "size": 348160,
+        "sha256": "2e8e2f28ada44f66899fd8f5f35f1030bd12121586c3431daf6a06e6781b1b6a",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "product": {
+        "size": 4479270912,
+        "sha256": "c4b09eb2c0bf98feff77d01754043f8b90d118c6a8691fe17ec8c68cc53f0bc6",
+        "operation_counts": {
+          "REPLACE_XZ": 1883,
+          "REPLACE": 227,
+          "REPLACE_BZ": 26
+        }
+      },
+      "pvmfw": {
+        "size": 1048576,
+        "sha256": "63e297a00159b521beb2ae61aa51f949d4206f391a325e317e023542c39f93f7",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "recovery": {
+        "size": 104857600,
+        "sha256": "8ef5f1241ec1e2f99442b7d92bcb24ee206bf10a43f367a2235bf28214dba7b4",
+        "operation_counts": {
+          "REPLACE_XZ": 14,
+          "REPLACE_BZ": 36
+        }
+      },
+      "sap": {
+        "size": 104857600,
+        "sha256": "e3622da4c283552a16040f65905445fd6b64fe85fdf502a5cb87547afcaf1cd3",
+        "operation_counts": {
+          "REPLACE_XZ": 8,
+          "REPLACE_BZ": 38,
+          "REPLACE": 4
+        }
+      },
+      "sec_dtbo": {
+        "size": 94208,
+        "sha256": "486039ea163b38f65d3a4ab032601370e5763c1e55dbc0871bdc0c806c591ddc",
+        "operation_counts": {
+          "REPLACE_BZ": 1
+        }
+      },
+      "sensorhub": {
+        "size": 1650688,
+        "sha256": "cb09945bc1b3b5941b1d94205561dc8abdf2fec23a784a312bcb8c4d7c8929a5",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "system": {
+        "size": 844222464,
+        "sha256": "39223d05b578b123c840049ed1896488763a33f8e7b8d4ac9603846cc00a9c3b",
+        "operation_counts": {
+          "REPLACE_XZ": 389,
+          "REPLACE": 13,
+          "REPLACE_BZ": 1
+        }
+      },
+      "system_dlkm": {
+        "size": 15196160,
+        "sha256": "3e85b933150390db78a9525bcea1daed3ea1f561adba0b38119f5576f21980b2",
+        "operation_counts": {
+          "REPLACE_XZ": 6,
+          "REPLACE": 2
+        }
+      },
+      "system_ext": {
+        "size": 459948032,
+        "sha256": "c011ba4359e9f6aaaa8018e743b68e95b32feb1336b231b1d3acdd0d798d0f66",
+        "operation_counts": {
+          "REPLACE_XZ": 215,
+          "REPLACE": 4,
+          "REPLACE_BZ": 1
+        }
+      },
+      "tee": {
+        "size": 5144576,
+        "sha256": "1ee374184901af7260189b69a0c8428a05a0fa846261a7060d61df7d130b50b8",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 1
+        }
+      },
+      "uefi": {
+        "size": 2105344,
+        "sha256": "febb07f08a391c3e07a1e76d90f74e643b297462ad2415b8d61e7117f69bd952",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "vbmeta": {
+        "size": 8192,
+        "sha256": "20d6f7dfaccc7f8f57df7cb8d18a53177c48dcefa156957af4e2b199870cbd28",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vbmeta_system": {
+        "size": 4096,
+        "sha256": "3b5247e77116a302c28051ce7a5d443dde4b4fb888bd864c082bc8ea50a0c81c",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vbmeta_vendor": {
+        "size": 8192,
+        "sha256": "00ce6c2ebe5be7d65fba2d9a333c1c522a3e91840df0867398b64fba09f3ae26",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vendor": {
+        "size": 725561344,
+        "sha256": "1a390a039b8cf30b345a985807b2f8178b1072d35fc0cc20ec54e357550b5844",
+        "operation_counts": {
+          "REPLACE_XZ": 313,
+          "REPLACE": 32,
+          "REPLACE_BZ": 1
+        }
+      },
+      "vendor_boot": {
+        "size": 100663296,
+        "sha256": "b7faf32b2d7fa98f7c5b248d5471fcf406b42756aead329cc628b16fc1593154",
+        "operation_counts": {
+          "REPLACE_XZ": 10,
+          "REPLACE": 1,
+          "REPLACE_BZ": 37
+        }
+      },
+      "vendor_dlkm": {
+        "size": 15212544,
+        "sha256": "9a684adc97e40fc5ba8e2b312fa5a150c06ea27aacb64681177b5e3fc3907189",
+        "operation_counts": {
+          "REPLACE_XZ": 8
+        }
+      },
+      "xctrl_cpu": {
+        "size": 139264,
+        "sha256": "910ea434a62048527c1f3a7d3dc09531637afdea385510da74e3e6c2dd4662ac",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xctrl_ddr": {
+        "size": 65536,
+        "sha256": "9e7da50f2dfae9e3a19801c2b73ecf9d13b6786b6770fc9cdbbc5c67c4049524",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xhee": {
+        "size": 385024,
+        "sha256": "b26a6f5886bd479d368c8277a8b9aea2aeba45a2a2014fade38de1d996fffd44",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xloader": {
+        "size": 221184,
+        "sha256": "48a5c94a16417f709f033e861ed2ac12bac9d0d11f69ebf061edbd253ca0b54c",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xrse": {
+        "size": 352256,
+        "sha256": "f8577694a6821de9a75e64f19917af4c0b4cc05811ee32fca134492b075b8cb5",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xspm": {
+        "size": 2555904,
+        "sha256": "496942baa748c6ccba8437613f5ad5e2e5d0b833de44ddc43350769443db98eb",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "xsps": {
+        "size": 786432,
+        "sha256": "f75aa56916b48754dfc4c02d2cdecb8c81bba5fbf4724a410eadd37428b4115f",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mi_ext": {
+        "size": 155648,
+        "sha256": "7a85acdd5e14d4f8a6f4258ef6c1c640f50ed65ca1264b7409c0a4c8909efa40",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      }
+    },
+    "extracted": {
+      "boot": {
+        "sha256": "0b029e1315f57d3b16f91db6ae16ec304ce6b4eb0bc4db006ed7174969b223fd",
+        "size": 100663296,
+        "verified": true
+      },
+      "init_boot": {
+        "sha256": "41d5cb815739dad17057d5358d63ed4aa24e25b3d58ecc505e696c569caeaca3",
+        "size": 16777216,
+        "verified": true
+      },
+      "vendor_boot": {
+        "sha256": "b7faf32b2d7fa98f7c5b248d5471fcf406b42756aead329cc628b16fc1593154",
+        "size": 100663296,
+        "verified": true
+      },
+      "recovery": {
+        "sha256": "8ef5f1241ec1e2f99442b7d92bcb24ee206bf10a43f367a2235bf28214dba7b4",
+        "size": 104857600,
+        "verified": true
+      },
+      "dtbo": {
+        "sha256": "c276e5714210d358518eab69ab7481147fe67aa464afc52e5545f07b92c2cada",
+        "size": 25165824,
+        "verified": true
+      },
+      "vendor_dlkm": {
+        "sha256": "9a684adc97e40fc5ba8e2b312fa5a150c06ea27aacb64681177b5e3fc3907189",
+        "size": 15212544,
+        "verified": true
+      },
+      "system_dlkm": {
+        "sha256": "3e85b933150390db78a9525bcea1daed3ea1f561adba0b38119f5576f21980b2",
+        "size": 15196160,
+        "verified": true
+      },
+      "odm": {
+        "sha256": "7dc76bf4cc0e262461f66b3bd49fa8692139763556d14311677b63670bb7c027",
+        "size": 1992466432,
+        "verified": true
+      },
+      "vendor": {
+        "sha256": "1a390a039b8cf30b345a985807b2f8178b1072d35fc0cc20ec54e357550b5844",
+        "size": 725561344,
+        "verified": true
+      },
+      "odm_dlkm": {
+        "sha256": "2e8e2f28ada44f66899fd8f5f35f1030bd12121586c3431daf6a06e6781b1b6a",
+        "size": 348160,
+        "verified": true
+      },
+      "system": {
+        "sha256": "39223d05b578b123c840049ed1896488763a33f8e7b8d4ac9603846cc00a9c3b",
+        "size": 844222464,
+        "verified": true
+      },
+      "system_ext": {
+        "sha256": "c011ba4359e9f6aaaa8018e743b68e95b32feb1336b231b1d3acdd0d798d0f66",
+        "size": 459948032,
+        "verified": true
+      },
+      "mi_ext": {
+        "sha256": "7a85acdd5e14d4f8a6f4258ef6c1c640f50ed65ca1264b7409c0a4c8909efa40",
+        "size": 155648,
+        "verified": true
+      },
+      "product": {
+        "sha256": "c4b09eb2c0bf98feff77d01754043f8b90d118c6a8691fe17ec8c68cc53f0bc6",
+        "size": 4479270912,
+        "verified": true
+      }
+    },
+    "verification_scope": "ZIP metadata CRC; operation hashes where present; full extracted partition SHA-256. No OTA signature authentication or whole ZIP digest yet.",
+    "tool_sha256": "b1caba4d5fabe0a7a19dee86a5253793855dfc621ca3ba59d39863dc3f3175dd",
+    "http_bytes_fetched_this_run": 4716706220
+  },
+  "os2-initial": {
+    "sample": "os2-initial",
+    "source": "https://bkt-sgp-miui-ota-update-alisgp.oss-ap-southeast-1.aliyuncs.com/OS2.0.121.0.VODCNXM/dijun-ota_full-OS2.0.121.0.VODCNXM-user-15.0-06c0ede3f3.zip",
+    "source_kind": "http-ranges",
+    "zip_size": 6968315507,
+    "etag": "\"F2A2FF4443D5E288CE6CB3FB9F88606D-400\"",
+    "zip_sha256": null,
+    "metadata_files": [
+      {
+        "name": "META-INF/com/android/metadata",
+        "sha256": "a64d98d00951f8663ce76111b84f99f87c3ac47f85e2df2bb713a239390d8c14"
+      },
+      {
+        "name": "payload_properties.txt",
+        "sha256": "1ccd3ff90128dbe0e0dd218034bef912c24c47a6f9c5a19f8371e8d2f23c73bd"
+      }
+    ],
+    "manifest_sha256": "e94c7c5d99b3c0cb72e19b9ccc21c547288d99bb2c3ce90db45b06577a918b0a",
+    "payload_metadata_hash_verified": true,
+    "ota_identity": {
+      "ota-type": "AB",
+      "post-build": "Xiaomi/dijun/dijun:15/AP3A.240905.015.A2/OS2.0.121.0.VODCNXM:user/release-keys",
+      "post-build-incremental": "OS2.0.121.0.VODCNXM",
+      "post-sdk-level": "35",
+      "post-security-patch-level": "2025-04-01",
+      "post-timestamp": "1747365645",
+      "pre-device": "dijun"
+    },
+    "payload_version": 2,
+    "block_size": 4096,
+    "payload_data_zip_offset": 259255,
+    "groups": [
+      {
+        "partitions": [
+          "odm",
+          "odm_dlkm",
+          "product",
+          "system",
+          "system_dlkm",
+          "system_ext",
+          "vendor",
+          "vendor_dlkm",
+          "mi_ext"
+        ],
+        "name": "xring_dynamic_partitions",
+        "size": 11263803392
+      }
+    ],
+    "partitions": {
+      "adsp": {
+        "size": 10493952,
+        "sha256": "f0a015343092810365e36c192760bc8712f4222a345c25999735cd21271d3c7d",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 4
+        }
+      },
+      "bl2": {
+        "size": 212992,
+        "sha256": "1704b0e72bfc15ce31f429dc234dacc67374ae2a6eac2e91c51bdb4c29fa4e23",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "bl31": {
+        "size": 217088,
+        "sha256": "09fa451363669f8c9072554d36fb906bfe499020ff6a1ac059369ca15c075ace",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "boot": {
+        "size": 100663296,
+        "sha256": "e6307c194cce33a415f08130574a8ed07aa051a978e102360830faeb97f93be2",
+        "operation_counts": {
+          "REPLACE_XZ": 18,
+          "REPLACE_BZ": 30
+        }
+      },
+      "boot_logo": {
+        "size": 6291456,
+        "sha256": "ddd05493a359f7f4b752e539667d57a9c39e233351b918d712936c737e00b7e8",
+        "operation_counts": {
+          "REPLACE_XZ": 1,
+          "REPLACE_BZ": 2
+        }
+      },
+      "ddr_param": {
+        "size": 1839104,
+        "sha256": "7caf06c05cbf23eeadffe169136ae880c2e064d57bbafb6f620be34cb68b293e",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "dtbo": {
+        "size": 25165824,
+        "sha256": "d1159130fcc5b78ffcbe137758bcec1df373c564e40009d87310556b060d4c6c",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE_BZ": 10
+        }
+      },
+      "hdcp": {
+        "size": 233472,
+        "sha256": "9e1a9cf36c3b3e5b334c3255babf9c517b2a5494d59f16a962e471b887c2f480",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "init_boot": {
+        "size": 16777216,
+        "sha256": "b0e5d102351ecd7c54372be38ce362ab19460679c96f12599227a708d0868cc8",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE_BZ": 6
+        }
+      },
+      "isp": {
+        "size": 4198400,
+        "sha256": "580cceb4bb8f34ced2669eb51ecd33b5e80327c0e776e1d5cbbe1a3538b20b44",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 1
+        }
+      },
+      "lpctrl": {
+        "size": 458752,
+        "sha256": "5a638299db3700fab894f3486452a3e72e7b7a7f5695842a46fdb1e881c70b83",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mcf_ota": {
+        "size": 33554432,
+        "sha256": "602f69b1b85951fce30ea0c46dc386cc2a8f617c59035577ac94dcaa8a1e6a37",
+        "operation_counts": {
+          "REPLACE_XZ": 6,
+          "REPLACE_BZ": 10
+        }
+      },
+      "modem": {
+        "size": 209715200,
+        "sha256": "24572e305199052c2cbd15e9e3ba3bca64595d2ac21ca80d45510ae6663a9d18",
+        "operation_counts": {
+          "REPLACE_BZ": 71,
+          "REPLACE_XZ": 24,
+          "REPLACE": 5
+        }
+      },
+      "npu": {
+        "size": 417792,
+        "sha256": "c35f5434b8fbe23912a006522dbb929e03069e1c92e8b7ab0f812c2f73322099",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "odm": {
+        "size": 1963925504,
+        "sha256": "a4fbe7aabda7f0715761f647d921d04b81e9c61cd745d2560a5eeb6b3943ea54",
+        "operation_counts": {
+          "REPLACE_XZ": 657,
+          "REPLACE_BZ": 33,
+          "REPLACE": 247
+        }
+      },
+      "odm_dlkm": {
+        "size": 348160,
+        "sha256": "f4c8e7a8feba3d610e6be2ecadf9559abde127aa9b37654b5b84cf7e0af1c4c4",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "product": {
+        "size": 4430118912,
+        "sha256": "7be434538b43f1152b1836cfa3c5a2863194b93cfc28f606b263e447f79b166c",
+        "operation_counts": {
+          "REPLACE_XZ": 1849,
+          "REPLACE": 232,
+          "REPLACE_BZ": 32
+        }
+      },
+      "pvmfw": {
+        "size": 1048576,
+        "sha256": "138a083c9ffae84e628c61a55264b95fcc6842de5e18a1a20352605c9efaa980",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "recovery": {
+        "size": 104857600,
+        "sha256": "f8c9d3c426486ac9af8936d85cf74b4f8e7c8f7f9949e7ffb41862ce00484957",
+        "operation_counts": {
+          "REPLACE_XZ": 14,
+          "REPLACE_BZ": 36
+        }
+      },
+      "sap": {
+        "size": 104857600,
+        "sha256": "db3d843067cad7ef7cac85db66fa664942b839724f74593aff8aaeafe9e0d063",
+        "operation_counts": {
+          "REPLACE_XZ": 8,
+          "REPLACE_BZ": 38,
+          "REPLACE": 4
+        }
+      },
+      "sec_dtbo": {
+        "size": 94208,
+        "sha256": "3e38c21e5c57757fe1731537a1ff519816fc3c28cfb3333f7d71fe5d984c0905",
+        "operation_counts": {
+          "REPLACE_BZ": 1
+        }
+      },
+      "sensorhub": {
+        "size": 1642496,
+        "sha256": "489f28944cba134fd756b5e13b87ecc28fd206216c12c4e4ff0f9865abcda6e1",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "system": {
+        "size": 843886592,
+        "sha256": "84fa006ae1312ff3c0447b7d6f1c3156e02043129901241a4bd9d92a4ab4d4fb",
+        "operation_counts": {
+          "REPLACE_XZ": 389,
+          "REPLACE": 13,
+          "REPLACE_BZ": 1
+        }
+      },
+      "system_dlkm": {
+        "size": 15134720,
+        "sha256": "c598277b46f60124b77821996f1b44ce0b07f586c7a4a09758211c67a0f470a2",
+        "operation_counts": {
+          "REPLACE_XZ": 6,
+          "REPLACE": 2
+        }
+      },
+      "system_ext": {
+        "size": 453820416,
+        "sha256": "9b4895b1cda039b4b9ee1e11c5b8bc931497fea55670a1daa18b503fbadf673c",
+        "operation_counts": {
+          "REPLACE_XZ": 212,
+          "REPLACE": 4,
+          "REPLACE_BZ": 1
+        }
+      },
+      "tee": {
+        "size": 5144576,
+        "sha256": "4ae7be1436cd2b507cd95292f1271da83a88dc616dc0f1fc1a518d434d340ea6",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 1
+        }
+      },
+      "uefi": {
+        "size": 2105344,
+        "sha256": "d3f714be3acf34dea3b8a6e21efce2319e36dd10f8d4331ad171f1715ad8a64e",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "vbmeta": {
+        "size": 8192,
+        "sha256": "33ea113e7e60907db7df6d4eeedab44bbafaa42ec9eeed5037ba56f5a6e96b65",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vbmeta_system": {
+        "size": 4096,
+        "sha256": "d62d0b596a0ee27f9b877b1a2cf43b00f13c176c7c80fce19dc8446d11ac0daf",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vbmeta_vendor": {
+        "size": 8192,
+        "sha256": "0ac8102724833ba66d9f5a96fd2980f604e8622dc989a09ec0a3c85498d749d8",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vendor": {
+        "size": 726745088,
+        "sha256": "9ea48b000624d2574e52751a485e47a99f13ce2577afe13c4e5fbef5a491e477",
+        "operation_counts": {
+          "REPLACE_XZ": 310,
+          "REPLACE": 36,
+          "REPLACE_BZ": 1
+        }
+      },
+      "vendor_boot": {
+        "size": 100663296,
+        "sha256": "e3d4da2d98e644aa44ef19e50fc8af029cb619314f49f2559c23b0a7f56cbc7d",
+        "operation_counts": {
+          "REPLACE_XZ": 10,
+          "REPLACE": 1,
+          "REPLACE_BZ": 37
+        }
+      },
+      "vendor_dlkm": {
+        "size": 15204352,
+        "sha256": "558ccd27a3dd6de34f9557270a8b3b77399ca4a53bad3b471b7ee608a246c9e9",
+        "operation_counts": {
+          "REPLACE_XZ": 8
+        }
+      },
+      "xctrl_cpu": {
+        "size": 139264,
+        "sha256": "4ae9f9f6841d32d1967d9524e36e06b22d7aa59cb901c9c7ce5107a05803fc39",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xctrl_ddr": {
+        "size": 65536,
+        "sha256": "a9a1939596d490e414729cab34a031598534190c0cc481d15431d56b719e1968",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xhee": {
+        "size": 385024,
+        "sha256": "d3dc75a8e558a5312f013d2f690ed9e117a75f48236d6e85225170e569a03923",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xloader": {
+        "size": 221184,
+        "sha256": "80706dfe4620f355826d0cc57aee48f4305f2c5dca79f3c4295d71e787f206f8",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xrse": {
+        "size": 352256,
+        "sha256": "6d074e37daa776b09d16680e204234f468a057d57999ca58ebd1933e23b858ce",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xspm": {
+        "size": 2555904,
+        "sha256": "be703659644aad6cd10002d98b395bc92bfd10607fda0240853693b1efb5005a",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "xsps": {
+        "size": 786432,
+        "sha256": "9a06f8fa0ee460b5224ed1d1014c73af73d25d1dc684e7e879eafaf73b35b0a6",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mi_ext": {
+        "size": 155648,
+        "sha256": "85b5fe9c720d3a398873d3ad92d5fccf8482731b7a6b22e966cb5672d4b63bb0",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      }
+    },
+    "extracted": {
+      "boot": {
+        "sha256": "e6307c194cce33a415f08130574a8ed07aa051a978e102360830faeb97f93be2",
+        "size": 100663296,
+        "verified": true
+      },
+      "init_boot": {
+        "sha256": "b0e5d102351ecd7c54372be38ce362ab19460679c96f12599227a708d0868cc8",
+        "size": 16777216,
+        "verified": true
+      },
+      "vendor_boot": {
+        "sha256": "e3d4da2d98e644aa44ef19e50fc8af029cb619314f49f2559c23b0a7f56cbc7d",
+        "size": 100663296,
+        "verified": true
+      },
+      "recovery": {
+        "sha256": "f8c9d3c426486ac9af8936d85cf74b4f8e7c8f7f9949e7ffb41862ce00484957",
+        "size": 104857600,
+        "verified": true
+      },
+      "dtbo": {
+        "sha256": "d1159130fcc5b78ffcbe137758bcec1df373c564e40009d87310556b060d4c6c",
+        "size": 25165824,
+        "verified": true
+      },
+      "vendor_dlkm": {
+        "sha256": "558ccd27a3dd6de34f9557270a8b3b77399ca4a53bad3b471b7ee608a246c9e9",
+        "size": 15204352,
+        "verified": true
+      },
+      "system_dlkm": {
+        "sha256": "c598277b46f60124b77821996f1b44ce0b07f586c7a4a09758211c67a0f470a2",
+        "size": 15134720,
+        "verified": true
+      },
+      "odm": {
+        "sha256": "a4fbe7aabda7f0715761f647d921d04b81e9c61cd745d2560a5eeb6b3943ea54",
+        "size": 1963925504,
+        "verified": true
+      },
+      "vendor": {
+        "sha256": "9ea48b000624d2574e52751a485e47a99f13ce2577afe13c4e5fbef5a491e477",
+        "size": 726745088,
+        "verified": true
+      },
+      "odm_dlkm": {
+        "sha256": "f4c8e7a8feba3d610e6be2ecadf9559abde127aa9b37654b5b84cf7e0af1c4c4",
+        "size": 348160,
+        "verified": true
+      },
+      "system": {
+        "sha256": "84fa006ae1312ff3c0447b7d6f1c3156e02043129901241a4bd9d92a4ab4d4fb",
+        "size": 843886592,
+        "verified": true
+      },
+      "system_ext": {
+        "sha256": "9b4895b1cda039b4b9ee1e11c5b8bc931497fea55670a1daa18b503fbadf673c",
+        "size": 453820416,
+        "verified": true
+      },
+      "mi_ext": {
+        "sha256": "85b5fe9c720d3a398873d3ad92d5fccf8482731b7a6b22e966cb5672d4b63bb0",
+        "size": 155648,
+        "verified": true
+      },
+      "product": {
+        "sha256": "7be434538b43f1152b1836cfa3c5a2863194b93cfc28f606b263e447f79b166c",
+        "size": 4430118912,
+        "verified": true
+      }
+    },
+    "verification_scope": "ZIP metadata CRC; operation hashes where present; full extracted partition SHA-256. No OTA signature authentication or whole ZIP digest yet.",
+    "tool_sha256": "b1caba4d5fabe0a7a19dee86a5253793855dfc621ca3ba59d39863dc3f3175dd",
+    "http_bytes_fetched_this_run": 4692384998
+  },
+  "os3-final": {
+    "sample": "os3-final",
+    "source": "https://bkt-sgp-miui-ota-update-alisgp.oss-ap-southeast-1.aliyuncs.com/OS3.0.304.0.WODCNXM/dijun-ota_full-OS3.0.304.0.WODCNXM-user-16.0-67dca2cb87.zip",
+    "source_kind": "http-ranges",
+    "zip_size": 7513494756,
+    "etag": "\"1B123EC1502EE7A519C69BC52EB7EECF-400\"",
+    "zip_sha256": null,
+    "metadata_files": [
+      {
+        "name": "META-INF/com/android/metadata",
+        "sha256": "c775f0fd26b9895fd6f0c543be6004bc38a140d5bcffcbf6d95b371d2144f123"
+      },
+      {
+        "name": "payload_properties.txt",
+        "sha256": "5777c8a737a038639283f3c0eb88b31b3e0ef9be8597d8d2467431226509f8d3"
+      }
+    ],
+    "manifest_sha256": "c496497527607dae9a97475226db6d82251f0d39d657db4a2f17954773cb3bad",
+    "payload_metadata_hash_verified": true,
+    "ota_identity": {
+      "ota-type": "AB",
+      "post-build": "Xiaomi/dijun/dijun:16/BP2A.250605.031.A3/16OS3.1.260921.214012529.XRPECN.S:user/release-keys",
+      "post-build-incremental": "16OS3.1.260921.214012529.XRPECN.S",
+      "post-sdk-level": "36",
+      "post-security-patch-level": "2026-09-01",
+      "post-timestamp": "1790002435",
+      "pre-device": "dijun"
+    },
+    "payload_version": 2,
+    "block_size": 4096,
+    "payload_data_zip_offset": 277700,
+    "groups": [
+      {
+        "partitions": [
+          "odm",
+          "odm_dlkm",
+          "product",
+          "system",
+          "system_dlkm",
+          "system_ext",
+          "vendor",
+          "vendor_dlkm",
+          "mi_ext"
+        ],
+        "name": "xring_dynamic_partitions",
+        "size": 11263803392
+      }
+    ],
+    "partitions": {
+      "adsp": {
+        "size": 10493952,
+        "sha256": "7fdd28bd71a88bf1148acba5cf799390fd3d714cb15203a3519954d40403513a",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 4
+        }
+      },
+      "bl2": {
+        "size": 212992,
+        "sha256": "3880424cdcf3bad45f096f19b4cc5366768626396e5e6b5234171e90a86902fc",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "bl31": {
+        "size": 217088,
+        "sha256": "9f35130a00fa53ee3897badac90229cf3cc49699857c340c69e7f30eeadc0c34",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "boot": {
+        "size": 100663296,
+        "sha256": "6c12aca2b91889272be1c317a43cbbd9b1e934dec770c18b61e79282681636e8",
+        "operation_counts": {
+          "REPLACE_XZ": 18,
+          "REPLACE_BZ": 30
+        }
+      },
+      "boot_logo": {
+        "size": 6291456,
+        "sha256": "ddd05493a359f7f4b752e539667d57a9c39e233351b918d712936c737e00b7e8",
+        "operation_counts": {
+          "REPLACE_XZ": 1,
+          "REPLACE_BZ": 2
+        }
+      },
+      "ddr_param": {
+        "size": 1839104,
+        "sha256": "c011418373d520014a241f15bc03385f05c36de49a9f4cec940ddacd97a12300",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "dtbo": {
+        "size": 25165824,
+        "sha256": "0276ea9dc4cfb4952807785964c91f6d2ae4736ac6627ca4a91532018bac1fee",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE_BZ": 10
+        }
+      },
+      "hdcp": {
+        "size": 233472,
+        "sha256": "4843f2ac060297fc1e1437e4190b8e59693cfe57ed275682382ddd2b746e44b4",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "init_boot": {
+        "size": 16777216,
+        "sha256": "cc0b33fdf44c5bc57a7b40f3f82b9367f4cd463a2c586f3f0f15e7c261c074c1",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE_BZ": 6
+        }
+      },
+      "isp": {
+        "size": 4173824,
+        "sha256": "1616be707e8c6a52e092fe95e1baada33bec8dd46a6d0ccbf2163e64f0ea2fdd",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "lpctrl": {
+        "size": 458752,
+        "sha256": "9bf8343e405ff8adc416b40c1649a0966767d81a71c7e27fca56bd0b6ccf392b",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mcf_ota": {
+        "size": 33554432,
+        "sha256": "14c410e0ac618443f0f60068e76fa2d17c97fc54c7b7f71f97c4eef1f5ccd77d",
+        "operation_counts": {
+          "REPLACE_XZ": 6,
+          "REPLACE_BZ": 10
+        }
+      },
+      "modem": {
+        "size": 209715200,
+        "sha256": "8dcb40080296b641b886189fe1e8b6caea1bf1e5c279b7464489eb2437c89540",
+        "operation_counts": {
+          "REPLACE_BZ": 71,
+          "REPLACE_XZ": 24,
+          "REPLACE": 5
+        }
+      },
+      "npu": {
+        "size": 417792,
+        "sha256": "6f2eccb049ac2d2fdc1807acf13a98f944e1f6dac60995a5699d692d4d56db09",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "odm": {
+        "size": 2011459584,
+        "sha256": "71c71d591a506d48396b6e030c4005ee93bc95730a8f3d4d3edf4222ed349fde",
+        "operation_counts": {
+          "REPLACE_XZ": 678,
+          "REPLACE_BZ": 33,
+          "REPLACE": 249
+        }
+      },
+      "odm_dlkm": {
+        "size": 348160,
+        "sha256": "b5b5a7dc63bb277e0a84c92af55e18b10f7343781169f4608dddd2ad8bc42c5e",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "product": {
+        "size": 4725530624,
+        "sha256": "46f2689f9f8f94ff5250a2819f1002d18eb7d3b4fb62dbb22bc12796453631cc",
+        "operation_counts": {
+          "REPLACE_XZ": 2008,
+          "REPLACE": 220,
+          "REPLACE_BZ": 26
+        }
+      },
+      "pvmfw": {
+        "size": 1048576,
+        "sha256": "3ccf9a867c33777a9102aed5038adb5b1781d29f04d3ba92f1e24fb452204c2f",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "recovery": {
+        "size": 104857600,
+        "sha256": "4c3782e8d3c6be334e13c5bcf40fcd635816b4e7f2f4ef636074126c99847ba5",
+        "operation_counts": {
+          "REPLACE_XZ": 14,
+          "REPLACE_BZ": 36
+        }
+      },
+      "sap": {
+        "size": 104857600,
+        "sha256": "910b7c669c1149795f70858ae5db9f2de9b166be4b82a87339940d5906114aa4",
+        "operation_counts": {
+          "REPLACE_XZ": 9,
+          "REPLACE_BZ": 37,
+          "REPLACE": 4
+        }
+      },
+      "sec_dtbo": {
+        "size": 94208,
+        "sha256": "cc25747b63b20001b3ad4064b2d62f1a64aa35efc697bdb9fee067d11380055a",
+        "operation_counts": {
+          "REPLACE_BZ": 1
+        }
+      },
+      "sensorhub": {
+        "size": 1650688,
+        "sha256": "69a02c18d7642fb1fff107d007f5f8c6cac0fbec4d4f4cfbc991d6f040c21571",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "system": {
+        "size": 883400704,
+        "sha256": "9bb0e93c2ff6a3a44e778c7c1956ab1d7de149b8894f5c9c79cd0bebec69c0ca",
+        "operation_counts": {
+          "REPLACE_XZ": 409,
+          "REPLACE": 10,
+          "REPLACE_BZ": 3
+        }
+      },
+      "system_dlkm": {
+        "size": 15273984,
+        "sha256": "8eb240d5ac3534f19f034a95ee1a87ad824a98e851d1d6029bbfaeb50eb00737",
+        "operation_counts": {
+          "REPLACE_XZ": 6,
+          "REPLACE": 2
+        }
+      },
+      "system_ext": {
+        "size": 612057088,
+        "sha256": "34986773e808f3212a7825045b7b57da9f0b88dc064198d6e9f806b694bc2285",
+        "operation_counts": {
+          "REPLACE_XZ": 276,
+          "REPLACE": 15,
+          "REPLACE_BZ": 1
+        }
+      },
+      "tee": {
+        "size": 5144576,
+        "sha256": "192b1f118f421518d84ed12a0621da57da07c36efb9388be8b98ceb71e737056",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 1
+        }
+      },
+      "uefi": {
+        "size": 2105344,
+        "sha256": "a4fbb6aa5ec75072c42ecbe5535ec58116877f8e72ad51165643340fc297b094",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "vbmeta": {
+        "size": 8192,
+        "sha256": "3e14abf53aa7f71188f94e68ddee074e3492064326a2161d93d11f4037303777",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vbmeta_system": {
+        "size": 4096,
+        "sha256": "e0a93d1aef392d386b685fd6d995b48287598666b94509a36903322c0da2e6e1",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vbmeta_vendor": {
+        "size": 8192,
+        "sha256": "eaf8641e72d72c471c032f11f8cb6416920d8daf8a615527de994fd317bc4192",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vendor": {
+        "size": 761638912,
+        "sha256": "b4796aafefdd1c5222cdf977706065712b746e0a43b6503bcd2bb2e0a771f99c",
+        "operation_counts": {
+          "REPLACE_XZ": 333,
+          "REPLACE": 29,
+          "REPLACE_BZ": 2
+        }
+      },
+      "vendor_boot": {
+        "size": 100663296,
+        "sha256": "0a26f44a8494def3e75d41e80f22551da53fdcc7adf048672de5ca3d2354119f",
+        "operation_counts": {
+          "REPLACE_XZ": 11,
+          "REPLACE": 1,
+          "REPLACE_BZ": 36
+        }
+      },
+      "vendor_dlkm": {
+        "size": 15474688,
+        "sha256": "ac65e606ae510678ff2af6d04ae7be13e916ea99cb734a9ada1146018896eb8b",
+        "operation_counts": {
+          "REPLACE_XZ": 8
+        }
+      },
+      "xctrl_cpu": {
+        "size": 139264,
+        "sha256": "efbf321b918525f2ee4f965c453f45dae1f933ca55d25c97c49026d499175c58",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xctrl_ddr": {
+        "size": 65536,
+        "sha256": "391b5702814c0640533efa55279b6d83a300c513aa0f6bd77587b796a51ed38d",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xhee": {
+        "size": 385024,
+        "sha256": "01da84b9ca62e05e275068422675fff55ed46a851a608f8bb4ee6ef7744b5c24",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xloader": {
+        "size": 221184,
+        "sha256": "324ed13ba08acae9bb509127fb76b464504afebb3835111ffd6d0d1164abe716",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xrse": {
+        "size": 352256,
+        "sha256": "b0a7b1033103062372bcf9f3ef4c0c20e85d528c3c703ab561c662d7423734c2",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xspm": {
+        "size": 2555904,
+        "sha256": "fe59d767b0e42ace0464b77f213b8c8ebd0d70afa2182aec1b0f6983907a2f2b",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "xsps": {
+        "size": 786432,
+        "sha256": "8f473b34781af453689646d8e845da42e4273a9cc93163916e62e621dd6cb27f",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mi_ext": {
+        "size": 86556672,
+        "sha256": "2688f763186081adfb96d890a6ee4e4678e79ab070a10f87bf975edc0f3083fd",
+        "operation_counts": {
+          "REPLACE_XZ": 17,
+          "REPLACE": 25
+        }
+      }
+    },
+    "extracted": {
+      "boot": {
+        "sha256": "6c12aca2b91889272be1c317a43cbbd9b1e934dec770c18b61e79282681636e8",
+        "size": 100663296,
+        "verified": true
+      },
+      "init_boot": {
+        "sha256": "cc0b33fdf44c5bc57a7b40f3f82b9367f4cd463a2c586f3f0f15e7c261c074c1",
+        "size": 16777216,
+        "verified": true
+      },
+      "vendor_boot": {
+        "sha256": "0a26f44a8494def3e75d41e80f22551da53fdcc7adf048672de5ca3d2354119f",
+        "size": 100663296,
+        "verified": true
+      },
+      "recovery": {
+        "sha256": "4c3782e8d3c6be334e13c5bcf40fcd635816b4e7f2f4ef636074126c99847ba5",
+        "size": 104857600,
+        "verified": true
+      },
+      "dtbo": {
+        "sha256": "0276ea9dc4cfb4952807785964c91f6d2ae4736ac6627ca4a91532018bac1fee",
+        "size": 25165824,
+        "verified": true
+      },
+      "vendor_dlkm": {
+        "sha256": "ac65e606ae510678ff2af6d04ae7be13e916ea99cb734a9ada1146018896eb8b",
+        "size": 15474688,
+        "verified": true
+      },
+      "system_dlkm": {
+        "sha256": "8eb240d5ac3534f19f034a95ee1a87ad824a98e851d1d6029bbfaeb50eb00737",
+        "size": 15273984,
+        "verified": true
+      },
+      "odm": {
+        "sha256": "71c71d591a506d48396b6e030c4005ee93bc95730a8f3d4d3edf4222ed349fde",
+        "size": 2011459584,
+        "verified": true
+      },
+      "vendor": {
+        "sha256": "b4796aafefdd1c5222cdf977706065712b746e0a43b6503bcd2bb2e0a771f99c",
+        "size": 761638912,
+        "verified": true
+      },
+      "odm_dlkm": {
+        "sha256": "b5b5a7dc63bb277e0a84c92af55e18b10f7343781169f4608dddd2ad8bc42c5e",
+        "size": 348160,
+        "verified": true
+      },
+      "system": {
+        "sha256": "9bb0e93c2ff6a3a44e778c7c1956ab1d7de149b8894f5c9c79cd0bebec69c0ca",
+        "size": 883400704,
+        "verified": true
+      },
+      "system_ext": {
+        "sha256": "34986773e808f3212a7825045b7b57da9f0b88dc064198d6e9f806b694bc2285",
+        "size": 612057088,
+        "verified": true
+      },
+      "mi_ext": {
+        "sha256": "2688f763186081adfb96d890a6ee4e4678e79ab070a10f87bf975edc0f3083fd",
+        "size": 86556672,
+        "verified": true
+      },
+      "product": {
+        "sha256": "46f2689f9f8f94ff5250a2819f1002d18eb7d3b4fb62dbb22bc12796453631cc",
+        "size": 4725530624,
+        "verified": true
+      }
+    },
+    "verification_scope": "ZIP metadata CRC; operation hashes where present; full extracted partition SHA-256. No OTA signature authentication or whole ZIP digest yet.",
+    "tool_sha256": "b1caba4d5fabe0a7a19dee86a5253793855dfc621ca3ba59d39863dc3f3175dd",
+    "http_bytes_fetched_this_run": 5153597896
+  },
+  "os3-initial": {
+    "sample": "os3-initial",
+    "source": "https://bkt-sgp-miui-ota-update-alisgp.oss-ap-southeast-1.aliyuncs.com/OS3.0.4.0.WODCNXM/dijun-ota_full-OS3.0.4.0.WODCNXM-user-16.0-1398c39929.zip",
+    "source_kind": "http-ranges",
+    "zip_size": 7235710449,
+    "etag": "\"6337C0DF2E97CF78CC59DA71617EFD14-400\"",
+    "zip_sha256": null,
+    "metadata_files": [
+      {
+        "name": "META-INF/com/android/metadata",
+        "sha256": "b71625b261c0937f5b6dfdf3c01229bd2064c8e10c6aabd6188deebfcaa3fc62"
+      },
+      {
+        "name": "payload_properties.txt",
+        "sha256": "595471870347c1aa2d8215cbb3e53f8e1d67b43c7c9cb8d8cd69666e0961954f"
+      }
+    ],
+    "manifest_sha256": "bb3f27e04c775713d0b66a4bc309b3cf135fb469f2f8a2c1b985ca673844da64",
+    "payload_metadata_hash_verified": true,
+    "ota_identity": {
+      "ota-type": "AB",
+      "post-build": "Xiaomi/dijun/dijun:16/BP2A.250605.031.A3/OS3.0.4.0.WODCNXM:user/release-keys",
+      "post-build-incremental": "OS3.0.4.0.WODCNXM",
+      "post-sdk-level": "36",
+      "post-security-patch-level": "2025-09-01",
+      "post-timestamp": "1760098157",
+      "pre-device": "dijun"
+    },
+    "payload_version": 2,
+    "block_size": 4096,
+    "payload_data_zip_offset": 267080,
+    "groups": [
+      {
+        "partitions": [
+          "odm",
+          "odm_dlkm",
+          "product",
+          "system",
+          "system_dlkm",
+          "system_ext",
+          "vendor",
+          "vendor_dlkm",
+          "mi_ext"
+        ],
+        "name": "xring_dynamic_partitions",
+        "size": 11263803392
+      }
+    ],
+    "partitions": {
+      "adsp": {
+        "size": 10493952,
+        "sha256": "8d883f9a78a819a018b44370c439813112b084ae14c27a5569402f9a16cad4ee",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 4
+        }
+      },
+      "bl2": {
+        "size": 212992,
+        "sha256": "62d3baedb6aa595580f99092b028e6a389bddcbf6b33f11164103c4dc83e32c0",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "bl31": {
+        "size": 217088,
+        "sha256": "c273c43599bfb3a563a87dbe20af57e1f4fd3a3b6893022efed72a722e995a36",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "boot": {
+        "size": 100663296,
+        "sha256": "d3a62783b0116b4c0297465aee83cc62922e9530a0f3576da93255a16cb8f3c5",
+        "operation_counts": {
+          "REPLACE_XZ": 18,
+          "REPLACE_BZ": 30
+        }
+      },
+      "boot_logo": {
+        "size": 6291456,
+        "sha256": "ddd05493a359f7f4b752e539667d57a9c39e233351b918d712936c737e00b7e8",
+        "operation_counts": {
+          "REPLACE_XZ": 1,
+          "REPLACE_BZ": 2
+        }
+      },
+      "ddr_param": {
+        "size": 1839104,
+        "sha256": "50a473264cd6618e76e06a0abf49c0963e8273a13a460311ce27b56b154b87b9",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "dtbo": {
+        "size": 25165824,
+        "sha256": "89808119adfad151468da0a0c93c80298564b3345e085582bc8133f27e99f0aa",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE_BZ": 10
+        }
+      },
+      "hdcp": {
+        "size": 233472,
+        "sha256": "9ed805d01d64742abcf46f8782326525ea36ee5bf41a0cb1e5412e3b34905e20",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "init_boot": {
+        "size": 16777216,
+        "sha256": "b12b5ffc47fce6341c24273bf0d369186fea20c3d91ce98bec7960607bccfc78",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE_BZ": 6
+        }
+      },
+      "isp": {
+        "size": 4173824,
+        "sha256": "92c0ba1e638844392c234889093310c566873331910e3164adb76f91e192a183",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "lpctrl": {
+        "size": 458752,
+        "sha256": "d0785c183a1b95f184f0092dc0d44b3ad4534b686380496b5f12e976fa9d0156",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mcf_ota": {
+        "size": 33554432,
+        "sha256": "9ebfa9672de5781de77ed5d684d6e8b3e8c1e0200382bca05ee8d46d450f2623",
+        "operation_counts": {
+          "REPLACE_XZ": 6,
+          "REPLACE_BZ": 10
+        }
+      },
+      "modem": {
+        "size": 209715200,
+        "sha256": "7f5d062b266fedea7e3faa37fdbe5705e95ac6a973cfd5c890a11ddb25a1d3b3",
+        "operation_counts": {
+          "REPLACE_BZ": 71,
+          "REPLACE_XZ": 24,
+          "REPLACE": 5
+        }
+      },
+      "npu": {
+        "size": 417792,
+        "sha256": "8292cc60afb9da53a05b18c37c71e88ca3829d80201ffe17be3cd6da59465b8d",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "odm": {
+        "size": 2011414528,
+        "sha256": "af06b91cf1e93f9da98b9dad2d63fec55a69ef24fa032cba75b8ef074786777c",
+        "operation_counts": {
+          "REPLACE_XZ": 678,
+          "REPLACE_BZ": 33,
+          "REPLACE": 249
+        }
+      },
+      "odm_dlkm": {
+        "size": 348160,
+        "sha256": "c6052491df415d9ace39c6ac2e39326e63c133ca1bfbd3d205023b1e9e3e0beb",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "product": {
+        "size": 4565377024,
+        "sha256": "c5b69179b26820a0c6b16747828cb568943011f3c0045ffa65f63f2119c898fd",
+        "operation_counts": {
+          "REPLACE_XZ": 1914,
+          "REPLACE": 234,
+          "REPLACE_BZ": 29
+        }
+      },
+      "pvmfw": {
+        "size": 1048576,
+        "sha256": "12e69f0d74ea590bd47daf591b789919b8bbd762fe7296973a512c7adefbc1d3",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "recovery": {
+        "size": 104857600,
+        "sha256": "803eff288949c41a75fb78822c16dc17c3f6c3f5ba68729065499f3a3f35bc87",
+        "operation_counts": {
+          "REPLACE_XZ": 14,
+          "REPLACE_BZ": 36
+        }
+      },
+      "sap": {
+        "size": 104857600,
+        "sha256": "910b7c669c1149795f70858ae5db9f2de9b166be4b82a87339940d5906114aa4",
+        "operation_counts": {
+          "REPLACE_XZ": 9,
+          "REPLACE_BZ": 37,
+          "REPLACE": 4
+        }
+      },
+      "sec_dtbo": {
+        "size": 94208,
+        "sha256": "deaf4afe2640461636b6ead3a260c65c34416783fc19d41a3b7d58dc4c08ef7d",
+        "operation_counts": {
+          "REPLACE_BZ": 1
+        }
+      },
+      "sensorhub": {
+        "size": 1650688,
+        "sha256": "c76097cb7fcb9754e38b1c1ca4aa4f910c3e2d4cd2ee5bed334b77bde5f3ce31",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "system": {
+        "size": 807337984,
+        "sha256": "0b49b15d2f41646675604e5d7dd7b28c4113c673a32cf7d906c6ef5907c1617c",
+        "operation_counts": {
+          "REPLACE_XZ": 370,
+          "REPLACE": 11,
+          "REPLACE_BZ": 4
+        }
+      },
+      "system_dlkm": {
+        "size": 15196160,
+        "sha256": "3a5ddb499e9fdf8b19ea0aab9bf93a4215db0b4c3eef804aa366b95cfb555892",
+        "operation_counts": {
+          "REPLACE_XZ": 6,
+          "REPLACE": 2
+        }
+      },
+      "system_ext": {
+        "size": 551796736,
+        "sha256": "b8f556c44127457e42866ede3bfb423510d90cc9fc60260ae82d0080aebdbd11",
+        "operation_counts": {
+          "REPLACE_XZ": 248,
+          "REPLACE": 15,
+          "REPLACE_BZ": 1
+        }
+      },
+      "tee": {
+        "size": 5144576,
+        "sha256": "1368bc950c4a8584949fcba2c1d4e7209b4724eba05a50b3a10f1cbf82d0d881",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 1
+        }
+      },
+      "uefi": {
+        "size": 2105344,
+        "sha256": "7b47afe461786fbc0b9c17e7cdc72f8ee0daaf9f14e8b36c0bee8cbadc987fb8",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "vbmeta": {
+        "size": 8192,
+        "sha256": "f78986da461572003f70084bd89a9d770fcdfb698c6a0214bf8a3403f3964577",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vbmeta_system": {
+        "size": 4096,
+        "sha256": "1a127d5cc599211c59de5876212cc9f3e27353bb804515481d99c49508be6878",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vbmeta_vendor": {
+        "size": 8192,
+        "sha256": "cc9659ef28f5765b6a33786b9a599b1f6225535d62cb43e989682991f5bc3009",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vendor": {
+        "size": 761610240,
+        "sha256": "db4b1d21818772a00a3840ba782443a9fddc361a74dfe5bbe8e7cff2c6ff2c96",
+        "operation_counts": {
+          "REPLACE_XZ": 330,
+          "REPLACE": 32,
+          "REPLACE_BZ": 2
+        }
+      },
+      "vendor_boot": {
+        "size": 100663296,
+        "sha256": "bc5edd482f3746883a0863cdcca70cf7115f95d5160b2abee3e345904e4d8534",
+        "operation_counts": {
+          "REPLACE_XZ": 12,
+          "REPLACE_BZ": 36
+        }
+      },
+      "vendor_dlkm": {
+        "size": 15421440,
+        "sha256": "8c7b06a9465afbce4d320555bc71af4865b9c800078c3453fe6c912271d96c47",
+        "operation_counts": {
+          "REPLACE_XZ": 8
+        }
+      },
+      "xctrl_cpu": {
+        "size": 139264,
+        "sha256": "f74da8ab2e8be016e78edb84728fd20dfb846ef7129f9faf9801b56ee1edfacc",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xctrl_ddr": {
+        "size": 65536,
+        "sha256": "97b55dbfe990b4c0dfe745b849a6949e1a462624aee0dd101ed67b7986b45d14",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xhee": {
+        "size": 385024,
+        "sha256": "2e5a48cde4d4224a6c5b9982f64de6c8f837bef7e352b0c05c34c138dd483a2e",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xloader": {
+        "size": 221184,
+        "sha256": "f92a32e0e4041cac7c6ca974872a3079c8756443dc23962abe828846f90a715b",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xrse": {
+        "size": 352256,
+        "sha256": "4d00ba977807dc529ba06ef0e5e55a6f39d743b98c7b6887892acd24aa03fb89",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xspm": {
+        "size": 2555904,
+        "sha256": "83af7a50111d594bea05aabca2a1d4d2af21921c9db35f0a7661fd0b1137f6d0",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "xsps": {
+        "size": 786432,
+        "sha256": "ff04140c0314d1e49195215a8ed4c4ebb5f6758b2da919bd311964c56c0f3f89",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mi_ext": {
+        "size": 196608,
+        "sha256": "ee7ff0666ecbba855b14c9be90ddf29e86b75bad17ade66aa9a24bccee836038",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      }
+    },
+    "extracted": {
+      "boot": {
+        "sha256": "d3a62783b0116b4c0297465aee83cc62922e9530a0f3576da93255a16cb8f3c5",
+        "size": 100663296,
+        "verified": true
+      },
+      "init_boot": {
+        "sha256": "b12b5ffc47fce6341c24273bf0d369186fea20c3d91ce98bec7960607bccfc78",
+        "size": 16777216,
+        "verified": true
+      },
+      "vendor_boot": {
+        "sha256": "bc5edd482f3746883a0863cdcca70cf7115f95d5160b2abee3e345904e4d8534",
+        "size": 100663296,
+        "verified": true
+      },
+      "recovery": {
+        "sha256": "803eff288949c41a75fb78822c16dc17c3f6c3f5ba68729065499f3a3f35bc87",
+        "size": 104857600,
+        "verified": true
+      },
+      "dtbo": {
+        "sha256": "89808119adfad151468da0a0c93c80298564b3345e085582bc8133f27e99f0aa",
+        "size": 25165824,
+        "verified": true
+      },
+      "vendor_dlkm": {
+        "sha256": "8c7b06a9465afbce4d320555bc71af4865b9c800078c3453fe6c912271d96c47",
+        "size": 15421440,
+        "verified": true
+      },
+      "system_dlkm": {
+        "sha256": "3a5ddb499e9fdf8b19ea0aab9bf93a4215db0b4c3eef804aa366b95cfb555892",
+        "size": 15196160,
+        "verified": true
+      },
+      "odm": {
+        "sha256": "af06b91cf1e93f9da98b9dad2d63fec55a69ef24fa032cba75b8ef074786777c",
+        "size": 2011414528,
+        "verified": true
+      },
+      "vendor": {
+        "sha256": "db4b1d21818772a00a3840ba782443a9fddc361a74dfe5bbe8e7cff2c6ff2c96",
+        "size": 761610240,
+        "verified": true
+      },
+      "odm_dlkm": {
+        "sha256": "c6052491df415d9ace39c6ac2e39326e63c133ca1bfbd3d205023b1e9e3e0beb",
+        "size": 348160,
+        "verified": true
+      },
+      "system": {
+        "sha256": "0b49b15d2f41646675604e5d7dd7b28c4113c673a32cf7d906c6ef5907c1617c",
+        "size": 807337984,
+        "verified": true
+      },
+      "system_ext": {
+        "sha256": "b8f556c44127457e42866ede3bfb423510d90cc9fc60260ae82d0080aebdbd11",
+        "size": 551796736,
+        "verified": true
+      },
+      "mi_ext": {
+        "sha256": "ee7ff0666ecbba855b14c9be90ddf29e86b75bad17ade66aa9a24bccee836038",
+        "size": 196608,
+        "verified": true
+      },
+      "product": {
+        "sha256": "c5b69179b26820a0c6b16747828cb568943011f3c0045ffa65f63f2119c898fd",
+        "size": 4565377024,
+        "verified": true
+      }
+    },
+    "verification_scope": "ZIP metadata CRC; operation hashes where present; full extracted partition SHA-256. No OTA signature authentication or whole ZIP digest yet.",
+    "tool_sha256": "b1caba4d5fabe0a7a19dee86a5253793855dfc621ca3ba59d39863dc3f3175dd",
+    "http_bytes_fetched_this_run": 4883241954
+  },
+  "os4-current": {
+    "sample": "os4-current",
+    "source": "/root/AAA/xringo1-twrp/dijun-ota_full-OS4.0.0.19.XODCNXM-user-17.0-aa6a58e947.zip",
+    "source_kind": "local-zip",
+    "zip_size": 7821662782,
+    "etag": null,
+    "zip_sha256": null,
+    "metadata_files": [
+      {
+        "name": "META-INF/com/android/metadata",
+        "sha256": "5446a24cc686381d1594b94c4eaa56bfb7d5fa56b051826797827f3a055df40e"
+      },
+      {
+        "name": "payload_properties.txt",
+        "sha256": "4d5802fae731ff2b11b517e21137ff3f22750af6a9c5d6185a8ff61d032f8403"
+      }
+    ],
+    "manifest_sha256": "cd41381064cbcd323d9b7059730bb800d9e81b39ea4622d86eaad2f444e4df9c",
+    "payload_metadata_hash_verified": true,
+    "ota_identity": {
+      "ota-type": "AB",
+      "post-build": "Xiaomi/dijun/dijun:17/CP2A.260605.016/17OS4.0.260920.221408987.XRPECN.S:user/release-keys",
+      "post-build-incremental": "17OS4.0.260920.221408987.XRPECN.S",
+      "post-sdk-level": "37",
+      "post-security-patch-level": "2026-09-01",
+      "post-timestamp": "1789918915",
+      "pre-device": "dijun"
+    },
+    "payload_version": 2,
+    "block_size": 4096,
+    "payload_data_zip_offset": 288469,
+    "groups": [
+      {
+        "partitions": [
+          "odm",
+          "odm_dlkm",
+          "product",
+          "system",
+          "system_dlkm",
+          "system_ext",
+          "vendor",
+          "vendor_dlkm",
+          "mi_product",
+          "mi_ext"
+        ],
+        "name": "xring_dynamic_partitions",
+        "size": 11263803392
+      }
+    ],
+    "partitions": {
+      "adsp": {
+        "size": 10493952,
+        "sha256": "1f0a43279fcc201883a952bf3cb67109199a97fd343740eecc00936d9d7bd988",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 4
+        }
+      },
+      "bl2": {
+        "size": 221184,
+        "sha256": "e41f3a5762f7a5c4f1a2361207e8722d5c8cfac955135ed410f17bd4d447b355",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "bl31": {
+        "size": 229376,
+        "sha256": "490dcb7905601f6c665fc3b22e5afacb53b6947edb795e37519e5c7a2a3187ff",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "boot": {
+        "size": 100663296,
+        "sha256": "8563cbf6f196daec15e23f773276dd811b023b6f76df1953b24af4d1b5066f07",
+        "operation_counts": {
+          "REPLACE_XZ": 21,
+          "REPLACE_BZ": 27
+        }
+      },
+      "boot_logo": {
+        "size": 6291456,
+        "sha256": "44d52fe6712dea45fec72c456ed5c99edefecf30ef6333567a7ecbc11702be5c",
+        "operation_counts": {
+          "REPLACE_XZ": 1,
+          "REPLACE_BZ": 2
+        }
+      },
+      "ddr_param": {
+        "size": 1839104,
+        "sha256": "1834dfd426d706b77fe85eb63069ffa37d604b406d8f150570db9a1ea38c7d49",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "dtbo": {
+        "size": 25165824,
+        "sha256": "9bcf9753191d3d3290c74e32246558f6bd197f7172549161dec833505c168823",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE_BZ": 10
+        }
+      },
+      "hdcp": {
+        "size": 233472,
+        "sha256": "e47fb948582cc9466abfb5c9059d10fbe44a54ef4b407aa598cad58635d4822f",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "init_boot": {
+        "size": 16777216,
+        "sha256": "f0eee4d301b0492a3e22747a4a0c076e8f87c76fd0d8600bb587d168b6592f79",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE_BZ": 6
+        }
+      },
+      "isp": {
+        "size": 4173824,
+        "sha256": "e6724184fb10ca625d024916102984cdaa1bdbe4e555358e832874d2d5590e5c",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "lpctrl": {
+        "size": 458752,
+        "sha256": "e34b686f892bf5d0d8350106df9b960c1c6ea1cfbdd35532785d24cb61d406f7",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mcf_ota": {
+        "size": 33554432,
+        "sha256": "a627649babb2b6ef00eeafdf3cc0470217f7ac348adef32ad9cba44a237223df",
+        "operation_counts": {
+          "REPLACE_XZ": 6,
+          "REPLACE_BZ": 10
+        }
+      },
+      "modem": {
+        "size": 209715200,
+        "sha256": "3969662c085ee42f4e47e767f32855bcca971b49af4eb94739fd52d2a4b57b4b",
+        "operation_counts": {
+          "REPLACE_BZ": 71,
+          "REPLACE_XZ": 24,
+          "REPLACE": 5
+        }
+      },
+      "npu": {
+        "size": 417792,
+        "sha256": "588358f383bd8b58c47ac3ca4886e04a51903edd5e345383a6588abfd0cd92c2",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "odm": {
+        "size": 2045456384,
+        "sha256": "146125e8e844f6eb7ba2a08c7f97012b8f1df81cce60e3d609a4375e67040990",
+        "operation_counts": {
+          "REPLACE_XZ": 687,
+          "REPLACE_BZ": 35,
+          "REPLACE": 254
+        }
+      },
+      "odm_dlkm": {
+        "size": 348160,
+        "sha256": "c6e5fedf4a4ef17045babce6bf9f6b9d8d5b13d291d603a80c48cbb272cd0079",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "product": {
+        "size": 4903432192,
+        "sha256": "11549ee9f86f5448a6921803e8fc686ce997aeb11059da00456d8b798e14fd43",
+        "operation_counts": {
+          "REPLACE_XZ": 2093,
+          "REPLACE": 221,
+          "REPLACE_BZ": 25
+        }
+      },
+      "pvmfw": {
+        "size": 1048576,
+        "sha256": "0360d4a43990c9a39d7cfe61533c236bf40692855c44a4a8ef908d3b68ea249e",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "recovery": {
+        "size": 104857600,
+        "sha256": "3bbd522941c598e366c26e5231ca76eed037d6278a985deb2fe52397b55db17e",
+        "operation_counts": {
+          "REPLACE_XZ": 14,
+          "REPLACE_BZ": 36
+        }
+      },
+      "sap": {
+        "size": 104857600,
+        "sha256": "426e5b34b64ae25b7682c64dcb484ea6717a695c5bee7bc388941f4f8d641c99",
+        "operation_counts": {
+          "REPLACE_XZ": 9,
+          "REPLACE_BZ": 37,
+          "REPLACE": 4
+        }
+      },
+      "sec_dtbo": {
+        "size": 102400,
+        "sha256": "cfe42690a78b1a8d20311a3a98d9bf92511de8673c8903ded87ac767de22cdfd",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "sensorhub": {
+        "size": 1843200,
+        "sha256": "4df2ffc97331ec2e2d30433979275d81fefff1847b9be68146d933a81c8ec86e",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "system": {
+        "size": 949473280,
+        "sha256": "9618beb29cab49ae19f10a63c4dd4784b6e115a25ea2ac79b5e918d590d64e6a",
+        "operation_counts": {
+          "REPLACE_XZ": 439,
+          "REPLACE": 12,
+          "REPLACE_BZ": 2
+        }
+      },
+      "system_dlkm": {
+        "size": 18034688,
+        "sha256": "2cb3be1262ed93ee466dd9de2a523e0b8b0e7c68c55576d416d92bb4e744d079",
+        "operation_counts": {
+          "REPLACE_XZ": 7,
+          "REPLACE": 2
+        }
+      },
+      "system_ext": {
+        "size": 638365696,
+        "sha256": "0cc6a297cc35685591a36d43fddc6116f07c87ba4d1678102c9538569b87a02f",
+        "operation_counts": {
+          "REPLACE_XZ": 291,
+          "REPLACE": 13,
+          "REPLACE_BZ": 1
+        }
+      },
+      "tee": {
+        "size": 6017024,
+        "sha256": "c11606a0666ac01be125e01f025560a66442574af7c69521458fcc41a12eaa94",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 1
+        }
+      },
+      "uefi": {
+        "size": 2105344,
+        "sha256": "ceb7fd80c966fed8108381f7ac9126ea262617829ccf6ec8909510dbf88404fe",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "vbmeta": {
+        "size": 8192,
+        "sha256": "1be635a00a25ecf4385bb0d8bc78c5211c75f44d8a4e4f24ff6b6e0b14bc5fa9",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vbmeta_system": {
+        "size": 4096,
+        "sha256": "ac4a62cfa3a7fd6dc33a0df59d62aa4b532b2997b1552a575822f93c5fcc568b",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vbmeta_vendor": {
+        "size": 8192,
+        "sha256": "666a9c5965971688bfb9d15e71b40526f6952087b1468e29657c27f842f68332",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vendor": {
+        "size": 783253504,
+        "sha256": "53e6eb73f8f8594ee618c9a3421e61245aa923305110240d7653bcfdf4020dfc",
+        "operation_counts": {
+          "REPLACE_XZ": 342,
+          "REPLACE": 31,
+          "REPLACE_BZ": 1
+        }
+      },
+      "vendor_boot": {
+        "size": 100663296,
+        "sha256": "0791386fb74933a1c568b4e2831f26d70d652de0a31acb158173a04aed2d75a8",
+        "operation_counts": {
+          "REPLACE_XZ": 3,
+          "REPLACE_BZ": 45
+        }
+      },
+      "vendor_dlkm": {
+        "size": 17481728,
+        "sha256": "72ba905640f68b6827c05c1bed01e0867878d4829d8a632b600008f9077b9f47",
+        "operation_counts": {
+          "REPLACE_XZ": 9
+        }
+      },
+      "xctrl_cpu": {
+        "size": 139264,
+        "sha256": "6727854d8fffba932e61862eea96a47394ddebd94451dd47f0f68990e1beecf7",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xctrl_ddr": {
+        "size": 69632,
+        "sha256": "499baf9f9ff61b469fe36b747c966c07ceed67a717fbcf2f044f42957a0ca0d3",
+        "operation_counts": {
+          "REPLACE_BZ": 1
+        }
+      },
+      "xhee": {
+        "size": 385024,
+        "sha256": "c6689d8d88b4c83d4eb065a2904174647e3b909da521b79513afe6b7a7f8158d",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xloader": {
+        "size": 241664,
+        "sha256": "ea94ca90dcc81c69e7f84c5f9a77549bbaa699180a3293a645e8e7f490a6c63e",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xrse": {
+        "size": 385024,
+        "sha256": "b8d198437e0523532afe55759c24313853a63d2f469aa88d979f361c82ebca8f",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xspm": {
+        "size": 991232,
+        "sha256": "caa069fdef079d1aa90acff506909b92d8ed20d7ed3482a52538aacdf67fa4ba",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xsps": {
+        "size": 835584,
+        "sha256": "4abe1ee92a80a401bfa57dde0933112c41da15f4f52e32bb17cf2e4a2aa5a710",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mi_product": {
+        "size": 348160,
+        "sha256": "19f7aad1284a0620aecd6ba9edd159640a6e3116a976a7a007c9c07f625f4b21",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mi_ext": {
+        "size": 144494592,
+        "sha256": "13f2dff5a7573a2159678ac23a861f8f978a5bce81f557fa04ccb498becda72e",
+        "operation_counts": {
+          "REPLACE_XZ": 31,
+          "REPLACE": 38
+        }
+      }
+    },
+    "extracted": {
+      "boot": {
+        "sha256": "8563cbf6f196daec15e23f773276dd811b023b6f76df1953b24af4d1b5066f07",
+        "size": 100663296,
+        "verified": true
+      },
+      "init_boot": {
+        "sha256": "f0eee4d301b0492a3e22747a4a0c076e8f87c76fd0d8600bb587d168b6592f79",
+        "size": 16777216,
+        "verified": true
+      },
+      "vendor_boot": {
+        "sha256": "0791386fb74933a1c568b4e2831f26d70d652de0a31acb158173a04aed2d75a8",
+        "size": 100663296,
+        "verified": true
+      },
+      "recovery": {
+        "sha256": "3bbd522941c598e366c26e5231ca76eed037d6278a985deb2fe52397b55db17e",
+        "size": 104857600,
+        "verified": true
+      },
+      "dtbo": {
+        "sha256": "9bcf9753191d3d3290c74e32246558f6bd197f7172549161dec833505c168823",
+        "size": 25165824,
+        "verified": true
+      },
+      "vendor_dlkm": {
+        "sha256": "72ba905640f68b6827c05c1bed01e0867878d4829d8a632b600008f9077b9f47",
+        "size": 17481728,
+        "verified": true
+      },
+      "system_dlkm": {
+        "sha256": "2cb3be1262ed93ee466dd9de2a523e0b8b0e7c68c55576d416d92bb4e744d079",
+        "size": 18034688,
+        "verified": true
+      },
+      "odm": {
+        "sha256": "146125e8e844f6eb7ba2a08c7f97012b8f1df81cce60e3d609a4375e67040990",
+        "size": 2045456384,
+        "verified": true
+      },
+      "vendor": {
+        "sha256": "53e6eb73f8f8594ee618c9a3421e61245aa923305110240d7653bcfdf4020dfc",
+        "size": 783253504,
+        "verified": true
+      },
+      "odm_dlkm": {
+        "sha256": "c6e5fedf4a4ef17045babce6bf9f6b9d8d5b13d291d603a80c48cbb272cd0079",
+        "size": 348160,
+        "verified": true
+      },
+      "system": {
+        "sha256": "9618beb29cab49ae19f10a63c4dd4784b6e115a25ea2ac79b5e918d590d64e6a",
+        "size": 949473280,
+        "verified": true
+      },
+      "system_ext": {
+        "sha256": "0cc6a297cc35685591a36d43fddc6116f07c87ba4d1678102c9538569b87a02f",
+        "size": 638365696,
+        "verified": true
+      },
+      "mi_ext": {
+        "sha256": "13f2dff5a7573a2159678ac23a861f8f978a5bce81f557fa04ccb498becda72e",
+        "size": 144494592,
+        "verified": true
+      },
+      "mi_product": {
+        "sha256": "19f7aad1284a0620aecd6ba9edd159640a6e3116a976a7a007c9c07f625f4b21",
+        "size": 348160,
+        "verified": true
+      },
+      "product": {
+        "sha256": "11549ee9f86f5448a6921803e8fc686ce997aeb11059da00456d8b798e14fd43",
+        "size": 4903432192,
+        "verified": true
+      }
+    },
+    "verification_scope": "ZIP metadata CRC; operation hashes where present; full extracted partition SHA-256. No OTA signature authentication or whole ZIP digest yet.",
+    "tool_sha256": "b1caba4d5fabe0a7a19dee86a5253793855dfc621ca3ba59d39863dc3f3175dd",
+    "http_bytes_fetched_this_run": 0
+  },
+  "os4-stable": {
+    "sample": "os4-stable",
+    "source": "https://bkt-sgp-miui-ota-update-alisgp.oss-ap-southeast-1.aliyuncs.com/OS4.0.4.0.XODCNXM/dijun-ota_full-OS4.0.4.0.XODCNXM-user-17.0-b0ce732f48.zip",
+    "source_kind": "http-ranges",
+    "zip_size": 7883598024,
+    "etag": "\"5484FEFAB4DD8D4E3912A2B0EA044243-400\"",
+    "zip_sha256": null,
+    "metadata_files": [
+      {
+        "name": "META-INF/com/android/metadata",
+        "sha256": "300032bd7f98025c6ccb940dfcaaf196fdb99bde1deb49d7d5448d75fbe62b09"
+      },
+      {
+        "name": "payload_properties.txt",
+        "sha256": "5662230d2f19194f5c12698037a82373e5fdc5a25c4057791680a6e953c5ee64"
+      }
+    ],
+    "manifest_sha256": "a8382eeb1961af09fadb1f3c035f78f69eb55bbd7502abf453167cd93be0a1c6",
+    "payload_metadata_hash_verified": true,
+    "ota_identity": {
+      "ota-type": "AB",
+      "post-build": "Xiaomi/dijun/dijun:17/CP2A.260605.016/17OS4.0.261106.161950561.XRPECN.S:user/release-keys",
+      "post-build-incremental": "17OS4.0.261106.161950561.XRPECN.S",
+      "post-sdk-level": "37",
+      "post-security-patch-level": "2026-10-01",
+      "post-timestamp": "1793957343",
+      "pre-device": "dijun"
+    },
+    "payload_version": 2,
+    "block_size": 4096,
+    "payload_data_zip_offset": 290184,
+    "groups": [
+      {
+        "partitions": [
+          "odm",
+          "odm_dlkm",
+          "product",
+          "system",
+          "system_dlkm",
+          "system_ext",
+          "vendor",
+          "vendor_dlkm",
+          "mi_product",
+          "mi_ext"
+        ],
+        "name": "xring_dynamic_partitions",
+        "size": 11263803392
+      }
+    ],
+    "partitions": {
+      "adsp": {
+        "size": 10493952,
+        "sha256": "0bd66ab4136a6d5c87e77b6510cd2f6fc13cfcaddbd952f5b04b38949e5b5d07",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 4
+        }
+      },
+      "bl2": {
+        "size": 221184,
+        "sha256": "997a718fbb5beb390ace7fc97379199c9acd9339284c9769d2f30e090d19a8d8",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "bl31": {
+        "size": 229376,
+        "sha256": "25a9e40457c55cb1328fc352e525f60f18447a5eb0188bfa08efe8a8a797d958",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "boot": {
+        "size": 100663296,
+        "sha256": "8de86167c494181a7ef515bedcdabbcbf9dc0af6ad323dd2ac30c2ff40bd8d2c",
+        "operation_counts": {
+          "REPLACE_XZ": 21,
+          "REPLACE_BZ": 27
+        }
+      },
+      "boot_logo": {
+        "size": 6291456,
+        "sha256": "572cb64d6cc62192dc4d3f92f59dc58de40b8eabefcfd70dc3501be6eacf0330",
+        "operation_counts": {
+          "REPLACE_XZ": 1,
+          "REPLACE_BZ": 2
+        }
+      },
+      "ddr_param": {
+        "size": 1839104,
+        "sha256": "72440ac38583eda5469c9afbfa3351f6822247287af5f452ffc61988e5a8e10f",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "dtbo": {
+        "size": 25165824,
+        "sha256": "54c12ae3a6fb841c042ae643f9e55ec10f8e41ca9256c55e297e3994e27c8226",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE_BZ": 10
+        }
+      },
+      "hdcp": {
+        "size": 233472,
+        "sha256": "f4df7d29b1b53b9079ff424c213c32a5be7d40771f4191431dd3297ff9f1ca47",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "init_boot": {
+        "size": 16777216,
+        "sha256": "a38965384e4decec4e3912ddcfd48de8d77942558f12b298e3a82ed9a89f5593",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE_BZ": 6
+        }
+      },
+      "isp": {
+        "size": 4173824,
+        "sha256": "3926b817d0d7379428458e6aac2a5a436c5845c90ceb542999b08265a8759b7f",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "lpctrl": {
+        "size": 458752,
+        "sha256": "04d646bdb53c0f12f98ad2b194cfd2984de49e974b53c5836c8f586da8efb01b",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mcf_ota": {
+        "size": 33554432,
+        "sha256": "893f10f5576fb9d40045546ebd1f915d218ad469b2ac379237549b1ec5694225",
+        "operation_counts": {
+          "REPLACE_XZ": 6,
+          "REPLACE_BZ": 10
+        }
+      },
+      "modem": {
+        "size": 209715200,
+        "sha256": "08a9ae5333180e06d58edb24b6c5ece182cc31253d614f421f5ef9496de39ba1",
+        "operation_counts": {
+          "REPLACE_BZ": 71,
+          "REPLACE_XZ": 24,
+          "REPLACE": 5
+        }
+      },
+      "npu": {
+        "size": 417792,
+        "sha256": "5e10b6f8ac7fc8f56e6c513a7eacbd7a299a17db85432043e8cf05b96ffffbb1",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "odm": {
+        "size": 2043846656,
+        "sha256": "915db5932e3f934616d44705f9d50ef7ffc7e0ac8c0e93e38fcc5211ed6a4cf3",
+        "operation_counts": {
+          "REPLACE_XZ": 685,
+          "REPLACE_BZ": 35,
+          "REPLACE": 255
+        }
+      },
+      "odm_dlkm": {
+        "size": 348160,
+        "sha256": "0da56e33a809c68c730a595abe81ec21f25845f5333889054cf9b36c2da7ca9a",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "product": {
+        "size": 4968710144,
+        "sha256": "068d4f9b25ca5d06f9d65aa02614b8dc332263d13ef4f36528549e9b23f2ab7e",
+        "operation_counts": {
+          "REPLACE_XZ": 2112,
+          "REPLACE": 222,
+          "REPLACE_BZ": 36
+        }
+      },
+      "pvmfw": {
+        "size": 1048576,
+        "sha256": "b622e39682526e1828457ec4dcef9102123083dc62d07048bdb781e3b866c10d",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "recovery": {
+        "size": 104857600,
+        "sha256": "6b09247cea7869b66b383009a28b77160c42afb0be90d6c143eca2d7c253b629",
+        "operation_counts": {
+          "REPLACE_XZ": 14,
+          "REPLACE_BZ": 36
+        }
+      },
+      "sap": {
+        "size": 104857600,
+        "sha256": "426e5b34b64ae25b7682c64dcb484ea6717a695c5bee7bc388941f4f8d641c99",
+        "operation_counts": {
+          "REPLACE_XZ": 9,
+          "REPLACE_BZ": 37,
+          "REPLACE": 4
+        }
+      },
+      "sec_dtbo": {
+        "size": 102400,
+        "sha256": "43f88885a630a2b52bba4c514c6ff9e6cd2c87b6d0305c0678df4480fe682237",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "sensorhub": {
+        "size": 2203648,
+        "sha256": "cf773e6a84c2a33ceee6630b44777a902f8996fe555a2e5c03dc865a9326da0a",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "system": {
+        "size": 950542336,
+        "sha256": "63bfdb9f2a240f67947f944b0e0502ba0373676c993ab0a71873354e44bcda99",
+        "operation_counts": {
+          "REPLACE_XZ": 437,
+          "REPLACE": 15,
+          "REPLACE_BZ": 2
+        }
+      },
+      "system_dlkm": {
+        "size": 18034688,
+        "sha256": "e30c915fac5c9b001a5d49fb79329139a0fe69631d74b37fa32e8220569c810b",
+        "operation_counts": {
+          "REPLACE_XZ": 7,
+          "REPLACE": 2
+        }
+      },
+      "system_ext": {
+        "size": 635367424,
+        "sha256": "589fdb4f0feb26328e51a05462ee64ced51a38de3ff6774d1f61de1b32ae94e0",
+        "operation_counts": {
+          "REPLACE_XZ": 288,
+          "REPLACE": 14,
+          "REPLACE_BZ": 1
+        }
+      },
+      "tee": {
+        "size": 6017024,
+        "sha256": "9e39c31e4ff0bed33cabb21320f4d45384d6cb5943f28b5eb07f19f4396e9b19",
+        "operation_counts": {
+          "REPLACE_XZ": 2,
+          "REPLACE": 1
+        }
+      },
+      "uefi": {
+        "size": 2105344,
+        "sha256": "30003531e85f22685a3b10b1fd9bd353e6031e8042c3ba9298b3c49ae0be8ab9",
+        "operation_counts": {
+          "REPLACE_XZ": 2
+        }
+      },
+      "vbmeta": {
+        "size": 8192,
+        "sha256": "e0ceb5a1b760bffda5b96701c6355d42382522a380a79c16b04319964fd54ef7",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vbmeta_system": {
+        "size": 4096,
+        "sha256": "2c57dc992e69c18d4a974e6de901f88a9a3e27d86593e79c66148fd69fd6ea43",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vbmeta_vendor": {
+        "size": 8192,
+        "sha256": "04153a119dc5f6c60a726f71b191469c66e99f68e41f2170ccdd2dfe38039254",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "vendor": {
+        "size": 783015936,
+        "sha256": "e54d1b91bc7f0fb262196e462caf547810078c2b878000c9a83fdfe6f4d17720",
+        "operation_counts": {
+          "REPLACE_XZ": 335,
+          "REPLACE": 38,
+          "REPLACE_BZ": 1
+        }
+      },
+      "vendor_boot": {
+        "size": 100663296,
+        "sha256": "ef9bd5838e3a672a02e280ee7279b0ef31b2f5031838e23ce036cc0ccb5e7eaf",
+        "operation_counts": {
+          "REPLACE_XZ": 3,
+          "REPLACE_BZ": 45
+        }
+      },
+      "vendor_dlkm": {
+        "size": 17473536,
+        "sha256": "5ca851e79ba7e5ed68b74259332e1f79d3011719fc01c9dce45e50007e144d57",
+        "operation_counts": {
+          "REPLACE_XZ": 9
+        }
+      },
+      "xctrl_cpu": {
+        "size": 139264,
+        "sha256": "95ded6c3c248f62563d139dc94fae607b7a1431aa5a3dae2404e84c499d23e42",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xctrl_ddr": {
+        "size": 65536,
+        "sha256": "41bf500e3278c5af4f24385d272d736e2e19b8beacd3f68764ea0f327adf80aa",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xhee": {
+        "size": 385024,
+        "sha256": "3d74b7ead466a3bf36210aea87bcb72ca79bb4fc46b6a7056bb5f9e02ce862de",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xloader": {
+        "size": 241664,
+        "sha256": "6dc101bc0d07152df48b8c9e468db89fbac1edbfce7cb2bfff7eeac86822d683",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xrse": {
+        "size": 385024,
+        "sha256": "da8d9b4c180151d8bd0f2121ea9038d669d11ff91f2d6244438c989d1371bc20",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xspm": {
+        "size": 991232,
+        "sha256": "3b5896098964ae8041ce4982099a2bbdafa77055f62ab775d8a078ff68434aca",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "xsps": {
+        "size": 835584,
+        "sha256": "cd56398d1c7c30379c75d5e678e84e62273249d66b1a69bd16dbb045db891d7a",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mi_product": {
+        "size": 348160,
+        "sha256": "49b9a8b349c24f13716cfb6e0df9e1239f61893047c9250e27acfb168c073832",
+        "operation_counts": {
+          "REPLACE_XZ": 1
+        }
+      },
+      "mi_ext": {
+        "size": 144515072,
+        "sha256": "dacaefcc37940548a25cc0bd027325d1d384dd4ea9630387455d2bbc461cd937",
+        "operation_counts": {
+          "REPLACE_XZ": 31,
+          "REPLACE": 38
+        }
+      }
+    },
+    "extracted": {
+      "boot": {
+        "sha256": "8de86167c494181a7ef515bedcdabbcbf9dc0af6ad323dd2ac30c2ff40bd8d2c",
+        "size": 100663296,
+        "verified": true
+      },
+      "init_boot": {
+        "sha256": "a38965384e4decec4e3912ddcfd48de8d77942558f12b298e3a82ed9a89f5593",
+        "size": 16777216,
+        "verified": true
+      },
+      "vendor_boot": {
+        "sha256": "ef9bd5838e3a672a02e280ee7279b0ef31b2f5031838e23ce036cc0ccb5e7eaf",
+        "size": 100663296,
+        "verified": true
+      },
+      "recovery": {
+        "sha256": "6b09247cea7869b66b383009a28b77160c42afb0be90d6c143eca2d7c253b629",
+        "size": 104857600,
+        "verified": true
+      },
+      "dtbo": {
+        "sha256": "54c12ae3a6fb841c042ae643f9e55ec10f8e41ca9256c55e297e3994e27c8226",
+        "size": 25165824,
+        "verified": true
+      },
+      "vendor_dlkm": {
+        "sha256": "5ca851e79ba7e5ed68b74259332e1f79d3011719fc01c9dce45e50007e144d57",
+        "size": 17473536,
+        "verified": true
+      },
+      "system_dlkm": {
+        "sha256": "e30c915fac5c9b001a5d49fb79329139a0fe69631d74b37fa32e8220569c810b",
+        "size": 18034688,
+        "verified": true
+      },
+      "odm_dlkm": {
+        "sha256": "0da56e33a809c68c730a595abe81ec21f25845f5333889054cf9b36c2da7ca9a",
+        "size": 348160,
+        "verified": true
+      },
+      "vendor": {
+        "sha256": "e54d1b91bc7f0fb262196e462caf547810078c2b878000c9a83fdfe6f4d17720",
+        "size": 783015936,
+        "verified": true
+      },
+      "odm": {
+        "sha256": "915db5932e3f934616d44705f9d50ef7ffc7e0ac8c0e93e38fcc5211ed6a4cf3",
+        "size": 2043846656,
+        "verified": true
+      },
+      "system": {
+        "sha256": "63bfdb9f2a240f67947f944b0e0502ba0373676c993ab0a71873354e44bcda99",
+        "size": 950542336,
+        "verified": true
+      },
+      "mi_product": {
+        "sha256": "49b9a8b349c24f13716cfb6e0df9e1239f61893047c9250e27acfb168c073832",
+        "size": 348160,
+        "verified": true
+      },
+      "system_ext": {
+        "sha256": "589fdb4f0feb26328e51a05462ee64ced51a38de3ff6774d1f61de1b32ae94e0",
+        "size": 635367424,
+        "verified": true
+      },
+      "mi_ext": {
+        "sha256": "dacaefcc37940548a25cc0bd027325d1d384dd4ea9630387455d2bbc461cd937",
+        "size": 144515072,
+        "verified": true
+      },
+      "product": {
+        "sha256": "068d4f9b25ca5d06f9d65aa02614b8dc332263d13ef4f36528549e9b23f2ab7e",
+        "size": 4968710144,
+        "verified": true
+      }
+    },
+    "verification_scope": "ZIP metadata CRC; operation hashes where present; full extracted partition SHA-256. No OTA signature authentication or whole ZIP digest yet.",
+    "tool_sha256": "73709570d8d342e54479d14e45cafeb6410618d375acdea8e2ace94ebf851e3d",
+    "http_bytes_fetched_this_run": 149301448,
+    "parallel_range_cache": {
+      "chunks": 925,
+      "workers": 16,
+      "tool_sha256": "acb0e60ab1753bbd69a36547e64a3dff0efd0891883ef06437f40ad10ca5acde",
+      "pin": {
+        "url": "https://bkt-sgp-miui-ota-update-alisgp.oss-ap-southeast-1.aliyuncs.com/OS4.0.4.0.XODCNXM/dijun-ota_full-OS4.0.4.0.XODCNXM-user-17.0-b0ce732f48.zip",
+        "etag": "\"5484FEFAB4DD8D4E3912A2B0EA044243-400\"",
+        "size": 7883598024,
+        "chunk": 8388608
+      }
+    }
+  }
+}

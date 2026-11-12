@@ -1,0 +1,85 @@
+--- a/data.cpp
++++ b/data.cpp
+@@ -27,6 +27,7 @@
+ #include <mutex>
+ #include <optional>
+ #include <string>
++#include <string_view>
+ #include <system_error>
+ #include <unordered_set>
+ 
+@@ -537,16 +538,21 @@
+   printf("TW_NO_CPU_TEMP := true\n");
+   consts_["tw_no_cpu_temp"] = true;
+ #else
+-#ifdef TW_CUSTOM_CPU_TEMP_PATH
+-  const std::string cpu_temp_file = TW_CUSTOM_CPU_TEMP_PATH;
+-#else
+-  const std::string cpu_temp_file = "/sys/class/thermal/thermal_zone0/temp";
+-#endif
+-  if (fs::exists(cpu_temp_file)) {
++  if (!android::base::GetProperty("ro.twrp.cpu_temp_type", "").empty()) {
++    // The matching thermal device may register after settings initialization.
+     consts_["tw_no_cpu_temp"] = false;
+   } else {
+-    LOGINFO("CPU temperature file '%s' not found, disabling CPU temp.\n", cpu_temp_file.c_str());
+-    consts_["tw_no_cpu_temp"] = true;
++#ifdef TW_CUSTOM_CPU_TEMP_PATH
++    const std::string cpu_temp_file = TW_CUSTOM_CPU_TEMP_PATH;
++#else
++    const std::string cpu_temp_file = "/sys/class/thermal/thermal_zone0/temp";
++#endif
++    if (fs::exists(cpu_temp_file)) {
++      consts_["tw_no_cpu_temp"] = false;
++    } else {
++      LOGINFO("CPU temperature file '%s' not found, disabling CPU temp.\n", cpu_temp_file.c_str());
++      consts_["tw_no_cpu_temp"] = true;
++    }
+   }
+ #endif
+ 
+@@ -894,15 +900,42 @@
+ #else
+       const std::string cpu_temp_file = "/sys/class/thermal/thermal_zone0/temp";
+ #endif
++      std::string selected_temp_file = cpu_temp_file;
++      const std::string sensor_type = android::base::GetProperty("ro.twrp.cpu_temp_type", "");
++      if (!sensor_type.empty()) {
++        // Hardware channel IDs do not define Linux thermal_zone ordinals.
++        // Re-resolve by type each refresh, including after registration changes.
++        selected_temp_file.clear();
++        std::error_code ec;
++        fs::directory_iterator entry("/sys/class/thermal", ec), end_entry;
++        if (ec) return -1;
++        for (; entry != end_entry; entry.increment(ec)) {
++          if (ec) return -1;
++          const std::string name = entry->path().filename();
++          constexpr std::string_view prefix = "thermal_zone";
++          if (!name.starts_with(prefix) || name.size() == prefix.size() ||
++              name.find_first_not_of("0123456789", prefix.size()) != std::string::npos)
++            continue;
++          std::string type;
++          if (!android::base::ReadFileToString(entry->path() / "type", &type)) continue;
++          const auto first = type.find_first_not_of(" \t\r\n");
++          if (first == std::string::npos) continue;
++          type = type.substr(first, type.find_last_not_of(" \t\r\n") + 1 - first);
++          if (type != sensor_type) continue;
++          if (!selected_temp_file.empty()) return -1;  // Ambiguous identity.
++          selected_temp_file = entry->path() / "temp";
++        }
++        if (ec || selected_temp_file.empty()) return -1;
++      }
+       std::string result;
+-      if (!android::base::ReadFileToString(cpu_temp_file, &result)) return -1;
++      if (!android::base::ReadFileToString(selected_temp_file, &result)) return -1;
+       const auto first = result.find_first_not_of(" \t\r\n");
+       if (first == std::string::npos) return -1;
+       const auto last = result.find_last_not_of(" \t\r\n") + 1;
+       int64_t raw = 0;
+       const auto [end, error] = std::from_chars(result.data() + first, result.data() + last, raw);
+       if (error != std::errc{} || end != result.data() + last) return -1;
+-      if (cpu_temp_file.starts_with("/sys/class/thermal/")) {
++      if (!sensor_type.empty() || cpu_temp_file.starts_with("/sys/class/thermal/")) {
+         // Linux thermal-class temp is signed millidegrees Celsius, including
+         // sub-degree and negative readings. Magnitude must not select its unit.
+         if (raw < -273150 || raw > 1000000) return -1;

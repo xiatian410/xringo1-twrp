@@ -1,0 +1,66 @@
+diff --git a/gui2/app/screen_actions.cpp b/gui2/app/screen_actions.cpp
+index 590a735..2974fd7 100644
+--- a/gui2/app/screen_actions.cpp
++++ b/gui2/app/screen_actions.cpp
+@@ -28,6 +28,12 @@ void screen_actions::request_screen_off() {
+ 
+ bool screen_actions::toggle_screen() {
+   if (screen_ == nullptr) return false;
++  // The first press may still await frame presentation. A second press
++  // cancels that request, leaving the screen and input awake.
++  if (pending_screen_off_) {
++    pending_screen_off_ = false;
++    return false;
++  }
+   if (screen_->is_screen_off()) {
+     if (screen_->screen_on()) {
+       gui2_input_set_screen_off(false);
+diff --git a/gui2/gui2_input.cpp b/gui2/gui2_input.cpp
+index 36a878b..6e638f3 100644
+--- a/gui2/gui2_input.cpp
++++ b/gui2/gui2_input.cpp
+@@ -22,7 +22,7 @@ static bool power_down;
+ static bool volume_down;
+ static bool key_combo_consumed;
+ static bool queued_screenshot;
+-static bool queued_toggle_screen;
++static unsigned queued_toggle_screen;
+ static bool queued_back;
+ static bool queued_home;
+ static bool screen_off_input;
+@@ -84,7 +84,7 @@ static void queue_key_action(gui2_key_action action) {
+   else if (action == gui2_key_action::HOME)
+     queued_home = true;
+   else
+-    queued_toggle_screen = true;
++    ++queued_toggle_screen;
+ }
+ 
+ // Map keys to other keys.
+@@ -217,6 +217,8 @@ static void process_key_event(const input_event& event) {
+ 
+   if (code == power_key) {
+     if (event.value != 0) {
++      // A new press can arrive before the previous queued action is drained.
++      if (!power_down && !volume_down) key_combo_consumed = false;
+       power_down = true;
+       if (volume_down && !key_combo_consumed) {
+         key_combo_consumed = true;
+@@ -489,7 +491,7 @@ bool gui2_input_take_key_action(gui2_key_action* action) {
+     return true;
+   }
+   if (queued_toggle_screen) {
+-    queued_toggle_screen = false;
++    --queued_toggle_screen;
+     *action = gui2_key_action::TOGGLE_SCREEN;
+     return true;
+   }
+@@ -512,7 +514,7 @@ lv_indev_t* gui2_input_init(void) {
+   volume_down = false;
+   key_combo_consumed = false;
+   queued_screenshot = false;
+-  queued_toggle_screen = false;
++  queued_toggle_screen = 0;
+   queued_back = false;
+   queued_home = false;
+   screen_off_input = false;

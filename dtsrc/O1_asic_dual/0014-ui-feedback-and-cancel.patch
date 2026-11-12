@@ -1,0 +1,131 @@
+diff --git a/gui2/gui2.cpp b/gui2/gui2.cpp
+index d8c89d2..cf476fe 100644
+--- a/gui2/gui2.cpp
++++ b/gui2/gui2.cpp
+@@ -2156,7 +2156,6 @@ static void sideload_cancel_cb(lv_event_t* event) {
+   if (sideload != nullptr) sideload->cancel();
+   if (page_state.sideload_progress.running_action != nullptr)
+     lv_obj_set_hidden(page_state.sideload_progress.running_action, true);
+-  if (hardware != nullptr) hardware->vibrate(gui2_backend::haptic_channel::BUTTON);
+ }
+ 
+ static void poll_sideload_console(void) {
+@@ -2442,7 +2441,6 @@ static void sort_choice_cb(lv_event_t* event) {
+   close_open_sort_menu(true);
+   if (file_manager_toolbar.sort_label != nullptr)
+     lv_label_set_text(file_manager_toolbar.sort_label, sort_key_label(order));
+-  if (hardware != nullptr) hardware->vibrate(gui2_backend::haptic_channel::BUTTON);
+   rebuild_file_list();
+   gui2_pages::fade_file_list(file_manager_view);
+ }
+@@ -3133,7 +3131,6 @@ static void install_countdown_cancel_cb(lv_event_t* event) {
+   page_state.install_countdown_done = true;
+   if (page_state.install_progress.running_action != nullptr)
+     lv_obj_set_hidden(page_state.install_progress.running_action, true);
+-  if (hardware != nullptr) hardware->vibrate(gui2_backend::haptic_channel::BUTTON);
+   refresh_install_progress();
+ }
+ 
+@@ -4127,7 +4124,6 @@ static void backup_slot_b_cb(lv_event_t* event) {
+ static void backup_cancel_cb(lv_event_t* event) {
+   if (lv_event_get_code(event) != LV_EVENT_CLICKED || !accept_click(event)) return;
+   if (backup != nullptr) backup->cancel();
+-  if (hardware != nullptr) hardware->vibrate(gui2_backend::haptic_channel::BUTTON);
+ }
+ 
+ static bool system_ro_never_show = false;
+@@ -4867,7 +4863,6 @@ static void change_fs_choice_event_cb(lv_event_t* event) {
+   const auto* index = static_cast<const int*>(lv_event_get_user_data(event));
+   if (index == nullptr) return;
+   page_state.change_fs_selected = *index;
+-  if (hardware != nullptr) hardware->vibrate(gui2_backend::haptic_channel::BUTTON);
+   navigate_to(page_kind::CHANGE_FS, nullptr, page_transition::NONE);
+ }
+ 
+diff --git a/gui2/core/ui_event_guard.cpp b/gui2/core/ui_event_guard.cpp
+index 3998738..7583c65 100644
+--- a/gui2/core/ui_event_guard.cpp
++++ b/gui2/core/ui_event_guard.cpp
+@@ -44,7 +44,7 @@ void add_press_cancel_guard(lv_obj_t* object) {
+   lv_obj_add_event_cb(object, press_cancel_guard_cb, LV_EVENT_PRESS_LOST, nullptr);
+ }
+ 
+-bool accept_click(lv_event_t* event) {
++bool accept_click(lv_event_t* event, bool feedback) {
+   lv_obj_t* target = static_cast<lv_obj_t*>(lv_event_get_target(event));
+   const bool accepted = click_target == nullptr || (click_target == target && !click_cancelled);
+   bool inside = true;
+@@ -58,7 +58,8 @@ bool accept_click(lv_event_t* event) {
+   }
+   const bool result = accepted && inside;
+   reset_click_guard();
+-  if (result && hardware != nullptr) hardware->vibrate(gui2_backend::haptic_channel::BUTTON);
++  if (result && feedback && hardware != nullptr)
++    hardware->vibrate(gui2_backend::haptic_channel::BUTTON);
+   return result;
+ }
+ 
+diff --git a/gui2/core/ui_event_guard.h b/gui2/core/ui_event_guard.h
+index 0cdf4e5..914bf44 100644
+--- a/gui2/core/ui_event_guard.h
++++ b/gui2/core/ui_event_guard.h
+@@ -10,7 +10,8 @@ void configure_click_guard(lv_indev_t* pointer_indev,
+                            gui2_backend::hardware_settings* hardware);
+ void press_cancel_guard_cb(lv_event_t* event);
+ void add_press_cancel_guard(lv_obj_t* object);
+-bool accept_click(lv_event_t* event);
++// Keyboard keys use their own KEYBOARD feedback callback after acceptance.
++bool accept_click(lv_event_t* event, bool feedback = true);
+ // A confirmed gesture is not a click, so it never reaches accept_click. The
+ // guard already owns the hardware handle, so components borrow it from here.
+ void vibrate_slider();
+diff --git a/gui2/components/keyboard.cpp b/gui2/components/keyboard.cpp
+index 796ac2b..59e028f 100644
+--- a/gui2/components/keyboard.cpp
++++ b/gui2/components/keyboard.cpp
+@@ -4,6 +4,7 @@
+ #include <string.h>
+ 
+ #include "core/ui_helpers.h"
++#include "core/ui_event_guard.h"
+ 
+ namespace gui2_components {
+ 
+@@ -483,6 +484,7 @@ lv_obj_t* keyboard::add_key(lv_obj_t* parent, const key& definition, int width,
+     lv_obj_set_style_bg_color(button, gui2_core::ui.accent, LV_PART_MAIN | LV_STATE_CHECKED);
+     if (ctrl_pending_) lv_obj_add_state(button, LV_STATE_CHECKED);
+   }
++  gui2_core::add_press_cancel_guard(button);
+   lv_obj_add_event_cb(button, key_event_cb, LV_EVENT_CLICKED, this);
+   lv_obj_set_user_data(button, const_cast<key*>(&definition));
+   return button;
+@@ -598,6 +600,7 @@ void keyboard::key_event_cb(lv_event_t* event) {
+   auto* self = static_cast<keyboard*>(lv_event_get_user_data(event));
+   auto* button = static_cast<lv_obj_t*>(lv_event_get_target(event));
+   if (self == nullptr || button == nullptr) return;
++  if (!gui2_core::accept_click(event, false)) return;
+   const auto* definition = static_cast<const key*>(lv_obj_get_user_data(button));
+   if (definition == nullptr) return;
+   self->handle(*definition);
+diff --git a/gui2/components/swipe_slider.cpp b/gui2/components/swipe_slider.cpp
+index 3d5fe14..991b893 100644
+--- a/gui2/components/swipe_slider.cpp
++++ b/gui2/components/swipe_slider.cpp
+@@ -103,6 +103,8 @@ void swipe_slider::update_from_point(lv_point_t point) {
+ }
+ 
+ void swipe_slider::finish_drag(bool cancelled) {
++  // A disabled/cancelled drag or a duplicate release must not confirm again.
++  if (!dragging_) return;
+   dragging_ = false;
+   if (cancelled || progress_ < 1000) {
+     set_progress(0);
+@@ -147,7 +149,7 @@ void swipe_slider::set_enabled(bool enabled) {
+     lv_obj_set_clickable(track_, true);
+     if (knob_ != nullptr) lv_obj_set_clickable(knob_, true);
+   } else {
+-    dragging_ = false;
++    if (dragging_) reset();
+     lv_obj_set_clickable(track_, false);
+     if (knob_ != nullptr) lv_obj_set_clickable(knob_, false);
+   }

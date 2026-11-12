@@ -1,0 +1,32 @@
+{
+  "/system_root/system/build.prop": {
+    "source": "firmware/samples/os3-final/analysis/system-resources/system/system/build.prop",
+    "sha256": "cbf700fd956f1c7b5915c06950ddd200355d1cf307fda1d6e0dfe13d69efea11",
+    "role": "system"
+  },
+  "/vendor/build.prop": {
+    "source": "firmware/samples/os3-final/analysis/vendor/build.prop",
+    "sha256": "b8892730814049fdb11655d12afbc1afdd41dc3f7b0d2b0dd180fab69f7e9de3",
+    "role": "vendor"
+  },
+  "/odm/etc/build.prop": {
+    "source": "firmware/samples/os3-final/analysis/odm/etc/build.prop",
+    "sha256": "9896be7f43d8763f29026eff6fec232d1f42c64a732a05c68c7116048291e6f4",
+    "role": "odm"
+  },
+  "/vendor/etc/fstab.O1_asic": {
+    "source": "firmware/samples/os3-final/analysis/vendor/etc/fstab.O1_asic",
+    "sha256": "194edcd3eab480dac5cd3cbf12903cd386848ef935781835ba7d7088843b4ab2",
+    "role": "fstab"
+  },
+  "/vendor_dlkm/lib/modules/synaptics_tcm2.ko": {
+    "source": "firmware/samples/os3-final/analysis/vendor_dlkm/lib/modules/synaptics_tcm2.ko",
+    "sha256": "de41d3fd55dcac45899ce3a4878f99048a8d43068ff3e7fc257212fa865d71df",
+    "role": "touch"
+  },
+  "/vendor_dlkm/lib/modules/xring_smartpa.ko": {
+    "source": "firmware/samples/os3-final/analysis/vendor_dlkm/lib/modules/xring_smartpa.ko",
+    "sha256": "bca5f8c4f34b721d1a5804393311cfd9b52243183ae1a5342db12a00cadb57de",
+    "role": "haptics"
+  }
+}

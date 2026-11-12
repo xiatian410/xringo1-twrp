@@ -1,0 +1,18 @@
+diff --git a/partition.cpp b/partition.cpp
+index 4c6e94b..3230c74 100755
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -634,9 +634,12 @@ void TWPartition::ApplyTwrpFlagsFile(int fstab_version, bool display_error,
+ 
+ void TWPartition::MountPersistRootIfNeeded() {
+   if (mount_point_ == TW_PERSIST_ROOT && can_be_mounted_) {
++    const bool was_mounted = IsMounted();
+     if (Mount(false)) {
+       TWFunc::FixupTimeOnBoot(TW_PERSIST_ROOT "/time/");
+-      Unmount(false);
++      // Device init may already have mounted persist for a live TEE service.
++      // Only release mounts acquired by this temporary time-fixup operation.
++      if (!was_mounted) Unmount(false);
+     }
+   }
+ }

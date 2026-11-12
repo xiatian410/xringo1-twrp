@@ -1,0 +1,15 @@
+{
+  "status": "prepared-runtime-profiles",
+  "profiles": [
+    "os2-final",
+    "os2-initial",
+    "os3-final",
+    "os3-initial",
+    "os4-current",
+    "os4-stable"
+  ],
+  "repeated_bytes": 159678382,
+  "unique_blob_bytes": 40184830,
+  "unique_blobs": 78,
+  "scope": "Crypto plus haptic/touch firmware assets. Module plans/activation code generated separately; image and runtime results are separate evidence."
+}

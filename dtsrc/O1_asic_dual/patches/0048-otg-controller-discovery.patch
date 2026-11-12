@@ -1,0 +1,112 @@
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -35,6 +35,7 @@
+ #include <algorithm>
+ #include <android-base/scopeguard.h>
+ #include "backup_manifest.hpp"
++#include "sysfs_device_match.hpp"
+ #include <cerrno>
+ #include <charconv>
+ #include <chrono>
+@@ -3191,14 +3192,7 @@
+   twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
+   for (TWPartition* partition : partitions_) {
+     if (!partition->sysfs_entry_.empty()) {
+-      std::string device;
+-      if (const size_t wildcard = partition->sysfs_entry_.find('*');
+-        wildcard != std::string::npos) {
+-        device = partition->sysfs_entry_.substr(0, wildcard);
+-      } else {
+-        device = partition->sysfs_entry_;
+-      }
+-      if (device == uevent_data.sysfs_path.substr(0, device.size())) {
++      if (twrp_uevent::MatchesSysfsDevice(partition->sysfs_entry_, uevent_data.sysfs_path)) {
+         // Found a match
+         if (uevent_data.type == "partition") {
+           // The disk's add event can arrive before its partitions.
+@@ -3229,7 +3223,7 @@
+           partition->primary_block_device_ = fs::path("/dev/block") / uevent_data.block_device;
+           partition->alternate_block_device_ = partition->primary_block_device_;
+           partition->is_present_ = true;
+-          LOGINFO("Found a match '%s' '%s'\n", uevent_data.block_device.c_str(), device.c_str());
++          LOGINFO("Found a match '%s' '%s'\n", uevent_data.block_device.c_str(), partition->sysfs_entry_.c_str());
+           partition->FindActualBlockDevice();
+           return;
+         }
+@@ -3361,10 +3355,9 @@
+     if (part->removable_ && !part->is_sub_partition_ && !part->sysfs_entry_.empty())
+       parents.push_back(part);
+   for (TWPartition* parent : parents) {
+-    const auto prefix = parent->sysfs_entry_.substr(0, parent->sysfs_entry_.find('*'));
+     std::vector<std::string> matches;
+     for (const auto& [path, block] : disks) {
+-      if (!path.starts_with(prefix)) continue;
++      if (!twrp_uevent::MatchesSysfsDevice(parent->sysfs_entry_, path)) continue;
+       matches.push_back(block);
+       const auto disk = fs::path("/sys" + path);
+       remember_unready(disk, block);
+@@ -3464,7 +3457,7 @@
+     const auto real = resolved.string();
+     if (TWFunc::IsPathExists(write_path) &&
+         std::ranges::any_of(sysfs_entries, [&](const std::string& e) {
+-          return real.find(e) != std::string::npos;
++          return twrp_uevent::MatchesSysfsDevice(e, real);
+         })) {
+       TWFunc::WriteToFile(write_path, "add\n");
+     }
+@@ -3487,8 +3480,7 @@
+   std::vector<std::string> sysfs_entries;
+   for (TWPartition* partition : partitions_)
+     if (!partition->sysfs_entry_.empty())
+-      sysfs_entries.push_back(
+-          partition->sysfs_entry_.substr(0, partition->sysfs_entry_.find('*')));
++      sysfs_entries.push_back(partition->sysfs_entry_);
+ 
+   if (!sysfs_entries.empty()) ColdbootScan(sysfs_entries, "/sys/block", 0);
+ }
+--- a/gui2/backend/mount_backend.h
++++ b/gui2/backend/mount_backend.h
+@@ -7,8 +7,12 @@
+ namespace gui2_backend {
+ 
+ inline bool is_otg_path(const std::string& path) {
+-  return path.starts_with("/usbotg") || path.starts_with("/usb-otg") ||
+-         path.starts_with("/usb_otg");
++  for (const auto* root : {"/usbotg", "/usb-otg", "/usb_otg", "/storage/usbotg"}) {
++    const std::string base(root);
++    if (path == base || path.starts_with(base + "-") || path.starts_with(base + "/"))
++      return true;
++  }
++  return false;
+ }
+ 
+ struct mount_target {
+--- /dev/null
++++ b/sysfs_device_match.hpp
+@@ -0,0 +1,26 @@
++#pragma once
++
++#include <fnmatch.h>
++#include <string>
++
++namespace twrp_uevent {
++
++// fstab describes a controller (possibly with wildcards); block uevents name
++// descendants of that controller. Match the complete pattern against the node
++// and its ancestors, never just the text before the first wildcard. Like vold,
++// allow '*' to span components. Ancestor boundaries also keep literal paths
++// such as /devices/usb1 from accepting /devices/usb10.
++inline bool MatchesSysfsDevice(const std::string& pattern, std::string path) {
++  if (pattern.empty() || pattern.front() != '/') return false;
++  if (path.starts_with("/sys/")) path.erase(0, 4);
++  if (path.empty() || path.front() != '/') return false;
++  while (path.size() > 1 && path.back() == '/') path.pop_back();
++  for (;;) {
++    if (fnmatch(pattern.c_str(), path.c_str(), 0) == 0) return true;
++    const auto slash = path.rfind('/');
++    if (slash == std::string::npos || slash == 0) return false;
++    path.resize(slash);
++  }
++}
++
++}  // namespace twrp_uevent

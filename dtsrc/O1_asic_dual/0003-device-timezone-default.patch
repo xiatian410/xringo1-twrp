@@ -1,0 +1,45 @@
+diff --git a/data.cpp b/data.cpp
+index c22ec4e..3e769fc 100644
+--- a/data.cpp
++++ b/data.cpp
+@@ -109,6 +109,19 @@ int DataManager::LoadValues(const std::string& filename) {
+   // Read in the file, if possible
+   pthread_mutex_lock(&values_lock_);
+   persist_.LoadValues();
++  // Migrate the inherited US default once; retain deliberate timezone choices.
++  const std::string device_timezone = android::base::GetProperty("ro.twrp.default_timezone", "");
++  if (!device_timezone.empty() && persist_.GetIntValue("tw_device_timezone_migrated") != 1) {
++    if (persist_.GetStrValue(TW_TIME_ZONE_VAR) == "CST6CDT,M3.2.0,M11.1.0" &&
++        persist_.GetStrValue(TW_TIME_ZONE_GUISEL) == "CST6;CDT,M3.2.0,M11.1.0" &&
++        persist_.GetIntValue(TW_TIME_ZONE_GUIOFFSET) == 0 &&
++        persist_.GetIntValue(TW_TIME_ZONE_GUIDST) == 0) {
++      persist_[TW_TIME_ZONE_VAR] = device_timezone;
++      persist_[TW_TIME_ZONE_GUISEL] = android::base::GetProperty(
++          "ro.twrp.default_timezone_selection", "CST6;CDT,M3.2.0,M11.1.0");
++    }
++    persist_["tw_device_timezone_migrated"] = 1;
++  }
+ 
+   pthread_mutex_unlock(&values_lock_);
+   const std::string current = GetCurrentStoragePath();
+@@ -621,7 +634,8 @@ void DataManager::SetDefaultValues() {
+   persist_[TW_DISABLE_FREE_SPACE_VAR] = false;
+   persist_[TW_FORCE_DIGEST_CHECK_VAR] = false;
+   persist_[TW_USE_COMPRESSION_VAR] = false;
+-  persist_[TW_TIME_ZONE_VAR] = "CST6CDT,M3.2.0,M11.1.0";
++  persist_[TW_TIME_ZONE_VAR] = android::base::GetProperty(
++      "ro.twrp.default_timezone", "CST6CDT,M3.2.0,M11.1.0");
+   persist_[TW_GUI_SORT_ORDER] = true;
+   persist_[TW_RM_RF_VAR] = false;
+   persist_[TW_SKIP_DIGEST_CHECK_VAR] = false;
+@@ -630,7 +644,9 @@ void DataManager::SetDefaultValues() {
+   persist_[TW_SDEXT_SIZE] = false;
+   persist_[TW_SWAP_SIZE] = false;
+   persist_[TW_SDPART_FILE_SYSTEM] = "ext3";
+-  persist_[TW_TIME_ZONE_GUISEL] = "CST6;CDT,M3.2.0,M11.1.0";
++  persist_[TW_TIME_ZONE_GUISEL] = android::base::GetProperty(
++      "ro.twrp.default_timezone_selection", "CST6;CDT,M3.2.0,M11.1.0");
++  persist_["tw_device_timezone_migrated"] = false;
+   persist_[TW_TIME_ZONE_GUIOFFSET] = false;
+   persist_[TW_TIME_ZONE_GUIDST] = false;
+   persist_[TW_AUTO_REFLASHTWRP_VAR] = false;

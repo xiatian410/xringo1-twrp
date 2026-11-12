@@ -1,0 +1,105 @@
+--- a/gui2/gui2.cpp
++++ b/gui2/gui2.cpp
+@@ -836,16 +836,34 @@
+     return;
+ 
+   // The page's listbox, offset buttons and checkboxes, then "Set Time Zone".
++  if (pending_timezone_index < 0 || pending_timezone_index >= static_cast<int>(std::size(timezone_values)) ||
++      pending_offset_index < 0 || pending_offset_index >= static_cast<int>(std::size(timezone_offsets)))
++    return;
++  const char* keys[] = {"tw_military_time", "tw_time_zone_guisel", "tw_time_zone_guioffset",
++                        "tw_time_zone_guidst", "tw_time_zone"};
++  const std::string previous[] = {
++      settings->get_string(keys[0], "0"), settings->get_string(keys[1], timezone_values[5]),
++      settings->get_string(keys[2], "0"), settings->get_string(keys[3], "0"),
++      settings->get_string(keys[4], "CST6CDT,M3.2.0,M11.1.0")};
++  const auto rollback = [&] {
++    for (size_t i = 0; i < std::size(keys); ++i) settings->set(keys[i], previous[i]);
++    // Restore the exact stored custom zone, not a reconstruction from UI choices.
++    settings->update_timezone(false);
++  };
+   const bool saved =
+       settings->set("tw_military_time", pending_military_time ? "1" : "0") &&
+       settings->set("tw_time_zone_guisel", timezone_values[pending_timezone_index]) &&
+       settings->set("tw_time_zone_guioffset", timezone_offsets[pending_offset_index]) &&
+       settings->set("tw_time_zone_guidst", pending_dst ? "1" : "0");
+-  if (saved) {
+-    settings->update_timezone();
+-    if (!settings->flush()) return;
+-    status_controller.refresh();
+-  }
++  if (!saved) {
++    rollback();
++    return;
++  }
++  if (!settings->update_timezone() || !settings->flush()) {
++    rollback();
++    return;
++  }
++  status_controller.refresh();
+   navigate_to(page_kind::TIMEZONE, nullptr, page_transition::REPLACE);
+ }
+ 
+--- a/gui2/backend/settings_store.h
++++ b/gui2/backend/settings_store.h
+@@ -17,7 +17,9 @@
+   virtual bool set(const std::string& key, const std::string& value) = 0;
+   virtual bool flush() = 0;
+   // setguitimezone: tw_time_zone from the three tw_time_zone_gui* choices.
+-  virtual void update_timezone() = 0;
++  // Rollback can refresh the stored exact zone without rebuilding it from UI
++  // choices (an existing custom zone need not match those choices).
++  virtual bool update_timezone(bool rebuild_from_selection = true) = 0;
+   // Puts every recovery variable back to its built-in value and
+   // remounts storage, the way the legacy Restore Defaults button does.
+   virtual bool restore_defaults() = 0;
+--- a/gui2/backend/twrp_settings_store.h
++++ b/gui2/backend/twrp_settings_store.h
+@@ -12,7 +12,7 @@
+   bool set_persistent(const std::string& key, const std::string& value) override;
+   bool set(const std::string& key, const std::string& value) override;
+   bool flush() override;
+-  void update_timezone() override;
++  bool update_timezone(bool rebuild_from_selection = true) override;
+   bool restore_defaults() override;
+ };
+ 
+--- a/gui2/backend/twrp_settings_store.cpp
++++ b/gui2/backend/twrp_settings_store.cpp
+@@ -31,25 +31,30 @@
+ }
+ 
+ // GUIAction::setguitimezone
+-void twrp_settings_store::update_timezone() {
++bool twrp_settings_store::update_timezone(bool rebuild_from_selection) {
++  if (!rebuild_from_selection) {
++    DataManager::UpdateTimezoneEnvironment();
++    return true;
++  }
+   std::string SelectedZone;
+-  DataManager::GetValue(TW_TIME_ZONE_GUISEL, SelectedZone);  // read the selected time zone into SelectedZone
++  if (DataManager::GetValue(TW_TIME_ZONE_GUISEL, SelectedZone) != 0) return false;
+   std::string Zone = SelectedZone.substr(0, SelectedZone.find(';'));  // parse to get time zone
+   std::string DSTZone = SelectedZone.substr(SelectedZone.find(';') + 1, std::string::npos);  // parse to get DST component
+ 
+-  int dst;
+-  DataManager::GetValue(TW_TIME_ZONE_GUIDST, dst);  // check wether user chose to use DST
++  int dst = 0;
++  if (DataManager::GetValue(TW_TIME_ZONE_GUIDST, dst) != 0) return false;
+ 
+   std::string offset;
+-  DataManager::GetValue(TW_TIME_ZONE_GUIOFFSET, offset);  // pull in offset
++  if (DataManager::GetValue(TW_TIME_ZONE_GUIOFFSET, offset) != 0) return false;
+ 
+   std::string NewTimeZone = Zone;
+   if (offset != "0") NewTimeZone += ":" + offset;
+ 
+   if (dst != 0) NewTimeZone += DSTZone;
+ 
+-  DataManager::SetValue(TW_TIME_ZONE_VAR, NewTimeZone);
++  if (DataManager::SetValue(TW_TIME_ZONE_VAR, NewTimeZone) != 0) return false;
+   DataManager::UpdateTimezoneEnvironment();
++  return true;
+ }
+ 
+ // GUIAction::restoredefaultsettings

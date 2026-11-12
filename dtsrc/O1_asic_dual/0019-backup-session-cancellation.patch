@@ -1,0 +1,658 @@
+diff --git a/twrpRepacker.cpp b/twrpRepacker.cpp
+index f2f842f..f9c2ae7 100755
+--- a/twrpRepacker.cpp
++++ b/twrpRepacker.cpp
+@@ -63,8 +63,8 @@ bool twrpRepacker::Backup_Image_For_Repack(TWPartition* part, const std::string&
+ 	part_settings.generate_digest = false;
+ 	part_settings.pm_method = PartitionManagerOp::kBackup;
+ 	part_settings.progress = NULL;
+-	pid_t not_a_pid = 0;
+-	if (!part->Backup(&part_settings, &not_a_pid))
++	BackupProcess backup_process;
++	if (!part->Backup(&part_settings, &backup_process))
+ 		return false;
+ 	std::string backed_up_image = part_settings.backup_folder;
+ 	backed_up_image += part->GetBackupFileName();
+diff --git a/partitionmanager.cpp b/partitionmanager.cpp
+index 73017f0..d55783c 100755
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -967,59 +967,20 @@ bool TWPartitionManager::IsBackupNameValid(const std::string& backup_name, const
+ }
+ 
+ bool TWPartitionManager::BackupPartition(PartitionSettings* part_settings) {
+-  if (part_settings->part == nullptr) return true;
+-
+-  const std::string backup_log = fs::path(part_settings->backup_folder) / "recovery.log";
+-  int use_compression;
+-  DataManager::GetValue(TW_USE_COMPRESSION_VAR, use_compression);
+-
++  if (!part_settings || !part_settings->part || CheckBackupCancel()) return false;
+   TWFunc::SetPerformanceMode(true);
++  auto performance = android::base::make_scope_guard([] { TWFunc::SetPerformanceMode(false); });
+   const time_t start = time(nullptr);
+-
+-  // Back up a single partition (the main partition or one of its sub-partitions):
+-  // run the backup, sync, and (when enabled) generate its digest. part_settings->part
+-  // is set to the partition being processed so the caller's view stays in sync. A
+-  // false return replaces the original 'goto backup_error' early-exit.
+-  auto backup_one = [&](TWPartition* part) -> bool {
+-    part_settings->part = part;
+-    if (!part->Backup(part_settings, &tar_fork_pid)) return false;
+-    sync();
+-    sync();
+-    const std::string full = fs::path(part_settings->backup_folder) / part->backup_file_name_;
+-    if (part_settings->generate_digest) {
+-      if (!TwrpDigestDriver::MakeDigest(full)) return false;
+-    }
+-    return true;
+-  };
+-
+-  const bool ok = [&] {
+-    TWPartition* parent = part_settings->part;
+-    if (!backup_one(parent)) return false;
+-    if (parent->has_sub_partition_) {
+-      for (TWPartition* subpart : partitions_) {
+-        if (subpart->can_be_backed_up_ && subpart->is_sub_partition_ &&
+-            subpart->sub_partition_of_ == parent->mount_point_) {
+-          if (!backup_one(subpart)) return false;
+-        }
+-      }
+-    }
+-    const time_t stop = time(nullptr);
+-    const int backup_time = static_cast<int>(difftime(stop, start));
+-    LOGINFO("Partition Backup time: %d\n", backup_time);
+-    if (part_settings->part->backup_method_ ==
+-        BackupMethod::kFiles)
+-      part_settings->file_time += backup_time;
+-    else part_settings->img_time += backup_time;
+-    return true;
+-  }();
+-
+-  if (!ok) {
+-    CleanBackupFolder(part_settings->backup_folder);
+-    TWFunc::CopyFile("/tmp/recovery.log", backup_log, 0644);
+-    tw_set_default_metadata(backup_log.c_str());
+-  }
+-  TWFunc::SetPerformanceMode(false);
+-  return ok;
++  TWPartition* part = part_settings->part;
++  // RunBackup owns the flat, deduplicated plan and the unfinished directory.
++  if (!part->Backup(part_settings, &backup_process_) || CheckBackupCancel()) return false;
++  const std::string full = fs::path(part_settings->backup_folder) / part->backup_file_name_;
++  if (part_settings->generate_digest && !TwrpDigestDriver::MakeDigest(full)) return false;
++  if (CheckBackupCancel()) return false;
++  const int elapsed = static_cast<int>(difftime(time(nullptr), start));
++  if (part->backup_method_ == BackupMethod::kFiles) part_settings->file_time += elapsed;
++  else part_settings->img_time += elapsed;
++  return true;
+ }
+ 
+ void TWPartitionManager::CleanBackupFolder(const std::string& backup_folder) {
+@@ -1051,36 +1012,27 @@ int TWPartitionManager::CheckBackupCancel() const {
+ }
+ 
+ int TWPartitionManager::CancelBackup() {
+-  std::string full_backup_path;
+-
+-  stop_backup = true;
+-
+-  if (tar_fork_pid != 0) {
+-    std::string backup_name;
+-    std::string backup_folder;
+-    DataManager::GetValue(TW_BACKUP_NAME, backup_name);
+-    DataManager::GetValue(TW_BACKUPS_FOLDER_VAR, backup_folder);
+-    full_backup_path = fs::path(backup_folder) / backup_name;
+-    LOGINFO("Killing pid: %d\n", tar_fork_pid);
+-    kill(tar_fork_pid, SIGUSR2);
+-    while (kill(tar_fork_pid, 0) == 0) {
+-      usleep(1000);
+-    }
+-    LOGINFO("Backup_Run stopped and returning false, backup cancelled.\n");
+-    LOGINFO("Removing directory %s\n", full_backup_path.c_str());
+-    TWFunc::RemoveDir(full_backup_path, false);
+-    tar_fork_pid = 0;
+-  }
+-
++  // No wait or directory removal here: only the worker owns child reaping and
++  // the captured destination. A stale/failed fork can never become kill(-1).
++  backup_process_.Cancel(stop_backup);
+   return 0;
+ }
+ 
+-bool TWPartitionManager::RunBackup() {
++bool TWPartitionManager::RunBackup(bool reset_cancel) {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  // GUI clears the flag before exposing its worker; clearing it again here
++  // would lose a cancel submitted before that worker starts. Script entry uses
++  // the default true to begin a new synchronous session.
++  if (reset_cancel) stop_backup = false;
++  auto clear_progress = android::base::make_scope_guard([] {
++    DataManager::SetValue("tw_file_progress", "");
++    DataManager::SetValue("tw_size_progress", "");
++  });
++  if (CheckBackupCancel()) return false;
+   PartitionSettings part_settings;
+   std::string backup_name, backup_list;
+   TWPartition* storage = nullptr;
+ 
+-  stop_backup = false;
+ 
+   part_settings.img_bytes_remaining = 0;
+   part_settings.file_bytes_remaining = 0;
+@@ -1110,6 +1062,9 @@ bool TWPartitionManager::RunBackup() {
+     DataManager::GetValue(TW_BACKUP_NAME, backup_name);
+   }
+ 
++  if (backup_name.empty() || backup_name == "." || backup_name == ".." ||
++      !IsBackupNameValid(backup_name, true, false)) return false;
++
+   LOGINFO("Backup Name is: '%s'\n", backup_name.c_str());
+ 
+   part_settings.backup_folder = (fs::path(part_settings.backup_folder) / backup_name).string();
+@@ -1123,50 +1078,41 @@ bool TWPartitionManager::RunBackup() {
+   // tw_backup_list is ';'-joined and ';'-terminated, e.g. "/system;/data;/".
+   const std::vector<std::string> backup_paths = TWFunc::SplitString(backup_list, ';', true);
+ 
+-  // Ordinary capacity refreshes do not mount filesystems. Measure each selected
+-  // file backup source explicitly before using its cached size for preflight.
+-  auto add_backup_size = [&](TWPartition* part) {
+-    twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
+-    if (part->backup_method_ == BackupMethod::kFiles) {
+-      // UpdateSize may treat a failed removable/encrypted mount as success.
+-      // Check Mount ourselves, then measure the mounted filesystem synchronously.
+-      if (!part->Mount(true) || !part->UpdateSize(true, false, false)) return false;
+-      part_settings.file_bytes += part->backup_size_;
+-    } else {
+-      part_settings.img_bytes += part->backup_size_;
+-    }
++  std::vector<TWPartition*> plan;
++  auto add_target = [&](TWPartition* part) {
++    if (!part || !part->is_present_ || !part->can_be_backed_up_) return false;
++    if (std::find(plan.begin(), plan.end(), part) == plan.end()) plan.push_back(part);
+     return true;
+   };
+-
+-  int partition_count = 0;
+   for (const std::string& path : backup_paths) {
+-    LOGINFO("backup_path: %s\n", path.c_str());
+     TWPartition* part = FindPartitionByPath(path);
+-    if (!part) {
++    if (!add_target(part)) {
+       gui2_console::log_error("unable_to_locate_partition", path);
+-      continue;
++      return false;
+     }
+-
+-    if (!add_backup_size(part)) return false;
+-    partition_count++;
+-
+     if (part->has_sub_partition_) {
+-      auto is_backup_sub_partition = [&](const TWPartition* subpart) {
+-        return subpart->can_be_backed_up_ && subpart->is_present_ && subpart->is_sub_partition_ &&
+-               subpart->sub_partition_of_ == part->mount_point_;
+-      };
+-      for (TWPartition* subpart : partitions_ | std::views::filter(is_backup_sub_partition)) {
+-        if (!add_backup_size(subpart)) return false;
+-        partition_count++;
++      for (TWPartition* child : partitions_) {
++        if (child->can_be_backed_up_ && child->is_present_ && child->is_sub_partition_ &&
++            child->sub_partition_of_ == part->mount_point_ && !add_target(child)) return false;
+       }
+     }
+   }
+-
++  uint64_t total_bytes = 0;
++  for (TWPartition* part : plan) {
++    if (CheckBackupCancel()) return false;
++    if (part->backup_method_ == BackupMethod::kFiles) {
++      if (!part->Mount(true) || !part->UpdateSize(true, false, false)) return false;
++    }
++    if (part->backup_size_ > std::numeric_limits<uint64_t>::max() - total_bytes) return false;
++    total_bytes += part->backup_size_;
++    if (part->backup_method_ == BackupMethod::kFiles) part_settings.file_bytes += part->backup_size_;
++    else part_settings.img_bytes += part->backup_size_;
++  }
++  const size_t partition_count = plan.size();
+   if (partition_count == 0) {
+     gui2_console::info("no_partition_selected");
+     return false;
+   }
+-  const uint64_t total_bytes = part_settings.file_bytes + part_settings.img_bytes;
+   ProgressTracking progress(total_bytes);
+   part_settings.progress = &progress;
+ 
+@@ -1185,7 +1131,7 @@ bool TWPartitionManager::RunBackup() {
+   DataManager::GetValue(TW_DISABLE_FREE_SPACE_VAR, disable_free_space_check);
+ 
+   // We require an extra 32MB just in case
+-  if (!disable_free_space_check && free_space - 32 * kMiB < total_bytes) {
++  if (!disable_free_space_check && (free_space < 32 * kMiB || free_space - 32 * kMiB < total_bytes)) {
+     gui2_console::log_error("no_space");
+     return false;
+   }
+@@ -1194,46 +1140,34 @@ bool TWPartitionManager::RunBackup() {
+ 
+   gui2_console::info("backup_started");
+ 
+-  int is_decrypted = 0;
+-  int is_encrypted = 0;
+-
+-  DataManager::GetValue(TW_IS_DECRYPTED, is_decrypted);
+-  DataManager::GetValue(TW_IS_ENCRYPTED, is_encrypted);
+-  bool backup_folder_made = false;
+-  if (!is_encrypted || is_decrypted) {
+-    gui2_console::info("backup_folder", part_settings.backup_folder);
+-    if (!TWFunc::RecursiveMkdir(part_settings.backup_folder)) {
+-      gui2_console::log_error("fail_backup_folder");
+-      return false;
+-    }
+-    backup_folder_made = true;
++  // Claim a new leaf directory atomically. Never overwrite or clean a backup
++  // that existed before this session, including a dangling symlink.
++  if (CheckBackupCancel() ||
++      !TWFunc::RecursiveMkdir(fs::path(part_settings.backup_folder).parent_path()) ||
++      mkdir(part_settings.backup_folder.c_str(), 0777) != 0) {
++    gui2_console::log_error("fail_backup_folder");
++    return false;
+   }
+-
+-  // Half of a backup restores to half of a system, so do not leave one in
+-  // the list looking like something that could be restored.
+-  auto discard_unfinished_backup = [&] {
+-    if (backup_folder_made && TWFunc::RemoveDir(part_settings.backup_folder, false) != 0)
+-      LOGERR("Unable to remove '%s'\n", part_settings.backup_folder.c_str());
+-  };
+-
+-  DataManager::SetProgress(0.0);
+-
+-  for (const std::string& path : backup_paths) {
+-    if (stop_backup) {
+-      discard_unfinished_backup();
+-      return false;
+-    }
+-    TWPartition* part = FindPartitionByPath(path);
+-    if (!part) {
+-      gui2_console::log_error("unable_to_locate_partition", path);
+-      continue;
++  struct stat owned{};
++  if (lstat(part_settings.backup_folder.c_str(), &owned) != 0) return false;
++  tw_set_default_metadata(part_settings.backup_folder.c_str());
++  bool completed = false;
++  auto discard_unfinished = android::base::make_scope_guard([&] {
++    if (completed) return;
++    struct stat current{};
++    if (lstat(part_settings.backup_folder.c_str(), &current) == 0 &&
++        current.st_dev == owned.st_dev && current.st_ino == owned.st_ino && S_ISDIR(current.st_mode)) {
++      if (TWFunc::RemoveDir(part_settings.backup_folder, false) != 0)
++        LOGERR("Unable to remove unfinished backup '%s'\n", part_settings.backup_folder.c_str());
+     }
++  });
++  DataManager::SetProgress(0.0);
++  for (TWPartition* part : plan) {
++    if (CheckBackupCancel()) return false;
+     part_settings.part = part;
+-    if (!BackupPartition(&part_settings)) {
+-      discard_unfinished_backup();
+-      return false;
+-    }
++    if (!BackupPartition(&part_settings)) return false;
+   }
++  if (CheckBackupCancel()) return false;
+ 
+   // Average BPS
+   if (part_settings.img_time == 0) part_settings.img_time = 1;
+@@ -1271,6 +1205,8 @@ bool TWPartitionManager::RunBackup() {
+   gui2_console::info("total_backed_size", UnitConversion::FormatBytes(actual_backup_size));
+   UpdateSystemDetails();
+   UnmountMainPartitions();
++  if (CheckBackupCancel()) return false;
++  completed = true;
+   gui2_console::highlight("backup_completed", total_time);
+ 
+   const std::string backup_log = (fs::path(part_settings.backup_folder) / "recovery.log").string();
+diff --git a/twrpTar.cpp b/twrpTar.cpp
+index d3df95c..f19d918 100755
+--- a/twrpTar.cpp
++++ b/twrpTar.cpp
+@@ -114,12 +114,11 @@ void twrpTar::Set_Archive_Type(ArchiveType archive_type) {
+ 	current_archive_type = archive_type;
+ }
+ 
+-int twrpTar::createTarFork(pid_t *tar_fork_pid) {
+-	int status = 0;
++int twrpTar::createTarFork(BackupProcess* backup_process) {
+ 	int progress_pipe[2];
+ 
+ 	file_count = 0;
+-	if (backup_exclusions == nullptr) {
++	if (backup_exclusions == nullptr || backup_process == nullptr) {
+ 		LOGINFO("backup_exclusions is NULL\n");
+ 		return -1;
+ 	}
+@@ -129,7 +128,8 @@ int twrpTar::createTarFork(pid_t *tar_fork_pid) {
+ 		gui2_console::log_error("backup_error");
+ 		return -1;
+ 	}
+-	if ((*tar_fork_pid = fork()) == -1) {
++	const pid_t child = backup_process->Fork(PartitionManager.stop_backup);
++	if (child == -1) {
+ 		LOGINFO("create tar failed to fork.\n");
+ 		gui2_console::log_error("backup_error");
+ 		close(progress_pipe[0]);
+@@ -137,7 +137,7 @@ int twrpTar::createTarFork(pid_t *tar_fork_pid) {
+ 		return -1;
+ 	}
+ 
+-	if (*tar_fork_pid == 0) {
++	if (child == 0) {
+ 		// Child process.
+ 		signal(SIGUSR2, twrpTar::Signal_Kill);
+ 		close(progress_pipe[0]);
+@@ -413,7 +413,8 @@ int twrpTar::createTarFork(pid_t *tar_fork_pid) {
+ 		close(progress_pipe[1]);
+ 
+ 		// Read progress data from children
+-		while (android::base::ReadFully(progress_pipe[0], &fs, sizeof(fs))) {
++		int read_result;
++		while ((read_result = backup_process->ReadProgress(progress_pipe[0], fs)) > 0) {
+ 			if (first_data == 0) {
+ 				// First incoming data is the file count
+ 				file_count = fs;
+@@ -439,6 +440,14 @@ int twrpTar::createTarFork(pid_t *tar_fork_pid) {
+ 		part_settings->progress->DisplayFileCount(false);
+ 		part_settings->progress->UpdateDisplayDetails(true);
+ 
++		if (read_result < 0) backup_process->Terminate();
++		const int child_result = backup_process->Wait();
++		if (child_result != 0 || read_result < 0 || first_data != 2 ||
++		    PartitionManager.CheckBackupCancel()) {
++			LOGERR("Backup child failed or was cancelled; metadata not published\n");
++			return -1;
++		}
++
+ 		InfoManager backup_info(backup_folder + "/" + partition_name + ".info");
+ 		backup_info["backup_size"] = size_backup;
+ 		if (use_compression && use_encryption)
+@@ -450,9 +459,7 @@ int twrpTar::createTarFork(pid_t *tar_fork_pid) {
+ 		else
+ 			backup_info["backup_type"] = UNCOMPRESSED;
+ 		backup_info["file_count"] = files_backup;
+-		backup_info.SaveValues();
+-		if (TWFunc::WaitForChild(*tar_fork_pid, &status, "createTarFork()") != 0)
+-			return -1;
++		if (backup_info.SaveValues() != 0 || PartitionManager.CheckBackupCancel()) return -1;
+ 	}
+ 	return 0;
+ }
+diff --git a/partitions.hpp b/partitions.hpp
+index f57a036..a13a168 100755
+--- a/partitions.hpp
++++ b/partitions.hpp
+@@ -19,6 +19,7 @@
+ #ifndef TWRP_PARTITION_MANAGER
+ #define TWRP_PARTITION_MANAGER
+ 
++#include "backup_process.hpp"
+ #include <sys/poll.h>
+ 
+ #include <atomic>
+@@ -241,7 +242,7 @@ public:
+   bool Resize();
+ 
+   // Backs up the partition to the folder specified
+-  bool Backup(PartitionSettings* part_settings, pid_t* tar_fork_pid);
++  bool Backup(PartitionSettings* part_settings, BackupProcess* backup_process);
+ 
+   // Restores the partition using the backup folder provided
+   bool Restore(PartitionSettings* part_settings);
+@@ -452,7 +453,7 @@ private:
+   bool WipeDataWithoutWipingMediaFunc(const std::filesystem::path& parent);
+ 
+   // Backs up using tar for file systems
+-  bool BackupTar(PartitionSettings* part_settings, pid_t* tar_fork_pid);
++  bool BackupTar(PartitionSettings* part_settings, BackupProcess* backup_process);
+ 
+   // Backs up using raw read/write for emmc memory types
+   bool BackupImage(PartitionSettings* part_settings);
+@@ -692,7 +693,7 @@ public:
+                                               bool must_be_unique);
+ 
+   // Initiates a backup in the current storage
+-  bool RunBackup();
++  bool RunBackup(bool reset_cancel = true);
+ 
+   // Restores a backup
+   int RunRestore(const std::string& restore_name);
+@@ -997,7 +998,7 @@ private:
+   bool mtp_was_enabled;
+   int mtp_write_fd;
+   // PID of twrpTar fork
+-  pid_t tar_fork_pid = 0;
++  BackupProcess backup_process_;
+   // Ramdisk format of boot partition
+   std::string original_ramdisk_format;
+ 
+diff --git a/twrpTar.hpp b/twrpTar.hpp
+index 1caf17f..2f5c0dc 100644
+--- a/twrpTar.hpp
++++ b/twrpTar.hpp
+@@ -16,7 +16,8 @@
+         along with TWRP.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+-	#include "libtar/libtar.h"
++	#include "backup_process.hpp"
++#include "libtar/libtar.h"
+ extern "C" {
+ 	ssize_t write_tar(int fd, const void *buffer, size_t size);
+ 	ssize_t write_tar_no_buffer(int fd, const void *buffer, size_t size);
+@@ -50,7 +51,7 @@ class twrpTar {
+ public:
+ 	twrpTar();
+ 	virtual ~twrpTar();
+-	int createTarFork(pid_t *tar_fork_pid);
++	int createTarFork(BackupProcess* backup_process);
+ 	int extractTarFork();
+ 	void setfn(string fn);
+ 	void setdir(string dir);
+diff --git a/partition.cpp b/partition.cpp
+index ef997ee..e8a523e 100755
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -1846,10 +1846,10 @@ bool TWPartition::Resize() {
+   return false;
+ }
+ 
+-bool TWPartition::Backup(PartitionSettings* part_settings, pid_t* tar_fork_pid) {
++bool TWPartition::Backup(PartitionSettings* part_settings, BackupProcess* backup_process) {
+   switch (backup_method_) {
+     case BackupMethod::kFiles:
+-      return BackupTar(part_settings, tar_fork_pid);
++      return BackupTar(part_settings, backup_process);
+     case BackupMethod::kDd:
+       return BackupImage(part_settings);
+     default:
+@@ -2299,7 +2299,7 @@ bool TWPartition::WipeDataWithoutWipingMediaFunc(const std::filesystem::path& pa
+   return true;
+ }
+ 
+-bool TWPartition::BackupTar(PartitionSettings* part_settings, pid_t* tar_fork_pid) {
++bool TWPartition::BackupTar(PartitionSettings* part_settings, BackupProcess* backup_process) {
+   twrpTar tar;
+ 
+   if (!Mount(true)) return false;
+@@ -2352,7 +2352,7 @@ bool TWPartition::BackupTar(PartitionSettings* part_settings, pid_t* tar_fork_pi
+   tar.setsize(backup_size_);
+   tar.partition_name = backup_name_;
+   tar.backup_folder = part_settings->backup_folder;
+-  if (tar.createTarFork(tar_fork_pid) != 0) return false;
++  if (tar.createTarFork(backup_process) != 0) return false;
+   return true;
+ }
+ 
+diff --git a/gui2/backend/twrp_backup_backend.cpp b/gui2/backend/twrp_backup_backend.cpp
+index 6e4df67..6c6e39c 100644
+--- a/gui2/backend/twrp_backup_backend.cpp
++++ b/gui2/backend/twrp_backup_backend.cpp
+@@ -14,7 +14,7 @@ namespace gui2_backend {
+ twrp_backup_backend::~twrp_backup_backend() {
+   if (cancel_worker_.joinable()) cancel_worker_.join();
+   if (worker_.joinable()) {
+-    PartitionManager.stop_backup = true;
++    if (running_.load()) PartitionManager.CancelBackup();
+     worker_.join();
+   }
+ }
+@@ -56,6 +56,8 @@ void twrp_backup_backend::join_finished_thread() {
+ bool twrp_backup_backend::start() {
+   if (running_.load()) return false;
+   join_finished_thread();
++  if (cancel_worker_.joinable()) cancel_worker_.join();
++  PartitionManager.stop_backup = false;
+   DataManager::SetValue("tw_size_progress", "");
+   DataManager::SetValue("tw_file_progress", "");
+ 
+@@ -82,9 +84,9 @@ void twrp_backup_backend::run() {
+       gui2_i18n::matches_message("curr_date", Backup_Name) ||
+       Backup_Name == "0" || Backup_Name == "(" ||
+       PartitionManager.IsBackupNameValid(Backup_Name, true, true)) {
+-    ret = PartitionManager.RunBackup();
++    ret = PartitionManager.RunBackup(false);
+     DataManager::SetValue("tw_encrypt_backup", 0);  // reset value so we don't encrypt every subsequent backup
+-    cancelled = PartitionManager.stop_backup;
++    cancelled = !ret && PartitionManager.stop_backup;
+     if (!cancelled) {
+       if (ret == false)
+         ret = 1;  // 1 for failure
+@@ -111,12 +113,12 @@ void twrp_backup_backend::run() {
+       state_ = backup_state::CANCELLED;
+     else
+       state_ = backup_state::DONE;
++    running_.store(false);
+   }
+-  running_.store(false);
+ }
+ 
+-// cancelbackup, which the legacy UI runs on its cancel thread: it waits for
+-// tar to stop.
++// Cancellation only signals the owned child group. The backup worker reaps
++// it and removes its own unfinished directory before publishing CANCELLED.
+ void twrp_backup_backend::cancel() {
+   if (!running_.load() || cancelling_.exchange(true)) return;
+   if (cancel_worker_.joinable()) cancel_worker_.join();
+diff --git a/backup_process.hpp b/backup_process.hpp
+new file mode 100644
+index 0000000..4bdb555
+--- /dev/null
++++ b/backup_process.hpp
+@@ -0,0 +1,109 @@
++#pragma once
++
++#include <atomic>
++#include <cerrno>
++#include <cstdint>
++#include <mutex>
++#include <poll.h>
++#include <signal.h>
++#include <sys/wait.h>
++#include <unistd.h>
++
++// One backup worker owns Fork/ReadProgress/Wait. Cancel may run concurrently.
++// Keep the leader unreaped until all group signals have been sent: its PID and
++// process-group ID cannot be recycled while cancellation holds this mutex.
++class BackupProcess {
++ public:
++  pid_t Fork(const std::atomic_bool& cancelled) {
++    std::unique_lock<std::mutex> lock(mutex_);
++    if (pid_ != 0 || cancelled.load()) {
++      errno = cancelled.load() ? ECANCELED : EBUSY;
++      return -1;
++    }
++    const pid_t child = fork();
++    if (child == 0) {
++      // The inherited mutex is never used by the child. Do not unlock a mutex
++      // copied from a multithreaded parent; all child paths terminate via _exit.
++      lock.release();
++      if (setpgid(0, 0) != 0) _exit(125);
++      return 0;
++    }
++    if (child < 0) return -1;
++    if (setpgid(child, child) != 0) {
++      const int error = errno;
++      kill(child, SIGKILL);
++      while (waitpid(child, nullptr, 0) < 0 && errno == EINTR) {}
++      errno = error;
++      return -1;
++    }
++    pid_ = child;
++    return child;
++  }
++
++  void Cancel(std::atomic_bool& cancelled) {
++    std::lock_guard<std::mutex> lock(mutex_);
++    cancelled.store(true);
++    if (pid_ > 1) kill(-pid_, SIGKILL);
++  }
++
++  void Terminate() {
++    std::lock_guard<std::mutex> lock(mutex_);
++    if (pid_ > 1) kill(-pid_, SIGKILL);
++  }
++
++  // A compressor/encryptor may still hold a pipe after the leader fails. Poll
++  // also checks that leader and closes its whole private group on exit.
++  // 1 = complete record, 0 = clean EOF, -1 = truncated record or I/O error.
++  int ReadProgress(int fd, uint64_t& value) {
++    size_t used = 0;
++    while (used != sizeof(value)) {
++      {
++        std::lock_guard<std::mutex> lock(mutex_);
++        siginfo_t info{};
++        if (pid_ > 1 && waitid(P_PID, pid_, &info, WEXITED | WNOHANG | WNOWAIT) == 0 &&
++            info.si_pid == pid_) kill(-pid_, SIGKILL);
++      }
++      pollfd pfd{fd, POLLIN, 0};
++      const int ready = poll(&pfd, 1, 100);
++      if (ready < 0 && errno == EINTR) continue;
++      if (ready < 0 || (ready > 0 && (pfd.revents & POLLNVAL))) return -1;
++      if (ready == 0) continue;
++      const ssize_t count = read(fd, reinterpret_cast<char*>(&value) + used, sizeof(value) - used);
++      if (count < 0 && errno == EINTR) continue;
++      if (count < 0) return -1;
++      if (count == 0) return used == 0 ? 0 : -1;
++      used += count;
++    }
++    return 1;
++  }
++
++  int Wait() {
++    for (;;) {
++      {
++        std::lock_guard<std::mutex> lock(mutex_);
++        if (pid_ <= 1) return -1;
++        siginfo_t info{};
++        const int result = waitid(P_PID, pid_, &info, WEXITED | WNOHANG | WNOWAIT);
++        if (result < 0 && errno != EINTR) {
++          // ECHILD is a failure, never successful completion or permission to
++          // send a signal to a numeric PID that we no longer own.
++          pid_ = 0;
++          return -1;
++        }
++        if (result == 0 && info.si_pid == pid_) {
++          kill(-pid_, SIGKILL);
++          int status = 0;
++          pid_t reaped;
++          do { reaped = waitpid(pid_, &status, 0); } while (reaped < 0 && errno == EINTR);
++          pid_ = 0;
++          return reaped > 0 && WIFEXITED(status) && WEXITSTATUS(status) == 0 ? 0 : -1;
++        }
++      }
++      usleep(10000);
++    }
++  }
++
++ private:
++  std::mutex mutex_;
++  pid_t pid_ = 0;
++};

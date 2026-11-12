@@ -1,0 +1,85 @@
+--- a/digest/twrp_digest_driver.cpp
++++ b/digest/twrp_digest_driver.cpp
+@@ -21,6 +21,8 @@
+ #include <fcntl.h>
+ #include <unistd.h>
+ #include <cerrno>
++#include <cstdlib>
++#include <cstring>
+ 
+ #include <algorithm>
+ #include <cstddef>
+@@ -36,6 +38,7 @@
+ 
+ #include <android-base/file.h>
+ #include <android-base/macros.h>
++#include <android-base/scopeguard.h>
+ #include <android-base/strings.h>
+ #include <android-base/unique_fd.h>
+ 
+@@ -233,12 +236,49 @@
+   LOGINFO("%s Digest: %s  %s\n", AlgorithmName(algorithm), digest_str.c_str(), file_name.c_str());
+   LOGINFO("digest_filename: %s\n", digest_filename.c_str());
+ 
+-  if (!TWFunc::WriteToFile(digest_filename, std::format("{}  {}\n", digest_str, file_name))) {
++  const auto failure = [&](const char* operation) {
++    const int error = errno;
++    LOGERR("Digest %s failed for '%s': %s\n", operation, digest_filename.c_str(), strerror(error));
++    gui2_console::log_error("digest_error");
++    return false;
++  };
++  const auto directory = std::filesystem::path(digest_filename).parent_path();
++  const android::base::unique_fd dir_fd(TEMP_FAILURE_RETRY(open(
++      directory.empty() ? "." : directory.c_str(), O_RDONLY | O_DIRECTORY | O_CLOEXEC)));
++  if (dir_fd < 0) return failure("directory open");
++
++  // Never truncate an existing sidecar. A reader sees the previous complete
++  // digest until the new, synced file is renamed into place. Interrupted
++  // staging files do not match any of CheckFileDigest's sidecar suffixes.
++  // A fixed short basename also supports sidecars near NAME_MAX.
++  std::string temporary = (directory / ".twrp-digest.XXXXXX").string();
++  android::base::unique_fd fd(mkostemp(temporary.data(), O_CLOEXEC));
++  if (fd < 0) return failure("temporary create");
++  auto cleanup = android::base::make_scope_guard([&] { unlink(temporary.c_str()); });
++  const std::string content = std::format("{}  {}\n", digest_str, file_name);
++  size_t offset = 0;
++  while (offset < content.size()) {
++    const ssize_t count = TEMP_FAILURE_RETRY(write(fd.get(), content.data() + offset,
++                                                  content.size() - offset));
++    if (count <= 0) {
++      if (count == 0) errno = EIO;
++      return failure("write");
++    }
++    offset += static_cast<size_t>(count);
++  }
++  // Preserve the existing best-effort metadata policy, before syncing and
++  // publication. Filesystems without Android labels remain supported.
++  tw_set_default_metadata(temporary.c_str());
++  if (TEMP_FAILURE_RETRY(fsync(fd.get())) != 0) return failure("file sync");
++  // Do not retry close: even on error the descriptor may have been released.
++  if (close(fd.release()) != 0) return failure("close");
++  if (rename(temporary.c_str(), digest_filename.c_str()) != 0) return failure("rename");
++  if (TEMP_FAILURE_RETRY(fsync(dir_fd.get())) != 0) {
++    LOGERR("Digest replaced but directory sync failed for '%s': %s\n",
++           digest_filename.c_str(), strerror(errno));
+     gui2_console::log_error("digest_error");
+     return false;
+   }
+-
+-  tw_set_default_metadata(digest_filename.c_str());
+   gui2_console::info("digest_created");
+   return true;
+ }
+--- a/digest/twrp_digest_driver.hpp
++++ b/digest/twrp_digest_driver.hpp
+@@ -39,7 +39,9 @@
+   // Verifies full_filename, or each part of a split archive.
+   static bool CheckDigest(const std::string& full_filename);
+ 
+-  // Writes full_filename's digest to .sha2 or .md5 per tw_use_sha2.
++  // Atomically replaces .sha2 or .md5 per tw_use_sha2 after syncing the new
++  // file, then syncs its directory. Failure after rename leaves the complete
++  // new sidecar visible but does not report durable publication.
+   static bool WriteDigest(const std::string& full_filename);
+ 
+   // Writes the digest of full_filename, or each split-archive part.

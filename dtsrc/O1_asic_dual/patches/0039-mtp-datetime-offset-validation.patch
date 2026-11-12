@@ -1,0 +1,109 @@
+--- a/mtp/MtpUtils.cpp
++++ b/mtp/MtpUtils.cpp
+@@ -26,6 +26,7 @@
+ #include <cstring>
+ #include <fcntl.h>
+ #include <string>
++#include <string_view>
+ #include <sys/sendfile.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
+@@ -59,37 +60,67 @@
+ */
+ 
+ bool parseDateTime(const char* dateTime, time_t& outSeconds) {
+-    int year, month, day, hour, minute, second;
+-    if (sscanf(dateTime, "%04d%02d%02dT%02d%02d%02d",
+-               &year, &month, &day, &hour, &minute, &second) != 6)
+-        return false;
+-
+-    // skip optional tenth of second
+-    const char* tail = dateTime + 15;
+-    if (tail[0] == '.' && tail[1]) tail += 2;
+-
+-    // FIXME: "Z" means UTC, but non-"Z" doesn't mean local time.
+-    // It might be that you're in Asia/Seoul on vacation and your Android
+-    // device has noticed this via the network, but your camera was set to
+-    // America/Los_Angeles once when you bought it and doesn't know where
+-    // it is right now, so the camera says "20160106T081700-0800" but we
+-    // just ignore the "-0800" and assume local time which is actually "+0900".
+-    // I think to support this (without switching to Java or using icu4c)
+-    // you'd want to always use timegm(3) and then manually add/subtract
+-    // the UTC offset parsed from the string (taking care of wrapping).
+-    // mktime(3) ignores the tm_gmtoff field, so you can't let it do the work.
+-    bool useUTC = (tail[0] == 'Z');
+-
+-    struct tm tm = {};
+-    tm.tm_sec = second;
+-    tm.tm_min = minute;
+-    tm.tm_hour = hour;
+-    tm.tm_mday = day;
+-    tm.tm_mon = month - 1;  // mktime uses months in 0 - 11 range
+-    tm.tm_year = year - 1900;
+-    tm.tm_isdst = -1;
+-    outSeconds = useUTC ? timegm(&tm) : mktime(&tm);
+-
++    if (dateTime == nullptr) return false;
++    const std::string_view text(dateTime);
++    if (text.size() < 15 || text[8] != 'T') return false;
++    const auto number = [&](size_t start, size_t count) {
++        int value = 0;
++        for (size_t i = start; i < start + count; ++i) {
++            if (text[i] < '0' || text[i] > '9') return -1;
++            value = value * 10 + text[i] - '0';
++        }
++        return value;
++    };
++    const int year = number(0, 4), month = number(4, 2), day = number(6, 2);
++    const int hour = number(9, 2), minute = number(11, 2), second = number(13, 2);
++    if (year < 1 || month < 1 || month > 12 || day < 1 || hour < 0 || hour > 23 ||
++        minute < 0 || minute > 59 || second < 0 || second > 59) return false;
++    const int days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
++    const bool leap = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
++    if (day > days[month - 1] + (month == 2 && leap ? 1 : 0)) return false;
++
++    size_t pos = 15;
++    // MTP's optional fraction is one decimal digit; time_t retains seconds.
++    if (pos < text.size() && text[pos] == '.') {
++        if (text.size() < pos + 2 || number(pos + 1, 1) < 0) return false;
++        pos += 2;
++    }
++    bool explicit_zone = false;
++    int offset = 0;
++    if (pos < text.size()) {
++        explicit_zone = true;
++        if (text[pos] == 'Z' && pos + 1 == text.size()) {
++            ++pos;
++        } else if ((text[pos] == '+' || text[pos] == '-') && pos + 5 == text.size()) {
++            const int hours = number(pos + 1, 2), minutes = number(pos + 3, 2);
++            if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return false;
++            offset = (hours * 60 + minutes) * 60 * (text[pos] == '+' ? 1 : -1);
++            pos += 5;
++        } else {
++            return false;
++        }
++    }
++    if (pos != text.size()) return false;
++    struct tm value = {};
++    value.tm_year = year - 1900;
++    value.tm_mon = month - 1;
++    value.tm_mday = day;
++    value.tm_hour = hour;
++    value.tm_min = minute;
++    value.tm_sec = second;
++    value.tm_isdst = -1;
++    errno = 0;
++    const time_t converted = explicit_zone ? timegm(&value) : mktime(&value);
++    // -1 is also the valid instant immediately before the Unix epoch.
++    if (converted == static_cast<time_t>(-1) && errno == EOVERFLOW) return false;
++    struct tm checked = {};
++    if ((explicit_zone ? gmtime_r(&converted, &checked) : localtime_r(&converted, &checked)) == nullptr ||
++        checked.tm_year != year - 1900 || checked.tm_mon != month - 1 ||
++        checked.tm_mday != day || checked.tm_hour != hour ||
++        checked.tm_min != minute || checked.tm_sec != second) return false;
++    time_t adjusted;
++    if (__builtin_sub_overflow(converted, static_cast<time_t>(offset), &adjusted)) return false;
++    outSeconds = adjusted;
+     return true;
+ }
+ 

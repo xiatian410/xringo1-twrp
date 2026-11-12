@@ -1,0 +1,723 @@
+{
+  "roots": [
+    "synaptics_tcm2",
+    "xring_smartpa"
+  ],
+  "order": [
+    "drm_display_helper",
+    "flowctrl",
+    "mca_platform_buckchg_class",
+    "mca_protocol_class",
+    "mca_sysfs",
+    "mca_event",
+    "mca_log",
+    "external_tcpc",
+    "mca_parse_dts",
+    "mca_protocol_pd_class",
+    "mca_workqueue",
+    "fsa4480_i2c",
+    "miev",
+    "redriver",
+    "securelib",
+    "shub_boot_prepare",
+    "xr_ffa_module",
+    "xr_ipc",
+    "shub_ipc_drv",
+    "xr_timestamp",
+    "xr_vote_mng",
+    "xr_pm_comm",
+    "xr_doze",
+    "xring_hwspinlock",
+    "xr_spi_mmio",
+    "xring_ocm",
+    "xring_smmu",
+    "xr_mem_adapter",
+    "xring_usb",
+    "xrsp_driver",
+    "pinctrl_xr",
+    "xr_ip_reset",
+    "xr_spmi_controller",
+    "xr_pmic_spmi",
+    "xr_dfx",
+    "dmd",
+    "mitee",
+    "xr_clk",
+    "media_dvfs",
+    "peri_dvfs",
+    "perf_actuator",
+    "xr_ddr",
+    "xr_heaps",
+    "xring_axi_dmac",
+    "xring_i2c",
+    "xr_regulator",
+    "xring_drm",
+    "tui",
+    "xiaomi_touch_dijun",
+    "synaptics_tcm2",
+    "xring_smartpa"
+  ],
+  "modules": {
+    "drm_display_helper": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/drm_display_helper.ko",
+      "runtime": "/vendor_dlkm/lib/modules/drm_display_helper.ko",
+      "sha256": "638e86f8548594ad52f5bf16acbe01792ae59e9775876b5ee1c4ebb1fd5f71f8",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "flowctrl": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/perf/flowctrl/flowctrl.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/perf/flowctrl/flowctrl.ko",
+      "sha256": "81189d83b8038261e7494dec21fc2939be3a321703e37dea09b37a0e765eb910",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "mca_platform_buckchg_class": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/mca_platform_buckchg_class.ko",
+      "runtime": "/vendor_dlkm/lib/modules/mca_platform_buckchg_class.ko",
+      "sha256": "94fb2f3c8825ff43f979bd851c83e6235b47e70c8404968bc3ea4c8457fa20c1",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "mca_protocol_class": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/mca_protocol_class.ko",
+      "runtime": "/vendor_dlkm/lib/modules/mca_protocol_class.ko",
+      "sha256": "e4879b4c591316d0a1759f65348b8c2dd11dd7435d4d54a36db2910ba46fca40",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "mca_sysfs": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/mca_sysfs.ko",
+      "runtime": "/vendor_dlkm/lib/modules/mca_sysfs.ko",
+      "sha256": "60893b096c4da76669663dc389982e5808bf2fea3560e8c8c895848b2d583aac",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "mca_event": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/mca_event.ko",
+      "runtime": "/vendor_dlkm/lib/modules/mca_event.ko",
+      "sha256": "fc1d684a1aeda3612044a814615ba22eeb668565e62c790529d9dcbb440a6343",
+      "hard": [
+        "mca_sysfs"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "mca_log": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/mca_log.ko",
+      "runtime": "/vendor_dlkm/lib/modules/mca_log.ko",
+      "sha256": "9f2abd8117e7ff3d488af4fa144e0a334153c78731959d9a3fa0c73f36cf398b",
+      "hard": [
+        "mca_event",
+        "mca_sysfs"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "external_tcpc": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/external_tcpc.ko",
+      "runtime": "/vendor_dlkm/lib/modules/external_tcpc.ko",
+      "sha256": "7a29735ef8f8522baa04f1efb7042a6f0d6cef68b77991ff124038cdfd08258d",
+      "hard": [
+        "mca_log"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "mca_parse_dts": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/mca_parse_dts.ko",
+      "runtime": "/vendor_dlkm/lib/modules/mca_parse_dts.ko",
+      "sha256": "2fdef441052d194c263e3d9b936f0beac0b8af3cd33f8fcd0205bfb00aa5af2d",
+      "hard": [
+        "mca_log"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "mca_protocol_pd_class": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/mca_protocol_pd_class.ko",
+      "runtime": "/vendor_dlkm/lib/modules/mca_protocol_pd_class.ko",
+      "sha256": "f1cc2a04d257f3a47266a97fa04ed67e4a049f170c3b51761436589f772eff13",
+      "hard": [
+        "mca_event",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_protocol_class",
+        "mca_sysfs"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "mca_workqueue": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/mca_workqueue.ko",
+      "runtime": "/vendor_dlkm/lib/modules/mca_workqueue.ko",
+      "sha256": "5970c3c76c54980b68d9c29297fcfc52bc475f35ff36b5504e2ce7bfdfe1f55a",
+      "hard": [
+        "mca_log"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "fsa4480_i2c": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/fsa4480-i2c.ko",
+      "runtime": "/vendor_dlkm/lib/modules/fsa4480-i2c.ko",
+      "sha256": "ac0b64c49a1d2f85bc1f1b5779a29c36e54a4090a63d7fd66d0c47e362f0ae97",
+      "hard": [
+        "external_tcpc",
+        "mca_event",
+        "mca_log",
+        "mca_platform_buckchg_class",
+        "mca_protocol_pd_class",
+        "mca_workqueue"
+      ],
+      "pre": [
+        "external_tcpc"
+      ],
+      "post": []
+    },
+    "miev": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/miev/miev.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/miev/miev.ko",
+      "sha256": "7a77ba11dd07059f1cdad2ae677ed0ac7a1be8b761578d2967addc283cda66b3",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "redriver": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/mca/mca_hardware_ic/redriver/ps5169/redriver.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/mca/mca_hardware_ic/redriver/ps5169/redriver.ko",
+      "sha256": "724101fecb8d37c62f53111c6a0877d43b6b98b7b0ddbfc43ad7fdfcd4e0c82f",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "securelib": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/secure/securelib/securelib.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/secure/securelib/securelib.ko",
+      "sha256": "4680bd58b683ff82c778c04c75f397663da7ed294a106e9a5e2fe82eb196ba3d",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "shub_boot_prepare": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/shub_boot_prepare.ko",
+      "runtime": "/vendor_dlkm/lib/modules/shub_boot_prepare.ko",
+      "sha256": "ae4a3b8f8e822ea2ac460674cecb2c441d3ce589715961e0ba5058097e399472",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "xr_ffa_module": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/xr_arm_ffa/xr_ffa-module.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/xr_arm_ffa/xr_ffa-module.ko",
+      "sha256": "e5b6803b88f8c1224c4c7700c0095b27bd2ba3d67ecfc6425cf8f74f7bea3ce5",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "xr_ipc": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/ipc/xr_ipc.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/ipc/xr_ipc.ko",
+      "sha256": "41fc98c42512e921430c5469956577135e04cbfb4da0ae7dcfbd46a9f96b5111",
+      "hard": [
+        "securelib"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "shub_ipc_drv": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/shub_ipc_drv.ko",
+      "runtime": "/vendor_dlkm/lib/modules/shub_ipc_drv.ko",
+      "sha256": "a6d6e7953068ba6b7da8097041caed67248e3ac8fce7c888bcd46e24da52a796",
+      "hard": [
+        "shub_boot_prepare",
+        "xr_ipc"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "xr_timestamp": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/timestamp/xr_timestamp.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/timestamp/xr_timestamp.ko",
+      "sha256": "3471dc460bf8632bf4d7ed58728df628412e4d0bfe714def495c2577f27439e3",
+      "hard": [
+        "securelib"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "xr_vote_mng": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/vote_mng/xr_vote_mng.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/vote_mng/xr_vote_mng.ko",
+      "sha256": "037aceac12b62a1521640eaed78df239364a17879d233d132ab8f80119cd97e6",
+      "hard": [
+        "securelib",
+        "xr_timestamp"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "xr_pm_comm": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/pm_comm/xr_pm_comm.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/pm_comm/xr_pm_comm.ko",
+      "sha256": "6e17d305783520541b1ea3c2a17dd4d2ed068ef8295e2f867188296c8b68fba3",
+      "hard": [
+        "xr_vote_mng"
+      ],
+      "pre": [
+        "xr_vote_mng"
+      ],
+      "post": []
+    },
+    "xr_doze": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/doze/xr_doze.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/doze/xr_doze.ko",
+      "sha256": "5cef6244d9252596957a48c6dadf9ba805c2678e56fb816dfbc42d7fa9d6a636",
+      "hard": [
+        "xr_pm_comm",
+        "xr_timestamp"
+      ],
+      "pre": [
+        "xr_pm_comm",
+        "xr_timestamp"
+      ],
+      "post": []
+    },
+    "xring_hwspinlock": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/hwspinlock/xring_hwspinlock.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/hwspinlock/xring_hwspinlock.ko",
+      "sha256": "6d54dcb28424b5f7a8bd29c74bc45deedde6019df602044f0d27864b7a862ff6",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "xr_spi_mmio": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/xr_spi_mmio.ko",
+      "runtime": "/vendor_dlkm/lib/modules/xr_spi_mmio.ko",
+      "sha256": "30df0fa81ae31066a36d48a03b9fb1a2661c27c79684e6360440148df6a32e80",
+      "hard": [
+        "xring_hwspinlock"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "xring_ocm": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/xring-ocm.ko",
+      "runtime": "/vendor_dlkm/lib/modules/xring-ocm.ko",
+      "sha256": "2b9b55de44dc4f1917fc0b779f9920dbe5db73fae891b4e343b016f320cc103e",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "xring_smmu": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/smmu/xring_smmu.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/smmu/xring_smmu.ko",
+      "sha256": "408492241b8e26a9d0407a6370b8ca246f45e45e61587cf5323ac55c5f9edf33",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "xr_mem_adapter": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/mem_adapter/xr_mem_adapter.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/mem_adapter/xr_mem_adapter.ko",
+      "sha256": "3c83fc566ff0619cdd1d151e867c7b9cf9348e1c1dbc52eea4cf578507f90b85",
+      "hard": [
+        "miev",
+        "xring_smmu"
+      ],
+      "pre": [
+        "miev"
+      ],
+      "post": []
+    },
+    "xring_usb": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/usb/xring_usb.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/usb/xring_usb.ko",
+      "sha256": "462202bce0e035ec8ce44f8bf4403fd89ad77870410e48b4cdb2105565a66944",
+      "hard": [
+        "flowctrl",
+        "redriver",
+        "xr_doze"
+      ],
+      "pre": [
+        "xr_doze"
+      ],
+      "post": []
+    },
+    "xrsp_driver": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/xsp/xsp1/xrsp_driver.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/xsp/xsp1/xrsp_driver.ko",
+      "sha256": "76e561cd64e65b722c32d77624ed7a72fce7015f2283afa3c459fb7056ae06e5",
+      "hard": [
+        "xr_ffa_module"
+      ],
+      "pre": [
+        "xr_ffa_module"
+      ],
+      "post": []
+    },
+    "pinctrl_xr": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/pinctrl/pinctrl-xr.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/pinctrl/pinctrl-xr.ko",
+      "sha256": "0857a70ca2ab9ffe2113d7535741a0ca9a1d03d002a10c70b5654a1fd84aa1fb",
+      "hard": [
+        "xr_doze",
+        "xring_hwspinlock",
+        "xrsp_driver"
+      ],
+      "pre": [
+        "xsp1"
+      ],
+      "post": []
+    },
+    "xr_ip_reset": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/reset/xr_ip_reset.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/reset/xr_ip_reset.ko",
+      "sha256": "323b6a18df02db488b9656aad165b48b37a37bd50ace8992bf1a3197805bd53e",
+      "hard": [
+        "xrsp_driver"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "xr_spmi_controller": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/spmi/xr-spmi-controller.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/spmi/xr-spmi-controller.ko",
+      "sha256": "51de290bb9df89fc665ed986779e01ac6bac6bc32f2eb8d49bc2dcf6644dcc0b",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
+    "xr_pmic_spmi": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/pmic/xr-pmic-spmi.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/pmic/xr-pmic-spmi.ko",
+      "sha256": "19a2654518aeda9829bc5d842d233b4f39d2fccea4669b8d119faadbf62ea32a",
+      "hard": [
+        "xrsp_driver"
+      ],
+      "pre": [
+        "xr_spmi_controller"
+      ],
+      "post": []
+    },
+    "xr_dfx": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/dfx/xr_dfx.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/dfx/xr_dfx.ko",
+      "sha256": "5ad16d39973d4977b8dd301ac8c2f11c79aa51e5bbc8552c493e8fc645cba9f9",
+      "hard": [
+        "xr_pmic_spmi",
+        "xr_timestamp"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "dmd": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/dmd/dmd.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/dmd/dmd.ko",
+      "sha256": "1c113b9610c9e5bdc9104e66e2a5d4ad87978b3c20ff5fd494ef9afa3fda7382",
+      "hard": [
+        "securelib",
+        "xr_dfx"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "mitee": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/tee/mitee/mitee/mitee.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/tee/mitee/mitee/mitee.ko",
+      "sha256": "2c4ea2e2571465aee0229deaec46d77536ebd8184660bb1bc5003e11b7417210",
+      "hard": [
+        "miev",
+        "xr_dfx",
+        "xr_ffa_module"
+      ],
+      "pre": [
+        "xr_ffa_module"
+      ],
+      "post": []
+    },
+    "xr_clk": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/clk/xr-clk.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/clk/xr-clk.ko",
+      "sha256": "f911dd0cb7dd5b2e10ecf02b7d7dff741d372e8a02f8b97cbd6eadf673ca8dc1",
+      "hard": [
+        "dmd",
+        "xr_doze",
+        "xr_pmic_spmi",
+        "xr_vote_mng",
+        "xrsp_driver"
+      ],
+      "pre": [
+        "xr_doze",
+        "xr_pmic_spmi",
+        "xr_vote_mng"
+      ],
+      "post": []
+    },
+    "media_dvfs": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/clk/media-dvfs.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/clk/media-dvfs.ko",
+      "sha256": "5fe3927747990685647d851422a283a3f2e8e474f45ae88a4d40431db6ef3d8c",
+      "hard": [
+        "xr_clk"
+      ],
+      "pre": [
+        "xr_clk"
+      ],
+      "post": []
+    },
+    "peri_dvfs": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/clk/peri-dvfs.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/clk/peri-dvfs.ko",
+      "sha256": "e0b78abbbe6ea5829cc9e14271d04b99c28a4704ad80d15f4d1627fa0ad77797",
+      "hard": [
+        "xr_clk",
+        "xr_vote_mng"
+      ],
+      "pre": [
+        "xr_clk"
+      ],
+      "post": []
+    },
+    "perf_actuator": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/perf/perf_actuator/perf-actuator.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/perf/perf_actuator/perf-actuator.ko",
+      "sha256": "82df5cc248dd0ee12de987793e073a8b1bd2fbd1b65303de0b80c879e08b1b5e",
+      "hard": [
+        "peri_dvfs"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "xr_ddr": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/ddr/xr_ddr.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/ddr/xr_ddr.ko",
+      "sha256": "78635410fcbf9d9a73024b994c40f503bcf36431ec95b18d8424a0f2afe0da03",
+      "hard": [
+        "perf_actuator",
+        "securelib",
+        "xr_vote_mng"
+      ],
+      "pre": [
+        "perf_actuator",
+        "xr_vote_mng"
+      ],
+      "post": []
+    },
+    "xr_heaps": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/heaps/xr_heaps.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/heaps/xr_heaps.ko",
+      "sha256": "ef8a3c63fccaf940ab5b35845d2d184ae0da9a05fa986c13e0d91bdc0bd359ae",
+      "hard": [
+        "mitee",
+        "xr_mem_adapter"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "xring_axi_dmac": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/dma/xring_axi_dmac.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/dma/xring_axi_dmac.ko",
+      "sha256": "d062b8472a3042bf1be9fc3be8c9c533a02fb362e67049c133b9a05c881e5ac3",
+      "hard": [],
+      "pre": [
+        "xr_ip_reset"
+      ],
+      "post": []
+    },
+    "xring_i2c": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/i2c/xring_i2c.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/i2c/xring_i2c.ko",
+      "sha256": "d9944a8547e816f306a767e5749ec90dc8a0ad2484b7664ab5630aca49e1a1a8",
+      "hard": [
+        "xring_hwspinlock"
+      ],
+      "pre": [
+        "pinctrl_xr",
+        "xr_ip_reset",
+        "xring_axi_dmac",
+        "xring_hwspinlock"
+      ],
+      "post": []
+    },
+    "xr_regulator": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/regulator/xr_regulator.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/regulator/xr_regulator.ko",
+      "sha256": "9ca75e01b0dca2cfa41e72f2180df11aea386eb0f8770aeb2a9e1d102276ef39",
+      "hard": [
+        "flowctrl",
+        "xr_timestamp",
+        "xr_vote_mng",
+        "xring_hwspinlock",
+        "xrsp_driver"
+      ],
+      "pre": [
+        "trace_hook",
+        "xr_timestamp",
+        "xring_i2c",
+        "xsp1"
+      ],
+      "post": []
+    },
+    "xring_drm": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/display/dpu/xring-drm.ko",
+      "runtime": "/lib/modules/6.6.30-android15-8-4k/extra/xring-modules/drivers/display/dpu/xring-drm.ko",
+      "sha256": "f58129a9d7de730c73fa0ed66d63f839b05f177906de35bb9ea0a8dbefaeb84a",
+      "hard": [
+        "drm_display_helper",
+        "fsa4480_i2c",
+        "media_dvfs",
+        "miev",
+        "mitee",
+        "xr_clk",
+        "xr_ddr",
+        "xr_dfx",
+        "xr_doze",
+        "xr_heaps",
+        "xr_timestamp",
+        "xring_ocm",
+        "xring_usb"
+      ],
+      "pre": [
+        "perf_monitor",
+        "pinctrl_xr",
+        "xr_regulator",
+        "xring_usb"
+      ],
+      "post": []
+    },
+    "tui": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/tui.ko",
+      "runtime": "/vendor_dlkm/lib/modules/tui.ko",
+      "sha256": "8493e7fb3a1758efe47e11e506878bd96ee7b848113c8d764eb20fc62e7308bf",
+      "hard": [
+        "mitee",
+        "xr_heaps",
+        "xring_drm"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "xiaomi_touch_dijun": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/xiaomi_touch_dijun.ko",
+      "runtime": "/vendor_dlkm/lib/modules/xiaomi_touch_dijun.ko",
+      "sha256": "49783544c73baa754ee44f3b6d0d04b69d304dbaeca47b4fbbb42feb83233851",
+      "hard": [
+        "miev",
+        "shub_ipc_drv",
+        "xr_timestamp",
+        "xring_drm"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "synaptics_tcm2": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/synaptics_tcm2.ko",
+      "runtime": "/vendor_dlkm/lib/modules/synaptics_tcm2.ko",
+      "sha256": "6565a0586bf146344a4d53937601b0c2767ec2e4c8f00487e09d6591912fb114",
+      "hard": [
+        "tui",
+        "xiaomi_touch_dijun",
+        "xr_doze",
+        "xr_spi_mmio"
+      ],
+      "pre": [],
+      "post": []
+    },
+    "xring_smartpa": {
+      "source": "firmware/samples/os2-initial/analysis/vendor_dlkm/lib/modules/xring_smartpa.ko",
+      "runtime": "/vendor_dlkm/lib/modules/xring_smartpa.ko",
+      "sha256": "7e566e67798d2730fa79dd22899507a6802413f59270105c375efcade1e39a17",
+      "hard": [
+        "miev"
+      ],
+      "pre": [
+        "xring_i2c"
+      ],
+      "post": []
+    }
+  },
+  "touch_priority_hard_closure": [
+    "dmd",
+    "drm_display_helper",
+    "external_tcpc",
+    "flowctrl",
+    "fsa4480_i2c",
+    "mca_event",
+    "mca_log",
+    "mca_parse_dts",
+    "mca_platform_buckchg_class",
+    "mca_protocol_class",
+    "mca_protocol_pd_class",
+    "mca_sysfs",
+    "mca_workqueue",
+    "media_dvfs",
+    "miev",
+    "mitee",
+    "perf_actuator",
+    "peri_dvfs",
+    "redriver",
+    "securelib",
+    "shub_boot_prepare",
+    "shub_ipc_drv",
+    "synaptics_tcm2",
+    "tui",
+    "xiaomi_touch_dijun",
+    "xr_clk",
+    "xr_ddr",
+    "xr_dfx",
+    "xr_doze",
+    "xr_ffa_module",
+    "xr_heaps",
+    "xr_ipc",
+    "xr_mem_adapter",
+    "xr_pm_comm",
+    "xr_pmic_spmi",
+    "xr_spi_mmio",
+    "xr_timestamp",
+    "xr_vote_mng",
+    "xring_drm",
+    "xring_hwspinlock",
+    "xring_ocm",
+    "xring_smmu",
+    "xring_usb",
+    "xrsp_driver"
+  ],
+  "haptics_priority_hard_closure": [
+    "miev",
+    "xring_smartpa"
+  ],
+  "unavailable_optional_softdeps": [
+    {
+      "owner": "pinctrl_xr",
+      "optional_softdep": "xsp1"
+    },
+    {
+      "owner": "xring_drm",
+      "optional_softdep": "perf_monitor"
+    },
+    {
+      "owner": "xr_regulator",
+      "optional_softdep": "trace_hook"
+    },
+    {
+      "owner": "xr_regulator",
+      "optional_softdep": "xsp1"
+    }
+  ],
+  "ignored_vendor_syntax": [
+    {
+      "owner": "xr_dfx",
+      "malformed_softdep": "pre:dw_apb_rtc"
+    },
+    {
+      "file": "vendor_boot/fragment-0/lib/modules/6.6.30-android15-8-4k/modules.softdep",
+      "malformed_softdep": "softdep xr_dfx pre:dw_apb_rtc"
+    }
+  ],
+  "conflicting_optional_order": []
+}

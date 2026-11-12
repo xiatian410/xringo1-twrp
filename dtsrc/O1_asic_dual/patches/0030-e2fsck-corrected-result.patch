@@ -1,0 +1,35 @@
+diff --git a/partition.cpp b/partition.cpp
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -30,6 +30,7 @@
+ #include <sys/ioctl.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
++#include <sys/wait.h>
+ #include <sys/vfs.h>
+ 
+ #include <algorithm>
+@@ -1760,7 +1761,22 @@
+     command += ' ';
+     command += actual_block_device_;
+     LOGINFO("Repair command: %s\n", command.c_str());
+-    if (TWFunc::ExecCmd(command) == 0) {
++    bool repaired;
++    if (std::strcmp(binary, "e2fsck") == 0) {
++      // e2fsck returns 1 when it corrected errors. The ordinary ExecCmd
++      // overload collapses every nonzero exit into -1, losing that result.
++      std::string output;
++      const int status = TWFunc::ExecCmd(command, output, true);
++      if (!output.empty()) std::fwrite(output.data(), 1, output.size(), stdout);
++      repaired = status >= 0 && WIFEXITED(status) &&
++                 (WEXITSTATUS(status) == 0 || WEXITSTATUS(status) == 1);
++      // Do not report reboot-required, uncorrected, cancelled or signal
++      // results as an ordinary successful repair.
++      LOGINFO("e2fsck repair wait status: %d\n", status);
++    } else {
++      repaired = TWFunc::ExecCmd(command) == 0;
++    }
++    if (repaired) {
+       gui2_console::info("done");
+       return true;
+     }

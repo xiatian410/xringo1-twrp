@@ -1,0 +1,92 @@
+--- a/gui2/backend/twrp_operation.cpp
++++ b/gui2/backend/twrp_operation.cpp
+@@ -1,27 +1,42 @@
+ #include "twrp_operation.h"
+ 
+ #include <atomic>
+-#include <ctime>
++#include <chrono>
++#include <mutex>
+ 
+ #include <cutils/properties.h>
+ 
+ #include "data.hpp"
+ #include "twcommon.h"
++#include "twrp_hardware_settings.h"
+ #include "twrpperf/perf_manager.hpp"
+ #include "variables.h"
+ 
+ namespace gui2_backend {
+ namespace {
+ 
+-time_t Start;
++using operation_clock = std::chrono::steady_clock;
++// Starts and ends belong to the same backend worker. Repeated starts on that
++// worker (for example, one per ZIP in a queue) continue the existing job.
++thread_local bool operation_active = false;
++thread_local operation_clock::time_point operation_started;
++std::mutex operation_mutex;
++size_t active_operations = 0;
+ std::atomic<bool> operation_ended{ false };
+ 
+ }  // namespace
+ 
+ void operation_start(const std::string& operation_name) {
+-  twrp::TwrpPerfManager::Get().BeginWorkload();
++  std::lock_guard<std::mutex> lock(operation_mutex);
++  if (!operation_active) {
++    operation_active = true;
++    operation_started = operation_clock::now();
++    if (active_operations++ == 0) {
++      twrp::TwrpPerfManager::Get().BeginWorkload();
++      property_set("twrp.action_complete", "0");
++    }
++  }
+   LOGINFO("operation_start: '%s'\n", operation_name.c_str());
+-  time(&Start);
+   DataManager::SetValue(TW_ACTION_BUSY, 1);
+   DataManager::SetValue("ui_progress", 0);
+   DataManager::SetValue("ui_portion_size", 0);
+@@ -34,19 +49,34 @@
+ }
+ 
+ void operation_end(const int operation_status) {
+-  time_t Stop;
+-  DataManager::SetValue("ui_progress", 100);
+-  DataManager::SetValue(TW_ACTION_BUSY, 0);
+-  operation_ended.store(true);
+-  property_set("twrp.action_complete", "1");
+-  time(&Stop);
++  std::lock_guard<std::mutex> lock(operation_mutex);
++  if (!operation_active) {
++    LOGINFO("operation_end: ignoring unmatched completion\n");
++    return;
++  }
++  const auto elapsed = operation_clock::now() - operation_started;
++  operation_active = false;
++  if (--active_operations == 0) {
++    DataManager::SetValue("ui_progress", 100);
++    DataManager::SetValue(TW_ACTION_BUSY, 0);
++    property_set("twrp.action_complete", "1");
++    twrp::TwrpPerfManager::Get().EndWorkload();
++  }
+ 
+ #ifndef TW_NO_HAPTICS
+-  if ((int)difftime(Stop, Start) > 10) DataManager::Vibrate("tw_action_vibrate");
++  if (elapsed > std::chrono::seconds(10)) {
++    twrp_hardware_settings hardware(nullptr, nullptr);
++    hardware.vibrate(haptic_channel::ACTION);
++  }
++#else
++  (void)elapsed;
+ #endif
+ 
++  // A completion wakes the screen; it does not imply success. Each backend
++  // publishes DONE/FAILED/CANCELLED independently. Multiple completions before
++  // a UI tick intentionally coalesce into one wake event.
++  operation_ended.store(true);
+   LOGINFO("operation_end - status=%d\n", operation_status);
+-  twrp::TwrpPerfManager::Get().EndWorkload();
+ }
+ 
+ bool take_operation_ended() {

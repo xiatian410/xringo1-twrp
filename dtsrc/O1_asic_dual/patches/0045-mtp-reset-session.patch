@@ -1,0 +1,184 @@
+--- a/mtp/IMtpHandle.h
++++ b/mtp/IMtpHandle.h
+@@ -40,6 +40,10 @@
+     virtual void beginTransaction(uint32_t) {}
+     virtual void endTransaction() {}
+ 
++    // A class Reset is distinct from cancellation of one transaction. Only
++    // the server thread consumes it, after the transport returns from I/O.
++    virtual bool consumeReset() { return false; }
++
+     virtual void close() = 0;
+ 
+     virtual ~IMtpHandle() {}
+--- a/mtp/MtpFfsHandle.h
++++ b/mtp/MtpFfsHandle.h
+@@ -68,6 +68,7 @@
+     bool mCanceled = false;
+     // Bit 32 distinguishes idle from an active transaction with ID zero.
+     std::atomic<uint64_t> mActiveTransaction{0};
++    std::atomic_bool mResetRequested{false};
+     bool mBatchCancel;
+ 
+     // start/close are serialized; event producers only take mEventMutex.
+@@ -120,6 +121,7 @@
+     int sendEvent(mtp_event me) override;
+ 
+     int start(bool ptp) override;
++    bool consumeReset() override { return mResetRequested.exchange(false); }
+     void close() override;
+ 
+     bool writeDescriptors(bool ptp);
+--- a/mtp/MtpFfsHandle.cpp
++++ b/mtp/MtpFfsHandle.cpp
+@@ -237,10 +237,13 @@
+         // parameters for a device-initiated cancellation. Never size this by
+         // sizeof(pointer), or allocate using the host's requested length.
+         std::array<uint16_t, 4> status{};
+-        const size_t size = mCanceled ? sizeof(status) : 2 * sizeof(uint16_t);
++        const bool resetting = mResetRequested.load();
++        const bool canceled = mCanceled && !resetting;
++        const size_t size = canceled ? sizeof(status) : 2 * sizeof(uint16_t);
+         status[0] = htole16(size);
+-        status[1] = htole16(mCanceled ? MTP_RESPONSE_TRANSACTION_CANCELLED : MTP_RESPONSE_OK);
+-        if (mCanceled) {
++        status[1] = htole16(resetting ? MTP_RESPONSE_DEVICE_BUSY :
++                           canceled ? MTP_RESPONSE_TRANSACTION_CANCELLED : MTP_RESPONSE_OK);
++        if (canceled) {
+             const int fds[] = {mBulkIn.get(), mBulkOut.get()};
+             for (size_t i = 0; i < 2; ++i) {
+                 usb_endpoint_descriptor desc{};
+@@ -291,9 +294,11 @@
+             // when its transaction differs from the active server command.
+             if (mActiveTransaction.load() != ((uint64_t{1} << 32) | le32toh(transaction)))
+                 return 0;
+-        }
+-        // Interrupt only a matching Cancel. Reset retains its existing
+-        // interruption contract; complete session reset is separate work.
++        } else {
++            mResetRequested.store(true);
++            mCanceled = false;
++        }
++        // Both interrupt I/O, but Reset also reaches server session cleanup.
+         errno = ECANCELED;
+         return -1;
+     }
+--- a/mtp/MtpServer.h
++++ b/mtp/MtpServer.h
+@@ -132,6 +132,8 @@
+     void                commitEdit(ObjectEdit* edit);
+ 
+     bool                handleRequest();
++    void                resetSession();
++    bool                handlePendingReset();
+ 
+     MtpResponseCode     doGetDeviceInfo();
+     MtpResponseCode     doOpenSession();
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -187,7 +187,12 @@
+     }
+ 
+     while (1) {
++        handlePendingReset();
+         int ret = mRequest.read(mHandle);
++        if (handlePendingReset()) {
++            if (ret < 0 && errno != ECANCELED && errno != EPIPE) break;
++            continue;
++        }
+         if (ret < 0) {
+             ALOGE("request read returned %d, errno: %d", ret, errno);
+ // QTI_BEGIN: 2022-12-05: Core: MTP: Do not exit MtpServer on receiving EPIPE
+@@ -215,6 +220,10 @@
+                     || operation == MTP_OPERATION_SET_DEVICE_PROP_VALUE);
+         if (dataIn) {
+             int ret = mData.read(mHandle);
++            if (handlePendingReset()) {
++                if (ret < 0 && errno != ECANCELED && errno != EPIPE) break;
++                continue;
++            }
+             if (ret < 0) {
+                 ALOGE("data read returned %d, errno: %d", ret, errno);
+                 if (errno == ECANCELED) {
+@@ -228,12 +237,18 @@
+             mData.reset();
+         }
+ 
+-        if (handleRequest()) {
++        const bool respond = handleRequest();
++        if (handlePendingReset()) continue;
++        if (respond) {
+             if (!dataIn && mData.hasData()) {
+                 mData.setOperationCode(operation);
+                 mData.setTransactionID(transaction);
+                 ALOGV("sending data:");
+                 ret = mData.write(mHandle);
++                if (handlePendingReset()) {
++                    if (ret < 0 && errno != ECANCELED && errno != EPIPE) break;
++                    continue;
++                }
+                 if (ret < 0) {
+                     ALOGE("request write returned %d, errno: %d", ret, errno);
+                     if (errno == ECANCELED) {
+@@ -248,6 +263,10 @@
+             ALOGV("sending response %04X", mResponse.getResponseCode());
+             ret = mResponse.write(mHandle);
+             const int savedErrno = errno;
++            if (handlePendingReset()) {
++                if (ret < 0 && savedErrno != ECANCELED && savedErrno != EPIPE) break;
++                continue;
++            }
+             if (ret < 0) {
+                 ALOGE("request write returned %d, errno: %d", ret, errno);
+                 if (savedErrno == ECANCELED) {
+@@ -261,8 +280,28 @@
+         }
+     }
+ 
++    resetSession();
++    std::lock_guard<std::mutex> event_guard(mEventMutex);
++    mHandle->close();
++}
++
++bool MtpServer::handlePendingReset() {
++    if (!mHandle->consumeReset()) return false;
++    const int savedErrno = errno;
++    resetSession();
++    errno = savedErrno;
++    return true;
++}
++
++void MtpServer::resetSession() {
+     std::lock_guard<std::mutex> guard(mMutex);
+-    mSessionOpen = false;
++    // Prevent new notifications while releasing session-owned state. Storage
++    // registrations and their database handles survive a class Reset.
++    {
++        std::lock_guard<std::mutex> event_guard(mEventMutex);
++        mSessionOpen = false;
++        mEventTransaction = 0;
++    }
+     mSessionID = 0;
+     if (mSendObjectHandle != kInvalidObjectHandle) {
+         mDatabase->endSendObject(mSendObjectHandle, false);
+@@ -270,6 +309,11 @@
+         mSendObjectFormat = 0;
+         mSendObjectModifiedTime = 0;
+     }
++    mSendObjectFilePath.set("");
++    mSendObjectFileSize = 0;
++    mRequest.reset();
++    mData.reset();
++    mResponse.reset();
+     // commit any open edits
+     int count = mObjectEditList.size();
+     for (int i = 0; i < count; i++) {
+@@ -279,8 +323,6 @@
+     }
+     mObjectEditList.clear();
+ 
+-    std::lock_guard<std::mutex> event_guard(mEventMutex);
+-    mHandle->close();
+ }
+ 
+ void MtpServer::sendObjectAdded(MtpObjectHandle handle) {

@@ -1,0 +1,378 @@
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -36,6 +36,7 @@
+ #include <android-base/scopeguard.h>
+ #include <cerrno>
+ #include <charconv>
++#include <chrono>
+ #include <cstdio>
+ #include <cstdlib>
+ #include <cstring>
+@@ -87,6 +88,7 @@
+ #ifdef TW_HAS_MTP
+ #include "MtpMessage.hpp"
+ #include "TwrpMtp.hpp"
++#include "MtpProcess.h"
+ #endif
+ 
+ #ifdef TW_INCLUDE_CRYPTO
+@@ -2602,42 +2604,83 @@
+   return res;
+ }
+ 
++bool TWPartitionManager::IsMtpEnabled() const {
++#ifdef TW_HAS_MTP
++  // GUI readers must not wait for a startup/shutdown holding this lock.
++  std::unique_lock<std::recursive_mutex> lock(mtp_mutex_, std::try_to_lock);
++  if (!lock.owns_lock() || mtp_pid_ <= 1 || mtp_write_fd < 0) return false;
++  siginfo_t info{};
++  int result;
++  do { result = waitid(P_PID, mtp_pid_, &info, WEXITED | WNOHANG | WNOWAIT); }
++  while (result < 0 && errno == EINTR);
++  return result == 0 && info.si_pid == 0 &&
++      android::base::GetProperty("sys.usb.config", "") == "mtp,adb" &&
++      android::base::GetProperty("sys.usb.state", "") == "mtp,adb" &&
++      (android::base::GetProperty("sys.usb.configfs", "0") != "1" ||
++       android::base::GetProperty("sys.usb.ffs.mtp.ready", "") == "1");
++#else
++  return false;
++#endif
++}
++
+ bool TWPartitionManager::EnableMtp() {
+ #ifdef TW_HAS_MTP
+-  if (mtp_pid_) {
+-    gui2_console::log_error("mtp_already_enabled");
+-    return true;
+-  }
+-
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  std::lock_guard<std::recursive_mutex> lock(mtp_mutex_);
++  if (mtp_pid_ > 1 && android::mtp_process::alive(mtp_pid_) &&
++      android::base::GetProperty("sys.usb.config", "") == "mtp,adb" &&
++      android::base::GetProperty("sys.usb.state", "") == "mtp,adb" &&
++      (android::base::GetProperty("sys.usb.configfs", "0") != "1" ||
++       android::base::GetProperty("sys.usb.ffs.mtp.ready", "") == "1")) return true;
++  // Recover a stale or failed generation before publishing a new request.
++  if (!DisableMtp()) return false;
+   int mtppipe[2];
+-
+-  if (pipe(mtppipe) < 0) {
++  // Atomic, nonblocking messages; MSG_NOSIGNAL protects recovery if the child
++  // dies between checking its state and publishing a storage update.
++  if (socketpair(AF_UNIX, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, mtppipe) < 0) {
+     LOGERR("Error creating MTP pipe\n");
+     return false;
+   }
+-
+-  if (android::base::GetProperty("sys.usb.config", "") != "mtp,adb") {
+-    android::base::SetProperty("sys.usb.config", "none");
++  if (android::base::GetProperty("sys.usb.configfs", "0") != "1") {
+     const std::string vendor = android::base::GetProperty("usb.vendor", "18D1");
+     const std::string product = android::base::GetProperty("usb.product.mtpadb", "4EE2");
+     TWFunc::WriteToFile("/sys/class/android_usb/android0/idVendor", vendor);
+     TWFunc::WriteToFile("/sys/class/android_usb/android0/idProduct", product);
+-    android::base::SetProperty("sys.usb.config", "mtp,adb");
++  }
++  if (!android::base::SetProperty("sys.usb.config", "mtp,adb")) {
++    close(mtppipe[0]); close(mtppipe[1]);
++    DisableMtp();
++    return false;
+   }
+   /* To enable MTP debug, use the twrp command line feature:
+    * twrp set tw_mtp_debug 1
+    */
+   const auto mtp = std::make_unique<android::TwrpMtp>(DataManager::GetIntValue("tw_mtp_debug"));
+   mtp_pid_ = mtp->ForkServer(mtppipe);
+-  if (mtp_pid_) {
++  if (mtp_pid_ > 1) {
+     close(mtppipe[0]); // Host closes read side
+     mtp_write_fd = mtppipe[1];
+-    DataManager::SetValue("tw_mtp_enabled", 1);
+     AddAllMtpStorage();
+-    return true;
++    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(8);
++    do {
++      const auto requested = android::base::GetProperty("sys.usb.config", "");
++      const auto state = android::base::GetProperty("sys.usb.state", "");
++      if (!android::mtp_process::alive(mtp_pid_) || requested != "mtp,adb" || state == "error") break;
++      if (state == "mtp,adb" &&
++          (android::base::GetProperty("sys.usb.configfs", "0") != "1" ||
++       android::base::GetProperty("sys.usb.ffs.mtp.ready", "") == "1")) {
++        DataManager::SetValue("tw_mtp_enabled", 1);
++        return true;
++      }
++      usleep(10000);
++    } while (std::chrono::steady_clock::now() < deadline);
++    LOGERR("MTP startup was not acknowledged by USB state\n");
++    DisableMtp();
++    return false;
+   }
+   close(mtppipe[0]);
+   close(mtppipe[1]);
++  DisableMtp();
+   gui2_console::log_error("mtp_fail");
+   return false;
+ #else
+@@ -2649,6 +2692,8 @@
+ 
+ void TWPartitionManager::AddAllMtpStorage() const {
+ #ifdef TW_HAS_MTP
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  std::lock_guard<std::recursive_mutex> lock(mtp_mutex_);
+   if (!mtp_pid_) return; // MTP is not enabled
+ 
+   for (TWPartition* partition : partitions_) {
+@@ -2660,33 +2705,40 @@
+ }
+ 
+ bool TWPartitionManager::DisableMtp() {
+-  android::base::SetProperty("sys.usb.ffs.mtp.ready", "0");
+-  if (android::base::GetProperty("sys.usb.config", "") != "adb") {
+-    android::base::SetProperty("sys.usb.config", "none");
++#ifdef TW_HAS_MTP
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  std::lock_guard<std::recursive_mutex> lock(mtp_mutex_);
++  DataManager::SetValue("tw_mtp_enabled", 0);
++  bool stopped = android::mtp_process::stop(mtp_pid_);
++  if (mtp_write_fd >= 0) { close(mtp_write_fd); mtp_write_fd = -1; }
++#else
++  const bool stopped = true;
++#endif
++  // Withdraw ready after the old child stops, so it cannot republish readiness
++  // after cleanup. If it could not be reaped, still recover ordinary ADB.
++  bool ok = android::base::SetProperty("sys.usb.ffs.mtp.ready", "0");
++  if (android::base::GetProperty("sys.usb.configfs", "0") != "1") {
+     const std::string vendor = android::base::GetProperty("usb.vendor", "18D1");
+     const std::string product = android::base::GetProperty("usb.product.adb", "D001");
+     TWFunc::WriteToFile("/sys/class/android_usb/android0/idVendor", vendor);
+     TWFunc::WriteToFile("/sys/class/android_usb/android0/idProduct", product);
+-    usleep(2000);
+-  }
++  }
++  ok = android::base::SetProperty("sys.usb.config", "adb") && ok;
++  const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
++  bool acknowledged = false;
++  do {
++    const auto requested = android::base::GetProperty("sys.usb.config", "");
++    const auto state = android::base::GetProperty("sys.usb.state", "");
++    if (requested != "adb" || state == "error") break;
++    if (state == "adb") { acknowledged = true; break; }
++    if (!ok) break;
++    usleep(10000);
++  } while (std::chrono::steady_clock::now() < deadline);
+ #ifdef TW_HAS_MTP
+-  if (mtp_pid_) {
+-    LOGINFO("Disabling MTP\n");
+-    int status;
+-    const pid_t pid = mtp_pid_;
+-    kill(pid, SIGKILL);
+-    mtp_pid_ = 0;
+-    // We don't care about the exit value, but this prevents a zombie process
+-    waitpid(pid, &status, 0);
+-    close(mtp_write_fd);
+-    mtp_write_fd = -1;
+-  }
+-#endif
+-  android::base::SetProperty("sys.usb.config", "adb");
+-#ifdef TW_HAS_MTP
+-  DataManager::SetValue("tw_mtp_enabled", 0);
+-  return true;
+-#endif
++  if (!stopped || !ok || !acknowledged) LOGERR("MTP shutdown or ADB recovery was not acknowledged\n");
++  return stopped && ok && acknowledged;
++#endif
++  (void)stopped; (void)ok; (void)acknowledged;
+   return false;
+ }
+ 
+@@ -2701,6 +2753,7 @@
+                                              const int message_type) const {
+ #ifdef TW_HAS_MTP
+   MtpMessage mtp_message{};
++  std::lock_guard<std::recursive_mutex> lock(mtp_mutex_);
+ 
+   if (!mtp_pid_) return false; // MTP is disabled
+ 
+@@ -2715,7 +2768,7 @@
+       mtp_message.message_type = MTP_MESSAGE_REMOVE_STORAGE; // Remove
+       LOGINFO("sending message to remove %i\n", part->mtp_storage_id_);
+       mtp_message.storage_id = part->mtp_storage_id_;
+-      if (TEMP_FAILURE_RETRY(write(mtp_write_fd, &mtp_message, sizeof(mtp_message))) <= 0) {
++      if (TEMP_FAILURE_RETRY(send(mtp_write_fd, &mtp_message, sizeof(mtp_message), MSG_NOSIGNAL | MSG_DONTWAIT)) != static_cast<ssize_t>(sizeof(mtp_message))) {
+         LOGINFO("error sending message to remove storage %i\n", part->mtp_storage_id_);
+         return false;
+       }
+@@ -2738,7 +2791,7 @@
+       mtp_message.max_file_size = part->current_file_system_ == "vfat" ? 0xFFFFFFFF : 0;
+       LOGINFO("sending message to add %i '%s' '%s'\n", mtp_message.storage_id, mtp_message.path,
+               mtp_message.display);
+-      if (TEMP_FAILURE_RETRY(write(mtp_write_fd, &mtp_message, sizeof(mtp_message))) <= 0) {
++      if (TEMP_FAILURE_RETRY(send(mtp_write_fd, &mtp_message, sizeof(mtp_message), MSG_NOSIGNAL | MSG_DONTWAIT)) != static_cast<ssize_t>(sizeof(mtp_message))) {
+         LOGINFO("error sending message to add storage %i\n", part->mtp_storage_id_);
+         return false;
+       }
+@@ -2751,7 +2804,7 @@
+     // occur in the calling function.
+     LOGINFO("TWPartitionManager::AddRemoveMtpStorage NULL partition given\n");
+   }
+-  return true;
++  return false;
+ #else
+   gui2_console::log_error("no_mtp");
+   DataManager::SetValue("tw_mtp_enabled", 0);
+--- a/partitions.hpp
++++ b/partitions.hpp
+@@ -807,6 +807,7 @@
+   // Creates a /cache/recovery/storage.fstab file with a list of all potential storage locations for app use
+   // Enables MTP
+   bool EnableMtp();
++  [[nodiscard]] bool IsMtpEnabled() const;
+ 
+   // Adds all storage objects for MTP
+   void AddAllMtpStorage() const;
+@@ -993,6 +994,7 @@
+ 
+   // Creates an empty folder at Folder. If the folder already exists, the folder is deleted, then created
+ #ifdef TW_HAS_MTP
++  mutable std::recursive_mutex mtp_mutex_;
+   pid_t mtp_pid_ = 0;
+ #endif
+   bool mtp_was_enabled;
+--- a/gui2/backend/twrp_mount_backend.cpp
++++ b/gui2/backend/twrp_mount_backend.cpp
+@@ -232,7 +232,7 @@
+ }
+ 
+ bool twrp_mount_backend::mtp_enabled() {
+-  return DataManager::GetIntValue("tw_mtp_enabled") != 0;
++  return PartitionManager.IsMtpEnabled();
+ }
+ 
+ // GUIAction::startmtp / stopmtp
+--- a/mtp/twrp/TwrpMtp.cpp
++++ b/mtp/twrp/TwrpMtp.cpp
+@@ -17,8 +17,10 @@
+ #include "TwrpMtp.hpp"
+ 
+ #include <cstdlib>
++#include <csignal>
+ #include <dirent.h>
+ #include <sys/stat.h>
++#include <thread>
+ #include <unistd.h>
+ 
+ #include "../MtpDebug.h"
+@@ -42,6 +44,7 @@
+ }
+ 
+ pid_t TwrpMtp::ForkServer(int mtp_pipe[2]) {
++  const pid_t parent = getpid();
+   const pid_t pid = fork();
+   if (pid == -1) {
+     MTPE("MTP fork failed.\n");
+@@ -49,6 +52,16 @@
+   }
+   if (pid == 0) {
+     // Child process
++    // PR_SET_PDEATHSIG follows the creating thread, which may be a short-lived
++    // operation worker. Watch process parentage instead; worker completion must
++    // not terminate the server while recovery is still alive.
++    if (getppid() != parent) std::_Exit(1);
++    std::thread([parent] {
++      for (;;) {
++        if (getppid() != parent) std::_Exit(1);
++        usleep(250000);
++      }
++    }).detach();
+     close(mtp_pipe[1]); // Child closes write side
+     // The recovery can be scanning /data on another thread during fork().
+     // Those inherited directory descriptors would keep it busy until MTP exits.
+@@ -80,4 +93,4 @@
+   MTPD("TwrpMtp mtpid: %d\n", mtp_id);
+ }
+ 
+-}
+\ No newline at end of file
++}
+--- a/mtp/twrp/TwrpMtpServer.cpp
++++ b/mtp/twrp/TwrpMtpServer.cpp
+@@ -20,6 +20,8 @@
+ 
+ #include <fcntl.h>
+ #include <unistd.h>
++#include <sys/socket.h>
++#include <cstring>
+ 
+ #include <chrono>
+ #include <thread>
+@@ -148,9 +150,14 @@
+     MTPD("Starting TwrpMtpServer::MtppipeThread\n");
+     MtpMessage mtp_message{};
+     for (;;) {
+-        const ssize_t read_count = read(mtp_read_pipe_, &mtp_message, sizeof(mtp_message));
++        const ssize_t read_count = TEMP_FAILURE_RETRY(recv(mtp_read_pipe_, &mtp_message, sizeof(mtp_message), MSG_TRUNC));
+         MTPD("read %zd from mtppipe\n", read_count);
+         if (read_count == static_cast<ssize_t>(sizeof(mtp_message))) {
++            if (memchr(mtp_message.path, 0, sizeof(mtp_message.path)) == nullptr ||
++                memchr(mtp_message.display, 0, sizeof(mtp_message.display)) == nullptr) {
++                MTPE("MTP storage message has unterminated strings\n");
++                continue;
++            }
+             if (mtp_message.message_type == MTP_MESSAGE_ADD_STORAGE) {
+                 MTPI("mtppipe add storage %u '%s'\n", mtp_message.storage_id, mtp_message.path);
+                 if (mtp_message.storage_id) {
+@@ -180,4 +187,4 @@
+     return 0;
+ }
+ 
+-}
+\ No newline at end of file
++}
+--- /dev/null
++++ b/mtp/MtpProcess.h
+@@ -0,0 +1,44 @@
++#pragma once
++
++#include <cerrno>
++#include <chrono>
++#include <csignal>
++#include <sys/wait.h>
++#include <unistd.h>
++
++namespace android::mtp_process {
++// Caller serializes all operations and is the sole reaper of this child.
++// An exited child remains unreaped until after signals have been decided.
++inline bool alive(pid_t& pid) {
++    if (pid <= 1) { pid = 0; return false; }
++    siginfo_t info{};
++    int result;
++    do { result = waitid(P_PID, pid, &info, WEXITED | WNOHANG | WNOWAIT); }
++    while (result < 0 && errno == EINTR);
++    if (result < 0) {
++        if (errno == ECHILD) pid = 0;
++        return false;
++    }
++    if (info.si_pid == 0) return true;
++    pid_t reaped;
++    do { reaped = waitpid(pid, nullptr, WNOHANG); } while (reaped < 0 && errno == EINTR);
++    if (reaped == pid || (reaped < 0 && errno == ECHILD)) pid = 0;
++    return false;
++}
++
++inline bool stop(pid_t& pid) {
++    if (pid == 0) return true;
++    if (!alive(pid)) return pid == 0;
++    // alive used WNOWAIT. The sole owner still holds this unreaped PID.
++    if (kill(pid, SIGKILL) != 0 && errno != ESRCH) return false;
++    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
++    do {
++        if (!alive(pid)) return pid == 0;
++        usleep(10000);
++    } while (std::chrono::steady_clock::now() < deadline);
++    // Keep ownership on timeout (e.g. uninterruptible driver I/O). A subsequent
++    // disable can reap it; enabling must not launch a second generation.
++    errno = ETIMEDOUT;
++    return false;
++}
++}

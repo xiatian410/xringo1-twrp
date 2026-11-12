@@ -1,0 +1,78 @@
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -3115,10 +3115,6 @@
+ }
+ 
+ bool TWPartition::FlashSparseImage(const std::string& Filename) const {
+-#ifdef TW_ENABLE_BLKDISCARD
+-  BlkDiscard();
+-#endif
+-
+   gui2_console::info("flashing", display_name_);
+ 
+   const android::base::unique_fd in(open(Filename.c_str(), O_RDONLY));
+@@ -3132,19 +3128,58 @@
+     gui2_console::log_error("sparse_import_err", Filename);
+     return false;
+   }
+-
+-  const android::base::unique_fd out(open(actual_block_device_.c_str(), O_WRONLY));
++  const auto sparse_cleanup = android::base::make_scope_guard([&] { sparse_file_destroy(s); });
++  // Compressed file size does not bound the writes made by a sparse image.
++  const int64_t expanded_size = sparse_file_len(s, false, false);
++  if (expanded_size <= 0 || static_cast<uint64_t>(expanded_size) > size_) {
++    LOGERR("Sparse image expanded size is empty or exceeds partition size\n");
++    gui2_console::log_error("img_size_err");
++    return false;
++  }
++
++  android::base::unique_fd out(open(actual_block_device_.c_str(), O_WRONLY | O_CLOEXEC));
+   if (!out.ok()) {
+     gui2_console::log_error("error_opening_strerr", actual_block_device_, strerror(errno));
+-    sparse_file_destroy(s);
+-    return false;
+-  }
++    return false;
++  }
++  // Recheck the opened target; a cached size or a changed path is insufficient.
++  struct stat st {};
++  uint64_t capacity = 0;
++  if (fstat(out.get(), &st) != 0 || !S_ISBLK(st.st_mode)) {
++    LOGERR("Sparse image target is not a block device\n");
++    return false;
++  }
++  int capacity_result;
++  do {
++    capacity_result = ioctl(out.get(), BLKGETSIZE64, &capacity);
++  } while (capacity_result != 0 && errno == EINTR);
++  if (capacity_result != 0 || capacity == 0 || static_cast<uint64_t>(expanded_size) > capacity) {
++    LOGERR("Sparse image expanded size exceeds opened target capacity or capacity is unavailable\n");
++    gui2_console::log_error("img_size_err");
++    return false;
++  }
++#ifdef TW_ENABLE_BLKDISCARD
++  // Validate the image and target before this optional destructive operation.
++  BlkDiscard();
++#endif
+ 
+   const int ret = sparse_file_write(s, out.get(), false, false, false);
+-  sparse_file_destroy(s);
+   if (ret < 0) {
+     LOGERR("Failed to flash sparse image '%s' to '%s'\n", Filename.c_str(),
+            actual_block_device_.c_str());
++    return false;
++  }
++  int sync_result;
++  do {
++    sync_result = fsync(out.get());
++  } while (sync_result != 0 && errno == EINTR);
++  if (sync_result != 0) {
++    LOGERR("Sparse image output sync failed: %s\n", strerror(errno));
++    return false;
++  }
++  // Linux close errors may report delayed writes; never retry a released fd.
++  if (close(out.release()) != 0) {
++    LOGERR("Sparse image output close failed: %s\n", strerror(errno));
+     return false;
+   }
+   return true;

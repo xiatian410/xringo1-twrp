@@ -1,0 +1,82 @@
+diff --git a/kernel_module_loader.cpp b/kernel_module_loader.cpp
+index 5bd7672..fc7da6a 100644
+--- a/kernel_module_loader.cpp
++++ b/kernel_module_loader.cpp
+@@ -40,6 +40,33 @@ BootMode KernelModuleLoader::GetBootMode() {
+ bool KernelModuleLoader::LoadVendorModules() {
+   if (android::base::GetBoolProperty(TW_MODULES_MOUNTED_PROP, false)) return true;
+ 
++  if (android::base::GetBoolProperty("ro.twrp.device_profiles", false)) {
++    // Exact-profile mode owns all additional module loads. Do not probe the
++    // legacy major.minor directories, even when profile selection fails.
++    std::vector<TWPartition*> mounted;
++    auto cleanup = android::base::make_scope_guard([&] {
++      for (auto it = mounted.rbegin(); it != mounted.rend(); ++it)
++        if (!(*it)->Unmount(false))
++          LOGERR("Profile source remains mounted: %s\n", (*it)->GetMountPoint().c_str());
++    });
++    for (const char* path : {"/system_root", "/vendor", "/odm", "/vendor_dlkm", "/system_dlkm"}) {
++      TWPartition* partition = PartitionManager.FindPartitionByPath(path);
++      if (partition && !partition->IsMounted() && partition->Mount(false))
++        mounted.push_back(partition);
++    }
++    const int cached = TWFunc::ExecCmd(
++        "/system/bin/timeout -s KILL 45 /system/bin/sh /system/bin/dijun-runtime.sh cache");
++    if (cached == 0) {
++      const int loaded = TWFunc::ExecCmd(
++          "/system/bin/timeout -s KILL 45 /system/bin/sh /system/bin/dijun-runtime.sh modules");
++      if (loaded != 0) LOGINFO("Profile module phase failed or reached its deadline\n");
++    } else {
++      LOGINFO("No complete matching device profile; retaining stock-loaded drivers\n");
++    }
++    android::base::SetProperty(TW_MODULES_MOUNTED_PROP, "true");
++    return cached == 0;
++  }
++
+   LOGINFO("Attempting to load modules\n");
+ 
+   // Probed directories, in priority order. vendor_module_dirs hold the
+diff --git a/partitionmanager.cpp b/partitionmanager.cpp
+index c419f3d..d49d4c0 100755
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -523,6 +523,15 @@ bool TWPartitionManager::SetupFstabPartitions(const bool display_error) {
+   // Finish startup mount cleanup before starting HALs and recovering keys.
+   if (!UnmountByPath("/data", false) && FindPartitionByPath("/data")) return false;
+   UnmountMainPartitions();
++  if (android::base::GetBoolProperty("ro.twrp.device_profiles", false)) {
++    // All startup mounts must be released before selected HAL paths are
++    // published into RAM. Never write through a mounted vendor partition.
++    if (TWFunc::ExecCmd(
++            "/system/bin/timeout -s KILL 35 /system/bin/sh /system/bin/dijun-runtime.sh publish") != 0) {
++      android::base::SetProperty("twrp.crypto.ready", "0");
++      LOGINFO("Device profile activation unavailable; retaining encrypted storage\n");
++    }
++  }
+   if (!android::base::SetProperty("twrp.storage.ready", "1")) return false;
+ 
+   for (TWPartition* partition : partitions_) {
+@@ -626,6 +635,11 @@ int TWPartitionManager::WriteFstab() const {
+ 
+ void TWPartitionManager::DecryptData() {
+ #ifdef TW_INCLUDE_CRYPTO
++  if (android::base::GetBoolProperty("ro.twrp.device_profiles", false) &&
++      !android::base::GetBoolProperty("twrp.crypto.ready", false)) {
++    LOGINFO("Decryption skipped: no verified, ready device profile\n");
++    return;
++  }
+   if (TWPartition* data = FindPartitionByPath("/data");
+     data && data->is_encrypted_ && !data->is_decrypted_) {
+     SetCryptoState();
+@@ -2032,6 +2046,11 @@ bool TWPartitionManager::PrepareDataForDe(const bool display_error) {
+ }
+ 
+ int TWPartitionManager::DecryptDevice(const std::string& Password, const int user_id) {
++  if (android::base::GetBoolProperty("ro.twrp.device_profiles", false) &&
++      !android::base::GetBoolProperty("twrp.crypto.ready", false)) {
++    LOGINFO("Credential request skipped: device crypto profile unavailable\n");
++    return -1;
++  }
+   twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
+ #ifdef TW_INCLUDE_CRYPTO
+   // Mount any partitions that need to be mounted for decrypt

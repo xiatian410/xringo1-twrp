@@ -1,0 +1,122 @@
+diff --git a/partitionmanager.cpp b/partitionmanager.cpp
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -1457,15 +1457,18 @@
+ }
+ 
+ int TWPartitionManager::WipeByPath(const std::string& Path) const {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
+   int ret = false;
+   bool found = false;
+-  std::string local_path = TWFunc::GetRootPath(Path);
++  bool children_ok = true;
++  const TWPartition* owner = FindPartitionByPath(Path);
++  std::string local_path = owner ? owner->mount_point_ : TWFunc::GetRootPath(Path);
+ 
+   if (local_path == "/system") local_path = GetAndroidRootPath();
+   if (Path == "/cache") {
+     if (const TWPartition* cache = FindPartitionByPath("/cache"); !cache) {
+       if (TWPartition* dat = FindPartitionByPath("/data")) {
+-        dat->WipeDataCache();
++        ret = dat->WipeDataCache();
+         found = true;
+       }
+     }
+@@ -1485,11 +1488,11 @@
+       else ret = partition->Wipe();
+       found = true;
+     } else if (partition->is_sub_partition_ && partition->sub_partition_of_ == local_path) {
+-      partition->Wipe();
++      if (!partition->Wipe()) children_ok = false;
+     }
+   }
+   if (found) {
+-    return ret;
++    return ret && children_ok;
+   }
+   gui2_console::log_error("unable_find_part_path", local_path);
+   return false;
+@@ -1497,9 +1500,12 @@
+ 
+ int TWPartitionManager::WipeByPath(const std::string& Path,
+                                    const std::string& new_file_system) const {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
+   int ret = false;
+   bool found = false;
+-  const std::string local_path = TWFunc::GetRootPath(Path);
++  bool children_ok = true;
++  const TWPartition* owner = FindPartitionByPath(Path);
++  const std::string local_path = owner ? owner->mount_point_ : TWFunc::GetRootPath(Path);
+ 
+   // Iterate through all partitions
+   for (TWPartition* partition : partitions_) {
+@@ -1508,11 +1514,11 @@
+       else ret = partition->Wipe(new_file_system);
+       found = true;
+     } else if (partition->is_sub_partition_ && partition->sub_partition_of_ == local_path) {
+-      partition->Wipe(new_file_system);
++      if (!partition->Wipe(new_file_system)) children_ok = false;
+     }
+   }
+   if (found) {
+-    return ret;
++    return ret && children_ok;
+   }
+   gui2_console::log_error("unable_find_part_path", local_path);
+   return false;
+@@ -1657,9 +1663,12 @@
+ }
+ 
+ int TWPartitionManager::RepairByPath(const std::string& Path, const bool display_error) const {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
+   int ret = false;
+   bool found = false;
+-  const std::string local_path = TWFunc::GetRootPath(Path);
++  bool children_ok = true;
++  const TWPartition* owner = FindPartitionByPath(Path);
++  const std::string local_path = owner ? owner->mount_point_ : TWFunc::GetRootPath(Path);
+ 
+   if (local_path == "/tmp" || local_path == "/") return true;
+ 
+@@ -1669,11 +1678,11 @@
+       ret = partition->Repair();
+       found = true;
+     } else if (partition->is_sub_partition_ && partition->sub_partition_of_ == local_path) {
+-      partition->Repair();
++      if (!partition->Repair()) children_ok = false;
+     }
+   }
+   if (found) {
+-    return ret;
++    return ret && children_ok;
+   }
+   if (display_error) {
+     gui2_console::log_error("unable_find_part_path", local_path);
+@@ -1684,9 +1693,12 @@
+ }
+ 
+ int TWPartitionManager::ResizeByPath(const std::string& Path, const bool display_error) const {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
+   int ret = false;
+   bool found = false;
+-  const std::string local_path = TWFunc::GetRootPath(Path);
++  bool children_ok = true;
++  const TWPartition* owner = FindPartitionByPath(Path);
++  const std::string local_path = owner ? owner->mount_point_ : TWFunc::GetRootPath(Path);
+ 
+   if (local_path == "/tmp" || local_path == "/") return true;
+ 
+@@ -1696,11 +1708,11 @@
+       ret = partition->Resize();
+       found = true;
+     } else if (partition->is_sub_partition_ && partition->sub_partition_of_ == local_path) {
+-      partition->Resize();
++      if (!partition->Resize()) children_ok = false;
+     }
+   }
+   if (found) {
+-    return ret;
++    return ret && children_ok;
+   }
+   if (display_error) {
+     gui2_console::log_error("unable_find_part_path", local_path);

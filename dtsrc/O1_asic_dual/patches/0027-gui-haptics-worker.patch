@@ -1,0 +1,315 @@
+--- a/Android.bp
++++ b/Android.bp
+@@ -481,6 +481,7 @@
+         "gui2/backend/twrp_console_backend.cpp",
+         "gui2/backend/twrp_hardware_settings.cpp",
+         "gui2/backend/backlight_controller.cpp",
++        "gui2/backend/haptics_controller.cpp",
+         "gui2/backend/twrp_log_export_backend.cpp",
+         "gui2/backend/twrp_reboot_backend.cpp",
+         "gui2/backend/twrp_screen_backend.cpp",
+--- a/twrp.cpp
++++ b/twrp.cpp
+@@ -48,6 +48,8 @@
+ #endif
+ #include "gui2/backend/twrp_hardware_settings.h"
+ #include "gui2/backend/backlight_controller.h"
++#include "gui2/backend/haptics_controller.h"
++#include "twrpminui/force_feedback.h"
+ #include "gui2/backend/twrp_log_export_backend.h"
+ #include "gui2/backend/twrp_reboot_backend.h"
+ #include "gui2/backend/twrp_screen_backend.h"
+@@ -629,7 +631,10 @@
+ 	gui2_backend::backlight_controller backlight([](int value) {
+ 		return TWFunc::SetBrightness(std::to_string(value)) == 0;
+ 	});
+-	gui2_backend::twrp_hardware_settings hardware_settings(&settings_store, &backlight);
++	gui2_backend::haptics_controller haptics([] { return haptics_available() != 0; },
++		[](int duration) { return ::vibrate(duration) == 0; },
++		[] { twrpminui::release_force_feedback(); });
++	gui2_backend::twrp_hardware_settings hardware_settings(&settings_store, &backlight, &haptics);
+ 	gui2_backend::twrp_screen_backend screen_backend(&settings_store, &backlight);
+ 	gui2_backend::twrp_reboot_backend reboot_backend;
+ 	gui2_backend::twrp_console_backend console_backend;
+@@ -674,6 +679,7 @@
+ 	// Started ahead of the GUI, as upstream does.
+ 	startBatteryMonitor();
+ 	const int gui2_result = gui2_start(&gui2_context_value);
++	haptics.stop();
+ 	backlight.stop();
+ 	if (gui2_result != 0) {
+ 		LOGERR("GUI2 exited with error %d.\n", gui2_result);
+--- a/gui2/gui2.cpp
++++ b/gui2/gui2.cpp
+@@ -6212,6 +6212,9 @@
+   if (background != nullptr) background->stop();
+   flush_hardware_settings();
+   if (hardware != nullptr) {
++    hardware->stop_haptics();
++    if (hardware->take_haptics_error())
++      std::fprintf(stderr, "GUI2: Haptics device request failed before shutdown\n");
+     hardware->stop_brightness();
+     if (hardware->take_brightness_error())
+       std::fprintf(stderr, "GUI2: Unable to write brightness before shutdown\n");
+@@ -6316,6 +6319,11 @@
+   if (hardware != nullptr && hardware->take_brightness_error()) {
+     show_hardware_error(strings().hardware_error);
+     set_quick_feedback(strings().hardware_error);
++  }
++  if (hardware != nullptr && hardware->take_haptics_error()) {
++    show_hardware_error(strings().hardware_error);
++    set_quick_feedback(strings().hardware_error);
++    std::fprintf(stderr, "GUI2: Haptics device request failed\n");
+   }
+   const bool has_mouse = ev_has_mouse() != 0;
+   if (has_mouse && mouse_cursor == nullptr)
+--- a/gui2/backend/twrp_hardware_settings.cpp
++++ b/gui2/backend/twrp_hardware_settings.cpp
+@@ -4,6 +4,7 @@
+ #include <string>
+ 
+ #include "backlight_controller.h"
++#include "haptics_controller.h"
+ #include "data.hpp"
+ #include "settings_store.h"
+ #include "twrp_functions.hpp"
+@@ -42,8 +43,17 @@
+ }  // namespace
+ 
+ twrp_hardware_settings::twrp_hardware_settings(settings_store* settings,
+-                                               backlight_controller* backlight)
+-    : settings_(settings), backlight_(backlight) {}
++                                               backlight_controller* backlight,
++                                               haptics_controller* haptics)
++    : settings_(settings), backlight_(backlight), haptics_(haptics) {}
++
++bool twrp_hardware_settings::take_haptics_error() {
++  return haptics_ != nullptr && haptics_->consume_error();
++}
++
++void twrp_hardware_settings::stop_haptics() {
++  if (haptics_ != nullptr) haptics_->stop();
++}
+ 
+ bool twrp_hardware_settings::take_brightness_error() {
+   return backlight_ != nullptr && backlight_->consume_error();
+@@ -79,7 +89,8 @@
+ // The build flag permits haptics, but only a live backend makes them available.
+ // Recheck when the page is entered or a request is made: modules can arrive late.
+ bool twrp_hardware_settings::has_haptics() const {
+-  return DataManager::GetIntValue("tw_disable_haptics") == 0 && haptics_available() != 0;
++  if (DataManager::GetIntValue("tw_disable_haptics") != 0) return false;
++  return haptics_ != nullptr ? haptics_->available() : haptics_available() != 0;
+ }
+ 
+ int twrp_hardware_settings::haptic_duration_ms(haptic_channel channel) const {
+@@ -100,7 +111,10 @@
+ void twrp_hardware_settings::vibrate(haptic_channel channel) {
+   if (!has_haptics()) return;
+   const int duration = haptic_duration_ms(channel);
+-  if (duration > 0) ::vibrate(duration);
++  if (duration > 0) {
++    if (haptics_ != nullptr) haptics_->submit(duration);
++    else ::vibrate(duration);  // Non-GUI completion callers already run on workers.
++  }
+ }
+ 
+ }  // namespace gui2_backend
+--- a/gui2/backend/twrp_hardware_settings.h
++++ b/gui2/backend/twrp_hardware_settings.h
+@@ -7,12 +7,16 @@
+ 
+ class settings_store;
+ class backlight_controller;
++class haptics_controller;
+ 
+ class twrp_hardware_settings final : public hardware_settings {
+  public:
+-  twrp_hardware_settings(settings_store* settings, backlight_controller* backlight);
++  twrp_hardware_settings(settings_store* settings, backlight_controller* backlight,
++                         haptics_controller* haptics = nullptr);
+   bool take_brightness_error() override;
+   void stop_brightness() override;
++  bool take_haptics_error() override;
++  void stop_haptics() override;
+ 
+   bool has_brightness() const override;
+   int brightness_percent() const override;
+@@ -26,6 +30,7 @@
+  private:
+   settings_store* settings_;
+   backlight_controller* backlight_;
++  haptics_controller* haptics_;
+ };
+ 
+ }  // namespace gui2_backend
+--- a/gui2/backend/hardware_settings.h
++++ b/gui2/backend/hardware_settings.h
+@@ -21,6 +21,8 @@
+   virtual void stop_brightness() {}
+ 
+   virtual bool has_haptics() const = 0;
++  virtual bool take_haptics_error() { return false; }
++  virtual void stop_haptics() {}
+   virtual int haptic_duration_ms(haptic_channel channel) const = 0;
+   virtual bool set_haptic_duration_ms(haptic_channel channel, int duration_ms) = 0;
+   virtual void vibrate(haptic_channel channel) = 0;
+--- a/twrpminui/force_feedback.cpp
++++ b/twrpminui/force_feedback.cpp
+@@ -182,4 +182,9 @@
+     }
+     return open_ff_haptics() >= 0;
+ }
++
++void release_force_feedback() {
++    std::lock_guard<std::mutex> lock(ff_mutex);
++    reset_ff();  // input core erases effects owned by this descriptor on close.
+ }
++}
+--- a/twrpminui/force_feedback.h
++++ b/twrpminui/force_feedback.h
+@@ -3,4 +3,5 @@
+ namespace twrpminui {
+ int play_force_feedback(int timeout_ms);
+ bool force_feedback_available();
++void release_force_feedback();
+ }
+--- /dev/null
++++ b/gui2/backend/haptics_controller.cpp
+@@ -0,0 +1,84 @@
++#include "haptics_controller.h"
++
++#include <utility>
++#include <cstdio>
++
++namespace gui2_backend {
++
++haptics_controller::haptics_controller(std::function<bool()> probe,
++                                       std::function<bool(int)> play,
++                                       std::function<void()> release)
++    : probe_(std::move(probe)), play_(std::move(play)), release_(std::move(release)),
++      worker_(&haptics_controller::run, this) {}
++
++haptics_controller::~haptics_controller() { stop(); }
++
++bool haptics_controller::available() {
++  std::lock_guard<std::mutex> lock(mutex_);
++  if (stopping_) return false;
++  return available_;
++}
++
++bool haptics_controller::submit(int duration_ms) {
++  std::lock_guard<std::mutex> lock(mutex_);
++  if (stopping_ || !available_ || duration_ms <= 0 || duration_ms > 10000) return false;
++  pending_ = duration_ms;
++  submitted_ = clock::now();
++  wake_.notify_one();
++  return true;
++}
++
++bool haptics_controller::consume_error() {
++  std::lock_guard<std::mutex> lock(mutex_);
++  const bool error = error_;
++  error_ = false;
++  return error;
++}
++
++void haptics_controller::stop() {
++  std::lock_guard<std::mutex> join_lock(stop_mutex_);
++  {
++    std::lock_guard<std::mutex> lock(mutex_);
++    stopping_ = true;
++    available_ = false;
++    pending_ = 0;
++    wake_.notify_one();
++  }
++  if (worker_.joinable()) worker_.join();
++}
++
++void haptics_controller::run() {
++  std::unique_lock<std::mutex> lock(mutex_);
++  auto next_probe = clock::now();
++  for (;;) {
++    wake_.wait_until(lock, next_probe, [this] { return stopping_ || refresh_ || pending_ > 0; });
++    if (stopping_) break;
++    const int duration = pending_;
++    const bool fresh = clock::now() - submitted_ <= std::chrono::milliseconds(250);
++    pending_ = 0;
++    if (duration > 0 && fresh) {
++      lock.unlock();
++      const bool success = play_(duration);
++      if (!success) std::fprintf(stderr, "GUI2 haptics: background device request failed\n");
++      lock.lock();
++      if (!success) {
++        error_ = true;
++        available_ = false;
++        refresh_ = true;
++      }
++    }
++    if (stopping_) break;
++    if (refresh_ || clock::now() >= next_probe) {
++      refresh_ = false;
++      lock.unlock();
++      const bool ready = probe_();
++      lock.lock();
++      available_ = !stopping_ && ready;
++      next_probe = clock::now() + std::chrono::milliseconds(500);
++    }
++  }
++  lock.unlock();
++  release_();
++}
++
++}  // namespace gui2_backend
+--- /dev/null
++++ b/gui2/backend/haptics_controller.h
+@@ -0,0 +1,49 @@
++#ifndef GUI2_BACKEND_HAPTICS_CONTROLLER_H
++#define GUI2_BACKEND_HAPTICS_CONTROLLER_H
++
++#include <chrono>
++#include <condition_variable>
++#include <functional>
++#include <mutex>
++#include <thread>
++
++namespace gui2_backend {
++
++// Owns GUI haptics I/O. At most one in-flight and one pending request exist;
++// the latest pending request replaces earlier feedback, and expires in 250 ms.
++// None of the caller methods execute probe/play/release or wait for device I/O.
++class haptics_controller {
++ public:
++  haptics_controller(std::function<bool()> probe, std::function<bool(int)> play,
++                     std::function<void()> release);
++  ~haptics_controller();
++  haptics_controller(const haptics_controller&) = delete;
++  haptics_controller& operator=(const haptics_controller&) = delete;
++
++  bool available();  // Cached state; worker refreshes at most every 500 ms.
++  bool submit(int duration_ms);
++  bool consume_error();
++  // Discards queued feedback and joins active I/O before releasing resources.
++  // A kernel call which never returns cannot be cancelled safely here.
++  void stop();
++
++ private:
++  using clock = std::chrono::steady_clock;
++  void run();
++  std::function<bool()> probe_;
++  std::function<bool(int)> play_;
++  std::function<void()> release_;
++  std::mutex mutex_;
++  std::mutex stop_mutex_;
++  std::condition_variable wake_;
++  bool stopping_ = false;
++  bool available_ = false;
++  bool refresh_ = true;
++  bool error_ = false;
++  int pending_ = 0;
++  clock::time_point submitted_;
++  std::thread worker_;
++};
++
++}  // namespace gui2_backend
++#endif

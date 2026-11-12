@@ -1,0 +1,26 @@
+# Copyright (C) 2012 The Android Open Source Project
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+on early-init
+    start console
+
+on init
+    setprop sys.usb.configfs 1
+    # RAM copy of matching ODM firmware takes priority, as in stock ueventd.
+    # Keep it accessible while vendor/odm are temporarily mounted or released.
+    write /sys/module/firmware_class/parameters/path /lib/firmware
+
+# XRing O1_asic USB: force device mode for recovery
+on property:sys.usb.config=fastboot
+    write /sys/bus/platform/devices/e1ac0000.xr_usb/force_role 2
+
+service console /system/bin/sh
+    class core
+    console
+    disabled
+    user shell
+    group shell log readproc
+    seclabel u:r:shell:s0
+    setenv HOSTNAME console

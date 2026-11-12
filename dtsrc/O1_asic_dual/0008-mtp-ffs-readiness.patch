@@ -1,0 +1,206 @@
+diff --git a/mtp/MtpDescriptors.cpp b/mtp/MtpDescriptors.cpp
+index 0e91c06..9eb67b4 100644
+--- a/mtp/MtpDescriptors.cpp
++++ b/mtp/MtpDescriptors.cpp
+@@ -262,24 +262,31 @@ const struct desc_v1 ptp_desc_v1 = {
+ };
+ 
+ bool writeDescriptors(int fd, bool ptp) {
++    if (!android::base::SetProperty("sys.usb.ffs.mtp.ready", "0"))
++        return false;
++    size_t expected = sizeof(desc_v2);
+     ssize_t ret = TEMP_FAILURE_RETRY(write(fd,
+                 &(ptp ? ptp_desc_v2 : mtp_desc_v2), sizeof(desc_v2)));
+     if (ret < 0) {
+         PLOG(ERROR) << fd << "Switching to V1 descriptor format";
+         ret = TEMP_FAILURE_RETRY(write(fd,
+                     &(ptp ? ptp_desc_v1 : mtp_desc_v1), sizeof(desc_v1)));
++        expected = sizeof(desc_v1);
+         if (ret < 0) {
+             PLOG(ERROR) << fd << "Writing descriptors failed";
+             return false;
+         }
+     }
++    if (static_cast<size_t>(ret) != expected) {
++        LOG(ERROR) << "Incomplete FunctionFS descriptors";
++        return false;
++    }
+     ret = TEMP_FAILURE_RETRY(write(fd, &mtp_strings, sizeof(mtp_strings)));
+-    if (ret < 0) {
++    if (ret != static_cast<ssize_t>(sizeof(mtp_strings))) {
+         PLOG(ERROR) << fd << "Writing strings failed";
+         return false;
+     }
+-    android::base::SetProperty("sys.usb.ffs.mtp.ready", "1");
+-    return true;
++    return android::base::SetProperty("sys.usb.ffs.mtp.ready", "1");
+ }
+ 
+ }; // namespace android
+diff --git a/mtp/MtpFfsCompatHandle.cpp b/mtp/MtpFfsCompatHandle.cpp
+index d2b342c..25333d2 100644
+--- a/mtp/MtpFfsCompatHandle.cpp
++++ b/mtp/MtpFfsCompatHandle.cpp
+@@ -110,7 +110,7 @@ int MtpFfsCompatHandle::readHandle(int fd, void* data, size_t len) {
+ }
+ 
+ int MtpFfsCompatHandle::start(bool ptp) {
+-    if (!openEndpoints(ptp))
++    if (!configureEndpoints(ptp))
+         return -1;
+ 
+     for (unsigned i = 0; i < NUM_IO_BUFS; i++) {
+@@ -224,7 +224,9 @@ int MtpFfsCompatHandle::receiveFile(mtp_file_range mfr, bool zero_packet) {
+                 file_length -= ret;
+             }
+             // Enqueue a new write request
+-            aio_prepare(&aio, data, length, offset);
++            // Unknown-length transfers end with a short USB packet. Only the
++            // bytes actually received are valid; the buffer tail is not data.
++            aio_prepare(&aio, data, ret, offset);
+             aio_write(&aio);
+ 
+             offset += ret;
+diff --git a/mtp/MtpFfsHandle.cpp b/mtp/MtpFfsHandle.cpp
+index f85c0fe..a1c2fc9 100644
+--- a/mtp/MtpFfsHandle.cpp
++++ b/mtp/MtpFfsHandle.cpp
+@@ -127,6 +127,7 @@ bool MtpFfsHandle::writeDescriptors(bool ptp) {
+ }
+ 
+ void MtpFfsHandle::closeConfig() {
++    android::base::SetProperty("sys.usb.ffs.mtp.ready", "0");
+     mControl.reset();
+ }
+ 
+@@ -265,7 +266,9 @@ int MtpFfsHandle::handleControlRequest(const struct usb_ctrlrequest *setup) {
+     return 0;
+ }
+ 
+-int MtpFfsHandle::start(bool ptp) {
++bool MtpFfsHandle::configureEndpoints(bool ptp) {
++    if (!android::base::SetProperty("sys.usb.ffs.mtp.ready", "0"))
++        return false;
+     // Reopen ep0 if a previous failed attempt closed it, and write the
+     // MTP/PTP descriptors before touching the endpoints: the kernel only
+     // creates the ep1/ep2 files and marks the function active after it
+@@ -275,14 +278,20 @@ int MtpFfsHandle::start(bool ptp) {
+         mControl.reset(TEMP_FAILURE_RETRY(open(ptp ? FFS_PTP_EP0 : FFS_MTP_EP0, O_RDWR)));
+         if (mControl < 0) {
+             PLOG(ERROR) << (ptp ? FFS_PTP_EP0 : FFS_MTP_EP0) << ": cannot open control ep";
+-            return -1;
++            return false;
+         }
+     }
+ 
+-    if (!writeDescriptors(ptp))
+-        return -1;
++    if (!writeDescriptors(ptp) || !openEndpoints(ptp)) {
++        closeEndpoints();
++        closeConfig();
++        return false;
++    }
++    return true;
++}
+ 
+-    if (!openEndpoints(ptp))
++int MtpFfsHandle::start(bool ptp) {
++    if (!configureEndpoints(ptp))
+         return -1;
+ 
+     for (unsigned i = 0; i < NUM_IO_BUFS; i++) {
+@@ -299,9 +308,15 @@ int MtpFfsHandle::start(bool ptp) {
+     memset(&mCtx, 0, sizeof(mCtx));
+     if (io_setup(AIO_BUFS_MAX, &mCtx) < 0) {
+         PLOG(ERROR) << "unable to setup aio";
++        closeEndpoints();
++        closeConfig();
+         return -1;
+     }
+     mEventFd.reset(eventfd(0, EFD_NONBLOCK));
++    if (mEventFd < 0) {
++        close();
++        return -1;
++    }
+     mPollFds[0].fd = mControl;
+     mPollFds[0].events = POLLIN;
+     mPollFds[1].fd = mEventFd;
+@@ -319,7 +334,11 @@ void MtpFfsHandle::close() {
+     }
+     mChildThreads.clear();
+ 
+-    io_destroy(mCtx);
++    if (mCtx != 0) {
++        io_destroy(mCtx);
++        mCtx = 0;
++    }
++    mEventFd.reset();
+     closeEndpoints();
+     closeConfig();
+ }
+@@ -480,6 +499,7 @@ int MtpFfsHandle::receiveFile(mtp_file_range mfr, bool zero_packet) {
+     bool has_write = false;
+     bool error = false;
+     bool write_error = false;
++    int write_errno = 0;
+     int packet_size = getPacketSize(mBulkOut);
+     bool short_packet = false;
+     advise(mfr.fd);
+@@ -497,8 +517,9 @@ int MtpFfsHandle::receiveFile(mtp_file_range mfr, bool zero_packet) {
+         if (has_write) {
+             aio_suspend(aiol, 1, nullptr);
+             int written = aio_return(&aio);
+-            if (static_cast<size_t>(written) < aio.aio_nbytes) {
++            if (written < 0 || static_cast<size_t>(written) < aio.aio_nbytes) {
+                 errno = written == -1 ? aio_error(&aio) : EIO;
++                write_errno = errno;
+                 PLOG(ERROR) << "Mtp error writing to disk";
+                 write_error = true;
+             }
+@@ -561,6 +582,7 @@ int MtpFfsHandle::receiveFile(mtp_file_range mfr, bool zero_packet) {
+ 
+             if (write_error) {
+                 cancelTransaction();
++                if (write_errno != 0) errno = write_errno;
+                 return -1;
+             }
+ 
+@@ -573,6 +595,12 @@ int MtpFfsHandle::receiveFile(mtp_file_range mfr, bool zero_packet) {
+             has_write = true;
+         }
+     }
++    // The final asynchronous write completes after file_length reaches zero.
++    // Its failure must not be lost when the loop exits without another read.
++    if (write_error) {
++        errno = write_errno != 0 ? write_errno : EIO;
++        return -1;
++    }
+     if ((ret % packet_size == 0 && !short_packet) || zero_packet) {
+         // Receive an empty packet if size is a multiple of the endpoint size
+         // and we didn't already get an empty packet from the header or large file.
+diff --git a/mtp/MtpFfsHandle.h b/mtp/MtpFfsHandle.h
+index 8f4b769..76df8ba 100644
+--- a/mtp/MtpFfsHandle.h
++++ b/mtp/MtpFfsHandle.h
+@@ -54,10 +54,11 @@ protected:
+     void cancelTransaction();
+     void doSendEvent(mtp_event me);
+     bool openEndpoints(bool ptp);
++    bool configureEndpoints(bool ptp);
+ 
+     static int getPacketSize(int ffs_fd);
+ 
+-    bool mCanceled;
++    bool mCanceled = false;
+     bool mBatchCancel;
+ 
+     std::vector<std::thread> mChildThreads;
+@@ -69,7 +70,7 @@ protected:
+     android::base::unique_fd mBulkOut;
+     android::base::unique_fd mIntr;
+ 
+-    aio_context_t mCtx;
++    aio_context_t mCtx = 0;
+ 
+     android::base::unique_fd mEventFd;
+     struct pollfd mPollFds[2];

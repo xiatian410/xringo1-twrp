@@ -1,0 +1,59 @@
+diff --git a/partitionmanager.cpp b/partitionmanager.cpp
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -834,7 +834,8 @@
+   twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
+   int ret = false;
+   bool found = false;
+-  const std::string local_path = TWFunc::GetRootPath(Path);
++  const TWPartition* owner = FindPartitionByPath(Path);
++  const std::string local_path = owner ? owner->mount_point_ : TWFunc::GetRootPath(Path);
+ 
+   if (local_path == "/tmp" || local_path == "/") return true;
+ 
+@@ -861,7 +862,8 @@
+   twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
+   int ret = false;
+   bool found = false;
+-  const std::string local_path = TWFunc::GetRootPath(path);
++  const TWPartition* owner = FindPartitionByPath(path);
++  const std::string local_path = owner ? owner->mount_point_ : TWFunc::GetRootPath(path);
+ 
+   // Iterate through all partitions
+   for (const TWPartition* partition : partitions_) {
+@@ -908,13 +910,29 @@
+ TWPartition* TWPartitionManager::FindPartitionByPath(const std::string& Path) const {
+   // Serialize traversal with hotplug changes; callers must protect pointer use too.
+   twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
+-  std::string local_path = TWFunc::GetRootPath(Path);
+-
+-  if (local_path == "/system") local_path = GetAndroidRootPath();
++  // Mount points may contain multiple components, e.g. /mnt/vendor/persist.
++  // Select the deepest containing mount point instead of truncating to /mnt.
++  std::string local_path = std::filesystem::path(
++      Path.empty() || Path.front() != '/' ? "/" + Path : Path).lexically_normal().string();
++  while (local_path.size() > 1 && local_path.back() == '/') local_path.pop_back();
++  if (local_path == "/system" || local_path.starts_with("/system/"))
++    local_path = GetAndroidRootPath() + local_path.substr(7);
++  TWPartition* best = nullptr;
++  size_t best_length = 0;
++  const auto contains = [&](const std::string& mount) {
++    return !mount.empty() && (local_path == mount ||
++        (mount != "/" && local_path.size() > mount.size() &&
++         local_path.compare(0, mount.size(), mount) == 0 && local_path[mount.size()] == '/'));
++  };
+   for (TWPartition* partition : partitions_) {
+-    if (MatchesPath(partition, local_path)) return partition;
+-  }
+-  return nullptr;
++    for (const std::string* mount : {&partition->mount_point_, &partition->symlink_mount_point_}) {
++      if (contains(*mount) && mount->size() > best_length) {
++        best = partition;
++        best_length = mount->size();
++      }
++    }
++  }
++  return best;
+ }
+ 
+ TWPartition* TWPartitionManager::FindPartitionByBlockDevice(const std::string& block_device) const {

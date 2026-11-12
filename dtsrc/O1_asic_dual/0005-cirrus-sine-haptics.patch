@@ -1,0 +1,68 @@
+diff --git a/twrpminui/force_feedback.cpp b/twrpminui/force_feedback.cpp
+index c8fb653..1330104 100644
+--- a/twrpminui/force_feedback.cpp
++++ b/twrpminui/force_feedback.cpp
+@@ -11,6 +11,7 @@
+ #include <string.h>
+ #include <sys/ioctl.h>
+ #include <unistd.h>
++#include <cutils/properties.h>
+ #include "common.h"
+ #include "twcommon.h"
+ namespace twrpminui {
+@@ -18,10 +19,12 @@ static std::mutex ff_mutex;
+ static int ff_haptics_fd = -1;
+ static int ff_haptics_effect_id = -1;
+ static int ff_haptics_effect_type = -1;
++static bool ff_haptics_is_cirrus = false;
+ 
+ static void reset_ff() {
+     if (ff_haptics_fd >= 0) close(ff_haptics_fd);
+     ff_haptics_fd = ff_haptics_effect_id = ff_haptics_effect_type = -1;
++    ff_haptics_is_cirrus = false;
+ }
+ 
+ static bool has_ff_effect(int fd, int effect_type) {
+@@ -56,7 +59,8 @@ static int open_ff_haptics() {
+ 
+         char name[64] = {};
+         ioctl(fd, EVIOCGNAME(sizeof(name)), name);
+-        if (strstr(name, "haptic") == nullptr && strstr(name, "vibrat") == nullptr) {
++        const bool is_cirrus = strstr(name, "cs40l26") != nullptr;
++        if (!is_cirrus && strstr(name, "haptic") == nullptr && strstr(name, "vibrat") == nullptr) {
+             close(fd);
+             continue;
+         }
+@@ -65,10 +69,13 @@ static int open_ff_haptics() {
+             ff_haptics_effect_type = FF_CONSTANT;
+         } else if (has_ff_effect(fd, FF_RUMBLE)) {
+             ff_haptics_effect_type = FF_RUMBLE;
++        } else if (has_ff_effect(fd, FF_PERIODIC) && has_ff_effect(fd, FF_SINE)) {
++            ff_haptics_effect_type = FF_PERIODIC;
+         } else {
+             close(fd);
+             continue;
+         }
++        ff_haptics_is_cirrus = is_cirrus;
+ 
+         LOGI("Using force-feedback haptics at %s (%s), effect type %d\n",
+              path, name, ff_haptics_effect_type);
+@@ -103,6 +110,18 @@ int play_force_feedback(int timeout_ms) {
+     effect.id = -1;
+     if (effect.type == FF_CONSTANT) {
+         effect.u.constant.level = 0x7fff;
++    } else if (effect.type == FF_PERIODIC) {
++        effect.u.periodic.waveform = FF_SINE;
++        int frequency = 200;
++        if (ff_haptics_is_cirrus) {
++            frequency = property_get_int32("ro.twrp.haptics_frequency", 200);
++            if (frequency < 100 || frequency > 250) frequency = 200;
++        }
++        // FF encodes whole milliseconds. dijun's stock 130 Hz resonance
++        // rounds to 8 ms (125 Hz); leave other devices at their default.
++        effect.u.periodic.period = (1000 + frequency / 2) / frequency;
++        // The OTA Cirrus driver clamps magnitude to 0..255, unlike generic FF.
++        effect.u.periodic.magnitude = ff_haptics_is_cirrus ? 64 : 0x4000;
+     } else {
+         effect.u.rumble.strong_magnitude = 0x7fff;
+         effect.u.rumble.weak_magnitude = 0x7fff;

@@ -1,0 +1,174 @@
+diff --git a/twrp.cpp b/twrp.cpp
+index 0a49256..1fb59a2 100644
+--- a/twrp.cpp
++++ b/twrp.cpp
+@@ -20,6 +20,7 @@
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ 
++#include <charconv>
+ #include <chrono>
+ #include <csignal>
+ #include <cstdio>
+@@ -526,9 +527,6 @@ static void Reboot() {
+ static constexpr auto kBatteryPollInterval = std::chrono::milliseconds(250);
+ 
+ #ifdef TW_USE_LEGACY_BATTERY_SERVICES
+-static constexpr int kBatteryHiddenSentinelLow = 0;
+-static constexpr int kBatteryHiddenSentinelHigh = 101;
+-
+ static BatteryInfo ReadLegacyBattery() {
+ #ifdef TW_CUSTOM_BATTERY_PATH
+   const auto battery_path = fs::path(TW_CUSTOM_BATTERY_PATH);
+@@ -539,22 +537,30 @@ static BatteryInfo ReadLegacyBattery() {
+   const std::string cap_path = battery_path / "capacity";
+   const std::string st_path = battery_path / "status";
+ 
+-  BatteryInfo battery_info{};
++  // A missing reading is distinct from a real empty battery. Never throw from
++  // the polling thread or manufacture a full battery when the node is absent.
++  BatteryInfo battery_info{false, -1};
+ 
+-  // Sysfs capacity: single integer (0–100), newline-terminated
++  // Sysfs capacity is one complete integer (0–100), with optional whitespace.
+   if (std::ifstream f(cap_path); f) {
+-    if (std::string line; std::getline(f, line)) {
+-      const int v = std::stoi(line);
+-      battery_info.capacity = v > 100
+-                                ? kBatteryHiddenSentinelHigh
+-                                : v < 0 ? kBatteryHiddenSentinelLow : v;
++    if (std::string token; f >> token) {
++      int capacity = -1;
++      const auto [end, error] = std::from_chars(token.data(), token.data() + token.size(), capacity);
++      f >> std::ws;
++      if (error == std::errc{} && end == token.data() + token.size() &&
++          capacity >= 0 && capacity <= 100 && f.eof() && !f.bad()) {
++        battery_info.capacity = capacity;
++      }
+     }
+   }
+ 
+   // Sysfs status: "Charging", "Discharging", "Full", etc.
+   if (std::ifstream f(st_path); f) {
+     std::string line;
+-    battery_info.charging = std::getline(f, line) && line == "Charging";
++    if (std::getline(f, line) && line == "Charging") {
++      f >> std::ws;
++      battery_info.charging = f.eof() && !f.bad();
++    }
+   }
+ 
+   return battery_info;
+diff --git a/data.cpp b/data.cpp
+index ee6bd58..23e68e7 100644
+--- a/data.cpp
++++ b/data.cpp
+@@ -24,6 +24,7 @@
+ #include <ctime>
+ #include <filesystem>
+ #include <format>
++#include <mutex>
+ #include <optional>
+ #include <string>
+ #include <system_error>
+@@ -873,14 +874,20 @@ int DataManager::GetMagicValue(const std::string& key, std::string& value) {
+     return 0;
+   }
+   if (key == "tw_cpu_temp") {
++    value.clear();
+     int tw_no_cpu_temp;
+     GetValue("tw_no_cpu_temp", tw_no_cpu_temp);
+     if (tw_no_cpu_temp == 1) return -1;
+ 
+     // Cached for 5s; steady_clock is monotonic, so wall-clock changes can't stall it.
++    static std::mutex temperature_lock;
++    const std::lock_guard<std::mutex> guard(temperature_lock);
+     static std::chrono::steady_clock::time_point next_refresh{};
+-    static uint64_t convert_temp = 0;
+-    if (const auto now = std::chrono::steady_clock::now(); now > next_refresh) {
++    static int64_t convert_temp = 0;
++    static bool valid = false;
++    if (const auto now = std::chrono::steady_clock::now(); now >= next_refresh) {
++      next_refresh = now + std::chrono::seconds(5);
++      valid = false;
+ #ifdef TW_CUSTOM_CPU_TEMP_PATH
+       const std::string cpu_temp_file = TW_CUSTOM_CPU_TEMP_PATH;
+ #else
+@@ -888,15 +895,28 @@ int DataManager::GetMagicValue(const std::string& key, std::string& value) {
+ #endif
+       std::string result;
+       if (!android::base::ReadFileToString(cpu_temp_file, &result)) return -1;
+-      // std::from_chars partial-parses past the trailing newline sysfs appends, so
+-      // no Trim is needed; on garbage raw stays 0, like the old strtoul.
+-      uint64_t raw = 0;
+-      std::from_chars(result.data(), result.data() + result.size(), raw);
+-      convert_temp = raw / 1000;
+-      if (convert_temp == 0) convert_temp = raw;
+-      if (convert_temp >= 150) convert_temp = raw / 10;
+-      next_refresh = now + std::chrono::seconds(5);
++      const auto first = result.find_first_not_of(" \t\r\n");
++      if (first == std::string::npos) return -1;
++      const auto last = result.find_last_not_of(" \t\r\n") + 1;
++      int64_t raw = 0;
++      const auto [end, error] = std::from_chars(result.data() + first, result.data() + last, raw);
++      if (error != std::errc{} || end != result.data() + last) return -1;
++      if (cpu_temp_file.starts_with("/sys/class/thermal/")) {
++        // Linux thermal-class temp is signed millidegrees Celsius, including
++        // sub-degree and negative readings. Magnitude must not select its unit.
++        if (raw < -273150 || raw > 1000000) return -1;
++        convert_temp = raw / 1000;
++      } else {
++        // Retain the legacy convention for explicitly configured non-thermal
++        // nodes. dijun uses the standard thermal class path above.
++        if (raw < -273150 || raw > 1000000) return -1;
++        convert_temp = raw / 1000;
++        if (convert_temp == 0) convert_temp = raw;
++        if (convert_temp >= 150 || convert_temp <= -150) convert_temp = raw / 10;
++      }
++      valid = true;
+     }
++    if (!valid) return -1;
+     value = std::to_string(convert_temp);
+     return 0;
+   }
+diff --git a/gui2/backend/status_backend.cpp b/gui2/backend/status_backend.cpp
+index f0fa0ee..fa6d12a 100644
+--- a/gui2/backend/status_backend.cpp
++++ b/gui2/backend/status_backend.cpp
+@@ -1,6 +1,6 @@
+ #include "status_backend.h"
+ 
+-#include <cstdlib>
++#include <charconv>
+ #include <string>
+ 
+ #include "settings_store.h"
+@@ -12,15 +12,22 @@ status_snapshot status_backend::snapshot() const {
+   if (settings_ == nullptr) return snapshot;
+   snapshot.time_text = settings_->get_string("tw_time", "");
+ 
+-  // "<capacity>%<'+' when charging, else ' '>"; -1 until the first reading.
++  // The producer writes "<capacity>%[+]"; older producers used a trailing
++  // space. Missing/invalid readings use -1 and must not appear as 0% or 100%.
+   const std::string battery = settings_->get_string("tw_battery", "");
+   const size_t percent = battery.find('%');
+-  if (percent == std::string::npos || settings_->get_int("tw_no_battery_percent", 0) != 0)
++  if (percent == std::string::npos || percent == 0 ||
++      settings_->get_int("tw_no_battery_percent", 0) != 0)
+     return snapshot;
+-  snapshot.battery_percentage = std::atoi(battery.substr(0, percent).c_str());
+-  snapshot.charging = percent + 1 < battery.size() && battery[percent + 1] == '+';
+-  // ui.xml shows it while 0 < tw_battery < 101.
+-  snapshot.battery_valid = snapshot.battery_percentage > 0 && snapshot.battery_percentage < 101;
++  const std::string suffix = battery.substr(percent + 1);
++  if (!suffix.empty() && suffix != "+" && suffix != " ") return snapshot;
++  int capacity = -1;
++  const auto [end, error] = std::from_chars(battery.data(), battery.data() + percent, capacity);
++  if (error != std::errc{} || end != battery.data() + percent ||
++      capacity < 0 || capacity > 100) return snapshot;
++  snapshot.battery_percentage = capacity;
++  snapshot.charging = suffix == "+";
++  snapshot.battery_valid = true;
+   return snapshot;
+ }
+ 

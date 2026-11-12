@@ -1,0 +1,285 @@
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -34,6 +34,7 @@
+ 
+ #include <algorithm>
+ #include <android-base/scopeguard.h>
++#include "backup_manifest.hpp"
+ #include <cerrno>
+ #include <charconv>
+ #include <chrono>
+@@ -1181,6 +1182,11 @@
+         LOGERR("Unable to remove unfinished backup '%s'\n", part_settings.backup_folder.c_str());
+     }
+   });
++  twrp_backup_manifest::Session manifest;
++  if (!manifest.Begin(part_settings.backup_folder)) {
++    gui2_console::log_error("backup_error");
++    return false;
++  }
+   DataManager::SetProgress(0.0);
+   for (TWPartition* part : plan) {
+     if (CheckBackupCancel()) return false;
+@@ -1226,6 +1232,17 @@
+   UpdateSystemDetails();
+   UnmountMainPartitions();
+   if (CheckBackupCancel()) return false;
++  std::vector<std::string> required;
++  for (TWPartition* part : plan) {
++    const auto files = TwrpDigestDriver::GetBackupFiles(
++        (fs::path(part_settings.backup_folder) / part->backup_file_name_).string());
++    if (!files) return false;
++    for (const auto& file : *files) required.push_back(fs::path(file).filename().string());
++  }
++  if (!manifest.Commit(required, [&] { return CheckBackupCancel(); })) {
++    gui2_console::log_error("backup_error");
++    return false;
++  }
+   completed = true;
+   gui2_console::highlight("backup_completed", total_time);
+ 
+@@ -1264,6 +1281,10 @@
+   gui2_console::info("restore_folder", restore_name);
+   if (!MountCurrentStorage(true)) return false;
+ 
++  if (!twrp_backup_manifest::Validate(restore_name)) {
++    gui2_console::log_error("restore_error");
++    return false;
++  }
+   std::string restore_list;
+   DataManager::GetValue("tw_restore_selected", restore_list);
+   std::vector<TWPartition*> plan;
+@@ -1388,6 +1409,10 @@
+   bool get_date = true, check_encryption = true;
+ 
+   DataManager::SetValue("tw_restore_encrypted", 0);
++  if (!twrp_backup_manifest::Validate(restore_name)) {
++    gui2_console::log_error("restore_error");
++    return;
++  }
+   const std::string android_root = GetAndroidRootPath();
+ 
+   std::error_code ec;
+--- /dev/null
++++ b/backup_manifest.hpp
+@@ -0,0 +1,220 @@
++#pragma once
++
++#include <cerrno>
++#include <charconv>
++#include <cstdint>
++#include <cstdio>
++#include <cstring>
++#include <dirent.h>
++#include <fcntl.h>
++#include <filesystem>
++#include <functional>
++#include <map>
++#include <string>
++#include <string_view>
++#include <sys/stat.h>
++#include <unistd.h>
++#include <vector>
++#include <android-base/unique_fd.h>
++
++// A new backup first records INCOMPLETE, before writing any payload. Only after
++// every payload has been synced is a complete file inventory published. Legacy
++// backups without this file remain readable; absence is not completeness proof.
++namespace twrp_backup_manifest {
++inline constexpr char kName[] = ".twrp_backup_manifest";
++inline constexpr char kTemporary[] = ".twrp_backup_manifest.tmp";
++inline constexpr char kHeader[] = "TWRP-BACKUP-MANIFEST 1\n";
++inline constexpr size_t kMaxBytes = 16 * 1024 * 1024;
++inline constexpr size_t kMaxFiles = 65536;
++
++struct File {
++  uint64_t size;
++  dev_t device;
++  ino_t inode;
++  bool operator==(const File&) const = default;
++};
++using Inventory = std::map<std::string, File>;
++
++inline bool Error(const char* operation) {
++  std::fprintf(stderr, "Backup manifest: %s: %s\n", operation, std::strerror(errno));
++  return false;
++}
++inline bool ValidName(std::string_view name) {
++  return !name.empty() && name != "." && name != ".." && name.size() <= 255 &&
++         name.find_first_of("/\r\n\t") == std::string_view::npos &&
++         name.find('\0') == std::string_view::npos;
++}
++inline bool Excluded(std::string_view name) {
++  // The recovery log is diagnostic and may be copied after commit.
++  return name == kName || name == kTemporary || name == "recovery.log";
++}
++inline bool Same(const struct stat& a, const struct stat& b) {
++  return a.st_dev == b.st_dev && a.st_ino == b.st_ino && a.st_size == b.st_size &&
++         S_ISREG(a.st_mode) && S_ISREG(b.st_mode);
++}
++inline bool WriteAll(int fd, std::string_view content) {
++  while (!content.empty()) {
++    const ssize_t count = TEMP_FAILURE_RETRY(write(fd, content.data(), content.size()));
++    if (count <= 0) { if (count == 0) errno = EIO; return Error("write"); }
++    content.remove_prefix(static_cast<size_t>(count));
++  }
++  return true;
++}
++inline bool Sync(int fd) {
++  return TEMP_FAILURE_RETRY(fsync(fd)) == 0 || Error("sync");
++}
++inline bool Snapshot(int directory, Inventory& files, bool sync_files,
++                     const std::function<bool()>& cancelled = {}) {
++  // A new open description keeps repeated snapshots independent of readdir's
++  // offset. Never follow a payload symlink or block on a FIFO.
++  android::base::unique_fd scan(TEMP_FAILURE_RETRY(openat(directory, ".", O_RDONLY | O_DIRECTORY | O_CLOEXEC)));
++  if (scan < 0) return Error("open directory snapshot");
++  const int scan_fd = scan.release();
++  DIR* stream = fdopendir(scan_fd);
++  if (!stream) { const int saved = errno; close(scan_fd); errno = saved; return Error("fdopendir"); }
++  files.clear();
++  bool result = true;
++  for (;;) {
++    errno = 0;
++    dirent* entry = readdir(stream);
++    if (!entry) { if (errno != 0) result = Error("readdir"); break; }
++    const std::string name = entry->d_name;
++    if (name == "." || name == ".." || Excluded(name)) continue;
++    if (cancelled && cancelled()) { errno = ECANCELED; result = Error("cancelled inventory"); break; }
++    if (!ValidName(name) || files.size() >= kMaxFiles) { errno = EINVAL; result = Error("invalid inventory name/count"); break; }
++    android::base::unique_fd fd(TEMP_FAILURE_RETRY(openat(directory, name.c_str(), O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC)));
++    struct stat before{}, after{}, path{};
++    if (fd < 0 || fstat(fd.get(), &before) != 0 || !S_ISREG(before.st_mode) || before.st_size <= 0) {
++      errno = EINVAL; result = Error("payload is not a nonempty regular file"); break;
++    }
++    if ((sync_files && !Sync(fd.get())) || fstat(fd.get(), &after) != 0 ||
++        fstatat(directory, name.c_str(), &path, AT_SYMLINK_NOFOLLOW) != 0 ||
++        !Same(before, after) || !Same(before, path)) {
++      errno = EIO; result = Error("payload changed or could not sync"); break;
++    }
++    files.emplace(name, File{static_cast<uint64_t>(before.st_size), before.st_dev, before.st_ino});
++    if (close(fd.release()) != 0) { result = Error("close payload"); break; }
++  }
++  if (closedir(stream) != 0) result = Error("closedir");
++  return result;
++}
++
++class Session {
++ public:
++  bool Begin(const std::string& folder) {
++    if (directory_ >= 0) { errno = EALREADY; return Error("session already begun"); }
++    folder_ = folder;
++    directory_.reset(TEMP_FAILURE_RETRY(open(folder.c_str(), O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)));
++    if (directory_ < 0) return Error("open new backup directory");
++    android::base::unique_fd marker(TEMP_FAILURE_RETRY(openat(directory_.get(), kName,
++        O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0600)));
++    if (marker < 0) return Error("create incomplete marker");
++    if (!WriteAll(marker.get(), std::string(kHeader) + "INCOMPLETE\n") || !Sync(marker.get())) return false;
++    if (close(marker.release()) != 0) return Error("close incomplete marker");
++    if (!Sync(directory_.get())) return false;
++    const auto parent = std::filesystem::path(folder).parent_path();
++    android::base::unique_fd parent_fd(TEMP_FAILURE_RETRY(open(
++        parent.empty() ? "." : parent.c_str(), O_RDONLY | O_DIRECTORY | O_CLOEXEC)));
++    if (parent_fd < 0 || !Sync(parent_fd.get())) return Error("sync backup parent");
++    begun_ = true;
++    return true;
++  }
++
++  bool Commit(const std::vector<std::string>& required,
++              const std::function<bool()>& cancelled = {}) {
++    struct stat opened{}, named{};
++    if (!begun_ || required.empty() || fstat(directory_.get(), &opened) != 0 ||
++        lstat(folder_.c_str(), &named) != 0 || !S_ISDIR(named.st_mode) ||
++        named.st_dev != opened.st_dev || named.st_ino != opened.st_ino) {
++      errno = EINVAL; return Error("backup directory no longer owned");
++    }
++    Inventory files;
++    if (!Snapshot(directory_.get(), files, true, cancelled) || files.empty()) return false;
++    for (const auto& name : required) {
++      if (!ValidName(name) || Excluded(name) || !files.contains(name)) {
++        errno = EINVAL; return Error("required archive part absent");
++      }
++    }
++    std::string content = std::string(kHeader) + "COMPLETE\n";
++    for (const auto& [name, file] : files) {
++      content += std::to_string(file.size) + "\t" + name + "\n";
++      if (content.size() > kMaxBytes) { errno = EFBIG; return Error("inventory too large"); }
++    }
++    android::base::unique_fd staged(TEMP_FAILURE_RETRY(openat(directory_.get(), kTemporary,
++        O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0600)));
++    if (staged < 0) return Error("create complete inventory");
++    bool ok = WriteAll(staged.get(), content) && Sync(staged.get());
++    // A failed close can already have released the fd. Never retry it.
++    if (close(staged.release()) != 0) ok = Error("close complete inventory");
++    Inventory current;
++    if (ok) ok = Snapshot(directory_.get(), current, false, cancelled) && current == files;
++    if (ok) ok = lstat(folder_.c_str(), &named) == 0 && S_ISDIR(named.st_mode) &&
++                 named.st_dev == opened.st_dev && named.st_ino == opened.st_ino;
++    if (ok && cancelled && cancelled()) { errno = ECANCELED; ok = Error("cancelled publication"); }
++    if (ok && renameat(directory_.get(), kTemporary, directory_.get(), kName) != 0)
++      ok = Error("publish complete inventory");
++    if (!ok) { unlinkat(directory_.get(), kTemporary, 0); return false; }
++    // After rename a complete inventory is visible; an error here is not a
++    // rollback. The caller still reports failure and cleans its owned folder.
++    if (!Sync(directory_.get())) return false;
++    begun_ = false;
++    return true;
++  }
++
++ private:
++  android::base::unique_fd directory_;
++  std::string folder_;
++  bool begun_ = false;
++};
++
++inline bool Validate(const std::string& folder) {
++  android::base::unique_fd directory(TEMP_FAILURE_RETRY(open(folder.c_str(), O_RDONLY | O_DIRECTORY | O_CLOEXEC)));
++  if (directory < 0) return Error("open restore directory");
++  android::base::unique_fd manifest(TEMP_FAILURE_RETRY(openat(directory.get(), kName,
++      O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC)));
++  if (manifest < 0) {
++    if (errno == ENOENT) return true;  // Historical format: no completeness proof.
++    return Error("open restore inventory");
++  }
++  struct stat before{}, after{}, path{};
++  if (fstat(manifest.get(), &before) != 0 || !S_ISREG(before.st_mode) ||
++      before.st_size <= 0 || static_cast<uint64_t>(before.st_size) > kMaxBytes) {
++    errno = EINVAL; return Error("invalid inventory type/size");
++  }
++  std::string content(static_cast<size_t>(before.st_size), '\0');
++  size_t offset = 0;
++  while (offset < content.size()) {
++    const ssize_t count = TEMP_FAILURE_RETRY(read(manifest.get(), content.data() + offset, content.size() - offset));
++    if (count <= 0) { errno = EIO; return Error("read inventory"); }
++    offset += static_cast<size_t>(count);
++  }
++  if (fstat(manifest.get(), &after) != 0 ||
++      fstatat(directory.get(), kName, &path, AT_SYMLINK_NOFOLLOW) != 0 ||
++      !Same(before, after) || !Same(before, path)) { errno = EIO; return Error("inventory changed"); }
++  const std::string prefix = std::string(kHeader) + "COMPLETE\n";
++  if (!content.starts_with(prefix)) { errno = EINVAL; return Error("backup incomplete or unsupported inventory"); }
++  std::map<std::string, uint64_t> expected;
++  size_t cursor = prefix.size();
++  while (cursor < content.size()) {
++    const auto end = content.find('\n', cursor);
++    const auto tab = content.find('\t', cursor);
++    if (end == std::string::npos || tab == std::string::npos || tab >= end) { errno = EINVAL; return Error("invalid inventory record"); }
++    uint64_t size = 0;
++    auto result = std::from_chars(content.data() + cursor, content.data() + tab, size);
++    std::string name = content.substr(tab + 1, end - tab - 1);
++    if (result.ec != std::errc{} || result.ptr != content.data() + tab || size == 0 ||
++        !ValidName(name) || Excluded(name) || expected.size() >= kMaxFiles ||
++        !expected.emplace(name, size).second) { errno = EINVAL; return Error("invalid or duplicate inventory entry"); }
++    cursor = end + 1;
++  }
++  Inventory actual;
++  if (expected.empty() || !Snapshot(directory.get(), actual, false) || actual.size() != expected.size()) {
++    errno = EINVAL; return Error("backup inventory file set differs");
++  }
++  for (const auto& [name, size] : expected) {
++    const auto found = actual.find(name);
++    if (found == actual.end() || found->second.size != size) { errno = EINVAL; return Error("backup inventory size differs"); }
++  }
++  return true;
++}
++}  // namespace twrp_backup_manifest

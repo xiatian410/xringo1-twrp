@@ -1,0 +1,172 @@
+--- a/gui2/backend/haptics_controller.cpp
++++ b/gui2/backend/haptics_controller.cpp
+@@ -22,6 +22,8 @@
+ bool haptics_controller::submit(int duration_ms) {
+   std::lock_guard<std::mutex> lock(mutex_);
+   if (stopping_ || !available_ || duration_ms <= 0 || duration_ms > 10000) return false;
++  if (pending_ > 0) ++replaced_requests_;
++  ++request_sequence_;
+   pending_ = duration_ms;
+   submitted_ = clock::now();
+   wake_.notify_one();
+@@ -54,11 +56,23 @@
+     wake_.wait_until(lock, next_probe, [this] { return stopping_ || refresh_ || pending_ > 0; });
+     if (stopping_) break;
+     const int duration = pending_;
++    const auto sequence = request_sequence_;
++    const auto replaced = replaced_requests_;
++    replaced_requests_ = 0;
++    const auto age = std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - submitted_).count();
+     const bool fresh = clock::now() - submitted_ <= std::chrono::milliseconds(250);
+     pending_ = 0;
+     if (duration > 0 && fresh) {
+       lock.unlock();
++      const auto started = clock::now();
++      std::fprintf(stderr, "GUI2 haptics: request=%llu phase=begin duration_ms=%d age_ms=%lld replaced=%llu monotonic_ms=%lld\n",
++                   static_cast<unsigned long long>(sequence), duration, static_cast<long long>(age),
++                   static_cast<unsigned long long>(replaced),
++                   static_cast<long long>(std::chrono::duration_cast<std::chrono::milliseconds>(started.time_since_epoch()).count()));
+       const bool success = play_(duration);
++      std::fprintf(stderr, "GUI2 haptics: request=%llu phase=end accepted=%d elapsed_ms=%lld\n",
++                   static_cast<unsigned long long>(sequence), success ? 1 : 0,
++                   static_cast<long long>(std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - started).count()));
+       if (!success) std::fprintf(stderr, "GUI2 haptics: background device request failed\n");
+       lock.lock();
+       if (!success) {
+@@ -66,6 +80,12 @@
+         available_ = false;
+         refresh_ = true;
+       }
++    } else if (duration > 0) {
++      lock.unlock();
++      std::fprintf(stderr, "GUI2 haptics: request=%llu phase=expired duration_ms=%d age_ms=%lld replaced=%llu\n",
++                   static_cast<unsigned long long>(sequence), duration, static_cast<long long>(age),
++                   static_cast<unsigned long long>(replaced));
++      lock.lock();
+     }
+     if (stopping_) break;
+     if (refresh_ || clock::now() >= next_probe) {
+--- a/gui2/backend/haptics_controller.h
++++ b/gui2/backend/haptics_controller.h
+@@ -2,6 +2,7 @@
+ #define GUI2_BACKEND_HAPTICS_CONTROLLER_H
+ 
+ #include <chrono>
++#include <cstdint>
+ #include <condition_variable>
+ #include <functional>
+ #include <mutex>
+@@ -41,6 +42,8 @@
+   bool refresh_ = true;
+   bool error_ = false;
+   int pending_ = 0;
++  uint64_t request_sequence_ = 0;
++  uint64_t replaced_requests_ = 0;
+   clock::time_point submitted_;
+   std::thread worker_;
+ };
+--- a/twrpminui/force_feedback.cpp
++++ b/twrpminui/force_feedback.cpp
+@@ -11,6 +11,9 @@
+ #include <string.h>
+ #include <sys/ioctl.h>
+ #include <unistd.h>
++#include <stdint.h>
++#include <time.h>
++#include <sys/syscall.h>
+ #include <cutils/properties.h>
+ #include "common.h"
+ #include "twcommon.h"
+@@ -21,9 +24,25 @@
+ static int ff_haptics_effect_type = -1;
+ static bool ff_haptics_is_cirrus = false;
+ static bool ff_missing_logged = false;
++static uint64_t ff_request_sequence = 0;
++
++static void trace_ff(uint64_t request, const char* phase, long result, int error,
++                     int duration, int effect) {
++    struct timespec now = {};
++    const long long monotonic = clock_gettime(CLOCK_MONOTONIC, &now) == 0
++        ? static_cast<long long>(now.tv_sec) * 1000 + now.tv_nsec / 1000000 : -1;
++    LOGI("FF haptics: request=%llu phase=%s result=%ld errno=%d duration_ms=%d effect=%d monotonic_ms=%lld pid=%ld tid=%ld\n",
++         static_cast<unsigned long long>(request), phase, result, error, duration, effect, monotonic,
++         static_cast<long>(getpid()), syscall(SYS_gettid));
++}
+ 
+ static void reset_ff() {
+-    if (ff_haptics_fd >= 0) close(ff_haptics_fd);
++    if (ff_haptics_fd >= 0) {
++        trace_ff(0, "close-begin", 0, 0, 0, ff_haptics_effect_id);
++        const int closed = close(ff_haptics_fd);
++        const int close_error = closed < 0 ? errno : 0;
++        trace_ff(0, "close-end", closed, close_error, 0, ff_haptics_effect_id);
++    }
+     ff_haptics_fd = ff_haptics_effect_id = ff_haptics_effect_type = -1;
+     ff_haptics_is_cirrus = false;
+ }
+@@ -114,14 +133,21 @@
+     std::lock_guard<std::mutex> lock(ff_mutex);
+     if (timeout_ms <= 0) return -1;
+     timeout_ms = std::min(timeout_ms, 10000);
++    const uint64_t request = ++ff_request_sequence;
+     int fd = open_ff_haptics();
+-    if (fd < 0)
+-        return -1;
++    if (fd < 0) {
++        trace_ff(request, "unavailable", -1, 0, timeout_ms, -1);
++        return -1;
++    }
+ 
+     if (ff_haptics_effect_id >= 0) {
+-        if (ioctl(fd, EVIOCRMFF, ff_haptics_effect_id) < 0) {
++        trace_ff(request, "erase-begin", 0, 0, timeout_ms, ff_haptics_effect_id);
++        const int removed = ioctl(fd, EVIOCRMFF, ff_haptics_effect_id);
++        const int remove_error = removed < 0 ? errno : 0;
++        trace_ff(request, "erase-end", removed, remove_error, timeout_ms, ff_haptics_effect_id);
++        if (removed < 0) {
+             LOGE("Unable to remove force-feedback effect %d: %s\n",
+-                 ff_haptics_effect_id, strerror(errno));
++                 ff_haptics_effect_id, strerror(remove_error));
+             reset_ff();
+             return -1;
+         }
+@@ -150,10 +176,20 @@
+         effect.u.rumble.weak_magnitude = 0x7fff;
+     }
+     effect.replay.length = timeout_ms;
+-
+-    if (ioctl(fd, EVIOCSFF, &effect) < 0) {
++    LOGI("FF haptics: request=%llu type=%u waveform=%u period_ms=%u magnitude=%d cirrus=%d\n",
++         static_cast<unsigned long long>(request), effect.type,
++         effect.type == FF_PERIODIC ? effect.u.periodic.waveform : 0,
++         effect.type == FF_PERIODIC ? effect.u.periodic.period : 0,
++         effect.type == FF_PERIODIC ? effect.u.periodic.magnitude : 0,
++         ff_haptics_is_cirrus ? 1 : 0);
++
++    trace_ff(request, "upload-begin", 0, 0, timeout_ms, effect.id);
++    const int uploaded = ioctl(fd, EVIOCSFF, &effect);
++    const int upload_error = uploaded < 0 ? errno : 0;
++    trace_ff(request, "upload-end", uploaded, upload_error, timeout_ms, effect.id);
++    if (uploaded < 0) {
+         LOGE("Unable to upload force-feedback effect type %d: %s\n",
+-             effect.type, strerror(errno));
++             effect.type, strerror(upload_error));
+         reset_ff();
+         return -1;
+     }
+@@ -163,9 +199,13 @@
+     play.type = EV_FF;
+     play.code = effect.id;
+     play.value = 1;
+-    if (write(fd, &play, sizeof(play)) != static_cast<ssize_t>(sizeof(play))) {
++    trace_ff(request, "play-begin", 0, 0, timeout_ms, effect.id);
++    const ssize_t written = write(fd, &play, sizeof(play));
++    const int play_error = written < 0 ? errno : 0;
++    trace_ff(request, "play-end", written, play_error, timeout_ms, effect.id);
++    if (written != static_cast<ssize_t>(sizeof(play))) {
+         LOGE("Unable to play force-feedback effect %d: %s\n",
+-             effect.id, strerror(errno));
++             effect.id, written < 0 ? strerror(play_error) : "short input event write");
+         reset_ff();
+         return -1;
+     }

@@ -1,0 +1,312 @@
+diff --git a/mtp/MtpFfsCompatHandle.cpp b/mtp/MtpFfsCompatHandle.cpp
+index 25333d2..f4830f0 100644
+--- a/mtp/MtpFfsCompatHandle.cpp
++++ b/mtp/MtpFfsCompatHandle.cpp
+@@ -110,6 +110,8 @@ int MtpFfsCompatHandle::readHandle(int fd, void* data, size_t len) {
+ }
+ 
+ int MtpFfsCompatHandle::start(bool ptp) {
++    std::lock_guard<std::recursive_mutex> lifecycle(mLifecycleMutex);
++    if (mEventThreadStarted) { errno = EBUSY; return -1; }
+     if (!configureEndpoints(ptp))
+         return -1;
+ 
+@@ -119,6 +121,8 @@ int MtpFfsCompatHandle::start(bool ptp) {
+                 POSIX_MADV_SEQUENTIAL | POSIX_MADV_WILLNEED);
+     }
+ 
++    if (!startEventThread()) { close(); return -1; }
++
+     // Get device specific r/w size
+     mMaxWrite = android::base::GetIntProperty("sys.usb.ffs.max_write", USB_FFS_MAX_WRITE);
+     mMaxRead = android::base::GetIntProperty("sys.usb.ffs.max_read", USB_FFS_MAX_READ);
+diff --git a/mtp/MtpFfsHandle.cpp b/mtp/MtpFfsHandle.cpp
+index a1c2fc9..faa3b2a 100644
+--- a/mtp/MtpFfsHandle.cpp
++++ b/mtp/MtpFfsHandle.cpp
+@@ -18,6 +18,7 @@
+ #include <android-base/properties.h>
+ #include <asyncio/AsyncIO.h>
+ #include <dirent.h>
++#include <chrono>
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <stdio.h>
+@@ -76,7 +77,7 @@ MtpFfsHandle::MtpFfsHandle(int controlFd) {
+     mBatchCancel = android::base::GetBoolProperty("sys.usb.mtp.batchcancel", false);
+ }
+ 
+-MtpFfsHandle::~MtpFfsHandle() {}
++MtpFfsHandle::~MtpFfsHandle() { close(); }
+ 
+ void MtpFfsHandle::closeEndpoints() {
+     mIntr.reset();
+@@ -102,7 +103,7 @@ bool MtpFfsHandle::openEndpoints(bool ptp) {
+     }
+ 
+     if (mIntr < 0) {
+-        mIntr.reset(TEMP_FAILURE_RETRY(open(ptp ? FFS_PTP_EP_INTR : FFS_MTP_EP_INTR, O_RDWR)));
++        mIntr.reset(TEMP_FAILURE_RETRY(open(ptp ? FFS_PTP_EP_INTR : FFS_MTP_EP_INTR, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+         if (mIntr < 0) {
+             PLOG(ERROR) << (ptp ? FFS_PTP_EP_INTR : FFS_MTP_EP_INTR) << ": cannot open intr ep";
+             return false;
+@@ -291,6 +292,8 @@ bool MtpFfsHandle::configureEndpoints(bool ptp) {
+ }
+ 
+ int MtpFfsHandle::start(bool ptp) {
++    std::lock_guard<std::recursive_mutex> lifecycle(mLifecycleMutex);
++    if (mEventThreadStarted) { errno = EBUSY; return -1; }
+     if (!configureEndpoints(ptp))
+         return -1;
+ 
+@@ -323,16 +326,27 @@ int MtpFfsHandle::start(bool ptp) {
+     mPollFds[1].events = POLLIN;
+ 
+     mCanceled = false;
++    if (!startEventThread()) { close(); return -1; }
+     return 0;
+ }
+ 
+ void MtpFfsHandle::close() {
+-    // Join all child threads before destruction
+-    int count = mChildThreads.size();
+-    for (int i = 0; i < count; i++) {
+-        mChildThreads[i].join();
+-    }
+-    mChildThreads.clear();
++    std::lock_guard<std::recursive_mutex> lifecycle(mLifecycleMutex);
++    {
++        std::lock_guard<std::mutex> lock(mEventMutex);
++        mEventStopping = true;
++        mEventError = ESHUTDOWN;
++        mEventQueue.clear();
++        wakeEventThread();
++    }
++    if (mEventThreadStarted) {
++        pthread_join(mEventThread, nullptr);
++        mEventThreadStarted = false;
++    }
++    // The worker cancels/drains any outstanding interrupt request before
++    // releasing its buffer. Never close/reuse its descriptor before joining.
++    if (mIntrCtx != 0) { io_destroy(mIntrCtx); mIntrCtx = 0; }
++    mIntrWake.reset();
+ 
+     if (mCtx != 0) {
+         io_destroy(mCtx);
+@@ -716,26 +730,156 @@ int MtpFfsHandle::sendFile(mtp_file_range mfr) {
+     return 0;
+ }
+ 
+-int MtpFfsHandle::sendEvent(mtp_event me) {
+-    // Mimic the behavior of f_mtp by sending the event async.
+-    // Events aren't critical to the connection, so we don't need to check the return value.
+-    char *temp = new char[me.length];
+-    memcpy(temp, me.data, me.length);
+-    me.data = temp;
++// A finite queue and a single worker preserve event order without creating
++// one blocked thread per storage notification. MTP containers fit in 512 bytes.
++static constexpr size_t MAX_PENDING_EVENTS = 128;
++static constexpr size_t MAX_EVENT_BYTES = 512;
+ 
+-    std::thread t([this, me]() { return this->doSendEvent(me); });
++void MtpFfsHandle::wakeEventThread() {
++    if (mIntrWake >= 0) {
++        uint64_t one = 1;
++        // EAGAIN means a wake is already pending; the counter cannot be lost.
++        TEMP_FAILURE_RETRY(::write(mIntrWake, &one, sizeof(one)));
++    }
++}
+ 
+-    // Store the thread object for later joining
+-    mChildThreads.emplace_back(std::move(t));
++bool MtpFfsHandle::startEventThread() {
++    int flags = fcntl(mIntr, F_GETFL);
++    if (flags < 0 || fcntl(mIntr, F_SETFL, flags | O_NONBLOCK) < 0) return false;
++    if (io_setup(1, &mIntrCtx) < 0) return false;
++    mIntrWake.reset(eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC));
++    if (mIntrWake < 0) return false;
++    {
++        std::lock_guard<std::mutex> lock(mEventMutex);
++        mEventStopping = false;
++        mEventError = 0;
++        mEventQueue.clear();
++    }
++    int error = pthread_create(&mEventThread, nullptr, [](void* self) -> void* {
++        static_cast<MtpFfsHandle*>(self)->eventLoop();
++        return nullptr;
++    }, this);
++    if (error) {
++        std::lock_guard<std::mutex> lock(mEventMutex);
++        mEventStopping = true;
++        mEventError = error;
++        errno = error;
++        return false;
++    }
++    mEventThreadStarted = true;
++    return true;
++}
++
++int MtpFfsHandle::sendEvent(mtp_event me) {
++    if (!me.data || me.length == 0 || me.length > MAX_EVENT_BYTES) {
++        errno = EINVAL;
++        return -1;
++    }
++    std::lock_guard<std::mutex> lock(mEventMutex);
++    if (mEventStopping) { errno = mEventError; return -1; }
++    if (mEventQueue.size() >= MAX_PENDING_EVENTS) { errno = EAGAIN; return -1; }
++    const auto* data = static_cast<const unsigned char*>(me.data);
++    mEventQueue.emplace_back(data, data + me.length);
++    wakeEventThread();
+     return 0;
+ }
+ 
+-void MtpFfsHandle::doSendEvent(mtp_event me) {
+-    unsigned length = me.length;
+-    int ret = ::write(mIntr, me.data, length);
+-    if (static_cast<unsigned>(ret) != length)
+-        PLOG(ERROR) << "Mtp error sending event thread!";
+-    delete[] reinterpret_cast<char*>(me.data);
++bool MtpFfsHandle::sendEventRequest(const std::vector<unsigned char>& packet) {
++    struct iocb request{};
++    io_prep(&request, mIntr, packet.data(), packet.size(), 0, false);
++    request.aio_flags = IOCB_FLAG_RESFD;
++    request.aio_resfd = mIntrWake;
++    struct iocb* requests[] = {&request};
++    bool submitted = false;
++    auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
++    int error = 0;
++    while (!error) {
++        {
++            std::lock_guard<std::mutex> lock(mEventMutex);
++            if (mEventStopping) { error = ESHUTDOWN; break; }
++        }
++        if (std::chrono::steady_clock::now() >= deadline) { error = ETIMEDOUT; break; }
++        if (!submitted) {
++            int ret = io_submit(mIntrCtx, 1, requests);
++            if (ret == 1) submitted = true;
++            else if (ret < 0 && errno != EINTR && errno != EAGAIN) {
++                error = errno;
++                break;
++            }
++        }
++        if (submitted) {
++            struct io_event completed{};
++            struct timespec zero{};
++            int ret = io_getevents(mIntrCtx, 0, 1, &completed, &zero);
++            if (ret == 1) {
++                // A short USB event is a broken container. Do not replay it or
++                // submit a separate tail packet, which would corrupt framing.
++                if (completed.res == static_cast<int64_t>(packet.size()) && !completed.res2)
++                    return true;
++                if (completed.res == -EAGAIN || completed.res == -EINTR) {
++                    // Linux AIO can accept a request and report a temporary
++                    // endpoint error in its completion instead of io_submit.
++                    // Drain that completion's wake before the retry delay.
++                    submitted = false;
++                    uint64_t count;
++                    TEMP_FAILURE_RETRY(::read(mIntrWake, &count, sizeof(count)));
++                } else {
++                    errno = completed.res < 0 ? -completed.res : EIO;
++                    return false;
++                }
++            }
++            if (ret < 0 && errno != EINTR) { error = errno; break; }
++        }
++        struct pollfd wake{mIntrWake.get(), POLLIN, 0};
++        int ret = poll(&wake, 1, 20);
++        if (ret < 0 && errno != EINTR) { error = errno; break; }
++        if (ret > 0) { uint64_t count; TEMP_FAILURE_RETRY(::read(mIntrWake, &count, sizeof(count))); }
++    }
++    if (submitted) {
++        struct io_event canceled{};
++        io_cancel(mIntrCtx, &request, &canceled);
++        // FunctionFS cancellation can complete asynchronously. io_destroy
++        // drains it before request/packet go out of scope (including the race
++        // where completion won and io_cancel reports EINVAL).
++        io_destroy(mIntrCtx);
++        mIntrCtx = 0;
++    }
++    errno = error;
++    return false;
++}
++
++void MtpFfsHandle::eventLoop() {
++    for (;;) {
++        std::vector<unsigned char> packet;
++        {
++            std::lock_guard<std::mutex> lock(mEventMutex);
++            if (mEventStopping) return;
++            if (!mEventQueue.empty()) {
++                packet = std::move(mEventQueue.front());
++                mEventQueue.pop_front();
++            }
++        }
++        if (packet.empty()) {
++            struct pollfd wake{mIntrWake.get(), POLLIN, 0};
++            int ret = TEMP_FAILURE_RETRY(poll(&wake, 1, -1));
++            if (ret > 0) { uint64_t count; TEMP_FAILURE_RETRY(::read(mIntrWake, &count, sizeof(count))); }
++            if (ret >= 0) continue;
++        } else if (sendEventRequest(packet)) {
++            continue;
++        }
++        int error = errno ? errno : EIO;
++        {
++            std::lock_guard<std::mutex> lock(mEventMutex);
++            if (mEventStopping) return;
++            mEventStopping = true;
++            mEventError = error;
++            mEventQueue.clear();
++        }
++        errno = error;
++        PLOG(ERROR) << "MTP interrupt event worker stopped";
++        android::base::SetProperty("sys.usb.ffs.mtp.ready", "0");
++        return;
++    }
+ }
+ 
+ } // namespace android
+diff --git a/mtp/MtpFfsHandle.h b/mtp/MtpFfsHandle.h
+index 76df8ba..0a37aaa 100644
+--- a/mtp/MtpFfsHandle.h
++++ b/mtp/MtpFfsHandle.h
+@@ -20,7 +20,10 @@
+ #include <android-base/properties.h>
+ #include <android-base/unique_fd.h>
+ #include <linux/aio_abi.h>
++#include <errno.h>
+ #include <mutex>
++#include <deque>
++#include <pthread.h>
+ #include <sys/poll.h>
+ #include <time.h>
+ #include <thread>
+@@ -52,7 +55,10 @@ protected:
+     int doAsync(void* data, size_t len, bool read, bool zero_packet);
+     int handleEvent();
+     void cancelTransaction();
+-    void doSendEvent(mtp_event me);
++    bool startEventThread();
++    void eventLoop();
++    bool sendEventRequest(const std::vector<unsigned char>& packet);
++    void wakeEventThread();
+     bool openEndpoints(bool ptp);
+     bool configureEndpoints(bool ptp);
+ 
+@@ -61,7 +67,16 @@ protected:
+     bool mCanceled = false;
+     bool mBatchCancel;
+ 
+-    std::vector<std::thread> mChildThreads;
++    // start/close are serialized; event producers only take mEventMutex.
++    std::recursive_mutex mLifecycleMutex;
++    std::mutex mEventMutex;
++    std::deque<std::vector<unsigned char>> mEventQueue;
++    bool mEventStopping = true;
++    int mEventError = ESHUTDOWN;
++    pthread_t mEventThread{};
++    bool mEventThreadStarted = false;
++    aio_context_t mIntrCtx = 0;
++    android::base::unique_fd mIntrWake;
+ 
+     android::base::unique_fd mControl;
+     // "in" from the host's perspective => sink for mtp server

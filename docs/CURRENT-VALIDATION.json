@@ -1,0 +1,66 @@
+{
+  "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
+  "image_name": "recovery-dijun-unified-nv-mount-policy.img",
+  "image_sha256": "0be46fb13091c4ebe663b5196ba22beadf5874990f7b811cb6d64c247195e5fe",
+  "production_sources": 751,
+  "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
+  "os4_haptics": "User confirms invocation is normal.",
+  "checks": [
+    {
+      "name": "nv-mount-policy",
+      "status": "PASS",
+      "cases": 26,
+      "failures": 0,
+      "local_report_sha256": "f8b2314c7ee7ff599e7be2175111e85f7ae1dffc702095b6d917b194dabcbba4",
+      "scope": "Execute original GUI mount list/action methods with explicit core doubles.\n\nNo real mount, device or settings access. Confirms NV/protection rows are hidden\nand stale/manual toggle calls are rejected in both directions, including a\nresolved alias. Core mounting remains outside this UI policy.\n"
+    },
+    {
+      "name": "nv-mount-policy-before",
+      "status": "FAIL",
+      "cases": 26,
+      "failures": 17,
+      "local_report_sha256": "bb8983e5f7c6b3384fefb7721b5f686c231445503094ef4dfde0008f0592e203",
+      "scope": "Execute original GUI mount list/action methods with explicit core doubles.\n\nNo real mount, device or settings access. Confirms NV/protection rows are hidden\nand stale/manual toggle calls are rejected in both directions, including a\nresolved alias. Core mounting remains outside this UI policy.\n"
+    },
+    {
+      "name": "nv-mount-list-chain",
+      "status": "PASS",
+      "cases": 6,
+      "failures": 0,
+      "local_report_sha256": "7b65c1866bcf23cdba9d999745ace5d4d86fc08958c428cabce1ccb4072c144a",
+      "scope": "Production mount/storage list branches, snapshots, backend and LVGL builders.\n\nPartition classification and presence are fixtures derived from the shipped\nfstab inventory, not executed fstab parsing or real block discovery. Only mount\nand storage branches of GetPartitionList are compiled; unrelated branches are\nomitted. No mounting, GUI pointer dispatch, actual storage or phone is accessed.\n"
+    },
+    {
+      "name": "nv-policy-profile-runtime",
+      "status": "PASS",
+      "cases": 102,
+      "failures": 0,
+      "local_report_sha256": "8260a40fa67d547a2d1e3bec92b033eecbf84457ae3ffb4d4117a2e64ecb973f",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "nv-policy-module-state",
+      "status": "PASS",
+      "cases": 24,
+      "failures": 0,
+      "local_report_sha256": "e30af7133ca8468c365b1d0791d14dafddd082ea1a7d7d9d1067fcd8695253b0",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
+    },
+    {
+      "name": "zip-install-chain",
+      "status": "PASS",
+      "cases": 36,
+      "failures": 0,
+      "local_report_sha256": "cf8829ef16e403f7756b25adfb34dc9374ad05bf1e439be5ec2cdd262e2b9608",
+      "scope": "Execute actual TWinstall_zip -> mapped package -> ZIP/verifier/digest -> updater.\n\nNative x86_64 builds of the current AOSP ZIP and TWRP sources run in a private\nchroot with ordinary files and locally generated test keys. Actual BoringSSL\nhost archive and AOSP host libbase/log/libc++ are hashed dependencies. Property,\nDataManager/progress and unmount are doubles. ABI-named updaters contain host\ncode solely to check selection; no ARM64/OTA payload/GUI/sideload/device run.\n"
+    },
+    {
+      "name": "zip-selection-updater-regression",
+      "status": "PASS",
+      "cases": 22,
+      "failures": 0,
+      "local_report_sha256": "99cdec236ca6fd238a1f74f2c1ecbd49dc0914a4503f0928bde366660ae0a02c",
+      "scope": "Execute production ZIP updater command, fork/exec pipe parser and child wait.\n\nThe compiled host updater only emits protocol/creates a private marker. Real\nfork, execve, pipe, stdio and waitpid execute; pipe/fork/fdopen failure injection\nis explicit. Progress sink is checked, logs are captured. No package extraction,\nZIP signature/digest verification, payload/OTA engine, device or USB execution.\n"
+    }
+  ]
+}

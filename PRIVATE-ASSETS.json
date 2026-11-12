@@ -1,0 +1,3071 @@
+{
+  "scope": "Metadata only. Obtain assets locally from the documented OTA sources; no private keys included.",
+  "files": [
+    {
+      "path": "dtsrc/O1_asic_dual/diagnostics/removed-first-stage-lists/6.18.txt",
+      "size": 2393,
+      "sha256": "6332d4048194b2670a00564151aa5ecd52321334216b728a03c28c2aab210e69",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/diagnostics/removed-first-stage-lists/6.6.txt",
+      "size": 2492,
+      "sha256": "5cfc1b571dbe8f5dd7e308a2a5aa1a5f777a5680fc767a8115cd379ed600980b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/02c3e8ef76c6cacfd3bbbbe024f030a8fd47638e5491f65c7445f28f854d9848",
+      "size": 134624,
+      "sha256": "02c3e8ef76c6cacfd3bbbbe024f030a8fd47638e5491f65c7445f28f854d9848",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/06f74415be3c9e376000caa4aa38e525149e7f8886341562446a0325d6e57470",
+      "size": 121960,
+      "sha256": "06f74415be3c9e376000caa4aa38e525149e7f8886341562446a0325d6e57470",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/0bd17d8ef283fe1f8752e199ee7d33ebb603d1e60767e32c215ac0319ab71948",
+      "size": 1611304,
+      "sha256": "0bd17d8ef283fe1f8752e199ee7d33ebb603d1e60767e32c215ac0319ab71948",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/0f27a439db2d3fbed50221ba91dc6999b65b1a8a2dd1c732e06eefbf7fef1a45",
+      "size": 653408,
+      "sha256": "0f27a439db2d3fbed50221ba91dc6999b65b1a8a2dd1c732e06eefbf7fef1a45",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/0f3d0800a533c99b8b9748e1d0c1f7aa624d6bd3f60254769322cb813a5d15e6",
+      "size": 154128,
+      "sha256": "0f3d0800a533c99b8b9748e1d0c1f7aa624d6bd3f60254769322cb813a5d15e6",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/12ed2cac5fcacacafdcd5ca680a540b2fa43c78e2b98380c231a041c421e7491",
+      "size": 292,
+      "sha256": "12ed2cac5fcacacafdcd5ca680a540b2fa43c78e2b98380c231a041c421e7491",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/13c1936f7a91bcc0d524a26b59ec81e76b53a044cd3ab4200efaba3b57dff321",
+      "size": 51560,
+      "sha256": "13c1936f7a91bcc0d524a26b59ec81e76b53a044cd3ab4200efaba3b57dff321",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/1c7898af4045e45455b4f848ed03c569ea6a648ccfd9effbac71ca338bcc083d",
+      "size": 101824,
+      "sha256": "1c7898af4045e45455b4f848ed03c569ea6a648ccfd9effbac71ca338bcc083d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/1c93f8c444d321553876930b43e5e3d3d5620b1dbf65e11da8f5318e8c577d1e",
+      "size": 694680,
+      "sha256": "1c93f8c444d321553876930b43e5e3d3d5620b1dbf65e11da8f5318e8c577d1e",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/1cb0dec8b5fd48a4d13534122574eaa2cc68560b7f9d0ee3dc370979c45a6657",
+      "size": 308,
+      "sha256": "1cb0dec8b5fd48a4d13534122574eaa2cc68560b7f9d0ee3dc370979c45a6657",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/2a00879474b96d14faa194bf55346de65211be62d8fb6b9b000620bdb42787a9",
+      "size": 471224,
+      "sha256": "2a00879474b96d14faa194bf55346de65211be62d8fb6b9b000620bdb42787a9",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/2f2ed097a910b744af7e631ebf3359b7fa3f7c963d8aecba7316c2e7bc7a0f12",
+      "size": 1230368,
+      "sha256": "2f2ed097a910b744af7e631ebf3359b7fa3f7c963d8aecba7316c2e7bc7a0f12",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/31c7b1cb4e487f79592258b8554b3ad676e92b19e8b71d16377c2edc8dd97016",
+      "size": 51584,
+      "sha256": "31c7b1cb4e487f79592258b8554b3ad676e92b19e8b71d16377c2edc8dd97016",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/34f13f3dbe9c5cae8e62da0afe1a1431d58ab1adefc8d02c2c608c30c5c08255",
+      "size": 469800,
+      "sha256": "34f13f3dbe9c5cae8e62da0afe1a1431d58ab1adefc8d02c2c608c30c5c08255",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/39392ca59db088da2226f9269081cf6f64a5f994c479192062de684250752a65",
+      "size": 471048,
+      "sha256": "39392ca59db088da2226f9269081cf6f64a5f994c479192062de684250752a65",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/3a88fb9e7f58e2161be3b9a29622560e01e0f4f691a7e2539cc8288e82863daa",
+      "size": 305,
+      "sha256": "3a88fb9e7f58e2161be3b9a29622560e01e0f4f691a7e2539cc8288e82863daa",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/3dd4534b5fe8a4c40c14de13dd2de1666876ac23ceeab35a4643d914542fb323",
+      "size": 36272,
+      "sha256": "3dd4534b5fe8a4c40c14de13dd2de1666876ac23ceeab35a4643d914542fb323",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/3e3426ee8db3453f6dcb8423ecbe531f7620fcc8be57d90b1a7f9eb897bebe44",
+      "size": 1234464,
+      "sha256": "3e3426ee8db3453f6dcb8423ecbe531f7620fcc8be57d90b1a7f9eb897bebe44",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/410e2dfd25276a9a87a4828db4d3ff6560a58327777b3a1206954351382d1f19",
+      "size": 136264,
+      "sha256": "410e2dfd25276a9a87a4828db4d3ff6560a58327777b3a1206954351382d1f19",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/42da4fecc0a716715a6a05904785b551e2af72f75751190c81865c4cf1a3641d",
+      "size": 1611304,
+      "sha256": "42da4fecc0a716715a6a05904785b551e2af72f75751190c81865c4cf1a3641d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/4516b191b3daafbf40a591e6f1ef9bd98fb6045a817bee366becaba460ef685b",
+      "size": 8432,
+      "sha256": "4516b191b3daafbf40a591e6f1ef9bd98fb6045a817bee366becaba460ef685b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/4571fb0ab5285f14f93d1d687bb11defdebbfb9937e2692ed569f6ee41ce2a4c",
+      "size": 273248,
+      "sha256": "4571fb0ab5285f14f93d1d687bb11defdebbfb9937e2692ed569f6ee41ce2a4c",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/4caad144ad233ff425940691d83a668f57cc203afb11cd2099f2006dfff8ddf3",
+      "size": 35488,
+      "sha256": "4caad144ad233ff425940691d83a668f57cc203afb11cd2099f2006dfff8ddf3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/4ce29bc6b0f3d18b35eacedf8dc787465ce7936180e9a8e3eda39f2da5cd2bbd",
+      "size": 694680,
+      "sha256": "4ce29bc6b0f3d18b35eacedf8dc787465ce7936180e9a8e3eda39f2da5cd2bbd",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/4d0d26bf6fb272cd6937a9f6b14ebe237310a01c794ea6c4d75a5eb5e5949c35",
+      "size": 904,
+      "sha256": "4d0d26bf6fb272cd6937a9f6b14ebe237310a01c794ea6c4d75a5eb5e5949c35",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/4e315a7ff638e85929ad6de59220716005fa6891fe6b4efa024c852bc6d06ad5",
+      "size": 52520,
+      "sha256": "4e315a7ff638e85929ad6de59220716005fa6891fe6b4efa024c852bc6d06ad5",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/529b456c0339db1de9752fb5702349e6333c0fdf5df47f6afa9e5fd9a896289f",
+      "size": 103464,
+      "sha256": "529b456c0339db1de9752fb5702349e6333c0fdf5df47f6afa9e5fd9a896289f",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/58fc15fa80a34d149cb8b4b5b9c8c6dc54c647800b25c49e716943cbf0d9f513",
+      "size": 363936,
+      "sha256": "58fc15fa80a34d149cb8b4b5b9c8c6dc54c647800b25c49e716943cbf0d9f513",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/59d21c9d0747b34e3f8511e465a6a6d4c6fdc7d42f7459c4ec15a71600ec65fe",
+      "size": 422528,
+      "sha256": "59d21c9d0747b34e3f8511e465a6a6d4c6fdc7d42f7459c4ec15a71600ec65fe",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/5f160ed0afbc5d5730bcb99e0452ccfb02483524a1901298adbb805136635099",
+      "size": 151792,
+      "sha256": "5f160ed0afbc5d5730bcb99e0452ccfb02483524a1901298adbb805136635099",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/6b2a6e5f4915600adf1721c5a4d739df69e7ce66edb6bc8ea97fab7806b3bb94",
+      "size": 51560,
+      "sha256": "6b2a6e5f4915600adf1721c5a4d739df69e7ce66edb6bc8ea97fab7806b3bb94",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/794eb8fafd7be35da3725e9ec0b15189c6f4f2544f5b78afd8a647dde5b69195",
+      "size": 1083168,
+      "sha256": "794eb8fafd7be35da3725e9ec0b15189c6f4f2544f5b78afd8a647dde5b69195",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/79f7d9c594a53309a142ea228f1d49e931243f8fc5f171d3700a9cb83c6d5de8",
+      "size": 461704,
+      "sha256": "79f7d9c594a53309a142ea228f1d49e931243f8fc5f171d3700a9cb83c6d5de8",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/7cbbafe6627604f5fba94b52c6014855aa5f88be79390fcfaaf58eaec08e216e",
+      "size": 148,
+      "sha256": "7cbbafe6627604f5fba94b52c6014855aa5f88be79390fcfaaf58eaec08e216e",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/7f9cb912bcc989844161d7d52151ed14d53bb9c03a06624a22085da7e99147ff",
+      "size": 13665144,
+      "sha256": "7f9cb912bcc989844161d7d52151ed14d53bb9c03a06624a22085da7e99147ff",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/7fa0c11be9282c9570545d9bf3d6766a3fe654a799c0fbdad4bafdfc92f2a856",
+      "size": 461704,
+      "sha256": "7fa0c11be9282c9570545d9bf3d6766a3fe654a799c0fbdad4bafdfc92f2a856",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/81c61c1fbdf80b2a84b45f044c24da31ddf84ae829b4d8adc9b08380d28c43fc",
+      "size": 85560,
+      "sha256": "81c61c1fbdf80b2a84b45f044c24da31ddf84ae829b4d8adc9b08380d28c43fc",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/82fc5a42db607bf1e23d21c5ff18512a124393959f448382ca9aa7c1457878c9",
+      "size": 119304,
+      "sha256": "82fc5a42db607bf1e23d21c5ff18512a124393959f448382ca9aa7c1457878c9",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/835b189c4fba6c99ae98edd3ac278c6090c467fc6e3908bb97d52c80eaacca95",
+      "size": 302632,
+      "sha256": "835b189c4fba6c99ae98edd3ac278c6090c467fc6e3908bb97d52c80eaacca95",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/8542109d6a0f95bcdd72b9bca97e7d450428b9ad3c48c2af1978e256901f24f5",
+      "size": 57264,
+      "sha256": "8542109d6a0f95bcdd72b9bca97e7d450428b9ad3c48c2af1978e256901f24f5",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/892f7246a3770adbb575cdfab7f0256b7ac56b95eb12bd776b3175f42a9bbdff",
+      "size": 302632,
+      "sha256": "892f7246a3770adbb575cdfab7f0256b7ac56b95eb12bd776b3175f42a9bbdff",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/89c1b52488fba561c5c5366fefa0cc64c5223b3d5d1d272c15730af626f199a2",
+      "size": 896,
+      "sha256": "89c1b52488fba561c5c5366fefa0cc64c5223b3d5d1d272c15730af626f199a2",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/8c3f0a3894ee5a06692ae5cf2861725105225957ffe28cb2bd4a67ba7cf591ac",
+      "size": 218928,
+      "sha256": "8c3f0a3894ee5a06692ae5cf2861725105225957ffe28cb2bd4a67ba7cf591ac",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/8e54e8a268a2d65ab1182e214b718ea3a767c71e7f4b6af4260746bd5a26abb2",
+      "size": 331032,
+      "sha256": "8e54e8a268a2d65ab1182e214b718ea3a767c71e7f4b6af4260746bd5a26abb2",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/940621f29f950c7650b9e3209f82c546a81e1cf8e7e158f7db0ceaca86b5927d",
+      "size": 51560,
+      "sha256": "940621f29f950c7650b9e3209f82c546a81e1cf8e7e158f7db0ceaca86b5927d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/9bc8fc6256fe4cc25582ef5a47b438a4d3efa4548301da60a4d010e219b9c785",
+      "size": 900,
+      "sha256": "9bc8fc6256fe4cc25582ef5a47b438a4d3efa4548301da60a4d010e219b9c785",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/a02aa53596410f5f87f905fa7da80d9314b1584a851f36ee0a56610b7c2d99d1",
+      "size": 363936,
+      "sha256": "a02aa53596410f5f87f905fa7da80d9314b1584a851f36ee0a56610b7c2d99d1",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/a45100ba076f466efa17b6c685c63129f3d8ed9515696e0df38ccf368fe5be1c",
+      "size": 85672,
+      "sha256": "a45100ba076f466efa17b6c685c63129f3d8ed9515696e0df38ccf368fe5be1c",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/a68f57daa0ba7d62acd28349d81263613e22a805ce7ee6b05ff72e5b91392a01",
+      "size": 482408,
+      "sha256": "a68f57daa0ba7d62acd28349d81263613e22a805ce7ee6b05ff72e5b91392a01",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/a6d7bfaa64cbda0dd987ac44b9bff795e05212c25312ef95d6837a751936037b",
+      "size": 47904,
+      "sha256": "a6d7bfaa64cbda0dd987ac44b9bff795e05212c25312ef95d6837a751936037b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/a7044489ecd256f274e3516dd90d8a868a84c994df8442cfd0f0689ab870a941",
+      "size": 1611304,
+      "sha256": "a7044489ecd256f274e3516dd90d8a868a84c994df8442cfd0f0689ab870a941",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/a787154889cf738512e30c0787f156b04a45d46d6a5a3c19a81f568b901b9435",
+      "size": 148,
+      "sha256": "a787154889cf738512e30c0787f156b04a45d46d6a5a3c19a81f568b901b9435",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/aa206eaa4774caf6d8d16d8116a3f4e115a6da1ad6adc51f9f60c2713aa05977",
+      "size": 1168,
+      "sha256": "aa206eaa4774caf6d8d16d8116a3f4e115a6da1ad6adc51f9f60c2713aa05977",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/b136c05852e7fe473e9edabfb2374fe04b1fa320cfbb4e5699f6681232676ab1",
+      "size": 1275608,
+      "sha256": "b136c05852e7fe473e9edabfb2374fe04b1fa320cfbb4e5699f6681232676ab1",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/b1a1b04938b2581e0ac2e9caec1bd1248c889878272056c8cc1db46d4fabf90f",
+      "size": 121856,
+      "sha256": "b1a1b04938b2581e0ac2e9caec1bd1248c889878272056c8cc1db46d4fabf90f",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/b26918f6170e47260e146f93efa28560576897c507a7ff9c0852def36faa3989",
+      "size": 302632,
+      "sha256": "b26918f6170e47260e146f93efa28560576897c507a7ff9c0852def36faa3989",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/b2bdb49ae64261fa1823af08a1c9039924af7857e17ed0292b76e2dfa267ed76",
+      "size": 434656,
+      "sha256": "b2bdb49ae64261fa1823af08a1c9039924af7857e17ed0292b76e2dfa267ed76",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/b8565e2cf0811a1828e5dd4ac253cadfb963004e2f1065b5c83a261cee1822b3",
+      "size": 171440,
+      "sha256": "b8565e2cf0811a1828e5dd4ac253cadfb963004e2f1065b5c83a261cee1822b3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/be6527d0596847fa4489d26c9799b7f4ea8c7c26857c33063b7741c4c1886d9b",
+      "size": 103464,
+      "sha256": "be6527d0596847fa4489d26c9799b7f4ea8c7c26857c33063b7741c4c1886d9b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/bf57f64f088123e66e41f2816736e6df9f1f565a537aa77f1c68e97f6786d95b",
+      "size": 17413,
+      "sha256": "bf57f64f088123e66e41f2816736e6df9f1f565a537aa77f1c68e97f6786d95b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/c3314097e097ff07a127356c3cc634757959ae8c7746966ecd4e394e6e4986e8",
+      "size": 482408,
+      "sha256": "c3314097e097ff07a127356c3cc634757959ae8c7746966ecd4e394e6e4986e8",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/c4552f41986ca14d0ad83ae75bdf3df4a0684e07b9b2bccb7753382f37b98642",
+      "size": 117480,
+      "sha256": "c4552f41986ca14d0ad83ae75bdf3df4a0684e07b9b2bccb7753382f37b98642",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/c7a958af0261df1a7cd33e81f3220896c3498eeaf6cfa46589178b9e8a7da15d",
+      "size": 85992,
+      "sha256": "c7a958af0261df1a7cd33e81f3220896c3498eeaf6cfa46589178b9e8a7da15d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/c815bc69626ea4a07d40f095328926ec472fed552aebc986dffc5753f12c3d5b",
+      "size": 1394624,
+      "sha256": "c815bc69626ea4a07d40f095328926ec472fed552aebc986dffc5753f12c3d5b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/c9816915518f020b3b8441da4809fdab8f931475445454f479b63efeeab027c1",
+      "size": 409720,
+      "sha256": "c9816915518f020b3b8441da4809fdab8f931475445454f479b63efeeab027c1",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/ccfa191314c67997ba33e6b8e779e7cb75a29e452cc4361884ee6ac1f42911a6",
+      "size": 514,
+      "sha256": "ccfa191314c67997ba33e6b8e779e7cb75a29e452cc4361884ee6ac1f42911a6",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/d1657007e417be8ec7a0c3ad81eca4d973e6a696aeefbb14481f66e35d4cd738",
+      "size": 37432,
+      "sha256": "d1657007e417be8ec7a0c3ad81eca4d973e6a696aeefbb14481f66e35d4cd738",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/d1c8b56db19af7dfb650d8cdc6e1d8db91102130b60a72e5e3e33bb023826397",
+      "size": 434656,
+      "sha256": "d1c8b56db19af7dfb650d8cdc6e1d8db91102130b60a72e5e3e33bb023826397",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/d936817b1c5b8d7557f6e195276382a2c7ca496ff2a27ba93294de78c34eb1ee",
+      "size": 144,
+      "sha256": "d936817b1c5b8d7557f6e195276382a2c7ca496ff2a27ba93294de78c34eb1ee",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/db669706df581a702d80c49703422b347507b25dea2cb3057f6d09d5796e26e8",
+      "size": 68984,
+      "sha256": "db669706df581a702d80c49703422b347507b25dea2cb3057f6d09d5796e26e8",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/de605bb3ff5d4e19427080bb99c5efd45eb7b8aa00a7a444ff386b43065b7b8d",
+      "size": 216,
+      "sha256": "de605bb3ff5d4e19427080bb99c5efd45eb7b8aa00a7a444ff386b43065b7b8d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/e02fa5cd06364e65bfa8fd178f86c170fe8183e953b5494701415d772a549d48",
+      "size": 570136,
+      "sha256": "e02fa5cd06364e65bfa8fd178f86c170fe8183e953b5494701415d772a549d48",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/e2368c87e0fcba2238911ea8e7d69be9e0eec69d025c5083b15a441dc8bb1dd4",
+      "size": 698984,
+      "sha256": "e2368c87e0fcba2238911ea8e7d69be9e0eec69d025c5083b15a441dc8bb1dd4",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/e7d16cd02367421fde8f52098f48420920575922a537c671cb73ad16ea38e984",
+      "size": 409720,
+      "sha256": "e7d16cd02367421fde8f52098f48420920575922a537c671cb73ad16ea38e984",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/e96fcf44435cc6fb9fdc2a55738c4067e23998d1074b9a4c4c51de35b87335e2",
+      "size": 68912,
+      "sha256": "e96fcf44435cc6fb9fdc2a55738c4067e23998d1074b9a4c4c51de35b87335e2",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/ea5b088c99f4dab7b7f322adf02203b5d1035d5a8b37c212c8dcc8ea6acd6023",
+      "size": 35304,
+      "sha256": "ea5b088c99f4dab7b7f322adf02203b5d1035d5a8b37c212c8dcc8ea6acd6023",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/ecc7b364e16837089aeb62d0041bda07722544ad1dbc1fc1643f95a04505391a",
+      "size": 1617352,
+      "sha256": "ecc7b364e16837089aeb62d0041bda07722544ad1dbc1fc1643f95a04505391a",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/common/profile-blobs/edaa698e65a41d165d87ceec13559f41232c0d9c42ce09e326fe2a5678928fee",
+      "size": 194794,
+      "sha256": "edaa698e65a41d165d87ceec13559f41232c0d9c42ce09e326fe2a5678928fee",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/lib/firmware/cs40l26-a2h.bin",
+      "size": 900,
+      "sha256": "9bc8fc6256fe4cc25582ef5a47b438a4d3efa4548301da60a4d010e219b9c785",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/lib/firmware/cs40l26-a2h1.bin",
+      "size": 904,
+      "sha256": "4d0d26bf6fb272cd6937a9f6b14ebe237310a01c794ea6c4d75a5eb5e5949c35",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/lib/firmware/cs40l26-calib.bin",
+      "size": 144,
+      "sha256": "d936817b1c5b8d7557f6e195276382a2c7ca496ff2a27ba93294de78c34eb1ee",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/lib/firmware/cs40l26-calib.wmfw",
+      "size": 47904,
+      "sha256": "a6d7bfaa64cbda0dd987ac44b9bff795e05212c25312ef95d6837a751936037b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/lib/firmware/cs40l26-dbc.bin",
+      "size": 148,
+      "sha256": "7cbbafe6627604f5fba94b52c6014855aa5f88be79390fcfaaf58eaec08e216e",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/lib/firmware/cs40l26-dvl.bin",
+      "size": 216,
+      "sha256": "de605bb3ff5d4e19427080bb99c5efd45eb7b8aa00a7a444ff386b43065b7b8d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/lib/firmware/cs40l26-svc.bin",
+      "size": 1168,
+      "sha256": "aa206eaa4774caf6d8d16d8116a3f4e115a6da1ad6adc51f9f60c2713aa05977",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/lib/firmware/cs40l26.bin",
+      "size": 8432,
+      "sha256": "4516b191b3daafbf40a591e6f1ef9bd98fb6045a817bee366becaba460ef685b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/lib/firmware/cs40l26.wmfw",
+      "size": 57264,
+      "sha256": "8542109d6a0f95bcdd72b9bca97e7d450428b9ad3c48c2af1978e256901f24f5",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/lib/firmware/dijun_syna_thp_config.ini",
+      "size": 17413,
+      "sha256": "bf57f64f088123e66e41f2816736e6df9f1f565a537aa77f1c68e97f6786d95b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/lib/firmware/synaptics_spi_dijun.img",
+      "size": 194794,
+      "sha256": "edaa698e65a41d165d87ceec13559f41232c0d9c42ce09e326fe2a5678928fee",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/vendor/firmware/cs40l26-a2h.bin",
+      "size": 896,
+      "sha256": "89c1b52488fba561c5c5366fefa0cc64c5223b3d5d1d272c15730af626f199a2",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/vendor/firmware/cs40l26-a2h1.bin",
+      "size": 904,
+      "sha256": "4d0d26bf6fb272cd6937a9f6b14ebe237310a01c794ea6c4d75a5eb5e5949c35",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/vendor/firmware/cs40l26-calib.bin",
+      "size": 144,
+      "sha256": "d936817b1c5b8d7557f6e195276382a2c7ca496ff2a27ba93294de78c34eb1ee",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/vendor/firmware/cs40l26-calib.wmfw",
+      "size": 47904,
+      "sha256": "a6d7bfaa64cbda0dd987ac44b9bff795e05212c25312ef95d6837a751936037b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/vendor/firmware/cs40l26-dbc.bin",
+      "size": 148,
+      "sha256": "a787154889cf738512e30c0787f156b04a45d46d6a5a3c19a81f568b901b9435",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/vendor/firmware/cs40l26-dvl.bin",
+      "size": 216,
+      "sha256": "de605bb3ff5d4e19427080bb99c5efd45eb7b8aa00a7a444ff386b43065b7b8d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/vendor/firmware/cs40l26-svc.bin",
+      "size": 1168,
+      "sha256": "aa206eaa4774caf6d8d16d8116a3f4e115a6da1ad6adc51f9f60c2713aa05977",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/vendor/firmware/cs40l26.bin",
+      "size": 8432,
+      "sha256": "4516b191b3daafbf40a591e6f1ef9bd98fb6045a817bee366becaba460ef685b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/haptics/root/vendor/firmware/cs40l26.wmfw",
+      "size": 57264,
+      "sha256": "8542109d6a0f95bcdd72b9bca97e7d450428b9ad3c48c2af1978e256901f24f5",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/bin/dijun-prepare-mitee.sh",
+      "size": 1998,
+      "sha256": "c925058e1bede7d0c177dc8497e5ba0bb2e8fd5e26d968d0eb63beb341227a33",
+      "mode": "0o755"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/etc/dijun-crypto-profile.prop",
+      "size": 193,
+      "sha256": "2876cb15abf3a3a8612e5c9e7d91bd60bbb0205e129bfafbb9f0ff89a20cc0e1",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/etc/init/android.hardware.boot-service.xring.recovery.rc",
+      "size": 400,
+      "sha256": "239aec2f6288443894b066448bcbdaedefa95fc1300b98a95ec26787bcd9a22b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/etc/init/dijun-mitee.rc",
+      "size": 1545,
+      "sha256": "0d9c282b76eb7416786a9367293104d8fd49fdcfbc8f05a50de757160ae3879a",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/etc/ld.config.txt",
+      "size": 383,
+      "sha256": "56b289bfa36b6e10bbb09282bfbf54b103aae2fa4acb2eff3843b50bf1b66e30",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/etc/vintf/manifest/android.hardware.gatekeeper-service.mitee.xml",
+      "size": 292,
+      "sha256": "12ed2cac5fcacacafdcd5ca680a540b2fa43c78e2b98380c231a041c421e7491",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/etc/vintf/manifest/android.hardware.security.keymint-service.mitee.xml",
+      "size": 514,
+      "sha256": "ccfa191314c67997ba33e6b8e779e7cb75a29e452cc4361884ee6ac1f42911a6",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/etc/vintf/manifest/android.hardware.security.secureclock-service.mitee.xml",
+      "size": 305,
+      "sha256": "3a88fb9e7f58e2161be3b9a29622560e01e0f4f691a7e2539cc8288e82863daa",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/etc/vintf/manifest/android.hardware.security.sharedsecret-service.mitee.xml",
+      "size": 308,
+      "sha256": "1cb0dec8b5fd48a4d13534122574eaa2cc68560b7f9d0ee3dc370979c45a6657",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/android.hardware.gatekeeper-V1-ndk.so",
+      "size": 68984,
+      "sha256": "db669706df581a702d80c49703422b347507b25dea2cb3057f6d09d5796e26e8",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/android.hardware.security.keymint-V3-ndk.so",
+      "size": 154128,
+      "sha256": "0f3d0800a533c99b8b9748e1d0c1f7aa624d6bd3f60254769322cb813a5d15e6",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/android.hardware.security.rkp-V3-ndk.so",
+      "size": 85992,
+      "sha256": "c7a958af0261df1a7cd33e81f3220896c3498eeaf6cfa46589178b9e8a7da15d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/android.hardware.security.secureclock-V1-ndk.so",
+      "size": 85560,
+      "sha256": "81c61c1fbdf80b2a84b45f044c24da31ddf84ae829b4d8adc9b08380d28c43fc",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/android.hardware.security.sharedsecret-V1-ndk.so",
+      "size": 85672,
+      "sha256": "a45100ba076f466efa17b6c685c63129f3d8ed9515696e0df38ccf368fe5be1c",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/android.system.suspend-V1-ndk.so",
+      "size": 68912,
+      "sha256": "e96fcf44435cc6fb9fdc2a55738c4067e23998d1074b9a4c4c51de35b87335e2",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/lib_android_keymaster_keymint_utils.so",
+      "size": 37432,
+      "sha256": "d1657007e417be8ec7a0c3ad81eca4d973e6a696aeefbb14481f66e35d4cd738",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libbase.so",
+      "size": 218928,
+      "sha256": "8c3f0a3894ee5a06692ae5cf2861725105225957ffe28cb2bd4a67ba7cf591ac",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libc++.so",
+      "size": 1083168,
+      "sha256": "794eb8fafd7be35da3725e9ec0b15189c6f4f2544f5b78afd8a647dde5b69195",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libcppbor.so",
+      "size": 103464,
+      "sha256": "529b456c0339db1de9752fb5702349e6333c0fdf5df47f6afa9e5fd9a896289f",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libcppbor_external.so",
+      "size": 103464,
+      "sha256": "be6527d0596847fa4489d26c9799b7f4ea8c7c26857c33063b7741c4c1886d9b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libcppcose_rkp.so",
+      "size": 119304,
+      "sha256": "82fc5a42db607bf1e23d21c5ff18512a124393959f448382ca9aa7c1457878c9",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libcrypto.so",
+      "size": 1394624,
+      "sha256": "c815bc69626ea4a07d40f095328926ec472fed552aebc986dffc5753f12c3d5b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libcutils.so",
+      "size": 101824,
+      "sha256": "1c7898af4045e45455b4f848ed03c569ea6a648ccfd9effbac71ca338bcc083d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libgatekeeper.so",
+      "size": 36272,
+      "sha256": "3dd4534b5fe8a4c40c14de13dd2de1666876ac23ceeab35a4643d914542fb323",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libhardware.so",
+      "size": 35488,
+      "sha256": "4caad144ad233ff425940691d83a668f57cc203afb11cd2099f2006dfff8ddf3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libhidlbase.so",
+      "size": 653408,
+      "sha256": "0f27a439db2d3fbed50221ba91dc6999b65b1a8a2dd1c732e06eefbf7fef1a45",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libkeymaster_messages.so",
+      "size": 134624,
+      "sha256": "02c3e8ef76c6cacfd3bbbbe024f030a8fd47638e5491f65c7445f28f854d9848",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libkeymaster_portable.so",
+      "size": 570136,
+      "sha256": "e02fa5cd06364e65bfa8fd178f86c170fe8183e953b5494701415d772a549d48",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libkeymint.so",
+      "size": 171440,
+      "sha256": "b8565e2cf0811a1828e5dd4ac253cadfb963004e2f1065b5c83a261cee1822b3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libpuresoftkeymasterdevice.so",
+      "size": 136264,
+      "sha256": "410e2dfd25276a9a87a4828db4d3ff6560a58327777b3a1206954351382d1f19",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libsoft_attestation_cert.so",
+      "size": 51584,
+      "sha256": "31c7b1cb4e487f79592258b8554b3ad676e92b19e8b71d16377c2edc8dd97016",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libteecli.so",
+      "size": 51560,
+      "sha256": "13c1936f7a91bcc0d524a26b59ec81e76b53a044cd3ab4200efaba3b57dff321",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libtrusty.so",
+      "size": 35304,
+      "sha256": "ea5b088c99f4dab7b7f322adf02203b5d1035d5a8b37c212c8dcc8ea6acd6023",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libutils.so",
+      "size": 151792,
+      "sha256": "5f160ed0afbc5d5730bcb99e0452ccfb02483524a1901298adbb805136635099",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/system/lib64/mitee/libz.so",
+      "size": 117480,
+      "sha256": "c4552f41986ca14d0ad83ae75bdf3df4a0684e07b9b2bccb7753382f37b98642",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/bin/hw/android.hardware.gatekeeper-service.mitee",
+      "size": 52520,
+      "sha256": "4e315a7ff638e85929ad6de59220716005fa6891fe6b4efa024c852bc6d06ad5",
+      "mode": "0o755"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/bin/hw/android.hardware.security.keymint@3.0-service.mitee",
+      "size": 121960,
+      "sha256": "06f74415be3c9e376000caa4aa38e525149e7f8886341562446a0325d6e57470",
+      "mode": "0o755"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/bin/tee-supplicant",
+      "size": 363936,
+      "sha256": "58fc15fa80a34d149cb8b4b5b9c8c6dc54c647800b25c49e716943cbf0d9f513",
+      "mode": "0o755"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/mitee/ta/07578c47-fb20-4d61-a3098be0e5a419d2.ta",
+      "size": 482408,
+      "sha256": "a68f57daa0ba7d62acd28349d81263613e22a805ce7ee6b05ff72e5b91392a01",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/mitee/ta/2e8fade5-0c7a-46cc-810e6468baee66b9.ta",
+      "size": 434656,
+      "sha256": "b2bdb49ae64261fa1823af08a1c9039924af7857e17ed0292b76e2dfa267ed76",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/mitee/ta/3fffcf00-a684-4e03-a6d11022eef45939.ta",
+      "size": 302632,
+      "sha256": "892f7246a3770adbb575cdfab7f0256b7ac56b95eb12bd776b3175f42a9bbdff",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/mitee/ta/4d573443-6a56-4272-ac6f2425af9ef9bb.ta",
+      "size": 422528,
+      "sha256": "59d21c9d0747b34e3f8511e465a6a6d4c6fdc7d42f7459c4ec15a71600ec65fe",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/mitee/ta/8f8e6cbf-b34b-48a4-a78a08cd5ffb81bd.ta",
+      "size": 698984,
+      "sha256": "e2368c87e0fcba2238911ea8e7d69be9e0eec69d025c5083b15a441dc8bb1dd4",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/mitee/ta/98f4690f-6d38-4422-ac87af686a883d9f.ta",
+      "size": 13665144,
+      "sha256": "7f9cb912bcc989844161d7d52151ed14d53bb9c03a06624a22085da7e99147ff",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/mitee/ta/a72aaa20-375d-2729-10f1d2f3c9b49315.ta",
+      "size": 273248,
+      "sha256": "4571fb0ab5285f14f93d1d687bb11defdebbfb9937e2692ed569f6ee41ce2a4c",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/mitee/ta/dba51a17-0563-11e7-93b16fa7b0071a51.ta",
+      "size": 1617352,
+      "sha256": "ecc7b364e16837089aeb62d0041bda07722544ad1dbc1fc1643f95a04505391a",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/mitee/ta/e97c270e-a5c4-4c58-bcd3384a2fa2539e.ta",
+      "size": 1275608,
+      "sha256": "b136c05852e7fe473e9edabfb2374fe04b1fa320cfbb4e5699f6681232676ab1",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/mitee/root/vendor/mitee/ta/efff4308-e6cb-42b0-ac5aa97eee959dc5.ta",
+      "size": 471048,
+      "sha256": "39392ca59db088da2226f9269081cf6f64a5f994c479192062de684250752a65",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/vendor_boot_modules/6.6/modules.dep",
+      "size": 1250,
+      "sha256": "ddd348a6fa88bee2fb905332fa56bb60384308b88e3064b2823329707eaedc9e",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/vendor_boot_modules/6.6/modules.softdep",
+      "size": 3653,
+      "sha256": "7e2163a708a8151a18e73c664e27aa990a709a0b6cdd1320fbe85a02ddc5a2cc",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/vendor_boot_modules/6.6/synaptics_tcm2.ko",
+      "size": 583296,
+      "sha256": "8ac731eeb37a01945e78eedf601b1be1da97a3ebc5d4d93bb6c18f4f648c7cc5",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/dijun/vendor_boot_modules/6.6/xiaomi_touch_dijun.ko",
+      "size": 248728,
+      "sha256": "c77fd45ac9de23ef09645abca9bffef13aa5e7221ed34a464e339ef7dae5bf83",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/jinghu/vendor_boot_modules/6.6/goodix_core.ko",
+      "size": 623184,
+      "sha256": "fad55be8c5e76034a87f02141b04fa4fcc27a2d0c1deec48476f3f0d8fdc9a82",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/jinghu/vendor_boot_modules/6.6/modules.dep",
+      "size": 1275,
+      "sha256": "e88b14c541fc22b9749f1c5e8b5bbd8d9d0f2bc0f634aca59b7743a53dbd6263",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/jinghu/vendor_boot_modules/6.6/modules.softdep",
+      "size": 3653,
+      "sha256": "7e2163a708a8151a18e73c664e27aa990a709a0b6cdd1320fbe85a02ddc5a2cc",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/jinghu/vendor_boot_modules/6.6/xiaomi_touch_jinghu.ko",
+      "size": 232712,
+      "sha256": "0b215b60f4a576560dc3d131c5669125ae641313eb079cc807fbc1aa99ec0389",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/kernel",
+      "size": 34148032,
+      "sha256": "18a8132a486ebe6b409dc623629b3a9e7900a353ff1ae3ec88a64cbb8953ac01",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/kernel-6.18",
+      "size": 42936832,
+      "sha256": "0d9917ca00657798e258889e258931b8b1fb0b2bbb8c0ad90e8c89ce517da0ac",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/violin/vendor_boot_modules/6.6/modules.dep",
+      "size": 1280,
+      "sha256": "818f08cb6803043c0d2e82b5b5073875f42e0eaa027ce00563752aba36b8242a",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/violin/vendor_boot_modules/6.6/modules.softdep",
+      "size": 3653,
+      "sha256": "7e2163a708a8151a18e73c664e27aa990a709a0b6cdd1320fbe85a02ddc5a2cc",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/violin/vendor_boot_modules/6.6/nt36532_tc_touch.ko",
+      "size": 1040240,
+      "sha256": "37079824bd5f42cf9a2eeeb80566a630fe2bb72085da877e96b0758e5ab8179b",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/prebuilt/violin/vendor_boot_modules/6.6/xiaomi_touch_violin.ko",
+      "size": 232712,
+      "sha256": "eb5b1702db7471f5a7faaf61a728632e5f97120c4cbf0804979ebefa4fc02d5f",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/profiles/common/root/system/etc/ld.config.txt",
+      "size": 383,
+      "sha256": "56b289bfa36b6e10bbb09282bfbf54b103aae2fa4acb2eff3843b50bf1b66e30",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/ab_slot_bootable_ctrl.ko",
+      "size": 19904,
+      "sha256": "da1bc0149abfa1c54a348dc1663ba29fe6713691de304cf522f09ff408521ddc",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/apb_timer.ko",
+      "size": 34648,
+      "sha256": "0e7e92c482abfc2aa0cfcfc50dae8e47a8462d5c8c2adaed1b5f1836041e9e29",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/bootinfo.ko",
+      "size": 19512,
+      "sha256": "f57c1d6a69a71ad3002ea1187ac852a1d114db38281e675f6cf9ca1d98ac15a3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/boottime.ko",
+      "size": 34872,
+      "sha256": "59863982ef91ab2f829fa1c07d1b21059584a1adfdeb527ff8f8d296cc0c72ce",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/bq27z561.ko",
+      "size": 169552,
+      "sha256": "8a3732236db87b1c4035106c10b2e4317513d822a29e120c1f1b6c062f80cdfe",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/charger_partition.ko",
+      "size": 51984,
+      "sha256": "7c813c3801c02e6a6058f6fd18c47468ac251ea4469f4efc4b49138af9f0bcba",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/dmd.ko",
+      "size": 26040,
+      "sha256": "b33861948194d2fc341efa43fa92f4043c63a26f0db5475f125974419c1a6101",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/drm_display_helper.ko",
+      "size": 319200,
+      "sha256": "1e01d73d8ea159a26a2441d5321b30999b265a7a4e67679b66f7ddacaafe3115",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/dse.ko",
+      "size": 43016,
+      "sha256": "dceee1335178dd3c827b7d957dbd87dfc1420799134e692754fe5bbd415df2f3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/dump_display.ko",
+      "size": 19440,
+      "sha256": "8cc36bf45bea0c0b3aadf618278af7f579034392b5091cce489265dce536d108",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/dw_apb_rtc.ko",
+      "size": 30432,
+      "sha256": "52e768af35e0380426ee8153c0de770d651fe1ba08970a63080a7fb68f05aca7",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/dw_wdt.ko",
+      "size": 36992,
+      "sha256": "dbb8fa97cdbe01791092c9537657fbbf441eb7e9a517f5823ca5890f54aec19a",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/ex_pd_protocol.ko",
+      "size": 69560,
+      "sha256": "af9d93f50e28810472b6f6a99aa9317d16e33d710aacbd4bbe82bb369ab7da6c",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/external_tcpc.ko",
+      "size": 558368,
+      "sha256": "78a767af8dea2e4f6f3c3d7c6e9a93e0e3fb46eede1df1888ce533bf70e294b9",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/fbe.ko",
+      "size": 29560,
+      "sha256": "577cafaa932924fc6ee5285aee4776ff9b40b9014fb19b0872a55790b7438a40",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/flowctrl.ko",
+      "size": 36544,
+      "sha256": "d95152faf515d443e30368de7d2d7c040769c03e242dbfd749cb8e801b1815e3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/fsa4480-i2c.ko",
+      "size": 76504,
+      "sha256": "5faea8e0d96cf451f4eb8185d8c1ff206853b6c7f4c0e578b4223d30f1214e0f",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/fts_touch_spi.ko",
+      "size": 511600,
+      "sha256": "52690bbfb9ffa73ba82a05ed24e8b706773fb169f60ec1447d87e6c98903b92f",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/hl7603.ko",
+      "size": 16808,
+      "sha256": "42bd74e8a597289c7afcc6ba33b46a01d79a9f7276af51d835a555f29bb26070",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/hwid.ko",
+      "size": 23168,
+      "sha256": "b5a32c6c4c056b28f26e0a65a8bb163d0029b969fd535b7b1159c641c6965dba",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/kmod_protect.ko",
+      "size": 18416,
+      "sha256": "2f63977ca72619b79cc6565e9b8c1a96df14cd8090e309db7e5fb35e6d1b9960",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/lp-dfx.ko",
+      "size": 28808,
+      "sha256": "73cfb437458b88a6aeb22f85680890db6beeed34ba1117e9ee60895b9dd036f6",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_basic_wireless.ko",
+      "size": 160104,
+      "sha256": "5fda12649875138bcf08e7087092298ee123045883754abc33fbe524fb7b61d9",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_bmd.ko",
+      "size": 28504,
+      "sha256": "cfa908987d32c25c1c7813658823e8595b10448f8859fc518a926e42482bd3f3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_buckchg_jeita.ko",
+      "size": 45536,
+      "sha256": "41151abcd0c362697293950a7d8b367f207d867bd4c00902ddc5d775d145756c",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_business_battery_comp.ko",
+      "size": 27680,
+      "sha256": "4153ee6c0047f034f24aa4e3f7f85800e0a774f32114a8adee12307d4b3deea5",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_business_charger_comp.ko",
+      "size": 74688,
+      "sha256": "b6ca94abf8f2551e3eb86f01b5239c5f26bd0008574e1d4b1d01449824ef2461",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_business_misc_comp.ko",
+      "size": 15696,
+      "sha256": "cb9d0405fc5689383f6151c55173df0834a504bd45b752191d59eb370a03396e",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_charge_interface.ko",
+      "size": 24544,
+      "sha256": "3fa928e817783a43bde443ba2b2603f7dd1ae7adfd58c5921df2474693886271",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_charge_mievent.ko",
+      "size": 52456,
+      "sha256": "62ac1471548b65500469e2fbddaeeb124b7f52ef92a25a481cbbfe3c3819478a",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_charger_thermal.ko",
+      "size": 48448,
+      "sha256": "4d0913e327771b9d95316163004a0e1831a7ad820d80dd7d1756920a0bea4e21",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_common.ko",
+      "size": 41384,
+      "sha256": "47b549dc42370cccb9a76618c149ca1ec4cd01ecbbaa745b27b9294ed6e60404",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_connector_antiburn.ko",
+      "size": 39672,
+      "sha256": "a1d1096e8665ab1e55fe725e5bcdb0f8987b8a55ef136fac5fd8380da140a200",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_event.ko",
+      "size": 21048,
+      "sha256": "49f303fecee7c69812a13e6ff356ebe229088622c76b64892663b8e57a302ee2",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_hwid.ko",
+      "size": 14080,
+      "sha256": "533db06b8967b1be7614f4318ba70a3da466489f6dd808a1a21a63915a25058b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_ibat_ocp_monitor.ko",
+      "size": 19480,
+      "sha256": "30cba0b87065a40b14b8613fb39930dd674f915c20e0b66182efaaaa4b0a4c6f",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_log.ko",
+      "size": 32504,
+      "sha256": "27802174ecb193d048bbf0e74baf739a17b33b41f8feb1131c961f821ae9972a",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_lpd_detect.ko",
+      "size": 20376,
+      "sha256": "b9d3486862b3fb11953efc2b14ad496e145cddf7ca4384f52c59c80f09cf8db2",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_parse_dts.ko",
+      "size": 22088,
+      "sha256": "c126422b69020a25a2140d41f7141779f81273b764e7dc8fe445fcfe48664efd",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_path_control.ko",
+      "size": 39712,
+      "sha256": "376d01b6158fb7d4fc7fa1e3243a518b1c7de4f59fce1362225f5a27eef54e34",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_pd_auth.ko",
+      "size": 25976,
+      "sha256": "6119c61d60155977966df2d3a7aa8e41e29fc9b556254d033b0377543aa649e9",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_platform_base.ko",
+      "size": 15280,
+      "sha256": "5e2732e2c3f2a6825a18111586478b87f5cef3b2835006f5d70f97de57df5778",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_platform_bc12_class.ko",
+      "size": 15976,
+      "sha256": "393f98ceeaaeace1357b5fa737d81fe97ca4cedd2c44b1ce5370d472f0b95cc3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_platform_buckchg_class.ko",
+      "size": 91152,
+      "sha256": "e274dbba8a94682dbd2b9c587ef4a9d85238a8afff32320447b95f324d7d2e19",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_platform_cp_class.ko",
+      "size": 68552,
+      "sha256": "fd6a53a441e615e9ae4f6be5c5fad2e87f0ca2c79ef10f466316aad4adee1a3c",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_platform_fg_ic_ops.ko",
+      "size": 68920,
+      "sha256": "0207d0042f01ca3f2e6108fdc5b927f549f514cf3c013d629129279b835aa59e",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_platform_loadsw_class.ko",
+      "size": 34616,
+      "sha256": "1a87ade1fb785c2208c5fc67580ea7e3adc07c5aebeca7e481022b5ce52aac43",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_platform_subpmic_cid_class.ko",
+      "size": 14992,
+      "sha256": "4fde06ddafd64dc6b89dabed24fa448786c58a35b8ed5e7918928f1795831b86",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_platform_wireless_class.ko",
+      "size": 96568,
+      "sha256": "2107cb319389091b5e57229e52ca37fb508b8744da914ca2d0204af8b3e42436",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_protocol_class.ko",
+      "size": 21624,
+      "sha256": "cd49037f3fa0bcf070f0031f1eb8a7a6655efcc1c48c3a437eb8f25d15d92dd5",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_protocol_pd_class.ko",
+      "size": 74560,
+      "sha256": "d2ed4b292f36169a9feab3e5614b032155aaf6d93b41c50e955b6edb400523f0",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_protocol_qc_class.ko",
+      "size": 17368,
+      "sha256": "87ca16f6e06ef11d61e33974ff02a704c214512548ab60d57dd45314b651ccaa",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_quick_wireless.ko",
+      "size": 90520,
+      "sha256": "5ab2501efe15657d55a5586e6f118616b6c5f50493c47447f0ba7d3db53c1357",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_smart_charge.ko",
+      "size": 70152,
+      "sha256": "d4acded36b2cf9c6f78b35c68a2a2f71f5dfb14d7484c70243ec8c51b76d9bb7",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_strategy_buckchg.ko",
+      "size": 92768,
+      "sha256": "db07c28e81c50b9458c7af993fc49835acc333c979c4faf561c0dc8c35eee031",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_strategy_class.ko",
+      "size": 15304,
+      "sha256": "1c675ccb2e2179c647f89fee7d14fd6d07de0452e256c42a4df7ad138106408a",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_strategy_fg_class.ko",
+      "size": 38296,
+      "sha256": "e6cc053e51e0c5a0c9ea73d5e18e2b9f273a203c4108d3b77d1b1ebd8e594e6c",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_strategy_fg_comp.ko",
+      "size": 154656,
+      "sha256": "f7c609235d3fa655725e290451505497abc218d16fc32967791f65de251a1ce0",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_strategy_quickchg.ko",
+      "size": 153104,
+      "sha256": "da1f66e165a9f29bdc967c33173507e934b47c828902c700fa5051a88c36e470",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_subpmic_sysfs.ko",
+      "size": 28104,
+      "sha256": "85a0654a9d8a73912718262e280be6e82427925db622cccdcbcda2d963fa882a",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_sysfs.ko",
+      "size": 34120,
+      "sha256": "de60f843008e5ed3539162509fef36e1800cb6b2b529ee790ff3f1c6061b44e0",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_vbat_ovp_monitor.ko",
+      "size": 25040,
+      "sha256": "3184207384ba002956fbf3932fa838b41396e8dead8d4c6df09eb04d49a85c88",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_wireless_revchg.ko",
+      "size": 91384,
+      "sha256": "5cab712b38de79cf84f6f083708070b1b4c2d4f4065f9329da1c8b836f16c41b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_workqueue.ko",
+      "size": 17296,
+      "sha256": "1b95d4637350eaeeb5eee2d09e674c33ac9ac16493e6a988b14041732704f8a7",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_xring_o1_sysfs.ko",
+      "size": 40072,
+      "sha256": "c65f21faa4590f33fa41e5e930e160c8ac2c22531fd3f304dbf740fb11797917",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_xring_panel.ko",
+      "size": 19216,
+      "sha256": "8d96b8beb5622ca3e8a049941ce6ae5f16fefe3303f7882f7e5320b8b70c29ff",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mca_xring_usb.ko",
+      "size": 27224,
+      "sha256": "1c4dd87cf10ca7bccd9bfe33735f964912ba83860c3eeb3707e4d38a466302dc",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/media-dvfs.ko",
+      "size": 38912,
+      "sha256": "c3781055af86856094f06b8522016330d79e05fe3aa7bf644c4afb5440c3e658",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mi_memory.ko",
+      "size": 74400,
+      "sha256": "50dc399f1be1cf28653375f9d53fb012876f7345d74651d7452b0bd103117f50",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mi_wq_dynamic_priority.ko",
+      "size": 26168,
+      "sha256": "65799f27d1c856595ce38da80d4b1638319baa89b22d0ae8e90548527f4b4c1a",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/miev.ko",
+      "size": 37152,
+      "sha256": "e12ec5b03ad6c2aa21a50c5e5374e190567ee8760f2f86b42ed2a8a5ddac27f9",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/mitee.ko",
+      "size": 279352,
+      "sha256": "5a4e4d12e3c0e95a8c35166bafc65c8f4cf44df2ec53454e137abfc59bdb3a16",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/modules.alias",
+      "size": 2473,
+      "sha256": "11cb8074303378d0a585d58b46ddeb17159b69c089626d7ef21bcb04a4cbd478",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/modules.dep",
+      "size": 17973,
+      "sha256": "505e782a46e450161fc02b45e9ccfa08433e9df243bfcc7d3324e847fe248b40",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/modules.softdep",
+      "size": 1855,
+      "sha256": "0d032eeb187ac18f3e3341430a8bb18c80c7b2a2bedea8204c9f748097b8ccdc",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/nanosic_platform.ko",
+      "size": 68440,
+      "sha256": "244423d697a22e952eb4c3731b2cf318a0a33c88db971fb8d4a8bc7eebd40a5e",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/nuvolta_1652.ko",
+      "size": 190760,
+      "sha256": "82f233ecd005776903301e372616f39bc50f84463391a19c75839620d1d69d3c",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/os_cpu_plat_common.ko",
+      "size": 26176,
+      "sha256": "0bdc744f8450fc6c4e3e857ddf7338e425384583d55aef2af2091b0c5f4aa8d5",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/os_cpu_vip_sched.ko",
+      "size": 99504,
+      "sha256": "a9fa67df5b83831b2682d85e9e16e4e77b4bea76cd02612f889475980b4aaa23",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/perf-actuator.ko",
+      "size": 73360,
+      "sha256": "93c59c815684c88ef186a9fb000d2d8a16e18c6f4eafc918b8ade33a73238932",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/peri-dvfs.ko",
+      "size": 30200,
+      "sha256": "1711084aab8c96997fa4b42fd3590660333668adbe54f2f7dff5661e8c0c19ac",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/pinctrl-xr.ko",
+      "size": 233128,
+      "sha256": "62d34a031daab268bcb8f0e7b94f1f23bccf6a399d2a074ef6d3d410597a9f3a",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/protocol_pd_manager.ko",
+      "size": 51368,
+      "sha256": "a36d40ebf8d1bf73c047783bd37ae2b15df97ee9afe9c67733215d98794aaa8d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/ps5169.ko",
+      "size": 61912,
+      "sha256": "2d052f6f987ab83a065c142d37d369e9b2991aee973735921d0dbd6e97424023",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/redriver.ko",
+      "size": 24384,
+      "sha256": "b2b41d1de924a2f75dba09bacec15b85e5cf849dfa8fdfee1c201b729fc20d5d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/sc8510.ko",
+      "size": 33824,
+      "sha256": "ca2628b3c5a9d9cd8dfddf6cf07b322c8eaf19685ae91d751a2d97766e7b6dd2",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/sc8577.ko",
+      "size": 66912,
+      "sha256": "9f0fad4a8f69fd06792ef0c30808ef2d242121bbaf962b167e4727ba4b1f08f6",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/sc8581.ko",
+      "size": 76128,
+      "sha256": "b94a43b701d10ee04433254ebed7329e59b15ab96a74a5c97e21d904afd7e101",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/sc96231_comp.ko",
+      "size": 133800,
+      "sha256": "08370f1ef6ec2550fd436a406a0b5cba16d94019e8e8af08aa3c83cb85c0b057",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/sc9625_comp.ko",
+      "size": 232704,
+      "sha256": "d0dc1f98b0f4f76966e79c04ba4793719f5b9a14466fc1dacd6d8a193ccda209",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/sched-walt.ko",
+      "size": 896904,
+      "sha256": "2153fe4a7053545f20a17d21cf1042cdf8d9213d75e310a0958c617868a7c30f",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/securelib.ko",
+      "size": 32672,
+      "sha256": "18f79978bd69109a447e07b1f8fdce059ad108eb5357698f20329bf41a3739d3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/shub_app_router.ko",
+      "size": 83512,
+      "sha256": "a0462e191f4f3db30612d3e43fb39541cad78b57184ba9e35b8e88ba46e3768d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/shub_boot_prepare.ko",
+      "size": 85072,
+      "sha256": "d97148ef42c023e9d71970c9914592bbb1bdbdc25239eb9f66ebe96ac0c5c376",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/shub_ipc_drv.ko",
+      "size": 33800,
+      "sha256": "c9d06a9040da2be30c83c7666fd4d05a35b045e153c433af0f1efa6971a1cbd1",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/subpmic_sc6601a.ko",
+      "size": 27816,
+      "sha256": "5a289b716e115cfb5bccdfb1290dc754721805ac065f69ed75cf7a188b368bfa",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/subpmic_sc6601a_cid.ko",
+      "size": 23536,
+      "sha256": "049bfa388bd613cf2abd4a46b41d3a56d3477fecaeed414293268aa1e083240b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/subpmic_sc6601a_driver.ko",
+      "size": 151504,
+      "sha256": "e0df0c501db33bf59894db287bcca172663a403a3c81627cf6173419cdd5c47a",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/synaptics_tcm2.ko",
+      "size": 595992,
+      "sha256": "dc2b7631bdac52d6c2152abb465aab7842e232da1bbf20958113b6c26d94b7bf",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/tcpc_sc2150.ko",
+      "size": 45920,
+      "sha256": "a65b5669c2be3df86e636ed0b5219efa36d1197c1397a96d90021ae79e43c120",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/tcpc_sc660x.ko",
+      "size": 56128,
+      "sha256": "47b7a2a6e099c98f223630367750651bfbc2895fed17c77f87099c62b3ca2cdb",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/touch_boost.ko",
+      "size": 48472,
+      "sha256": "50e8d4e2dadbaadeb29a1fd33e663a32a5519adbc54d1be2cf79e7fea7a716ff",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/tui.ko",
+      "size": 63640,
+      "sha256": "a62578380d91dce251be2031363ab2c4917a44e7b913292061a986664d44f615",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xiaomi_touch_dijun.ko",
+      "size": 233176,
+      "sha256": "0ecca676ca633b18b325f3e2aa6708f280937442ca63a929191c6dd09076d5ad",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xm_battmngr_init.ko",
+      "size": 17224,
+      "sha256": "dfb6c714f8ec333a570e044b19492756d9d7d31e7b30227eac3a79dc95c581f9",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xm_charger.ko",
+      "size": 65712,
+      "sha256": "87639589159170725098487eacf6e93c9a66386bb7a6f049c2ce71b8d564cff6",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xm_utils.ko",
+      "size": 80584,
+      "sha256": "a084c512023095ccdda4620da131e58b7b72d4f37c135e6711f54348e2c5e6bf",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr-clk.ko",
+      "size": 294544,
+      "sha256": "efcf8fb619625b6ccd3414c711f37cbf79220fe60417aa93937a16e2f31a770d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr-pmic-spmi.ko",
+      "size": 26744,
+      "sha256": "a76bc952b52df6c63529a229f610adebb90e603a6b665de627f2fcf6217cff17",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr-spmi-controller.ko",
+      "size": 27920,
+      "sha256": "4ceca257865727870dbc74256447b5f090f0bb3cd207d0504c490bd86827a07a",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_bootup_stage1.ko",
+      "size": 29104,
+      "sha256": "6d3530d0af563d2f7f1e25febdd9b199c4074d011cd334f8ba55a5e3ca195117",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_bootup_track_stage1.ko",
+      "size": 12736,
+      "sha256": "6382115684b70e5544f3173e5bee0b95d50ad6b7198a425dee62d760f5e81d84",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_cpufreq.ko",
+      "size": 73400,
+      "sha256": "f2444881c64e9c128a450f4a0456a4ac3dd049b34dfad0103e4c3ace12221198",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_cpuidle.ko",
+      "size": 245568,
+      "sha256": "46d600323689f390c227440d4eb02364e9bec7e5270b173ee563727e7e4b9604",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_ddr.ko",
+      "size": 82760,
+      "sha256": "ef7fdc1d3237d7cf3b4ae65c9497bb7708b1723cc147ea11b86bfe5d76ca3db1",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_dfx.ko",
+      "size": 211008,
+      "sha256": "1d75cafcde5fb6eb6bddb693a01c8043c0b58c427d03390a267ab13ca714802f",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_doze.ko",
+      "size": 22440,
+      "sha256": "6cfea6653ef8eec6648c6406de2e0627ad93d4e34defe8d56e30be721c95c95d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_dynamic_governor.ko",
+      "size": 44432,
+      "sha256": "b5cb98995008b179edf6b4db33ffb39c5d837fa3aeeb5d0a134b2c7f497bdd7e",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_ffa-module.ko",
+      "size": 79656,
+      "sha256": "46b8d001122411d66da733fd0617763e925768937b2b72aee7e4868f95d54740",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_hwspinlock.ko",
+      "size": 19472,
+      "sha256": "7388a12349deb15b3975e98342d8ac52e67169fcdd7c7b102683c5d84fdc2c35",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_ip_reset.ko",
+      "size": 25624,
+      "sha256": "85a46fd99f98b3c841807f134682355eb78fb4bfbe90de1e2702b94a86110b87",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_ipc.ko",
+      "size": 126912,
+      "sha256": "d247b391a3ea30240ea7ce85ddbe6ba75989c757dc35a02771388b4ba50c1e18",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_isp.ko",
+      "size": 1085000,
+      "sha256": "995a83549fff11d89def900db8661d9289e66e53890fa58fb9b3f8c35d0d81d2",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_kdump.ko",
+      "size": 30024,
+      "sha256": "8a4f68b77e26c8e93e045330c5d15da74494e3f63fa960724ef9f1a3ee484883",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_mem_s1.ko",
+      "size": 575856,
+      "sha256": "19e213cb48af3cbc1658b2a59d08fb2ab3d46a7d437ffadee356bc94111c33c2",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_minidump.ko",
+      "size": 40784,
+      "sha256": "ea80535d8489bfa194ee7b998a340fd8edbe8b0b1bff6dfcafb4f719c349510f",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_pm_comm.ko",
+      "size": 19488,
+      "sha256": "2d167a4e7d6f53eef481d8e75e736e3f489f1d146361d69f050cd1169517a54d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_pmic.ko",
+      "size": 129576,
+      "sha256": "3aaeea85387f9cd5e92bebfa569dde0745d236facf00239b97996453d395aba3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_regulator.ko",
+      "size": 128224,
+      "sha256": "7ca57fa244af5218648335bae58122a88924efd30e5983e9b246bab4cef8bc18",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_rpmb.ko",
+      "size": 38160,
+      "sha256": "6ec34888e2fec55b5d8d8d58516af02519a2bef8e767ea25e9d893a3e4903fb6",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_spi_mmio.ko",
+      "size": 78680,
+      "sha256": "47b416238cad3ec91e1b0f88ec114306b471ef228f5959a4b11181459e3e6b02",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_timestamp.ko",
+      "size": 26384,
+      "sha256": "87108e89aaf4b197d467e42f4d1ac3be5b080f0ae47220d09032e1b49d71e98b",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_uart.ko",
+      "size": 79976,
+      "sha256": "d9e090c1de2ae4f32bc2821402149c23a512fea5e413cdb80c72765ead943100",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_ufs.ko",
+      "size": 931056,
+      "sha256": "1e247c8748b97ac988357f070180d3b9ce6d747397c4be5aca6f2ded4b9ee609",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_vh_printk.ko",
+      "size": 13832,
+      "sha256": "3e7a529e28750cf6928035faa039721ef6342f75e5bc22a6ff32032d8b313323",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xr_vote_mng.ko",
+      "size": 64320,
+      "sha256": "41148bd53ea8a249f650281b02ba11c240ab2e570826459303afdfa8b177e178",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring-ade.ko",
+      "size": 59496,
+      "sha256": "5af9a0ec5b712ad6ee63bbb4fbc01cf9d959e20880a9629effd1ff566ace4aa7",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring-drm.ko",
+      "size": 6045144,
+      "sha256": "b906842c30c5242ea6147c6244a5e7675785e75ff0cde0178b19232c2cc8f790",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring-dwc3.ko",
+      "size": 358128,
+      "sha256": "e8d88c35bea030255bff32671b5b1c8a838f30091c07724d80c31d9312a3aba3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring-noc.ko",
+      "size": 402200,
+      "sha256": "5a2b97e8debc03beae8e63cc1368ad89a6ef386a276ec5623ab594f5b62b705e",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring-ocm.ko",
+      "size": 48840,
+      "sha256": "0fa9a84ed5d5fa0394a49216a947d8eab4f90e1512a986dfbfb49dfc8fa53ecb",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring-xhci-hcd.ko",
+      "size": 519272,
+      "sha256": "d2b35b5fe2217692fc694e8aaf3a40610020b03692932f125f6be810eaf72bfe",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring_audio_hw_third.ko",
+      "size": 5544832,
+      "sha256": "969a17203bf56c3d5b46e3a3ee1827cb3579aaa423c2fc21508e73d2548650f6",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring_axi_dmac.ko",
+      "size": 83472,
+      "sha256": "2d64d5ebc9e48f23a6bc2ac8833a48862e12196bfbdd4797335dda2f701e091d",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring_i2c.ko",
+      "size": 90584,
+      "sha256": "91754a6e62d0bf6ecfc3525f93f94c83063514478ba744d7bacfa20bbc941cb9",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring_ras.ko",
+      "size": 14272,
+      "sha256": "b2cd93c5b30454d3a6140d53d6e0d5d6257d09c572cc14a40f4920363b08c287",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring_smmu.ko",
+      "size": 196960,
+      "sha256": "a4160f70be8705dee0d6d23bae2a297686dbc2e42dc679e6ba20d49dbf88cdc4",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring_thermal.ko",
+      "size": 155936,
+      "sha256": "a72150b02648bfd0bf8c8cf83f68abe6daeca6cfa7304cd9869fd12829039723",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring_trng.ko",
+      "size": 13048,
+      "sha256": "fba7ad6f5f076a3818ccde2b4eba97e5a65174fd0e3705a4ea675ad605f153a8",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring_usb.ko",
+      "size": 162240,
+      "sha256": "762d35516b3c490cdbf5732e5aafd4273a6f19307fc1a66c7323e0b79f8a96d6",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring_usb_adsp_stub.ko",
+      "size": 16168,
+      "sha256": "e728b972ba9f56f628fe0c277c4769ed37067728181ff043f1807c83fe84d5f3",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring_usb_phy.ko",
+      "size": 99424,
+      "sha256": "b4a5076e4a9d35edfca26dee15ff852e684ef7b276638ef21a8e0b4367be5329",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring_usb_repeater.ko",
+      "size": 24336,
+      "sha256": "5cfe0659dd38cdf5593d4889458dd0734532441c44a6d4862b016a9b823e6a73",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xring_usb_reset.ko",
+      "size": 19616,
+      "sha256": "7cd2d5d97a0e84dc85beb3e5d34c962553e168a43a32c71c59584b9e08690322",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.18/xrsp_driver.ko",
+      "size": 16736,
+      "sha256": "ef32075e47864b934a88a99f5866dfd86f45c59db306b813cecbb4598fbddc4e",
+      "mode": "0o644"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/ab_slot_bootable_ctrl.ko",
+      "size": 22080,
+      "sha256": "0d1d0259b300b52c20068300cafdc04ef45b15c105d4dba2693a1d6956f447a3",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/apb_timer.ko",
+      "size": 30448,
+      "sha256": "888cb9219e5543a1b25d48ff7fc40f7810ff5742f5fbf66b6a95642f01031d3c",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/atf_mdr.ko",
+      "size": 15264,
+      "sha256": "0fb946ec92bc8c6558700c618109d9cef37054f7214f0746da76b3f8c0803dca",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/bq27z561.ko",
+      "size": 172984,
+      "sha256": "879ffce7add6a0738798635e9a46a11aea0c61e631ce2176dc4d3bbb2c285dcc",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/charger_partition.ko",
+      "size": 52256,
+      "sha256": "22b72110212ef1f7821627d6d7f38fbc5e90319d7642411d5afca5a982243475",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/dmd.ko",
+      "size": 24168,
+      "sha256": "1b74fe0503a88b9ebf34db45534ae4f19c2e30e6422131d77fee79c7409af410",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/drm_display_helper.ko",
+      "size": 279936,
+      "sha256": "791c6e5f958d153e4d20ac57bf2eaabe97b6438274dde8d3451aad329ccaf36f",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/dse.ko",
+      "size": 88816,
+      "sha256": "abc7885dada6218fd7f87373f4e8aad4fd97a36a7dd80aceab2876a14643bebd",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/dw_apb_rtc.ko",
+      "size": 27840,
+      "sha256": "952f0dc8a5602aea6d3703284ec8933474b761c0e427c4fdd5939ab81dfc9308",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/dw_wdt.ko",
+      "size": 33112,
+      "sha256": "d4b5f5603efe87f663b24af98a9c117e89b52c088cf13a299444a805acc4f4d8",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/ex_pd_protocol.ko",
+      "size": 67048,
+      "sha256": "14d55bae3fef4ce2129dd0aa416d2ce31944be0f6933716a9ac034271e0e9053",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/external_tcpc.ko",
+      "size": 631432,
+      "sha256": "a02fa2562cd91d3385c6316167d677817789cb2920b99819452c97e8b1e9dfd5",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/fbe.ko",
+      "size": 28112,
+      "sha256": "0e28ca91b018727793baa87c2b12622aff98f512467e8c28c43646fb3471b97d",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/flowctrl.ko",
+      "size": 44416,
+      "sha256": "9469ecba994539080ded28696e473661bb7a063f3ecc8eb38f34b745ec1b7ca4",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/fsa4480-i2c.ko",
+      "size": 79936,
+      "sha256": "16fde8f6ab6701067fe29e8a5a7bbf51336ad2da6b249fc2ee57262e740c1743",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/fts_touch_spi.ko",
+      "size": 385880,
+      "sha256": "77a96dcfe8db55ce8192b8a9b9dd0c78a25fa97e60fd40187ddd5b9d54eb1c10",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/hl7603.ko",
+      "size": 15816,
+      "sha256": "e51124833e68f917147abd84409351d5042ff5edef87bfa53fb675d11ef6057a",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/hwid.ko",
+      "size": 23024,
+      "sha256": "d0b8447692f6bacb1fef70369cdd7f2034334adb08c4a75728080a92710e4f91",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/kmod_protect.ko",
+      "size": 17856,
+      "sha256": "c039f7815c420fc1aea8b10cbe845cb19e7eb3ac301a267f3dfde6a3072e013a",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/lp-dfx.ko",
+      "size": 19888,
+      "sha256": "55fb697bb2ab1774ef279fbc64c79735760e9dea0b498328cfca431a897dfd01",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_basic_wireless.ko",
+      "size": 154608,
+      "sha256": "8f8c816da2d17472accb1eef46907f103677a8984838627b6389fa9b36e22ca6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_bmd.ko",
+      "size": 27144,
+      "sha256": "bbc4d4ac728b6042d797ab67df05a1eefcf4bf3035a91de2f7ce2a9ef51e5ca6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_buckchg_jeita.ko",
+      "size": 43080,
+      "sha256": "d0d5f0d3bcec11c6b09fd9797fcade468346e82dd7849aa8a9b6af272f6281ff",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_business_battery_comp.ko",
+      "size": 26272,
+      "sha256": "629da776447f5d4a62cfd07d5632c3cedf763d4561901b4580e47e96b9f77434",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_business_charger_comp.ko",
+      "size": 71992,
+      "sha256": "36bbd53fed77431aae5a444fef7a678c137d3bd6800dbd0522ec76ea06a31680",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_business_misc_comp.ko",
+      "size": 14616,
+      "sha256": "9b6df8ed0bfd5f1c030a3904d97f3b4e56cbee693419cfdc489ff892062f771d",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_charge_interface.ko",
+      "size": 23632,
+      "sha256": "005df2ca004f444e571179cbbeaf0e555ac834815e0f88228bf5f6761b7e9874",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_charge_mievent.ko",
+      "size": 38608,
+      "sha256": "d7f05898d841604412ebc0a35d715289a6d6d4704679fc8c6abcbac202c5968e",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_charger_thermal.ko",
+      "size": 47696,
+      "sha256": "a42ed9874c9eb9b5fa11e520bc0a09405a3512ae30eaceacfe7e9cdd16f3956f",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_common.ko",
+      "size": 38672,
+      "sha256": "b07a382bd17ae872e33afe893c7b72c46234942da2538cc2cb7629d274b38e94",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_connector_antiburn.ko",
+      "size": 38160,
+      "sha256": "b69b783e59348f5f0fe685a514d75b2a1658e0416eb665e17e08b973a87f02e1",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_event.ko",
+      "size": 18808,
+      "sha256": "9a96c9aee55dbacb02c14a67a3a8ad71360f5a34ff06ee8e358ad3f02eee90ce",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_hwid.ko",
+      "size": 12048,
+      "sha256": "7d30e06e038a440a1b338e0871035939c19d8fa041825e8b966ece727b170d35",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_ibat_ocp_monitor.ko",
+      "size": 18312,
+      "sha256": "7fd48f8198a1470e52f51d19ee0e96474c1d296c28c80acd8f75128cfddef3c6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_log.ko",
+      "size": 29456,
+      "sha256": "11d42087cc37dc0b17a6b8c9458d0e6f88681da4d9c632e5428f98c0ca632044",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_lpd_detect.ko",
+      "size": 18912,
+      "sha256": "bab086187e7c960feea896bb35354f420b64c83def689db80d1e3be74b24c741",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_parse_dts.ko",
+      "size": 20120,
+      "sha256": "0cc05b47b4aa873cb9a3f5de6f6bdfcd3d6ae5084f7f19e38ee87311253a9d2a",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_path_control.ko",
+      "size": 36776,
+      "sha256": "5029c2de6ae119c416a30c46df46ba24fe0a456bb53e7cd6ded216315f893ce7",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_pd_auth.ko",
+      "size": 25144,
+      "sha256": "8c4ae5c6263611251671f534840ae8c50c8da5fefded4ad47171c23111589c0d",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_platform_base.ko",
+      "size": 14296,
+      "sha256": "7585163ebc8f97d71c3e2435e999e6c9cb62577bda8b0de8745c46abcf366639",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_platform_bc12_class.ko",
+      "size": 14896,
+      "sha256": "23a84e3914aa72c74df69a159047228be57aee44b4da006bc6da31d4370d275e",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_platform_buckchg_class.ko",
+      "size": 76552,
+      "sha256": "2d0a9eb721b2e1cb6d7df0db08554b449c99001813c225ac301b9789405986d8",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_platform_cp_class.ko",
+      "size": 68184,
+      "sha256": "a6dee5f4015255cb2a6a252a8e86d295619b3375dd0dc01eccadfbbeefe1c7fe",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_platform_fg_ic_ops.ko",
+      "size": 56832,
+      "sha256": "ee058f417e31ba7de517488c6188a5214cffd35b7e80484685fecf0bbd53aca6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_platform_loadsw_class.ko",
+      "size": 26496,
+      "sha256": "98f45d1fbb45276770b6746345773f9f629da89b1bfa701eca61c133dd8115f6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_platform_subpmic_cid_class.ko",
+      "size": 13824,
+      "sha256": "69c969e661870252d57cac059c369005e5086b72e4130575d74d332beef8a786",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_platform_wireless_class.ko",
+      "size": 89776,
+      "sha256": "252896ca8b054c4cb5bf43432259b78c3db6ebc83336369cd505cb0479d4a265",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_protocol_class.ko",
+      "size": 19656,
+      "sha256": "6202d08592e6a20624215824153c8edd600ca1eebc99c59c0feedca3d9075e92",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_protocol_pd_class.ko",
+      "size": 69944,
+      "sha256": "2048145a32dfa18a882846516381ad7dd63bb0f29cd74aacc8dbd45c4867ad4a",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_protocol_qc_class.ko",
+      "size": 16184,
+      "sha256": "5aa49b19a35936eea6bedd4d7eeba57aa4d187072f83c00d95d5ab208780cdf7",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_quick_wireless.ko",
+      "size": 83544,
+      "sha256": "7c101aa184335ae25f803bea39e50a1cd0d25d8b70147014bdd3af7328d4051b",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_smart_charge.ko",
+      "size": 63688,
+      "sha256": "13379b9ec43eb19d46771a324a43570cc3dde66b3f5b1bbe5b4a6f62f5825896",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_soc_limit.ko",
+      "size": 14152,
+      "sha256": "42dce7517b5b8fba6fbb673f6e2c06a8f089516765a7c79e4ce9723222a689a1",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_strategy_buckchg.ko",
+      "size": 90184,
+      "sha256": "52422e9265bcf1c8d188d74818245b30d2506fd50aed9093cba07c9d7acb8210",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_strategy_class.ko",
+      "size": 14128,
+      "sha256": "8361a144f815c0695a31df3c533fc08ebb505157d9adecd5d5832b24e37739f3",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_strategy_fg_class.ko",
+      "size": 35224,
+      "sha256": "8d49d1558f1c85de8a19bc4baec64510592e6bcf2421ac963985a2742737c9ec",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_strategy_fg_comp.ko",
+      "size": 137120,
+      "sha256": "bfbb50cd1cac79e6495c5c2ba451994cac437aedb5f72bc63f7775ca232b4c34",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_strategy_quickchg.ko",
+      "size": 145560,
+      "sha256": "3482ad5d5afaa3a61a834614219a1e72eb681718ed805ab58e467b0403d42709",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_subpmic_sysfs.ko",
+      "size": 27264,
+      "sha256": "d343cbdfe7e34b99e41f8322e72a8d1255732f4b358539d9c580a7e393be5560",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_sysfs.ko",
+      "size": 30808,
+      "sha256": "9003ae0d2e9f23b7e1001a0f08e9834621dad7f33a4218d012a289c4a02e9e96",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_vbat_ovp_monitor.ko",
+      "size": 23688,
+      "sha256": "c8e5067d1b677d4b5260f414050a2f9157ddaacfa387b146b23914a3875b90e3",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_wireless_revchg.ko",
+      "size": 88104,
+      "sha256": "83e383acaa989ea4e07dfce2e51df5072079f91e89e9f8cef79f85a97d93a9a4",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_workqueue.ko",
+      "size": 15088,
+      "sha256": "c56520680eefaff9ff297ab1410c86a51324b0648f828afd40b31de43d7b6c58",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_xring_o1_sysfs.ko",
+      "size": 39232,
+      "sha256": "78915c8fc92b5e1ffba5e3b35a54afdded7984003403c8556daf777d4c677f17",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_xring_panel.ko",
+      "size": 17752,
+      "sha256": "a2b78de612c0884f0b167fe131e9ed854e19790b5fa0367f1746670cc2e49844",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mca_xring_usb.ko",
+      "size": 25608,
+      "sha256": "5a4381dac0c6202d8c45d146a533452a948f9cb56d2eeaf70c1d9f364acb0139",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/media-dvfs.ko",
+      "size": 35816,
+      "sha256": "bd1a6643a087cba2db7c755ca56cf9c53ed18de8db54973c53543098c17bf686",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/miev.ko",
+      "size": 34720,
+      "sha256": "c5c4ee56666919ebccae5aaaaefaa0b68f1191b1036f959bab051958902d6046",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/mitee.ko",
+      "size": 239392,
+      "sha256": "55a18251839739aec264fa1a7ad6fed677caf30c9b69f841753f1e07ea599052",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/modules.dep",
+      "size": 21845,
+      "sha256": "d4acb824b28eebf10171fe7527e8d7e82a0050c8dbcbf163e68886671a89ba6f",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/modules.softdep",
+      "size": 3653,
+      "sha256": "7e2163a708a8151a18e73c664e27aa990a709a0b6cdd1320fbe85a02ddc5a2cc",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/nanosic_platform.ko",
+      "size": 66408,
+      "sha256": "71c7bbf48e35477b53776f7b8f7f0b3a894a336965961d71164f0ebab4a98e7d",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/nt36532_touch.ko",
+      "size": 502176,
+      "sha256": "91459ec6852abca74a09001472ad21cede96c9596afb0a7fb8514d07ae6e2c85",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/nuvolta_1652.ko",
+      "size": 195256,
+      "sha256": "3d40b71539d7258990375f48ad3517688acadccf66acf5651fbea38358aa61b9",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/perf-actuator.ko",
+      "size": 24848,
+      "sha256": "361299932b25f70e45b26294602703e16e7d1fa63348d50aaad0813934f2b383",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/peri-dvfs.ko",
+      "size": 31224,
+      "sha256": "e858aff0342f2354068bad6957c9a21de14daabd959cb1bfd5a694178bec7428",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/pinctrl-xr.ko",
+      "size": 269296,
+      "sha256": "a9a0da7b76d11ed57ce849138e70532ecece88127889299ebccb8788dc8d5f5b",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/protocol_pd_manager.ko",
+      "size": 49128,
+      "sha256": "047c0ba1a391ba80a8ce48956beae135aac88f91c62feecf2bc21072313937f9",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/ps5169.ko",
+      "size": 59632,
+      "sha256": "089c59d837717cbc930484401429d438dd56323400b24465cabe7fead7011a61",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/redriver.ko",
+      "size": 22368,
+      "sha256": "56123e25665f4b9e9a4bdf9cd6fe874242be7ef7f63b3a943442e0e206a57754",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/sc8510.ko",
+      "size": 32808,
+      "sha256": "0bd6d274350c9bc95c897e38d906abb2d82e2dc8a60f5be0bb804a51f15a4d5e",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/sc8577.ko",
+      "size": 68744,
+      "sha256": "1bcde47035dd5f6e11b13e572e4dead869c726e9e9bdd1ad0078182dcda8a4b1",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/sc8581.ko",
+      "size": 92472,
+      "sha256": "8b5a1caebd9c8dc4dd02a2375b9eabdb2c239b3a9cdc1c33bf0a1351148c9ef1",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/sc96231_comp.ko",
+      "size": 130616,
+      "sha256": "2cde5eada4739b44f00bcdeddac60cc81cc31286e7dd73edfc4637631f27a647",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/sc9625_comp.ko",
+      "size": 225384,
+      "sha256": "5ed43a08426fe8c27751d228759d13dfe73588dd7928394955a9ae1fa95c4308",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/sched-walt.ko",
+      "size": 1072544,
+      "sha256": "6a281b62629852efa8a70ea4cbf0e5d9a07ed513a244880e5ca8a067f6d9f2f5",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/securelib.ko",
+      "size": 30920,
+      "sha256": "62134960afb3a82dc41f0854129ea677afaeb623c0b19042c3011c51f2ecd144",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/shub_app_router.ko",
+      "size": 61728,
+      "sha256": "6953a308c79df4463fe1df5a45a12b04932a905430e819c6945c660df326952b",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/shub_boot_prepare.ko",
+      "size": 72456,
+      "sha256": "de7d3eb91710d543860767c00612e5c661afa93dc241caf1003711358f44c8aa",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/shub_ipc_drv.ko",
+      "size": 25224,
+      "sha256": "45c200cc22fd3ff55da9aa3f4cd01ec3bf25d0ba5d48ff18b265e100cd410806",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/subpmic_sc6601a.ko",
+      "size": 26360,
+      "sha256": "2d6e07ac19c4d89394e0769addd4be1ffa8ed91e2916e1b2f3c8c374b4e24a9d",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/subpmic_sc6601a_cid.ko",
+      "size": 22576,
+      "sha256": "4f59184127c2366e60fe83bd4bded2f04621756c1eef709c38d9788f7e6c3a53",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/subpmic_sc6601a_driver.ko",
+      "size": 150976,
+      "sha256": "6f20af8026e55a117db8ff187a9dd5e8c3c6fb50dc45f789cece1ac544be59e5",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/synaptics_tcm2.ko",
+      "size": 583296,
+      "sha256": "8ac731eeb37a01945e78eedf601b1be1da97a3ebc5d4d93bb6c18f4f648c7cc5",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/tcpc_sc2150.ko",
+      "size": 82336,
+      "sha256": "df479c1d937bc32935376f36a47921f94e469eab39c348791d5a8b004d61515c",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/tcpc_sc660x.ko",
+      "size": 56560,
+      "sha256": "913595b14ec545b7d31d90b8f33499fd516d669373431096b640ad4c465af8f6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/touch_boost.ko",
+      "size": 43760,
+      "sha256": "69cf176e2ef60073446cf182c21f83192767b7b66d28d322a0e5d8225dc7bf88",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/tui.ko",
+      "size": 65816,
+      "sha256": "d840d0355ed0607f1810789ff7a0e94c21151ed0856ad9e90035ad43728332bd",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xiaomi_touch_dijun.ko",
+      "size": 248728,
+      "sha256": "c77fd45ac9de23ef09645abca9bffef13aa5e7221ed34a464e339ef7dae5bf83",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xm_battmngr_init.ko",
+      "size": 16064,
+      "sha256": "ce897598c6dffd4003a7bf2157188fe6d5da94bbb954c56537c5680bbeab6905",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xm_charger.ko",
+      "size": 63576,
+      "sha256": "0966f4cfd967957811154246abe551bc5bff661185e41cee3ea13c2d8839da95",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xm_utils.ko",
+      "size": 74720,
+      "sha256": "844cd10835a5a335962dedd95579998800309bad9f1ec7d381f15cf199cb2426",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr-clk.ko",
+      "size": 381432,
+      "sha256": "24031edb3b553726f838734ab8dc971291e628e747537c33aeb4e3706766e6fa",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr-pmic-spmi.ko",
+      "size": 17488,
+      "sha256": "6a2e4f06d80cf91eb5da2887b9706b42349d9ce03fe967aad0d255bbfc368689",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr-spmi-controller.ko",
+      "size": 24696,
+      "sha256": "91270bc38432fe767d19672822e8344c30a396238d975473e74d6c4c45f4f00e",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_bootup_stage1.ko",
+      "size": 20904,
+      "sha256": "566ddc054edf3892c034bbf944b7abadcb9ee85547085fb2f7d6a62bda05e11a",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_bootup_track_stage1.ko",
+      "size": 11784,
+      "sha256": "7b46eefac7746219e26e0330db18d6f7ed9128cdb6f31ecfec053c2dc02e3f90",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_cpufreq.ko",
+      "size": 54920,
+      "sha256": "c3591554a49945c47d6c22595b79983f68c658d579daed00680c280d12ce18e0",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_cpuidle.ko",
+      "size": 135784,
+      "sha256": "10d7046bbd0dda9682c179157b70951338c9072239702058452d1dcad3d4f8b3",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_ddr.ko",
+      "size": 65512,
+      "sha256": "0580305bf84e1b339cfdf1f42b6ae172e11a6dd52804a44aa31d228bd94c0a8e",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_dfx.ko",
+      "size": 247936,
+      "sha256": "62ff575069346c7d4e856f7e9507b11b0edf99d2d5b2b01ba8065902521211f6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_doze.ko",
+      "size": 81336,
+      "sha256": "8a1d9359fe464e1fa2ecd9ad1d6b3fe000fccf4a6f0432073c8a98dde1aaee0a",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_dynamic_governor.ko",
+      "size": 38264,
+      "sha256": "7fa60ccfbc9254af717d2c642c98517578f5165d942a4e22c14e5c85cc7acc0a",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_ffa-module.ko",
+      "size": 43664,
+      "sha256": "f8b16a09d9b699edf87c9dc15e3b3509e7395e362537cd85d86cd0422fbf094d",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_heaps.ko",
+      "size": 316408,
+      "sha256": "a3343c2956f2c710ddbd55bbf19c8971edd5d4b901912d6401723b4961c359a2",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_ip_reset.ko",
+      "size": 23864,
+      "sha256": "762592d0179148bf724997be1e2792c92c724c9216ab65ea87732923eded8a5b",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_ipc.ko",
+      "size": 113624,
+      "sha256": "5f28a375d5db9ef1a7635bd925873355a6997ac162591a709a159ee5b12f8437",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_isp.ko",
+      "size": 1321856,
+      "sha256": "a855f5a77d2ec3391ce42dc9ba65bf84b07f1089efe7eb311479738c8ec245bc",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_kdump.ko",
+      "size": 20752,
+      "sha256": "079704f7915fd3cd22f915f056b71342ccb0b3aa8822079eb77da1f8434f9b7c",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_mem_adapter.ko",
+      "size": 154512,
+      "sha256": "ae89f717a20b435e19d9765d10f21567d41a3321fcd1c29db6dc2569861ac1ba",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_minidump.ko",
+      "size": 34880,
+      "sha256": "f615673a3f1e2748c0c1ab3d7dcbe591c760cf0c0e3cbe5fbb713e39fcacab54",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_pm_comm.ko",
+      "size": 17280,
+      "sha256": "41a3e5b1c295092809c3f3ea2ab0eb47bd0106714dae33bcc6e588aed24bee93",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_pmic.ko",
+      "size": 126920,
+      "sha256": "fdaec69f1afb91a4389ba4751312e4f283058e3a4e6399348a213cd4373ac1ea",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_regulator.ko",
+      "size": 99088,
+      "sha256": "64e1dac2ef710fc6a67c9bf04dc76373dc6df73bed752c8362866fcf07b79b93",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_rpmb.ko",
+      "size": 33808,
+      "sha256": "fafed911f5a534bce81e946043fdf4e2efa85d4eb23a9879c08637715405f47e",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_spi_mmio.ko",
+      "size": 85512,
+      "sha256": "548af69f541877e71d0d05f54499fa9b894d2fb05a574554fbe1477a3c1eab0d",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_timestamp.ko",
+      "size": 25200,
+      "sha256": "ae8db17c7f3353b6af921694b020853db153afdfc45e5bf3980893cd93ec1c45",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_uart.ko",
+      "size": 75056,
+      "sha256": "01955aa2405e348bc47b9510eb691dbf9d4c19ca24b09bb213d2423e67ecb888",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_ufs.ko",
+      "size": 930360,
+      "sha256": "362b257fe50b23e7d28f57011995889692e13191697e69433d931ad1e12a8c5c",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_vh_printk.ko",
+      "size": 22120,
+      "sha256": "2e8afad4cb971a2128ec4b5920c9d03ce5eaaaecca4dd320fdd4f23e33f9d81d",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xr_vote_mng.ko",
+      "size": 66520,
+      "sha256": "72fe1141a365174ccf5578eb099cd1f9b061fe27b281d476d4eb408427bf9bfb",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring-ade.ko",
+      "size": 244704,
+      "sha256": "02b9d91b46602023488b63655923b5d8344bd1d16b50dee84d3b27028561c469",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring-drm.ko",
+      "size": 3706024,
+      "sha256": "a6b4706cdb02b29b453d973c619f1a34e5209e447ce726061c353e4d834369b3",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring-noc.ko",
+      "size": 389800,
+      "sha256": "8e849c05d0dd53e300cbed307f9c4afbd721be053765f884aa46027cb264eb33",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring-ocm.ko",
+      "size": 46320,
+      "sha256": "5c4fc7ccdde33f375d7b7cf760efec53dc9736bd6211223f3843d17be2bcf26f",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring_axi_dmac.ko",
+      "size": 73304,
+      "sha256": "ee47185c870e44a15f143189ab7dab0c3b489145ac74177156990b30aabd15ef",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring_hwspinlock.ko",
+      "size": 18896,
+      "sha256": "88d3a3cd3a1e053ff07a0d5d086512eff92c82516b51f5e1b579686c5a24a42c",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring_i2c.ko",
+      "size": 87296,
+      "sha256": "5db54a5a7e7a60d51edaeacb06c90e85c1b64166d630aa1e2c0ccd0fed9b50c5",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring_ras.ko",
+      "size": 13608,
+      "sha256": "6d7332d1331fe8629aa88a1f4df37819dde3e65460270d55eb07eedf9b64cd3a",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring_smmu.ko",
+      "size": 203192,
+      "sha256": "79842b7fde456f2fe025ffad8af31f35a2cf5e9e2d6ae92bd5eb11742edc9998",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring_thermal.ko",
+      "size": 144768,
+      "sha256": "1ea3e87805af2fcf48de10d576970d939d72b7adf24f98a7b34d59674bc8c151",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring_trng.ko",
+      "size": 12144,
+      "sha256": "ebf0cf5b5804173f98dffcf82ed0e5772b639d58b94c149163ff4f3c00c091d4",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring_usb.ko",
+      "size": 127680,
+      "sha256": "91d6fbf3b1f763d1979aa341a80366fd90158149f37a702c03e34788536ef29e",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring_usb_adsp_stub.ko",
+      "size": 15104,
+      "sha256": "e71dcf036651e7c6254d18f837449019d46f99e3c4378a7fcee01612243f33f7",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring_usb_phy.ko",
+      "size": 97592,
+      "sha256": "d85afe518bd5af5f23d0f03eae2390a44aa0900f65418456ca6654ec519da6e7",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring_usb_repeater.ko",
+      "size": 17976,
+      "sha256": "d54770c0fa5025b816ed7129faaa503ef9f52e831c561b0553d59f14e61d9075",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xring_usb_reset.ko",
+      "size": 16824,
+      "sha256": "75b291f4de3e0f3600b5f38fef994530f1f58d07ec5ddbf76c41945579566a44",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/lib/modules/6.6/xrsp_driver.ko",
+      "size": 14216,
+      "sha256": "e84382c694adeddd5e50d26d364c065c565d761a9cac734ca226160124520da6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/dijun/odm/bin/hw/vendor.xiaomi.hardware.vibratorfeature.service",
+      "size": 203992,
+      "sha256": "e627a250b0cac277fd186960b2f4822e63c5c12908d995161b199fbc42c96edc",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/dijun/odm/bin/hw/vendor.xiaomi.hw.touchfeature-service",
+      "size": 237984,
+      "sha256": "a476f9ce9d4bf4b38c89aa53b0967d31e51d2f6e31586550a8a62a10a24df604",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/dijun/odm/bin/touch_report_debug",
+      "size": 4208,
+      "sha256": "8d954d0cedc40e9ff9902ec98f640c76826fcb35c32f2bcf11834c49cd89c700",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/dijun/odm/bin/toucheventcheck",
+      "size": 170520,
+      "sha256": "051fce503ec23a0296ebdfe3e1fe4663d9fc63f64bcc4d5d68f85bb8ffff3499",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/dijun/odm/firmware/dijun_syna_thp_config.ini",
+      "size": 17413,
+      "sha256": "bf57f64f088123e66e41f2816736e6df9f1f565a537aa77f1c68e97f6786d95b",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/dijun/odm/firmware/dijun_test_limits_S3910P.csv",
+      "size": 25883,
+      "sha256": "fb63478079cdcd21944f1947f8de5fdd124b47d07051943e1b117a24a15a2be5",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/dijun/odm/firmware/synaptics_spi_dijun.img",
+      "size": 194794,
+      "sha256": "edaa698e65a41d165d87ceec13559f41232c0d9c42ce09e326fe2a5678928fee",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/dijun/odm/lib64/hw/fingerprint.goodix_us.so",
+      "size": 51992,
+      "sha256": "6c904e9154c59bd65c8e96dd6500891214cbdd9bb83d84eb8b7317ae5f5e3487",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/dijun/odm/lib64/libtouchreport.so",
+      "size": 62040,
+      "sha256": "b739c5f9fc95068ae16c3659f03c0b6833810a3c87a9bee546a164bd2ce8ca8a",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/dijun/odm/lib64/libtouchreport_alg.so",
+      "size": 509936,
+      "sha256": "f0d46aafc5a1130ba99e5ad95117621d1f2a05f000ebe25b205b1b1335c59bc6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/dijun/odm/lib64/libtouchreport_hal.so",
+      "size": 205264,
+      "sha256": "b76d5509b8c3dc7a9c962729c5cd5d49254950dc562c7a4f1f4e0a6ff7bf070b",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/dijun/odm/lib64/libtouchreport_sensor.so",
+      "size": 34336,
+      "sha256": "361bc3903fc99e5cbfa1ef0f9932ce3e2e20b0f196c3f6aedb23cdec6753a5ba",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/bin/hw/vendor.xiaomi.hardware.vibratorfeature.service",
+      "size": 203992,
+      "sha256": "e627a250b0cac277fd186960b2f4822e63c5c12908d995161b199fbc42c96edc",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/bin/hw/vendor.xiaomi.hw.touchfeature-service",
+      "size": 271736,
+      "sha256": "c91eca461bd55683fe8fda0cb022fc1a5e174ac6076e177bf3f70ed861d29a5b",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/bin/touch_report_debug",
+      "size": 4208,
+      "sha256": "97689fe3c56425fe0d4ee0873d9b41c2ca67ab731ba22f40be302a8e7a6f90a6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/bin/toucheventcheck",
+      "size": 137360,
+      "sha256": "a63deeff40ff24c482c5806201e37b261e8ef8555cb247cfb5f8a97e982a26d9",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/firmware/goodix_cfg_group_jinghu_csot.bin",
+      "size": 2473,
+      "sha256": "f9b2adfae9ea951aa00a5f801190b9b19633e87f29098ae7e3edb7c2f196ece6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/firmware/goodix_cfg_group_jinghu_csot_1.bin",
+      "size": 2473,
+      "sha256": "6f888f69d0cfd697f4e3ececde724e080287dbd0452f6ffd39c1b0aee908122a",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/firmware/goodix_firmware_jinghu_csot.bin",
+      "size": 274944,
+      "sha256": "3ca1ef1989d6c28acfe41b9f493b0e1241d818878067c02de9421d4ed2579b2a",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/firmware/goodix_test_limits_255.csv",
+      "size": 788358,
+      "sha256": "1cfe57dc35fafbfb75b6247a7e5cebb79ad24039737114bc3bc195824dd0e185",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/firmware/jinghu_goodix_thp_config.ini",
+      "size": 47173,
+      "sha256": "f77943b0ef3e275064796e7c9dbf7bc1a65db8141587546aa083ddefafac12cf",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/firmware/jinghu_goodix_thp_config_vendor.ini",
+      "size": 86033,
+      "sha256": "39cdf44ee916306f5f8128c1ec9bbfb427aa0afc949712932019c6c69346ecc0",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/lib64/hw/fingerprint.goodix.so",
+      "size": 51960,
+      "sha256": "738f5363a53de8996b6245080418a3efaeb1ced6ef77b3cc0cbac7cd3864183c",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/lib64/libtouchreport.so",
+      "size": 60920,
+      "sha256": "ae5d83cc073d0cedb761d29775a6aacdda54e6b2e9cea60c064f9679d5dd1a71",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/lib64/libtouchreport_alg_goodix.so",
+      "size": 2020376,
+      "sha256": "a1da3576bd082dc1ee470a30e85cb3c68dff2d86287b4be37a18c768c25267b6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/lib64/libtouchreport_hal.so",
+      "size": 195776,
+      "sha256": "dfbf0f8ec5da89cd82d937297cdebd92f6107f5127bdd323814f5043edd0e5c7",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/jinghu/odm/lib64/libtouchreport_sensor.so",
+      "size": 30672,
+      "sha256": "14872840b85cc074cb824effde9d9b4bdb557ecb1f4734074dd3ddcdfe5b4f11",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/bin/hw/vendor.xiaomi.hw.touchfeature-service",
+      "size": 271568,
+      "sha256": "782cab4aa34b485bdafe724aafe28b194ba1b240213b0287aaf3451ca54e2736",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/bin/touch_report_debug",
+      "size": 4208,
+      "sha256": "97689fe3c56425fe0d4ee0873d9b41c2ca67ab731ba22f40be302a8e7a6f90a6",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/bin/toucheventcheck",
+      "size": 170520,
+      "sha256": "051fce503ec23a0296ebdfe3e1fe4663d9fc63f64bcc4d5d68f85bb8ffff3499",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/firmware/novatek_nt36536_violin_fw_tm00.bin",
+      "size": 253952,
+      "sha256": "3effd0693bcd0277940e1b468b98feebffc2e03501d06eb26902d9fd1831185c",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/firmware/novatek_nt36536_violin_fw_tm01.bin",
+      "size": 253952,
+      "sha256": "3effd0693bcd0277940e1b468b98feebffc2e03501d06eb26902d9fd1831185c",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/firmware/novatek_nt36536_violin_fw_tm02.bin",
+      "size": 253952,
+      "sha256": "3effd0693bcd0277940e1b468b98feebffc2e03501d06eb26902d9fd1831185c",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/firmware/novatek_nt36536_violin_mp_tm00.bin",
+      "size": 253952,
+      "sha256": "276aa88c2479a456cc7ef77b6a685decd8e7fcd1edc612b2d5a8e6f4b9677d6d",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/firmware/novatek_nt36536_violin_mp_tm01.bin",
+      "size": 253952,
+      "sha256": "276aa88c2479a456cc7ef77b6a685decd8e7fcd1edc612b2d5a8e6f4b9677d6d",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/firmware/novatek_nt36536_violin_mp_tm02.bin",
+      "size": 253952,
+      "sha256": "276aa88c2479a456cc7ef77b6a685decd8e7fcd1edc612b2d5a8e6f4b9677d6d",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/firmware/violin_nova_thp_config.ini",
+      "size": 36542,
+      "sha256": "db2842aff7c4725a798daa90666017ea2a3436a395a253056fc8f134fe8f0f91",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/lib64/hw/fingerprint.goodix.so",
+      "size": 51960,
+      "sha256": "56d023edbb605ebace1a188b05f0bccc9b854d44248bc74e6d0e7b8e8847a514",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/lib64/libtouchreport.so",
+      "size": 65400,
+      "sha256": "22de8c1d12ad458cd1fce4664d902da41a43709e02070a26d106a4a9b43a677d",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/lib64/libtouchreport_alg.so",
+      "size": 561480,
+      "sha256": "3a165fa63688038cb1b5c140ce7c382b64760f54a5960889ca8ad40d7943a2d5",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/lib64/libtouchreport_hal.so",
+      "size": 238760,
+      "sha256": "06315764658c9f670ddbc53b4b3d1d135779b3a97ba952a86a74adec3fea77ec",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/odm/variant/violin/odm/lib64/libtouchreport_sensor.so",
+      "size": 41712,
+      "sha256": "cfa859c9a7d596ea870acda0760c705604c2577b88aadc6df85108312923b10b",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/system/bin/hw/android.hardware.boot-service.xring.recovery",
+      "size": 136608,
+      "sha256": "86e963d74ad7c80bc7289ba5983232180f6354b99ae0cddeeacecac776352495",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/system/bin/hw/android.hardware.fastboot-service.example_recovery",
+      "size": 52600,
+      "sha256": "c29ce13da53d4e7a5388978c05aa2979137ddb08f7b8982e408a61548d520d31",
+      "mode": "0o666"
+    },
+    {
+      "path": "dtsrc/O1_asic_dual/recovery/root/system/bin/hw/android.hardware.health-service.example_recovery",
+      "size": 120152,
+      "sha256": "55de0e2af40e228a6d17a4d8c5d0c6aea4c707e070030da1fc1582c6332e82fa",
+      "mode": "0o666"
+    }
+  ]
+}

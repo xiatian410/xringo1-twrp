@@ -1,0 +1,16 @@
+diff --git a/data.cpp b/data.cpp
+--- a/data.cpp
++++ b/data.cpp
+@@ -857,9 +857,10 @@
+ int DataManager::GetMagicValue(const std::string& key, std::string& value) {
+   // Handle special dynamic cases
+   if (key == "tw_time") {
++    value.clear();
+     const time_t now = time(nullptr);
+-    tm local;
+-    localtime_r(&now, &local);
++    tm local{};
++    if (now == static_cast<time_t>(-1) || localtime_r(&now, &local) == nullptr) return -1;
+     int tw_military_time;
+     GetValue(TW_MILITARY_TIME, tw_military_time);
+ 

@@ -1,0 +1,81 @@
+--- a/twrpinstall/twinstall.cpp
++++ b/twrpinstall/twinstall.cpp
+@@ -64,28 +64,35 @@
+ 	AB_OTA_ZIP_TYPE
+ };
+ 
++// Dispatch and extraction must agree, including packages with ABI-only updaters.
++static bool FindUpdaterBinary(ZipArchiveHandle Zip, ZipEntry64* entry, std::string* selected_name) {
++	*selected_name = UPDATE_BINARY_NAME;
++	if (FindEntry(Zip, *selected_name, entry) == 0)
++		return true;
++
++	char arches[PATH_MAX];
++	if (property_get("ro.product.cpu.abilist", arches, "") == 0)
++		property_get("ro.product.cpu.abi", arches, "");
++	for (const auto& arch : TWFunc::SplitString(arches, ',', true)) {
++		if (arch.empty()) continue;
++		const std::string name = std::string(UPDATE_BINARY_NAME) + "-" + arch;
++		if (FindEntry(Zip, name, entry) == 0) {
++			*selected_name = name;
++			return true;
++		}
++	}
++	selected_name->clear();
++	return false;
++}
++
+ static int Prepare_Update_Binary(ZipArchiveHandle Zip) {
+-	char arches[PATH_MAX];
+-	property_get("ro.product.cpu.abilist", arches, "error");
+-	if (strcmp(arches, "error") == 0)
+-		property_get("ro.product.cpu.abi", arches, "error");
+-	vector<string> split = TWFunc::SplitString(arches, ',', true);
+-	std::vector<string>::iterator arch;
+-	std::string base_name = UPDATE_BINARY_NAME;
+-	base_name += "-";
+-	ZipEntry64 binary_entry;
+-	std::string update_binary_string(UPDATE_BINARY_NAME);
+-	if (FindEntry(Zip, update_binary_string, &binary_entry) != 0) {
+-		for (arch = split.begin(); arch != split.end(); arch++) {
+-			std::string temp = base_name + *arch;
+-			std::string binary_name(temp.c_str());
+-			if (FindEntry(Zip, binary_name, &binary_entry) != 0) {
+-				std::string binary_name(temp.c_str());
+-				break;
+-			}
+-		}
+-	}
+-	LOGINFO("Extracting updater binary '%s'\n", UPDATE_BINARY_NAME);
++	ZipEntry64 binary_entry{};
++	std::string binary_name;
++	if (!FindUpdaterBinary(Zip, &binary_entry, &binary_name)) {
++		LOGERR("Zip contains no updater for the advertised ABIs\n");
++		return INSTALL_CORRUPT;
++	}
++	LOGINFO("Extracting updater binary '%s'\n", binary_name.c_str());
+ 	unlink(TMP_UPDATER_BINARY_PATH);
+ 	android::base::unique_fd fd(
+ 		open(TMP_UPDATER_BINARY_PATH, O_CREAT | O_WRONLY | O_TRUNC | O_CLOEXEC, 0755));
+@@ -94,7 +101,7 @@
+ 	}
+ 	int32_t err = ExtractEntryToFile(Zip, &binary_entry, fd);
+ 	if (err != 0) {
+-		LOGERR("Could not extract '%s'\n", UPDATE_BINARY_NAME);
++		LOGERR("Could not extract '%s'\n", binary_name.c_str());
+ 		return INSTALL_ERROR;
+ 	}
+ 
+@@ -342,9 +349,9 @@
+ 	time_t start, stop;
+ 	time(&start);
+ 
+-	std::string update_binary_name(UPDATE_BINARY_NAME);
+-	ZipEntry64 update_binary_entry;
+-	if (FindEntry(Zip, update_binary_name, &update_binary_entry) == 0) {
++	std::string update_binary_name;
++	ZipEntry64 update_binary_entry{};
++	if (FindUpdaterBinary(Zip, &update_binary_entry, &update_binary_name)) {
+ 		LOGINFO("Update binary zip\n");
+ 		// Additionally verify the compatibility of the package.
+ 		if (!verify_package_compatibility(Zip)) {

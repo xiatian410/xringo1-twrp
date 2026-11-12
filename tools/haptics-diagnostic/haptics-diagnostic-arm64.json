@@ -1,0 +1,15 @@
+{
+  "binary": "tools/haptics-diagnostic/haptics-diagnostic-arm64",
+  "sha256": "61dd414084dd6a371573b1acb8c3d71e7f6db7faa447ad5242aa25adf65e468b",
+  "scope": "Independent static Android ARM64 diagnostic; not executed on a device, not part of recovery image. Existing bionic artifacts are build inputs, not a fresh Android rebuild.",
+  "inputs": {
+    "/root/AAA/xringo1-twrp/tools/haptics-diagnostic/build.py": "1425abb0f48f31491a24ab41e0988b8f184535fb50f249022aae8d901ee7c314",
+    "/root/AAA/xringo1-twrp/tools/haptics-diagnostic/haptics-diagnostic.c": "98143fe14edeb092330d29e848fe3686adba5f2093ef0ba322b84469fdfcd5df",
+    "/root/AAA/twrp/prebuilts/clang/host/linux-x86/clang-r547379/bin/clang": "55d80d777d85327543868817fb836231691eae2e13030ab31a01a769a820bf2f",
+    "/root/AAA/twrp/prebuilts/clang/host/linux-x86/clang-r547379/bin/ld.lld": "55bfa2be5af6af9a3d9a17e310c501c0aca10f5431649988ed0a9a233c911652",
+    "/root/AAA/twrp/out/soong/.intermediates/bionic/libc/crtbegin_static/android_recovery_arm64_armv8-a/crtbegin_static.o": "aeb25420996b1a7c93d51dc1e4b8baa44866688c746b05ccc0c3bd318b1a5d14",
+    "/root/AAA/twrp/out/soong/.intermediates/bionic/libc/crtend_android/android_recovery_arm64_armv8-a/crtend_android.o": "2244c0f6cc461486d4c86d6e1309c30a877994cc57359bb5712e0ba3ba4286d3",
+    "/root/AAA/twrp/out/soong/.intermediates/bionic/libc/libc/android_recovery_arm64_armv8-a_static/libc.a": "9352f9109f4a6576547bc6320199f8a2af88ccc5c82e2bf0ccf4d7f1d53e6405",
+    "/root/AAA/twrp/prebuilts/clang/host/linux-x86/clang-r547379/lib/clang/20/lib/linux/libclang_rt.builtins-aarch64-android.a": "e7238acf130c2f98b008cb5bef9751d4cc56408dda5ddd4e3d7e157547dccbaf"
+  }
+}

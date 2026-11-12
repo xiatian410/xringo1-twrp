@@ -1,0 +1,40 @@
+--- a/gui2/backend/twrp_mount_backend.cpp
++++ b/gui2/backend/twrp_mount_backend.cpp
+@@ -221,14 +221,32 @@
+     PartitionManager.RefreshPartitionListSnapshots();
+   });
+   TWPartition* Part = PartitionManager.FindPartitionByPath(path);
+-  if (Part == nullptr) {
+-    LOGERR("Unable to locate partition for '%s'\n", path.c_str());
++  if (Part == nullptr || !Part->is_storage_ || !Part->is_present_ ||
++      Part->storage_path_ != path) {
++    LOGERR("Storage selection: target unavailable or no longer a storage root: '%s'\n",
++           path.c_str());
+     return false;
+   }
+-  bool update_size = !Part->IsMounted() && Part->removable_;
++  const bool was_mounted = Part->IsMounted();
+   if (!Part->Mount(true)) return false;
+-  if (update_size && !Part->UpdateSize(true)) return false;
+-  DataManager::SetValue("tw_storage_path", path);
++  bool selected = false;
++  const auto restore = android::base::make_scope_guard([&] {
++    if (!selected && !was_mounted && Part->IsMounted() && !Part->Unmount(true))
++      LOGERR("Storage selection: failed to undo new mount for '%s'\n", path.c_str());
++  });
++  // A mounted removable filesystem still needs a fresh capacity check. Do not
++  // allow UpdateSize to retry a mount: removable mount failure returns true in
++  // its general refresh path and would disguise a device disappearing here.
++  if (Part->removable_ &&
++      (!Part->UpdateSize(true, false, false) || !Part->is_present_ || !Part->IsMounted())) {
++    LOGERR("Storage selection: removable capacity unavailable for '%s'\n", path.c_str());
++    return false;
++  }
++  if (DataManager::SetValue("tw_storage_path", path) != 0) {
++    LOGERR("Storage selection: failed to publish target '%s'\n", path.c_str());
++    return false;
++  }
++  selected = true;
+   return true;
+ }
+ 

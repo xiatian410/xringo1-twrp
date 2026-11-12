@@ -1,0 +1,106 @@
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -121,7 +121,7 @@
+         mSendObjectHandle(kInvalidObjectHandle),
+         mSendObjectFormat(0),
+         mSendObjectFileSize(0),
+-        mSendObjectModifiedTime(0)
++        mSendObjectModifiedTime(std::nullopt)
+ {
+     bool ffs_ok = access(FFS_MTP_EP0, W_OK) == 0;
+     if (ffs_ok) {
+@@ -307,7 +307,7 @@
+         mDatabase->endSendObject(mSendObjectHandle, false);
+         mSendObjectHandle = kInvalidObjectHandle;
+         mSendObjectFormat = 0;
+-        mSendObjectModifiedTime = 0;
++        mSendObjectModifiedTime.reset();
+     }
+     mSendObjectFilePath.set("");
+     mSendObjectFileSize = 0;
+@@ -418,7 +418,7 @@
+         mDatabase->endSendObject(mSendObjectHandle, false);
+         mSendObjectHandle = kInvalidObjectHandle;
+         mSendObjectFormat = 0;
+-        mSendObjectModifiedTime = 0;
++        mSendObjectModifiedTime.reset();
+     }
+ 
+     int containertype = mRequest.getContainerType();
+@@ -1073,9 +1073,8 @@
+     }
+     ALOGV("name: %s format: 0x%04X (%s)\n", (const char*)name, format,
+           MtpDebug::getFormatCodeName(format));
+-    time_t modifiedTime;
+-    if (!parseDateTime(modified, modifiedTime))
+-        modifiedTime = 0;
++    time_t modifiedTime = 0;
++    const bool hasModifiedTime = parseDateTime(modified, modifiedTime);
+ 
+     if ((strcmp(name, ".") == 0) || (strcmp(name, "..") == 0) ||
+         (strchr(name, '/') != NULL)) {
+@@ -1127,7 +1126,7 @@
+     // save the handle for the SendObject call, which should follow
+     mSendObjectHandle = handle;
+     mSendObjectFormat = format;
+-    mSendObjectModifiedTime = modifiedTime;
++    mSendObjectModifiedTime = hasModifiedTime ? std::optional<time_t>(modifiedTime) : std::nullopt;
+ 
+     mResponse.setParameter(1, storageID);
+     mResponse.setParameter(2, parent);
+@@ -1194,7 +1193,7 @@
+             ALOGE("Expected folder size to be 0!");
+         mSendObjectHandle = kInvalidObjectHandle;
+         mSendObjectFormat = 0;
+-        mSendObjectModifiedTime = 0;
++        mSendObjectModifiedTime.reset();
+         return result;
+     }
+ 
+@@ -1245,13 +1244,14 @@
+         }
+     }
+ 
+-    if (mSendObjectModifiedTime) {
+-        struct timespec newTime[2];
++    if (ret >= 0 && mSendObjectModifiedTime.has_value()) {
++        struct timespec newTime[2]{};
+         newTime[0].tv_nsec = UTIME_NOW;
+-        newTime[1].tv_sec = mSendObjectModifiedTime;
++        newTime[1].tv_sec = *mSendObjectModifiedTime;
+         newTime[1].tv_nsec = 0;
+         if (futimens(mfr.fd, newTime) < 0) {
+             ALOGW("changing modified time failed, %s", strerror(errno));
++            ret = -1;
+         }
+     }
+ 
+@@ -1294,7 +1294,7 @@
+     mDatabase->endSendObject(mSendObjectHandle, result == MTP_RESPONSE_OK);
+     mSendObjectHandle = kInvalidObjectHandle;
+     mSendObjectFormat = 0;
+-    mSendObjectModifiedTime = 0;
++    mSendObjectModifiedTime.reset();
+ 
+     auto end = std::chrono::steady_clock::now();
+     std::chrono::duration<double> diff = end - start;
+--- a/mtp/MtpServer.h
++++ b/mtp/MtpServer.h
+@@ -30,6 +30,7 @@
+ #include <memory>
+ #include <atomic>
+ #include <mutex>
++#include <optional>
+ #include <queue>
+ 
+ namespace android {
+@@ -73,7 +74,8 @@
+     MtpObjectFormat     mSendObjectFormat;
+     MtpStringBuffer     mSendObjectFilePath;
+     size_t              mSendObjectFileSize;
+-    time_t              mSendObjectModifiedTime;
++    // Absence is distinct from a valid Unix epoch timestamp (zero).
++    std::optional<time_t> mSendObjectModifiedTime;
+ 
+     std::mutex          mMutex;
+ 

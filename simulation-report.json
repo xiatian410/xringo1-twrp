@@ -1,0 +1,2856 @@
+{
+  "status": "in_progress",
+  "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-nv-mount-policy.img",
+  "image_sha256": "0be46fb13091c4ebe663b5196ba22beadf5874990f7b811cb6d64c247195e5fe",
+  "image_status": "Clean-built offline candidate: ordinary GUI hides NV/protection targets and rejects manual mount/unmount, including resolved aliases. Original fstab/core access retained. Inherits OTG/ZIP fixes. Hardware unverified.",
+  "checks": [
+    {
+      "name": "stock-ARM64-OS4-haptics-service-tail-review",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/haptics-service-tail-review.json",
+      "evidence_sha256": "f6775e9395c9f9b168b59ea5d42645e8ef36e908bdf7a53827689ea7db2b63d3",
+      "count": 14,
+      "scope": "Join original OS4 PCM/data setup to thread construction and XML consumption.\n\nUses prior partial constructor: alternate-device/map initialization and\ncalibration body are still skipped. Original hash-container static init runs.\nOriginal service-thread constructor and XML consumers execute; libxml nodes,\ncontent and libc/Android Thread/refcount/ALSA calls are explicit fixtures.\nThe service worker is entered separately by an explicit scheduler boundary and\nstops at its first timed wait. AAC worker is never scheduled. No full Android\nservice lifecycle, real ALSA/driver/DSP or motor is executed.\nOrdinary on then uses the XML-derived global without pre-filling its long-id;\nonly the restore-complete flag and null callback remain explicit boundaries.\n"
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-pcm-init-review",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/haptics-pcm-init-review.json",
+      "evidence_sha256": "adbeae7bd7bc6d0fbe20236cd0ba048648e2e6ff6877ae244bac59faf1116fe4",
+      "count": 26,
+      "scope": "Execute original OS4 selector/PCM and wave-data construction up to thread setup.\n\nDiscovery runs first in the same address space. The alternate-device/config-map\nrange 0x13084..0x1324c is skipped explicitly. Original library-vector setup is\nexecuted separately, then selector/PCM/data construction is continuous through\n0x1349c. AAC init executes in that context; AWA fallback is a recorded boundary.\nFiles, properties, mixer, libc/math and dynamic-loader/thread calls are fixtures.\nCalibration restore remains a recorded boundary. No complete outer constructor,\nplugin worker, thread, XML, ALSA, DSP or motor executes.\nOrdinary on is then invoked in that partial context with XML long-id and the\nrestore-complete flag explicitly supplied, and a null callback (no timer).\n"
+    },
+    {
+      "name": "firmware-extraction-unit",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/os4-stable-acquire-test.log",
+      "count": 4,
+      "evidence_sha256": "56e03afda220e7ba78bbcecf9a2e53a0149cfc3e311fa10bbd01b25e8e5ba671"
+    },
+    {
+      "name": "firmware-parser-libkmod",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/os4-stable-facts-test.log",
+      "count": 6,
+      "evidence_sha256": "87e57e945192c4cae76b2a70c3d22e87eb1415a72c4cb985fcacb329ccc69c6e"
+    },
+    {
+      "name": "binary-policy",
+      "grade": "S1/S3",
+      "result": "pass",
+      "evidence": "logs/backup-manifest-haptics-policy.json",
+      "count": 12,
+      "evidence_sha256": "59c1de5d8d33b0ff7276e9a6ff8cbff517b38b89dbfc63673fe4f43a1dc02e92"
+    },
+    {
+      "name": "production-FF-and-power-keys",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-route-device-regression.log",
+      "count": null,
+      "evidence_sha256": "2187a8dfdc14804fad216128c39db19c3507c0d3bc56757d312082b561cab783"
+    },
+    {
+      "name": "init-scripts",
+      "grade": "S1",
+      "result": "pass",
+      "evidence": "logs/backup-manifest-init.json",
+      "count": 6,
+      "evidence_sha256": "3aa367aba723db563b2225b9898ccc993c128c74cd45c34c851c527268c73f3b"
+    },
+    {
+      "name": "patch-reconstruction",
+      "grade": "S1",
+      "result": "pass",
+      "evidence": "logs/mtp-transaction-final-source-recheck.log",
+      "count": 80,
+      "evidence_sha256": "61c1c2ef67a5a44561838eaf314bd18bab5d9b679d2395e3143ccf8a88402828"
+    },
+    {
+      "name": "source-build",
+      "grade": "S3",
+      "result": "pass",
+      "evidence": "logs/build-mtp-transaction.log",
+      "count": null,
+      "evidence_sha256": "4ac13a70efd67e310d355c26f86720269ccdada024b85c5ff236ea98a5e1ad2e"
+    },
+    {
+      "name": "image-verification",
+      "grade": "S3",
+      "result": "pass",
+      "evidence": "imgs/built/recovery-dijun-unified-mtp-transaction.json",
+      "count": 6,
+      "evidence_sha256": "a37ac0ad452067ae0eb4894e9179c3230903f312cd583ac0cff60df820640864"
+    },
+    {
+      "name": "system-resource-reader",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/os4-stable-system-resources-test.log",
+      "count": 4,
+      "evidence_sha256": "af3ef76f9dd694407e148283a8345b4ee20d8f5bf493164c926e0e054a27b49f"
+    },
+    {
+      "name": "read-only-profile-selector",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/profile-selection-test.json",
+      "count": 77,
+      "evidence_sha256": "ee4242e1d304ac05da3a0bf626780cf4e9d341b47632b9c9865dc4033807eb55"
+    },
+    {
+      "name": "minui-production-host",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/minui-host-regression.log",
+      "count": 4,
+      "evidence_sha256": "b595aca60c9e6b32c2f6fa2f4d03376723991f649dd11206f7616b9e174fe194"
+    },
+    {
+      "name": "MTP-native-and-compat-transport",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/mtp-transport-regression.json",
+      "count": null,
+      "evidence_sha256": "87782c3818c7d19d5c99d9211663c5c10995c6f91686838c52eb0b5f511db50e"
+    },
+    {
+      "name": "actual-image-profile-activation",
+      "grade": "S2/S3",
+      "evidence": "logs/ce-lifecycle-profile-runtime.json",
+      "count": 9,
+      "result": "pass",
+      "evidence_sha256": "04393a223f244b71f313f147b45a46e0c17e170cbdd8e617aaec0c3963aba498",
+      "stage_calls": 102,
+      "scope": "Same-image 9-test runtime replay covers all six profiles and both slots plus module/input-state boundaries; total shell phase count is recorded in the detailed result."
+    },
+    {
+      "name": "profile-core-branches",
+      "grade": "S2",
+      "evidence": "logs/profile-core-test.log",
+      "count": null,
+      "result": "pass",
+      "evidence_sha256": "26dd3185c3121ed15c9fba27165adcd73191917e0caf45d1a27209c49774df02"
+    },
+    {
+      "name": "binder-readiness",
+      "grade": "S2",
+      "evidence": "logs/wait-services-test.log",
+      "count": 5,
+      "result": "pass",
+      "evidence_sha256": "0109d4f720ae9d18afc088ddb228b105ef372adf3f351f0688e2f1152f3f6fd5"
+    },
+    {
+      "name": "dijun-touch-coordinate-replay",
+      "grade": "S2",
+      "evidence": "logs/dijun-touch-regression.json",
+      "count": 6,
+      "result": "pass",
+      "evidence_sha256": "40de439ce990866a208d14fd4ab33d5136d07c0b7dacac4dc9eb0725952ad2d3"
+    },
+    {
+      "name": "settings-persistence-and-timezone",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/status-settings-regression.json",
+      "count": 21,
+      "evidence_sha256": "d75491d7f4934043a591148c8ae6b322b9b254d93599f2490ab4a3f69fd1b06b"
+    },
+    {
+      "name": "multiuser-discovery-and-core",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/ce-lifecycle-multiuser-core.json",
+      "count": 18,
+      "evidence_sha256": "b4f7a7e66b73f1931f66bfea1168034a8b1861eab334cefcffe5e8f5b2934448"
+    },
+    {
+      "name": "multiuser-backend-threads",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/multiuser-backend.json",
+      "count": 12,
+      "evidence_sha256": "956150cd4c168d74f683d1ae86bb73af70b68f1285214c98e0688976a2d6b58d"
+    },
+    {
+      "name": "multiuser-GUI-routes",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/ui-feedback-multiuser-routes.json",
+      "count": 8,
+      "evidence_sha256": "f22e2c64b97d5be7ba1eea038956b23a5a7e4b0ebbcdc5b792767bd83a512cec"
+    },
+    {
+      "name": "multiuser-i18n",
+      "grade": "S1",
+      "result": "pass",
+      "evidence": "logs/multiuser-i18n.log",
+      "count": 4,
+      "evidence_sha256": "1f6554a534d49c21513826548687cedca2172ba2478001641716fdae4a329174"
+    },
+    {
+      "name": "status-readings",
+      "evidence": "logs/status-readings.json",
+      "count": 24,
+      "grade": "S2",
+      "result": "pass",
+      "evidence_sha256": "b633fe268ece7cbcdf335576555d6f95709905aa62d86ffff8e7aa17aa9637ac"
+    },
+    {
+      "name": "five-sample-battery-node-declaration",
+      "evidence": "logs/status-firmware-nodes.json",
+      "count": 5,
+      "grade": "S0/S1",
+      "result": "pass",
+      "evidence_sha256": "2d44797285c48a63c121a868bb1187ec3871d708a7ac36caacc050b7e4c434e6"
+    },
+    {
+      "name": "haptics-production-routing",
+      "evidence": "logs/haptics-route.json",
+      "count": 28,
+      "grade": "S2",
+      "result": "pass",
+      "evidence_sha256": "29f12511e67b2036530fc36722d73868f1b8028a86b64e95d0c096da5b4ba3a1"
+    },
+    {
+      "name": "sample-haptics-provenance",
+      "evidence": "logs/haptics-profile-audit.json",
+      "count": 6,
+      "grade": "S0/S1",
+      "result": "pass",
+      "evidence_sha256": "72ec50375d3ef0b4ba376179d3930f8a01a890ca2d7e27cb04ddd26fa6e84791"
+    },
+    {
+      "name": "production-LVGL-haptics-and-cancellation",
+      "evidence": "logs/haptics-ui.json",
+      "grade": "S2",
+      "count": 21,
+      "result": "pass",
+      "evidence_sha256": "fa44349831979b6b508e66c27ebe3f50b596204597a836ed8d0781ca3289ec95"
+    },
+    {
+      "name": "production-archive-restore",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/archive-restore.json",
+      "count": 30,
+      "evidence_sha256": "ebcd0a919112e8c4353450ec197ecf1531f78e8a934475f76ec1270690899fc5",
+      "scope": "All 15 production libtar sources with ASan/UBSan, host files/links/Android xattrs, write/close/xattr faults and synthetic fscrypt v2 metadata ordering. No compression/split/fork/raw-image/GUI workflow or actual encryption."
+    },
+    {
+      "name": "production-raw-image-transfer",
+      "grade": "S2",
+      "result": "pass",
+      "count": 65,
+      "evidence": "logs/raw-image.json",
+      "evidence_sha256": "21e09b26cac66ba6904d380df223d3e5407664729c86ff6c6951ac20f8956742",
+      "scope": "Actual BackupImage/RestoreImage/RawReadWrite/CheckBackupCancel bodies, 59 current-build cases and 6 optional-discard cases. Ordinary-file block-device boundary, real file I/O/commit, cancellation/faults and two process exits. No physical block devices or full backup session."
+    },
+    {
+      "name": "operation-completion-feedback",
+      "grade": "S2",
+      "result": "pass",
+      "count": 64,
+      "evidence": "logs/operation-feedback.json",
+      "evidence_sha256": "44a0eead56eed720d1f32070ce6393092b640892d1742adc26ac458210f6756a",
+      "scope": "Actual completion lifecycle/hardware settings and backup/restore/ZIP/screen tick bodies; 32 cases under enabled and compile-disabled haptics. Controlled clocks, real threads, substituted storage/performance/properties/display/motor boundaries. Not full partition sessions."
+    },
+    {
+      "name": "restore-session-preflight",
+      "grade": "S2",
+      "result": "pass",
+      "count": 54,
+      "evidence": "logs/digest-atomic-restore.json",
+      "evidence_sha256": "ca21c34907934d135dc1686e9b5603249e5050a61766f9a4c356c2637aec47cd",
+      "scope": "Actual manager restore methods, raw-image bodies, complete digest source and real BoringSSL hashing. File-backed block metadata/ioctl, mount/UI and tar-extraction substitutes. No full backup cancel-worker or compressed/encrypted archive workflow."
+    },
+    {
+      "name": "backup-session-cancellation",
+      "grade": "S2",
+      "result": "pass",
+      "count": 55,
+      "evidence": "logs/digest-atomic-backup.json",
+      "scope": "Actual manager, tar fork/pipe/process-group lifecycle, .info SaveValues and GUI start/run/cancel/acknowledge/destructor. Host processes/files; mount/archive-codec/digest and UI boundaries substituted. No full compressed/encrypted archive, power-loss recovery or device test.",
+      "evidence_sha256": "3af09bd4442df20420629bd8a3d2eaf122c2ceca2ad5b90f62c3949ad1246cd1"
+    },
+    {
+      "name": "archive-codec-pipeline",
+      "grade": "S2",
+      "result": "pass",
+      "count": 46,
+      "evidence": "logs/archive-pipeline.json",
+      "scope": "Whole production tar/pigz/OAES, BoringSSL, libtar and actual file/fork/thread pipelines in private host chroots. Plain/compressed/encrypted/mixed split roundtrips, corrupt/truncated streams, child waits, fragmented reads, separate buffers. Mount/GUI/fscrypt/default-label boundaries substituted; split threshold 64 KiB. Not full manager sessions, hardware encryption or authenticated archive format.",
+      "evidence_sha256": "7b3ed1e986c8360b9ab574093493724710bdd713d0e59f74c350ae130b98f439"
+    },
+    {
+      "name": "MTP-object-lifecycle",
+      "grade": "S2",
+      "result": "pass",
+      "count": 94,
+      "evidence": "logs/mtp-upload-time-objects.json",
+      "evidence_sha256": "867f4a8f39faa982de5c0bf75d819bc1d428656954ec3a03214d17ce3b93a815",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "MTP-transfer-reconciliation",
+      "grade": "S2",
+      "result": "pass",
+      "count": 48,
+      "evidence": "logs/mtp-upload-time-transfers.json",
+      "evidence_sha256": "d83ab4aa065ac93776fd8b3cde1a8c42e63afea0fee7cfe501136a7446ea8165",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs."
+    },
+    {
+      "name": "MTP-event-lifecycle",
+      "grade": "S2",
+      "result": "pass",
+      "count": 62,
+      "evidence": "logs/mtp-events.json",
+      "evidence_sha256": "ad8b9bbbd380a3dec9e8f4bb3d0effc2e57e137056ac7a606e05ec9be17b27be",
+      "scope": "Actual native/compat event worker and lifecycle, real host pipes/AIO/threads; injected pending completions, cancellation races and targeted faults. No UDC/configfs/Windows."
+    },
+    {
+      "name": "USB-init-configfs-reconciliation",
+      "grade": "S2",
+      "result": "pass",
+      "count": 42,
+      "evidence": "logs/usb-init.json",
+      "evidence_sha256": "d94622fbd09fc23da413c604c9d577ea982987fdef1dae363e1d1569d5a77586",
+      "scope": "Actual AOSP init parser/actions and production helper; configfs, property store and service completion boundaries. No full init boot or physical USB."
+    },
+    {
+      "name": "USB-helper-binary-policy",
+      "grade": "S1/S3",
+      "result": "pass",
+      "count": 53,
+      "evidence": "logs/backup-manifest-usb-policy.json",
+      "evidence_sha256": "6095e0ee154034778ec5db8e241a5e7f67803dd5c0fb24b2f95b8daff7f3ef55",
+      "scope": "Candidate compiled policy; explicit rootfs entrypoint and enforcing helper, required access and negative controls."
+    },
+    {
+      "name": "MTP-control-framing",
+      "grade": "S2",
+      "result": "pass",
+      "count": 66,
+      "evidence": "logs/mtp-control.json",
+      "evidence_sha256": "9e278b5af4e53a6227baf6b84e6a7179cff1fe6b413a05b747755b3464b363e5",
+      "scope": "Actual production control parser/status/event batches with ep0 and endpoint ioctl substitutes. Not full cancel/reset, compat dispatch, UDC or Windows."
+    },
+    {
+      "name": "MTP-caller-lifecycle",
+      "grade": "S2",
+      "result": "pass",
+      "count": 40,
+      "evidence": "logs/mtp-caller.json",
+      "evidence_sha256": "8cfff3bc228ac76e91da8182a18bed180f16087d671918804fdd52ba580f2e65",
+      "scope": "Production functions, real processes/threads/sockets; USB/property and storage object boundary substitutes. Not full decrypted-storage/UI/init integration."
+    },
+    {
+      "name": "MTP-storage-receiver",
+      "grade": "S2",
+      "result": "pass",
+      "count": 11,
+      "evidence": "logs/mtp-receiver.json",
+      "evidence_sha256": "115922de9e40f88ce7531b45beab8cdcd6c431bfd77425ecd16c21bfbcf98ff3",
+      "scope": "Production functions, real processes/threads/sockets; USB/property and storage object boundary substitutes. Not full decrypted-storage/UI/init integration."
+    },
+    {
+      "name": "OS4-stable-component-comparison",
+      "grade": "S0/S1",
+      "result": "pass",
+      "count": 1,
+      "evidence": "logs/os4-stable-comparison.json",
+      "evidence_sha256": "94bceb7ed65a6d70ebe2c7e8b19a735fbaff4af01f1a400d7ab508403059017e",
+      "scope": "Exact original OS4 sample differences and stable userspace closure. No hardware or arbitrary intermediate version guarantee."
+    },
+    {
+      "name": "stock-ARM64-haptics-driver-emulation",
+      "evidence": "logs/haptics-driver-emulation.json",
+      "count": 120,
+      "grade": "S2",
+      "result": "pass",
+      "evidence_sha256": "471c2c2107ea439f09b3e0dcf5bd6c9b1ff57f828b5d652d0441e4e8378ccc2c"
+    },
+    {
+      "name": "stock-ARM64-haptics-lifecycle",
+      "evidence": "logs/haptics-lifecycle-emulation.json",
+      "count": 90,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Original ARM64 input registration, upload/erase callbacks and workers, repeated playback callbacks and OS4 composite wrapper. Per-sample registration contract records name, PERIODIC/CUSTOM/SINE/GAIN capability requests, 96 effect slots and callback addresses. Kernel input core/scheduling/PM/DSP/completions substituted. Probe/start/stop/IRQ, ioctl readiness, node permissions and hardware excluded.",
+      "evidence_sha256": "ccc3be914792e242a494e6a1d652a5a5cf66b478baab1bb63fd6985fe8d93184"
+    },
+    {
+      "name": "haptics-original-DTBO-merge",
+      "evidence": "logs/haptics-devicetree-audit.json",
+      "count": 48,
+      "grade": "S0/S1",
+      "result": "pass",
+      "scope": "All original DTBO entries merged with matching hash-verified vendor_boot DTB using AOSP libfdt; dijun binding and haptic parameters checked. No bootloader selection or device probe.",
+      "evidence_sha256": "295779d5a3ffe5eb0c73b2e888c9468d32c62364e6a2a23bcac95197c1f485c9"
+    },
+    {
+      "name": "GUI-haptics-background-owner",
+      "evidence": "logs/haptics-worker.json",
+      "count": 16,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Actual owner and GUI backend with real threads and gated probe/play/release boundaries; latest pending feedback, expiry, failure, stop/join. No hardware or deadline for permanently blocked kernel I/O.",
+      "evidence_sha256": "ee9dcf9a34d47d3a8ce1ae2a908f0c97588766419802045c8d84e8af154f8603"
+    },
+    {
+      "name": "GUI-haptics-production-FF-I/O",
+      "evidence": "logs/haptics-worker-ff.json",
+      "count": 4,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Production owner/backend/minui/FF; gated EVIOCRMFF, GUI calls independent, stop/join/fd release and upload/play failures. ioctl/property/device boundaries substituted.",
+      "evidence_sha256": "907eeb2d21d4c51ff74edbb31377de7a2dec83e7de572e5d3f74aa36dfe0b049"
+    },
+    {
+      "name": "stock-ARM64-haptics-playback-and-init-boundaries",
+      "evidence": "logs/haptics-playback-emulation.json",
+      "count": 120,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Execute original ARM64 start/stop workers and early firmware/I2C wrappers.\n\nUpload and playback callbacks use the existing lifecycle fixture. Runtime PM,\nDSP symbol lookup, mailbox, state update and sleep are explicit boundaries.\nFirmware tests stop at request/parse failures; I2C wrapper substitutes core probe.\nNo full probe, DSP boot, IRQ, kernel workqueue or motor is simulated.",
+      "evidence_sha256": "12fd81539cbcf24dd16d2f42637f5d627602e9e53d5a738dc25295415a155207"
+    },
+    {
+      "name": "stock-ARM64-haptics-early-probe",
+      "evidence": "logs/haptics-probe-emulation.json",
+      "count": 54,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Execute original probe through DT parsing/power/reset, ending before PLL I/O.\n\nDT properties come from the separately hash-bound original overlay-5 merge.\nRegulator/GPIO/pinctrl/workqueue services and remove are explicit fixtures.\nPLL always fails: DSP boot, IRQ, cleanup internals and physical timing excluded.",
+      "evidence_sha256": "942ee01ad9d5df653e28d56a42139e3de5554b459db6f440de2a66e705dbc979"
+    },
+    {
+      "name": "touch-priority-dependency-plans",
+      "evidence": "logs/touch-priority-plans.json",
+      "evidence_sha256": "58bce9393bc2d7a993cb9475e99d81c8911b99402144104e75ba9401fee6aad0",
+      "grade": "S2",
+      "result": "pass",
+      "count": 6,
+      "scope": "Six generated plans preserve accepted hard/soft edges; touch dependency closure completes before haptics-specific closure."
+    },
+    {
+      "name": "touch-registration-to-GUI",
+      "evidence": "logs/touch-delivery.json",
+      "evidence_sha256": "cab9af6f5fe0cfd92ac577ecab0bfd49f6ae5e99ae9c5a93df81495c34a5bef0",
+      "grade": "S2",
+      "result": "pass",
+      "count": 2
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-startup-and-ISR",
+      "evidence": "logs/touch-startup-emulation.json",
+      "evidence_sha256": "0d1111a6a89388e03f74315098221f01f7b253734efda08535e1a191886daab4",
+      "grade": "S2",
+      "result": "pass",
+      "count": 88,
+      "scope": "Run exact stock OS4 ARM64 connect, report-mode, reflash, ISR and parser.\n\nSPI, firmware request/update, IRQ, Xiaomi panel/input registration and kernel\nservices are explicit fixtures. ISR tests use either a decoded-object fixture\nor the original parser with synthetic configuration/packets. Does not emulate\nprobe, a controller, a booted kernel or real touch. Unknown boundaries and\nexecution-budget exhaustion fail."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-configuration-and-probe",
+      "evidence": "logs/touch-configuration-emulation.json",
+      "evidence_sha256": "7bc599fe7ed748f71ab082a16d9a95e678ff941638d97f203e12aaa5cd97f07a",
+      "grade": "S2",
+      "result": "pass",
+      "count": 62,
+      "scope": "Execute original OS4 app-info/configuration/IRQ/probe and parser functions.\n\nController commands provide explicit synthetic responses, never phone data.\nKernel allocation, IRQ, GPIO and panel/cdev registration are fixtures; original\nCFI checks execute. Probe uses the original connect function and original\napp-info/config acquisition, but panel setup and disconnect cleanup are hooks.\nNo real SPI, kernel boot, driver bind, calibration or physical touch is tested."
+    },
+    {
+      "name": "OS4-original-touch-DTBO",
+      "evidence": "logs/touch-devicetree-audit.json",
+      "evidence_sha256": "1f6863d4831e1c73b2fbe63d3781d0fe866bdd7c25c928a593073d2ffc714934",
+      "grade": "S0/S1",
+      "result": "pass",
+      "count": 2,
+      "scope": "Inspect original OS4 dijun overlay-5 touch nodes and resolve phandles.\n\nRebuild host libfdt overlay tool from bound sources. No bootloader overlay\nselection or physical GPIO/regulator/panel behavior is simulated."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-SPI-and-power",
+      "evidence": "logs/touch-spi-emulation.json",
+      "evidence_sha256": "92d6229b8c8f95465ea7e3a0c19d57d1d8eb780fbb0015b2021717217bf82ade",
+      "grade": "S2",
+      "result": "pass",
+      "count": 58,
+      "scope": "Execute stock OS4 SPI probe and Xiaomi DT parsing using original DTBO facts.\n\nOF reads use hash-bound merged overlay properties. Kernel GPIO numbering,\npinctrl/regulator handles, core allocation, controller responses and panel/cdev\nregistration are fixtures. Separate platform probe is invoked explicitly after\nSPI registration; its original hardware callbacks and CFI execute. No actual\nSPI transfer, real power, kernel scheduling or phone."
+    },
+    {
+      "name": "module-initialization-lifecycle",
+      "evidence": "logs/ce-lifecycle-module-state.json",
+      "evidence_sha256": "73d1f0f2f2001ef55a5e4e9cdd9ad919699f80b865bf27344576e02784c9259f",
+      "grade": "S2/S3",
+      "result": "pass",
+      "count": 4,
+      "stage_calls": 24,
+      "scope": "Same-image production shell against module state races, touch/haptics input registration states and private OTA/sysfs fixtures; never actual insmod or kernel I2C probe."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-transport-and-selector",
+      "evidence": "logs/touch-transport-emulation.json",
+      "evidence_sha256": "25e4d4a1c598ce6c122eea083038d5aa3ec5a180fba1c808530192b7d0072e26",
+      "grade": "S2",
+      "result": "pass",
+      "count": 86,
+      "scope": "Execute original OS4 SPI buffers/transfers and protocol-selection code.\n\nspi_sync substitutes a controller, captures original transfer descriptors and\nsupplies deterministic synthetic bytes. Allocation, completion, locks and PM\nare fixtures. Protocol-specific detect is a separately declared boundary.\nNo physical SPI, kernel scheduling, real controller response or device testing."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-panel-setup",
+      "evidence": "logs/touch-panel-emulation.json",
+      "evidence_sha256": "9ed87f0e192613a2f2c3743f28c0bf59e54bc94e10d8678871691e6997fd2b9e",
+      "grade": "S2",
+      "result": "pass",
+      "count": 22,
+      "scope": "Execute stock Xiaomi panel setup with original parsed DT configuration.\n\nFlash contents, firmware-completion waits, panel/notifier/TUI registration and\ndebugfs are explicit fixtures. Original name selection, parameter population\nand report-mode switching execute. This does not run the wrapper's registration\nimplementation, the flash protocol, kernel scheduling or physical touch."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-wrapper-registration",
+      "evidence": "logs/touch-wrapper-emulation.json",
+      "evidence_sha256": "4a122da2cced7fcd4cfb4f59bef21fbacf0601fe51be475c486f9b89454a9cbb",
+      "grade": "S2",
+      "result": "pass",
+      "count": 50,
+      "scope": "Execute original OS4 Xiaomi wrapper panel/input/raw-mode entry points.\n\nPanel parameter bytes are captured from original Synaptics setup with hash-bound\nDT properties. Kernel allocations, proc creation, mode DT init, input core,\nthreads and notifier registration are explicit fixtures. Raw-mode callback\ncrosses an explicit host bridge into a separate original Synaptics emulator;\nit does not emulate kernel linking or concurrent execution. No phone is used."
+    },
+    {
+      "name": "stock-ARM64-haptics-PLL-and-chip-identification",
+      "evidence": "logs/haptics-pll-emulation.json",
+      "evidence_sha256": "fd86ac3e0749f541cbfbe84adc04388dfceb1aeacf23105dff6d0e218ea6f2e1",
+      "grade": "S2",
+      "result": "pass",
+      "count": 80,
+      "scope": "Execute original Cirrus PLL programming and OS4 chip identification.\n\nRegister reads/updates use explicit synthetic values and failures; no I2C or\nphysical PLL state is simulated. Joined probe cases execute original pre-PLL\nsetup then stop at real register failures/unknown-chip rejection. Remove remains\nan explicit fixture. Firmware/DSP boot, IRQ and motor output remain excluded."
+    },
+    {
+      "name": "stock-ARM64-OS2-OS3-haptics-probe-prefix",
+      "grade": "S2",
+      "result": "pass",
+      "count": 16,
+      "evidence": "logs/haptics-legacy-probe-prefix.json",
+      "evidence_sha256": "d3b0bed4f878c5ee29d00e6ad5cadd4052ad47c23619cd438c4bb2e4cbdac525",
+      "scope": "Execute four stock OS2/OS3 cs40l26_probe ELFs using merged-DT properties. Each has pinctrl, PLL and chip-ID failure cases plus a joined original PLL/chip-ID/regmap path through the exact cs40l26.wmfw request, where -ENOENT is injected. Synthetic chip identity and regulator/GPIO/pinctrl/regmap/kernel services are fixtures; no firmware bytes, DSP, input, IRQ or motor execute. Original remove executes on each failed path; IRQ/workqueue teardown services are fixtures."
+    },
+    {
+      "name": "six-sample-Cirrus-haptics-firmware-byte-comparison",
+      "grade": "S1/S2",
+      "result": "pass",
+      "count": 42,
+      "evidence": "logs/haptics-firmware-cross-version-audit.json",
+      "evidence_sha256": "650cdae794e819a12eec75a94532e9df67f69b6b3e04f636b2a08113da144f17",
+      "scope": "Compare seven stock ODM/vendor Cirrus firmware files across six extracted OS2/OS3/OS4 samples and bind each sample's driver ELF. This is byte provenance only; runtime request, parser, DSP execution and motor output are not inferred."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-identification",
+      "evidence": "logs/touch-identification-emulation.json",
+      "evidence_sha256": "4a11609001625120b85f34c00a3d0358e157921eceb9449ddf45bd7e19c275f8",
+      "grade": "S2",
+      "result": "pass",
+      "count": 62,
+      "scope": "Execute original OS4 protocol detection, ID parsing and transfer-size setup.\n\nMessage read/write/continued-read and v2 command execution are explicit fixtures;\nthey supply synthetic ID bytes, statuses and errors. This is not full protocol,\nSPI, a controller or a booted kernel. Original detect/parse/size/CRC-update code\nand operation-table installation execute; unknown boundaries fail."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-message-and-ISR",
+      "evidence": "logs/touch-message-emulation.json",
+      "evidence_sha256": "fd53e98499fd3a9d11e732085a2f27c54a68cc4a5c4a15ff328d0d156aca7b48",
+      "grade": "S2",
+      "result": "pass",
+      "count": 90,
+      "scope": "Original OS4 message read -> event copy -> parser -> ISR with synthetic bytes.\n\nv1 executes original read_message, continued_read, buffer operations, transport\ncallback CFI and header retries. The callback supplies explicit byte fragments,\nnot physical SPI. v2 execute_cmd_request remains a declared boundary supplying\ndecoded command state; original read_message/dispatch/get_event_data execute.\nConfig acquisition uses the existing synthetic command boundary. Kernel input,\nallocation, GPIO, IRQ, time, locks and completion are fixtures; no phone used."
+    },
+    {
+      "name": "OS4-touch-static-load-order",
+      "evidence": "logs/touch-load-order-audit.json",
+      "evidence_sha256": "ad6d86eaf96ab39179c3e3e895d2270464df2e6daf67f343fc301f2f4ae551e3",
+      "grade": "S1",
+      "result": "pass",
+      "count": 2,
+      "scope": "Inspect delivered recovery and stock first-stage inputs, without booting init.\n\nThis is a static source/archive audit. It does not execute bootloader ramdisk\nmerging, init, ueventd or module insertion, and cannot establish actual timing."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-v2-command-framing",
+      "evidence": "logs/touch-v2-command-emulation.json",
+      "evidence_sha256": "6a057068a1e9bd77d2d0773c8278a532848de666f3baf6f0b59679ab828e4618",
+      "grade": "S2",
+      "result": "pass",
+      "count": 78,
+      "scope": "Execute stock OS4 v2 command/read/write/framing through parser and ISR.\n\nOriginal ARM64 builds and checks CRC6/CRC16, sequence bits, retries and buffer\nassembly. The physical transport callback supplies explicitly synthetic frames\nand records generated command bytes; no SPI controller or kernel is booted.\nReport configuration, allocation, locks, time, GPIO and input remain fixtures."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-v2-startup-chain",
+      "evidence": "logs/touch-v2-startup-emulation.json",
+      "evidence_sha256": "bef6ab60f26fea33c1a3cfb9800ca074a56025e21a5af7a7c9b6b2bd953d3130",
+      "grade": "S2",
+      "result": "pass",
+      "count": 44,
+      "scope": "Join original OS4 detect/connect/mode/config/background/ISR over v2 frames.\n\nID, app-info, config and event bytes are synthetic physical-transport fixtures.\nPower/setup/reset callbacks, panel setup, firmware update, input registration,\nIRQ registration and scheduling are explicit boundaries. Background work is\ninvoked sequentially, not by a kernel workqueue. No phone or real SPI is used."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-v2-panel-flash-startup",
+      "evidence": "logs/touch-v2-panel-startup-emulation.json",
+      "evidence_sha256": "358cc7e1dcbc1a2886b2d42d3c660f3c9f97bdd44c9598223116596d769f2fcd",
+      "grade": "S2",
+      "result": "pass",
+      "count": 32,
+      "scope": "Join stock OS4 DT parsing/panel/report commands with v2 startup and ISR.\n\nOriginal ARM64 parses hash-bound DT properties and synthetic lockdown bytes,\nselects panel parameters, switches reports using original v2 frames and runs\nconnect/background/parser/ISR. Flash-area read is a fixture in the first 13 cases;\nthe last three execute original identify/mode/boot-info/flash-read/return paths\nwith synthetic bytes. Physical transport, panel/input registration, firmware\nrequest/update and kernel services are fixtures. Background runs sequentially.\nNo kernel or phone is booted.\nSupplied status4/no-event responses do not model controller enable state."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-firmware-parser-and-startup",
+      "evidence": "logs/touch-firmware-emulation.json",
+      "evidence_sha256": "052657a4f07e882e1ca55acc2570f8ee38d8b1c1fbfe2cb56d8cf21721e31cc1",
+      "grade": "S2",
+      "result": "pass",
+      "count": 26,
+      "scope": "Execute original OS4 firmware container parsing/comparison and joined startup.\n\nUses exact stock firmware bytes and ARM64 instructions; kernel crc32_le is an\nindependent zlib-backed service fixture. Controller identity/app/config/frame\nresponses are synthetic. Flash programming is not executed: differing/forced\nimages stop at original flash-access identify timeout. Power, panel/input/IRQ\nregistration, firmware delivery and kernel scheduling are explicit fixtures.\nBackground runs sequentially. No physical phone, SPI or firmware write is used."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-firmware-parser",
+      "evidence": "logs/haptics-firmware-emulation.json",
+      "evidence_sha256": "76556949653e2a90a39d7fb17d0bafaf5e07c437c2423662a758035662ee88d5",
+      "grade": "S2",
+      "result": "pass",
+      "count": 64,
+      "scope": "Execute stock OS4 Cirrus DSP create/header/firmware/coeff-init instructions.\n\nExact normal/calibration wmfw bytes are used. Allocations, memcpy and regmap\nare bounded kernel fixtures; reads supply explicitly synthetic algorithm tables\nor errors. No DSP execution, I2C, probe, IRQ, kernel boot or motor is simulated.\nUnknown imports and instruction/time budget exhaustion fail closed."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-firmware-upload",
+      "evidence": "logs/haptics-upload-emulation.json",
+      "evidence_sha256": "e9b4d06056bfb98f5f27c333dca8b1a2ab1a4663dbf6a86336b0a8895b7b5b1e",
+      "grade": "S2",
+      "result": "pass",
+      "count": 72,
+      "scope": "Execute stock OS4 firmware upload, PM shutdown, parser and firmware identity.\n\nUses exact ODM wmfw/bin bytes and original chip resolver, DSP pre-config,\nPM transition, state-get, wavetable-create, parser, coefficient loader and\nfirmware-ID/revision functions. Mailbox acknowledgement, regmap reads/writes,\nalgorithm rows, allocations, firmware requests and sleeps are explicit fixtures.\nCoefficient revisions are synthetic and may be rejected by original bin parser.\nJoined uploads stop on actual failures, including first MEM_RDY update failure;\nno successful DSP boot, complete probe, IRQ, physical I2C or motor is claimed."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-stock-coefficients",
+      "evidence": "logs/haptics-coefficients-emulation.json",
+      "evidence_sha256": "882a9b9efeda8b43231b4ce03414bcac3487162e7d7a3f94ead1739e1504d84b",
+      "grade": "S2",
+      "result": "pass",
+      "count": 16,
+      "scope": "Join original OS4 upload with stock-derived packed algorithm tables and bins.\n\nPacked wmfw algorithm rows are decoded independently from original bytes and\nsupplied at the regmap-read boundary. Exact bin files pass original coefficient\nparsing, identity/revision validation and raw-write code. This assumes those\nregisters expose the decoded table; no DSP executes and writes do not change\nhardware. Mailbox/regmap/kernel services remain fixtures. Successful coefficient\npaths stop at injected first MEM_RDY failure, without claiming DSP boot/motor."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-DSP-config-boundaries",
+      "grade": "S2",
+      "result": "pass",
+      "count": 36,
+      "evidence": "logs/haptics-config-emulation.json",
+      "evidence_sha256": "622510bfb111fb0d6d610bf8cfc56432e8eefedcf9eae520b12ec72b0f582fda",
+      "scope": "Join original OS4 upload/coefficients to DSP config and IRQ mask setup.\n\nAlgorithm tables come from exact stock wmfw bytes at an explicit regmap fixture.\nPM state, HALO state, IRQ mask and write-sequence bytes are synthetic reads;\nall-FF sequences contain an immediate terminator, not a real controller dump.\nOriginal memchunk/wseq/populate/write, DSP config and IRQ mask code executes.\nDebugfs init, mailbox and kernel/regmap services remain explicit fixtures.\nEvery scenario ends at an injected failure or invalid state; no DSP execution,\ncomplete probe/IRQ delivery, hardware state changes or motor output is claimed."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-flash-failure-and-background",
+      "grade": "S2",
+      "result": "pass",
+      "count": 32,
+      "evidence": "logs/touch-flash-failure-emulation.json",
+      "evidence_sha256": "57c5d9db73c711b109a09edb4d18a6fba349831c57832387a45197b950b858b7",
+      "scope": "Execute original OS4 reflash failure handling over synthetic v2 transport.\n\nStock firmware/container/CRC, identify, boot info, block checks, erase/write\ncommand construction and reset execute original ARM64. Responses and geometry\nare synthetic; erased/programmed bytes never reach hardware. Inject timeout at\nerase or first/second write; no complete programming success is claimed.\nNo physical device, kernel scheduling or controller flash state is modeled."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-complete-programming-and-config",
+      "grade": "S2",
+      "result": "pass",
+      "count": 26,
+      "evidence": "logs/touch-flash-complete-emulation.json",
+      "evidence_sha256": "4bcaabfcb9f74ddc71fa0cebe35ff8d889d075a3366f1490493df2ce7dac76ec",
+      "scope": "Execute complete stock OS4 programming command generation and post-reset paths.\n\nOriginal ARM64 firmware parsing/CRC, block checks, erase/write/reset, v2 framing,\nbackground app/config retrieval and ISR execute. Explicit synthetic transport\nresponses acknowledge writes without modeling controller flash contents. Full\nbyte/address inventories verify every requested programming chunk. No physical\nflash, kernel workqueue/IRQ scheduling or successful hardware boot is claimed."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-probe-to-stock-upload",
+      "grade": "S2",
+      "result": "pass",
+      "count": 16,
+      "evidence": "logs/haptics-probe-upload-emulation.json",
+      "evidence_sha256": "8c8cf6a95f0a9f638b9b95b98da7b841282435449492ff11f50a14e468067914",
+      "scope": "Join original OS4 probe/DT/power/PLL to stock upload and DSP configuration.\n\nProperties are bound to original merged overlay evidence. Regulator/GPIO/pinctrl,\nworkqueue, remove and debugfs are explicit service fixtures. Stock algorithm rows\nare supplied through regmap reads; PM/HALO/IRQ and all-FF sequence data remain\nsynthetic. All cases terminate in injected failures, never a successful DSP boot,\ninput registration, actual cleanup, IRQ scheduling or physical motor output."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-IRQ-and-PM-gates",
+      "grade": "S2",
+      "result": "pass",
+      "count": 40,
+      "evidence": "logs/touch-irq-emulation.json",
+      "evidence_sha256": "bf567df7cf552f650cab72b3e57c134fca860ffcec7a737654514d953eea84d5",
+      "scope": "Execute original OS4 IRQ switches, PM callbacks and parser/ISR gates.\n\nIRQ descriptors/depth, wake return values, locks and sleep completion are explicit\nkernel fixtures, not a running IRQ controller or concurrent kernel. Sleep records\nrequested durations without waiting. ISR packets/configuration are synthetic;\nno hardware latency, physical delivery or current fault root cause is asserted.\nUnknown services and execution-budget exhaustion fail, except one named unchanged\nIRQ-depth fixture which must exhaust the finite budget before its flag is set."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-display-suspend-resume",
+      "grade": "S2",
+      "result": "pass",
+      "count": 48,
+      "evidence": "logs/touch-display-resume-emulation.json",
+      "evidence_sha256": "46d4af603f16ce612dad14e8eabfcf1ca6afd543614c3ecf0dc40250532e4a96",
+      "scope": "Execute original OS4 display suspend/resume, sensing, IRQ and configuration.\n\nNo-gesture mode and initial device states are explicit fixtures, not captured\nhardware state. Original sleep/dynamic commands run to a typed send-command\nresponse boundary; app/config parsing and report switching execute as well.\nReset/event, thermal, power, pinctrl, IRQ depth and kernel services are fixtures.\nSynthetic ISR bytes test parser delivery only, not real controller/IRQ readiness,\ndisplay notifier scheduling, physical wake latency or the user's fault cause."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-notifier-wrapper-dispatch",
+      "grade": "S2",
+      "result": "pass",
+      "count": 30,
+      "evidence": "logs/touch-notifier-emulation.json",
+      "evidence_sha256": "8e75a7da9d1a64567e6e29c0a53c5ecd2d6ce3eb507f90cc9f7c594e701b2a24",
+      "scope": "Join stock Xiaomi display notifier/workers to stock Synaptics resume/suspend.\n\nTwo isolated ARM64 address spaces cross a typed, explicit host callback bridge;\nthis does not emulate kernel symbol linking or concurrent workqueues. Original\npanel parameters are captured using hash-bound DT evidence and original setup.\nWork scheduling/empty queue flush, IPC, timestamps, IC-mode and driver services\nremain fixtures. Original wrapper workers, Synaptics dispatch/display recovery,\nconfiguration/parser/ISR run. No real display events, IRQ or fault cause claimed."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-postboost-brownout",
+      "grade": "S2",
+      "result": "pass",
+      "count": 26,
+      "evidence": "logs/haptics-postboost-emulation.json",
+      "evidence_sha256": "b179f4654e28e666c101c8dfcced30b9fbd9497e20b2dda88875229b072be6cb",
+      "scope": "Execute original OS4 probe/upload through boost and brownout configuration.\n\nOriginal merged DT, stock DSP firmware/bins and algorithm rows are bound inputs.\nExplicit synthetic registers, all-FF sequences, mailbox/debugfs and kernel\nservices inherit the documented probe fixture. Writes do not mutate hardware.\nAll paths end in injected read/write/wseq errors before runtime PM/input; no DSP\nexecution, successful full probe, IRQ delivery or motor output is claimed."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-runtime-logger-ASP",
+      "grade": "S2",
+      "result": "pass",
+      "count": 16,
+      "evidence": "logs/haptics-runtime-config-emulation.json",
+      "evidence_sha256": "b89f45882d1edbae88d47b0e526106c420907021aedd84ca2947c4ac651ad8f6",
+      "scope": "Join original OS4 probe/upload to runtime PM, logger and ASP failure paths.\n\nStock DT/firmware/algorithm tables and original ARM64 functions execute. Runtime\nPM, timers/time, logger COUNT/SOURCE reads, all-FF sequences and regmap services\nare explicit fixtures; writes never change supplied register values. COUNT=0\nand SOURCE=0 are synthetic, not a DSP dump. Every scenario injects a failure;\nno full probe/input, kernel PM scheduling, DSP execution or motor is claimed."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-original-IC-mode",
+      "grade": "S2",
+      "result": "pass",
+      "count": 22,
+      "evidence": "logs/touch-ic-mode-emulation.json",
+      "evidence_sha256": "b989c94b94cad657ff4e7355d8b28a9ad9523b4f33bbfbe88cc4361b57aee64f",
+      "scope": "Execute original OS4 resume dispatch and IC mode-2 command generation.\n\nOriginal notifier/workers cross the existing typed host bridge. Original\nsyna_set_ic_mode replaces its former success stub; command 0xc7 response,\nmanaged allocation, IRQ, reset, no-gesture and all controller responses remain\nexplicit fixtures. Synthetic ISR coordinates do not prove controller mode or\nphysical touch. No kernel scheduling/concurrency or current root cause claimed."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-wave-IRQ-input",
+      "grade": "S2",
+      "result": "pass",
+      "count": 26,
+      "evidence": "logs/haptics-wave-irq-emulation.json",
+      "evidence_sha256": "a5b746232316ad470790ee14610ce6a92c0e8376ace030d9c5c57b36e0eb0c35",
+      "scope": "Join stock OS4 probe to waveform diagnostics, IRQ setup and input allocation.\n\nRuntime PM/HALO/logger, wave counts 5/0, mailbox ACK, all-FF sequences, regmap,\nIRQ domains and kernel services are explicit fixtures, not a booted DSP/kernel.\nOriginal stock bytes/parser/config execute; writes never change supplied reads.\nEvery case ends in a deliberate IRQ/input/MFD or earlier error. Kernel input\nregistration and FF allocation are service fixtures, not a real evdev node. No\nsuccessful full probe, real cleanup, IRQ delivery or motor output is claimed."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-probe-selftest",
+      "grade": "S2",
+      "result": "pass",
+      "count": 16,
+      "evidence": "logs/haptics-probe-selftest-emulation.json",
+      "evidence_sha256": "bbefaf5f32ec6e01e29d40c384add198a6278b86420b09ffb41bee559216a72a",
+      "scope": "Execute original OS4 probe through built-in upload/play/erase self-test.\n\nStock firmware, DT and original functions execute. Kernel input/FF/MFD, IRQ\nregistration, runtime PM, mailbox ACK, registers and all-FF sequences are\nexplicit fixtures. A bounded sequential workqueue driver handles flush_work;\nit is not concurrent kernel scheduling. The original ordered-workqueue flags\nand max_active=1 are checked; a reversed-order model is explicitly rejected.\nProbe zero only describes original control flow under those fixtures,\nnot working DSP, IRQ/completion, successful hardware boot or motor output."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-pending-work-flush",
+      "grade": "S2",
+      "result": "pass",
+      "count": 16,
+      "evidence": "logs/touch-pending-flush-emulation.json",
+      "evidence_sha256": "c172d2c132ee3a6e4dc1582760edfd7f2db28bdc52bc19365a5486a8e03ee92d",
+      "scope": "Execute original OS4 display notifications with pending work at flush.\n\nThe original notifier pauses at __flush_workqueue; a bounded sequential host\ndriver executes previously queued original workers on a separate stack, then\nrestores the notifier CPU context. This models completion of queued work, not\nLinux scheduling, simultaneous notifications, elapsed time or real interrupts.\nThe existing typed bridge executes original Synaptics display/IC-mode code;\ncontroller responses, input, power and kernel services remain explicit fixtures.\nSynthetic coordinates and successful flush do not prove physical touch recovery."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-mailbox-IRQ-completion",
+      "grade": "S2",
+      "result": "pass",
+      "count": 30,
+      "evidence": "logs/haptics-irq-completion-emulation.json",
+      "evidence_sha256": "d71023c2f11dcbd8a4c9e704acb63760709467532b5fb0d104c66718340360c2",
+      "scope": "Execute original OS4 registered mailbox IRQ and vibration/completion state.\n\nProbe/init and stock DSP metadata execute, followed by the exact registered\nmailbox handler. An explicit mutable synthetic ring is supplied via regmap;\nonly its read-pointer ACK changes the ring fixture. This is not controller RAM\nor DSP execution. Kernel mutex/input/PM/IRQ/completion/sysfs are fixture services.\nNo interrupt controller, concurrent kernel, real timing or motor is executed.\nUnknown services and instruction/time exhaustion fail."
+    },
+    {
+      "name": "stock-ARM64-OS4-touch-joined-panel-input",
+      "grade": "S2",
+      "result": "pass",
+      "count": 16,
+      "evidence": "logs/touch-joined-registration-emulation.json",
+      "evidence_sha256": "b80e0671974b6b3674eea16381f72c7d3853422337ab407e9678d998c4dd5d39",
+      "scope": "Join original OS4 Synaptics startup to original Xiaomi panel/input registration.\n\nPanel parameter bytes come directly from original Synaptics DT/panel setup.\nTwo original ELF modules execute in separate ARM64 address spaces with typed\nhost bridges. The wrapper callback table remains explicit, so this is neither\nkernel linking nor a complete shared object/pointer model. Kernel input/slots,\nallocators, threads, mode/proc setup and notifier services remain fixtures.\nTransport ID/app/config/report responses, lockdown and firmware-request failure\nare explicit fixtures. No kernel, physical SPI, IRQ or device is executed."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-active-erase-completion",
+      "grade": "S2",
+      "result": "pass",
+      "count": 30,
+      "evidence": "logs/haptics-active-erase-emulation.json",
+      "evidence_sha256": "09701ce0365e91b54f9bde22cde874ed855fe59decc6fc6afb76a23af6beec0d",
+      "scope": "Join production FF bytes to stock OS4 probe/play/IRQ/active erase waits.\n\nOriginal stock probe, firmware metadata/parser, FF callbacks/workers and the\nregistered mailbox handler execute. Kernel input, ordered queues, PM, mailbox,\nregmap and DSP sequences remain explicit fixtures. Completion counters use a\nbounded single-waiter model: complete adds one, complete_all saturates, waits\nconsume a token or time out. HZ=1000 is a fixture, not device timing evidence.\nAt a wait boundary CPU context is saved, a synthetic IRQ message is consumed\nby the original handler on another stack, then the worker resumes. No concurrent\nLinux scheduling, real IRQ delivery, DSP instructions or motor are executed."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-regmap-pre-IRQ",
+      "grade": "S2",
+      "result": "pass",
+      "count": 12,
+      "evidence": "logs/haptics-pre-irq-emulation.json",
+      "evidence_sha256": "ad79789c540b5439f001d1fe94883c3fa6cadd37e61c079a729331f913825676",
+      "scope": "Execute stock OS4 regmap IRQ pre-callback and its registered mailbox child.\n\nActual relocated chip data supplies the callback and context; no post callback\nis installed. PM and regmap services remain fixtures. The explicitly selected\nchild is invoked after pre according to the saved upstream v6.18 contract,\nwhich ignores the pre return; this does not execute the kernel regmap IRQ core,\nstatus/mask dispatch, concurrent PM, physical interrupts or a motor. Every child\nmessage is synthetic. Direct pre results and optional child results are separate."
+    },
+    {
+      "name": "haptics-runtime-input-registration",
+      "grade": "S2/S3",
+      "result": "pass",
+      "evidence": "logs/haptics-input-profile-runtime-image.json",
+      "count": 3,
+      "evidence_sha256": "2f99bc70210e1845a6173f2c55831ff9155570a8ca9c9476a61e38bcb686a6ea",
+      "scope": "Same-image runtime host fixtures: OS4 module live with no cs40l26_input, immediate registration and delayed registration. No I2C probe, EV_FF ioctl or motor."
+    },
+    {
+      "name": "OS4-stable-haptics-runtime-observation",
+      "grade": "S3",
+      "result": "pass",
+      "evidence": "logs/os4-stable-haptics-runtime-observation.json",
+      "count": 1,
+      "evidence_sha256": "d91b04b1395c9a032250c0c9403501ac56ee2e87fdb3dbcd9398cbf306603397",
+      "scope": "Read-only extraction of the user-provided OS4.0.4 recovery log bundle. Confirms verified os4-stable cache, completed module phase, xring_audio_hw_third live, cs40l26_input event4, FF_PERIODIC/SINE/CUSTOM/GAIN capabilities, root:input 0660 and Recovery backend selection. Firmware rootfs write and adaptive_haptics_prop AVC entries are permissive=1, not proof of failed copy/property read. The bundle lacks Cirrus probe/DSP startup logs, a user-request-correlated EVIOCSFF/play result and before/after IRQ delta; the cumulative touch/mailbox snapshots are uncorrelated. No DSP state or motor response is observed."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-gain-default",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-gain-emulation.json",
+      "count": 12,
+      "evidence_sha256": "14bad0fdc1f3648e61bf4bf08923245a81b35f9e67973a3748a71094a7432854"
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-service-request",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-service-request-emulation.json",
+      "count": 18,
+      "evidence_sha256": "fc02177e2c145b529202afddfb2eb95e86b23c5e025e7e77acae26ba1fae34de"
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-calibration-restore",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-calibration-restore-emulation.json",
+      "count": 16,
+      "evidence_sha256": "8d85cadff8ac98acbd5024b43c0ae89078dc5d748d9781ed681838883141ecd6"
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-calibration-coefficients",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-calibration-coefficients-emulation.json",
+      "count": 36,
+      "evidence_sha256": "5db9db91e0cc2d17ab8c9305f937c68604ebc5a18d888ab850295a19f519b64c"
+    },
+    {
+      "name": "haptics-independent-diagnostic",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-diagnostic-test.json",
+      "count": 47,
+      "evidence_sha256": "04fa0c5f7b2009caf8cdc2390bd11a15d432ccae956562ec2eac7025a817a49b"
+    },
+    {
+      "name": "video-frames-encode-decode",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/video-frames.json",
+      "count": 18,
+      "evidence_sha256": "38f7e32266187612d37af408c8f0d20a844589c20ac9cdec688d34676ee450e9",
+      "scope": "Encode production recorder output and decode WebM with libwebm/libvpx.\n\nActual worker, color converter, VP8 encoder and file muxer execute. Input is a\nsynthetic BGRA color-bar frame with padded stride and supplied monotonic times.\nHost decoder is validation-only; no Android decoder dependency is introduced.\nSequential cases wait for encode completion. Queue cases gate the first real\nencode to saturate two pending slots, drop seven frames, check copied pixels,\ndrain on stop or resume with original timestamps. Synthetic gating is not a\ndevice throughput measurement; display shadow/DRM and screen lifecycle are not covered.\nDecoded color checks sample the centers of the three bars, not every pixel or\nodd-dimension chroma edges. Container timestamps and duration are parsed from\nactual files; playback/seek in an independent player is not exercised."
+    },
+    {
+      "name": "haptics-diagnostic-ARM64-startup",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-diagnostic-arm64-test.json",
+      "count": 18,
+      "evidence_sha256": "425a0db335133cdcfc632d1b62c1b35ab978e6bb462c7f2b9bcae8e6274d1dc3"
+    },
+    {
+      "name": "OS4-user-raw-off-coordinate-recovery",
+      "result": "observed",
+      "evidence": "logs/touch-raw-off-observation.json",
+      "evidence_sha256": "21d7f2d95c85bd3854e9ace7d3553608d54325b7389f0e280023b1c9bd1a892f"
+    },
+    {
+      "name": "ordinary-report-startup-policy",
+      "result": "pass",
+      "evidence": "logs/touch-report-policy-test.json",
+      "evidence_sha256": "a7cba1030e551ecda5923d22db90699db46cc8d4756717650787feffc6fd0260"
+    },
+    {
+      "name": "ordinary-report-image-profile-runtime",
+      "result": "pass",
+      "evidence": "logs/touch-report-profile-runtime-image.json",
+      "count": 9,
+      "evidence_sha256": "da8f086d608e872bb52a234616d8afaa2d010880fdd171adf299a1880924b46d"
+    },
+    {
+      "name": "settings-user-report-storage-regression",
+      "result": "pass",
+      "evidence": "logs/settings-user-report-regression.json",
+      "count": 21,
+      "evidence_sha256": "d75491d7f4934043a591148c8ae6b322b9b254d93599f2490ab4a3f69fd1b06b"
+    },
+    {
+      "name": "nested-partition-owner-and-settings-guard",
+      "result": "pass",
+      "evidence": "logs/nested-partition-path-test.json",
+      "evidence_sha256": "af2c60825ae7b75fe0d48a68083ea712ea2a2b42b684abfdccb77bbbd5825ece",
+      "grade": "S2",
+      "count": 31
+    },
+    {
+      "name": "nested-path-settings-storage",
+      "result": "pass",
+      "evidence": "logs/nested-path-settings-storage-regression.json",
+      "evidence_sha256": "d75491d7f4934043a591148c8ae6b322b9b254d93599f2490ab4a3f69fd1b06b"
+    },
+    {
+      "name": "nested-path-restore-regression",
+      "result": "pass",
+      "evidence": "logs/nested-path-restore-regression.json",
+      "evidence_sha256": "e242960ea6e31986565ee8b2c77b756f06ba1dbd64e6834eff47bbcd68f0e1a5"
+    },
+    {
+      "name": "nested-path-backup-regression",
+      "result": "pass",
+      "evidence": "logs/nested-path-backup-regression.json",
+      "evidence_sha256": "54aee238891271cab454828b5d54766b4073f944f2e6bafc0a4f03807d269008"
+    },
+    {
+      "name": "touch-settings-image-profile-runtime",
+      "result": "pass",
+      "evidence": "logs/touch-settings-profile-runtime-image.json",
+      "evidence_sha256": "3db077e1c52a4b80ceea67cd71a452fead69f9db141a56719b89363bb5514067"
+    },
+    {
+      "name": "touch-settings-targeted-delivery",
+      "result": "pass",
+      "evidence": "logs/touch-settings-targeted-delivery.json",
+      "evidence_sha256": "d1037198e6165a723d78b9aced3be05896970d62ba0548300f0bcd48bcd2bf0e"
+    },
+    {
+      "name": "OS4-real-haptics-playback-observation",
+      "result": "observed",
+      "evidence": "logs/haptics-playback-field-observation.json",
+      "count": 43,
+      "evidence_sha256": "a28799b406613567c905c5ff1caa0b82a4db461edc43eed5544203ee9507ec85"
+    },
+    {
+      "name": "OS4-haptics-state-collector",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/haptics-state-collector-test.json",
+      "evidence_sha256": "176ba33162106e25efab03257c428e26a057153bd4fe7775e0ce5671e122ed1e",
+      "count": 11,
+      "scope": "Private POSIX sh scenarios and original OS4 ELF attribute names/groups/show pointers. No Windows, Android, DSP, physical input or device execution. Read callbacks can resume DSP; baseline first. No hardware writes/playback/calibration."
+    },
+    {
+      "name": "stock-ARM64-OS4-field-A1-calibration-review",
+      "grade": "S1/S2",
+      "result": "pass",
+      "count": 16,
+      "evidence": "logs/haptics-A1-calibration-review.json",
+      "evidence_sha256": "284af2ffba57864075ee0d809bfdaabf866be47795bbaef6bef224f8e70413ce",
+      "scope": "Original DT/probe fields stop at injected fw_upload failure; explicit transfer to separate original WMFW parser/config context. A1 Q=0 write versus B2 skip; synthetic positive Q restore accepted. No full A1 probe, physical readback/DSP/motor or root cause proof."
+    },
+    {
+      "name": "partition-operation-path-routing",
+      "grade": "S2",
+      "result": "pass",
+      "count": 46,
+      "evidence": "logs/partition-operation-path.json",
+      "evidence_sha256": "c0561432f943efb965f948f90057daed0a2adf4344e494bedf095e7d60c96661"
+    },
+    {
+      "name": "partition-operation-settings-mount-regression",
+      "grade": "S2",
+      "result": "pass",
+      "count": 31,
+      "evidence": "logs/operation-path-settings-mount-regression.json",
+      "evidence_sha256": "af2c60825ae7b75fe0d48a68083ea712ea2a2b42b684abfdccb77bbbd5825ece"
+    },
+    {
+      "name": "partition-operation-settings-regression",
+      "grade": "S2",
+      "result": "pass",
+      "count": 21,
+      "evidence": "logs/operation-path-settings-regression.json",
+      "evidence_sha256": "d75491d7f4934043a591148c8ae6b322b9b254d93599f2490ab4a3f69fd1b06b"
+    },
+    {
+      "name": "partition-operation-backup-regression",
+      "grade": "S2",
+      "result": "pass",
+      "count": 55,
+      "evidence": "logs/operation-path-backup-regression.json",
+      "evidence_sha256": "1494b46d2f28568b9ba6da3d3ff3420a6f40d6f7daf32c35d1627d0520856593"
+    },
+    {
+      "name": "partition-operation-restore-regression",
+      "grade": "S2",
+      "result": "pass",
+      "count": 54,
+      "evidence": "logs/operation-path-restore-regression.json",
+      "evidence_sha256": "871038a7a130068efb9cafdd6f56ca5f0658fca945a833e3f23fd4332340c04d"
+    },
+    {
+      "name": "partition-paths-same-image-profile-runtime",
+      "grade": "S2/S3",
+      "result": "pass",
+      "count": 9,
+      "evidence": "logs/partition-paths-profile-runtime-image.json",
+      "evidence_sha256": "e7f0cfe3768c2c2037d5e9bb4852ab996d164614e779823c4b452661c54a761a",
+      "image_sha256": "fac3c815d6fab6febe23910c2f7bbf2c28d509a35003cb9db6df388b9237b4ed"
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-algorithm-defaults-review",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/haptics-algorithm-defaults-review.json",
+      "count": 12,
+      "evidence_sha256": "96c22deee5b1a3d91d19aca838d93a9b2665b9aeb4f6073d7864ba6811d113dc",
+      "scope": "Review the missing audio-initialization hypothesis using original OS4 bytes.\n\nDecode stock WMFW/WMDR initial values and run original ALSA get callbacks.\nThe algorithm table and coefficient values are supplied at the regmap boundary;\nALSA objects, PM and register reads are fixtures. No audio core, DSP or motor\nexecutes. A file default is not a readback from the user's controller."
+    },
+    {
+      "name": "current-image-ARM64-filesystem-tools",
+      "grade": "S2/S3",
+      "result": "pass",
+      "evidence": "logs/filesystem-tools-image-test.json",
+      "count": 17,
+      "evidence_sha256": "2c4792e2c39f86001029eaa13a65f085a0919b16a0069269ace832eda11f3835",
+      "scope": "Run delivered Android filesystem tools on disposable regular files in QEMU.\n\nActual ARM64 linker, libraries and filesystem tools are extracted from the\ncurrent recovery image. No mount, loop device, physical block device, phone,\nkernel filesystem implementation or GUI operation executes. Android SELinux\nlabeling/encrypted volumes and hardware discard behavior remain unverified."
+    },
+    {
+      "name": "e2fsck-corrected-result",
+      "grade": "S2",
+      "result": "pass",
+      "count": 146,
+      "evidence": "logs/repair-exit-status.json",
+      "evidence_sha256": "139ec90d303525a2a84c9f51cc33aef16ac8658afee151e638b931c4113fae6d"
+    },
+    {
+      "name": "fsck-result-image-profile-runtime",
+      "grade": "S2/S3",
+      "result": "pass",
+      "count": 9,
+      "evidence": "logs/fsck-result-profile-runtime.json",
+      "evidence_sha256": "d3f274c38096f6235f59761c9a9c729321a5e0dc55338020f23ced444c35986f"
+    },
+    {
+      "name": "clock-read-failure-status",
+      "grade": "S2",
+      "result": "pass",
+      "count": 28,
+      "evidence": "logs/clock-failure-status-regression.json",
+      "evidence_sha256": "4e28da18c5d068fe787f3a09b65c9630b98ee9ffe224c46654543555621d5b91"
+    },
+    {
+      "name": "clock-failure-settings-regression",
+      "grade": "S2",
+      "result": "pass",
+      "count": 21,
+      "evidence": "logs/clock-failure-settings-regression.json",
+      "evidence_sha256": "f2c09e547237d96794c1fec0778c499ff80a2b4eb5aba9e8267dceb4854424ee"
+    },
+    {
+      "name": "clock-failure-image-profile-runtime",
+      "grade": "S2/S3",
+      "result": "pass",
+      "count": 9,
+      "evidence": "logs/clock-failure-profile-runtime.json",
+      "evidence_sha256": "0a287fb4ec8c14153961e191984d6145c324902766ff72b6cefd45fc861a9ebc"
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-service-route-review",
+      "grade": "S1/S2",
+      "result": "pass",
+      "count": 20,
+      "evidence": "logs/haptics-service-route-review.json",
+      "evidence_sha256": "a8ccbbbdbd766a4440bae80ef511d2bab72de1a231e809c0db71ebdb344eb700",
+      "scope": "Execute original OS4 mixer routing and the separate ordinary on entry.\n\nXML consumption, constructors, Binder, ALSA, device discovery, calibration,\ntimer threads, DSP and motor do not execute. XML lists are installed in an\nexplicit libc++ unordered-set layout fixture. Mixer/FF/PLT calls are recorded\nboundaries; successful returns do not prove hardware state or physical output.\nUnknown calls and instruction/time budget exhaustion fail closed."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-sine-coefficients",
+      "grade": "S1/S2",
+      "result": "pass",
+      "count": 46,
+      "evidence": "logs/haptics-sine-coefficients-review.json",
+      "evidence_sha256": "a9c3c487f4de75f4a2de64ace420f2c29db8ab3c809d2370cd791be9388f3688",
+      "scope": "Join original OS4 SINE upload to the actual firmware coefficient resolver.\n\nProduction FF bytes are captured with ioctl/write fixtures. Original WMFW\nparser, coefficient initialization/get_reg and SINE upload execute together.\nThe file-decoded algorithm table, allocation, PM and regmap are explicit\nboundaries; register writes are recorded and never execute DSP or hardware.\nNo calibration, real evdev/input core, boot or physical vibration is tested."
+    },
+    {
+      "name": "video-error-propagation-and-restart",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/video-failure.json",
+      "count": 6,
+      "evidence_sha256": "dd504b6e6620f27f05067b6ccfbcee965021a3c912a9b2660438af69b1085e2e",
+      "scope": "Execute production recorder error propagation and same-object recovery.\n\nPrivate regular output files, real libwebm and host libvpx are used. Explicit\nstdio/codec wrappers inject open, write, flush, close and codec errors. Close\nactually releases its FILE before returning an injected EIO. A later recording\non the same object executes without injection. No target kernel, storage,\ndisplay, power loss or real disk-full device is exercised."
+    },
+    {
+      "name": "recording-close-same-image-profile-runtime",
+      "grade": "S2/S3",
+      "result": "pass",
+      "evidence": "logs/recording-close-profile-runtime.json",
+      "count": 9,
+      "evidence_sha256": "43332c5a6da8f49b923db756ad6a8e5b63d7d7d8dd75921bf2a9a411b39220d2",
+      "image_sha256": "2773dec6298035e66dcb0b24deb78636207a6bbf24fab6f9490a5ad3151d83c7"
+    },
+    {
+      "name": "video-ffmpeg-native-decode-and-seek",
+      "grade": "S2",
+      "result": "pass",
+      "count": 18,
+      "evidence": "logs/video-ffmpeg.json",
+      "evidence_sha256": "0854e714913758e82ca6ed6e2489b7695ee55b8083fca63d2410b7ed2796bb51",
+      "scope": "Read actual recorder samples with FFmpeg's independent native VP8 decoder.\n\nValidates ffprobe metadata/timestamps, native decoder pixel centers and bounded\ninput seeks against linear decoded frame bytes. Existing short synthetic host\nsamples have one cluster and no cues; this is not a long-file seek, real-time\nGUI player, target codec/display or phone throughput test. Tools are unpacked\nDebian packages in the workspace, using recorded host shared libraries."
+    },
+    {
+      "name": "settings-whole-row-input",
+      "status": "PASS",
+      "count": 20,
+      "evidence": "logs/settings-row.json",
+      "evidence_sha256": "51427387f8f6611e2b00cd33f2b18ccb6436214dcb925d2e7386885b29972202",
+      "scope": "Actual LVGL pointer dispatcher, production check/switch row and general settings callback. Storage/hardware substitutes; whole-row target, drag/scroll cancellation, disabled, rollback/retry. Before component fails8/20.",
+      "grade": "S2",
+      "result": "pass"
+    },
+    {
+      "name": "settings-row-same-image-profile-runtime",
+      "status": "PASS",
+      "count": 9,
+      "evidence": "logs/settings-row-profile-runtime.json",
+      "evidence_sha256": "87a1f89b85812fb449a93391e06f45123f76212c4db06d780b9321b01711bcf2",
+      "scope": "Actual new image scripts, six profiles/both slots and bounded state/error fixtures;102 phase calls. No physical touch/haptics/TEE result.",
+      "tested_image_sha256": "3c0bed7c0e93b2b5b7a50aada62165d69562c6217955a35d85eb4e03ba7cbe67"
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-DAPM-topology",
+      "status": "PASS",
+      "count": 20,
+      "evidence": "logs/haptics-dapm-route-review.json",
+      "evidence_sha256": "8b263ebcb13e6b7a700063e0d80b75700f9e5051eb84f7fe12c2f8c3e0ad0376",
+      "scope": "Hash-pinned original ELF DAPM routes/widgets/enum and PCM event callback, stock parser/get_reg. Explicit scheduling/pointers/register/mailbox/SVC fixtures; no ALSA dispatcher/PCM stream/DSP/motor. Source1 is PCM, no proven FF prerequisite."
+    },
+    {
+      "name": "video-multicluster-timeline-and-seek",
+      "status": "PASS",
+      "count": 3,
+      "evidence": "logs/video-timeline.json",
+      "evidence_sha256": "bfb15a16e47a3bf79751d30ac20f281b0fc873493f0b25e244bc838bf8ea1355",
+      "scope": "Production host recorder12.5-second160x96 timelines15/30/60FPS;3 clusters/keyframes each,1313 native-decoded frame IDs/PTS and30 accurate input seeks. Synthetic sequential capture, no target codec/display/performance/hour-scale result."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-protection-IRQ",
+      "status": "PASS",
+      "count": 44,
+      "evidence": "logs/haptics-protection-irq-review.json",
+      "evidence_sha256": "d49db2dec3052ea093d7dd115e91145ec87a2019acbbb583d57e4e9845e9b68e",
+      "scope": "Original log-only brownout handlers and4 protection fault handlers with original error_release read/3write failure paths; synthetic regmap/log/IRQ entry only. No electrical state, protection bypass or motor result."
+    },
+    {
+      "name": "haptics-actual-image-firmware-publication",
+      "status": "PASS",
+      "count": 12,
+      "evidence": "logs/haptics-firmware-publication.json",
+      "evidence_sha256": "8b4b63ab4cf2f1b50ca45a0600a1c16af2b37e6c5f885c23782f05d079cc2aa4",
+      "scope": "Current image scripts/catalog/CAS, six profiles/both slots; all nine exact ODM Cirrus files checked at624 substituted module insertion boundaries after cache/stock firmware fixture removal. Original parser names10 vendor/ODM differing parameter words perOS4. No kernel loader, physical probe/DSP/motor.",
+      "tested_image_sha256": "3c0bed7c0e93b2b5b7a50aada62165d69562c6217955a35d85eb4e03ba7cbe67"
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-A1-joined",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-A1-joined-review.json",
+      "evidence_sha256": "13410876f596e0c33552b17bfe671007724ef433730e9d8f213e066eaadd9d90",
+      "count": 16,
+      "scope": "Original A1/B2 probe/config/selftest joined to production FF, synthetic IRQ and single-waiter erase; PM/register/kernel/DSP boundaries remain explicit; no motor claim."
+    },
+    {
+      "name": "mount-mode-current-source-regression",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/mount-mode.json",
+      "evidence_sha256": "7da7ea2c1d15d813113f6475a63e628f5b2f5a072d661dceef9e5b522102724d",
+      "count": 15,
+      "scope": "Production transaction, recursive operation lock and partition/DataManager doubles; no real mounts. Old source fails8 same cases."
+    },
+    {
+      "name": "mount-mode-actual-image-profile-runtime",
+      "grade": "S2/S3",
+      "result": "pass",
+      "evidence": "logs/mount-mode-profile-runtime.json",
+      "evidence_sha256": "0bc9fe141cb6cbb3a6286306a5c341b841ec53c8c49a8266ebde5a05e5bea842",
+      "count": 9,
+      "phase_calls": 102,
+      "tested_image_sha256": "848096d4b42b41926e2741ba4a34ef1ec4922aaa66036281724e7a2d65b652f1",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-reference-FF-core",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-ff-core-review.json",
+      "evidence_sha256": "ce274c8de9eec19822d0802aed8434af77aea2dbe3240ca5aaef0e3e063527c0",
+      "count": 16,
+      "scope": "Versioned reference core and original A1 driver with explicit kernel/PM/IRQ boundaries; not motor proof."
+    },
+    {
+      "name": "field-OS4-haptics-stop-erase",
+      "grade": "user-observation",
+      "result": "observed",
+      "evidence": "logs/haptics-erase-field-observation.json",
+      "evidence_sha256": "38145f1fe073bd2ce769b2a2d7b1133cf3f5fac6f895256a9296b648247aa8ee",
+      "count": 43,
+      "scope": "Existing user dmesg43 stop/erase pairs, all erase_ret0; no caller/ioctl/electrical proof."
+    },
+    {
+      "name": "six-profile-haptics-power-topology",
+      "grade": "S1",
+      "result": "pass",
+      "evidence": "logs/haptics-power-topology.json",
+      "evidence_sha256": "8ebc0ece656720e29579d49ea2212df39f67f39b5856f353fae97131164ad373",
+      "count": 6,
+      "scope": "Stock merged phandle resolution and original ELF supply data; extracted OS4 init rc inspected; no regulator/GPIO/kernel/DSP or physical output."
+    },
+    {
+      "name": "storage-selection-production-failure-paths",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/otg-selection.json",
+      "count": 15,
+      "evidence_sha256": "d90a132bf5c6a4535cb5e52afb4c859180d6d33c3794ed68918b3ffd19073ab2"
+    },
+    {
+      "name": "settings-current-persistence-regression",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/settings-regression.json",
+      "count": 21,
+      "evidence_sha256": "e00388c210fc870f0509a97e1cb487119415a5aa06520972b5de598e991b48fb"
+    },
+    {
+      "name": "storage-selection-same-image-profile-runtime",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/otg-selection-profile-runtime.json",
+      "count": 9,
+      "evidence_sha256": "8efc816a9907885f581b334427bb6a78764e45034e04f26572c29b4090902bae"
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-restore-joined",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-restore-joined-review.json",
+      "evidence_sha256": "554c710baa422f09e93d94d4388e0bc420b3c2942852d432cd00bc7eefd48a89",
+      "count": 14,
+      "scope": "Original service restore bridged to same original post-probe A1/B2 stores; synthetic values/FS/PM/regmap, no actual calibration or motor."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-stock-wave-table",
+      "grade": "S1/S2",
+      "result": "pass",
+      "count": 10,
+      "evidence": "logs/haptics-stock-wave-review.json",
+      "evidence_sha256": "a996c71e24ac9e06037ad72b4294b279b56f49bb4608e339149ed1a8ad40ee60",
+      "scope": "Independent43 WMDR wave records match original parser; original CUSTOM31 worker accepts count derived from file at explicit regmap boundary; post-user-copy only, no DSP/motor."
+    },
+    {
+      "name": "six-profile-CPU-thermal-sensor-identity",
+      "grade": "S1",
+      "result": "pass",
+      "evidence": "logs/thermal-topology.json",
+      "evidence_sha256": "3dc557096318f66adbb2b3e7131d85ccd28420dd86a42dd56ba412f4b620453c",
+      "count": 6,
+      "scope": "Original matching DTB+overlay5 and thermal module registration disassembly; cpu-crg tsensor channel0; not Linux sysfs ordinal or physical measurement."
+    },
+    {
+      "name": "CPU-thermal-dynamic-type-identity",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/thermal-identity.json",
+      "evidence_sha256": "af7d281a47b36ec6f10228c8d8a98001e6ae86f00084c91a908ca1683713a649",
+      "count": 12
+    },
+    {
+      "name": "CPU-thermal-status-regression",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/thermal-status-regression.json",
+      "evidence_sha256": "129e51c96a558790aa141ba66976e2482a384c4356b83881c6e30effed6afac9",
+      "count": 28
+    },
+    {
+      "name": "CPU-thermal-same-image-profile-runtime",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/thermal-identity-profile-runtime.json",
+      "evidence_sha256": "309dc3f0ee83a471aa919266013f013312c1b6030595a1d10d70f0f725858154",
+      "count": 9
+    },
+    {
+      "name": "GUI2-temperature-status-layout",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/temperature-ui.json",
+      "count": 11,
+      "scope": "Actual production provider/controller/LVGL, strict parser14 values, disabled/recovery, independent battery, timer refresh, recording/Wi-Fi layout and four widths/two themes; settings and tick are fixtures, host fonts; no Android sensor/display.",
+      "evidence_sha256": "212447cf057001d62bd4db39969f78a33e25b15e674ec13264087e0a6348cc80"
+    },
+    {
+      "name": "temperature-GUI-status-regression",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/temperature-status-regression.json",
+      "count": 28,
+      "scope": "Actual status reading methods and updated backend; clocks/sysfs/properties substituted, no physical temperature accuracy.",
+      "evidence_sha256": "2aee3376e17cb7fe6e17e3945fea742a3fbfd18ab1b31f543b8346079c84ce50"
+    },
+    {
+      "name": "temperature-GUI-same-image-profile-runtime",
+      "grade": "S2/S3",
+      "result": "pass",
+      "count": 9,
+      "evidence": "logs/temperature-ui-profile-runtime.json",
+      "evidence_sha256": "10d0052548a3190b55a180f1ca868647caf2f71bee109940bb7fa79f99e871d0",
+      "scope": "Same image activation scripts and six profiles/both slots; mount/property/input/insmod/Binder fixtures, no physical motor or temperature."
+    },
+    {
+      "name": "stock-ARM64-legacy-firmware-resolver-FF-join",
+      "grade": "S2",
+      "result": "pass",
+      "count": 60,
+      "evidence": "logs/haptics-legacy-firmware-join.json",
+      "evidence_sha256": "173750421074383234c8e510a479140982069261c64aa0537990b00998294853",
+      "scope": "Four OS2/OS3 stock normal/calibration parsers with file-decoded algorithm tables; normal firmware feeds original coefficient lookup and synchronous FF upload callback/worker. Kernel/PM/queue/regmap explicit fixtures, no full probe/parameter loading/start/IRQ/DSP/motor."
+    },
+    {
+      "name": "stock-ARM64-legacy-parameter-loader-join",
+      "grade": "S2",
+      "result": "pass",
+      "count": 48,
+      "evidence": "logs/haptics-legacy-parameters-join.json",
+      "evidence_sha256": "f16320e81daac1d5f5761728eabb152def1e7cb92d29127956f676342dfad9a9",
+      "scope": "Four OS2/OS3 original wavetable creation, normal/calib firmware parse and parameter loader/parser execute together; missing/header/raw-write faults can warn and return loader0. Allocation/request/string/regmap boundaries explicit; no probe/config/start/IRQ/DSP/motor."
+    },
+    {
+      "name": "stock-ELF-six-profile-haptics-probe-relocation-inventory",
+      "grade": "S1",
+      "result": "pass",
+      "count": 6,
+      "evidence": "logs/haptics-probe-callgraph.json",
+      "evidence_sha256": "9ed72060cc8ef5a47e2ef2f061579f472c89ffeedcbb84a903db781929771329",
+      "scope": "Static ARM64 ELF relocation/symbol inventory of each stock cs40l26_probe; OS2/OS3 direct target sequence matches across initial/final samples and differs from OS4. Legacy probes include regmap read/write and direct upload/play/erase self-test targets; OS4 includes part-number resolver and different workqueue/FWNODE imports. Relocations do not establish runtime branch order. No probe execution, kernel service, DSP, hardware or motor."
+    },
+    {
+      "name": "GUI2-settings-failed-apply-retry",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/settings-retry.json",
+      "count": 9,
+      "scope": "Actual language/theme callbacks and LVGL event dispatch; failure before publication rolls back memory and permits retry. Store/routing/console fixtures; no phone/persist or motor.",
+      "evidence_sha256": "504f850606c8e402a0426aa5f19f5a52a688e60bec88f0ddc4e3e853f8789b69"
+    },
+    {
+      "name": "settings-retry-current-row-regression",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/settings-retry-row-regression.json",
+      "count": 20,
+      "scope": "Actual LVGL row input and extracted general callback; storage/hardware fixtures.",
+      "evidence_sha256": "7f46c67aa5351b084ff264e0cef55bdb4c7b0093da9f498de0b7dd004667f9ea"
+    },
+    {
+      "name": "settings-retry-current-storage-regression",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/settings-retry-storage-regression.json",
+      "count": 21,
+      "scope": "Real InfoManager/DataManager selected methods and disposable host files; mount/property/metadata fixtures.",
+      "evidence_sha256": "e00388c210fc870f0509a97e1cb487119415a5aa06520972b5de598e991b48fb"
+    },
+    {
+      "name": "settings-retry-haptics-widget-regression",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/settings-retry-haptics-ui-regression.json",
+      "count": 21,
+      "evidence_sha256": "9c26b0c3d16873c981704f12dba8ac5741855ee5ab6d507bc2940cca0197869c",
+      "scope": "Existing actual LVGL widgets and extracted callbacks; fixture hardware sink, no motor output."
+    },
+    {
+      "name": "settings-retry-same-image-profile-runtime",
+      "grade": "S2/S3",
+      "result": "pass",
+      "evidence": "logs/settings-retry-profile-runtime.json",
+      "count": 9,
+      "evidence_sha256": "888d5341a38d51e2791fb8e0d2d7f4f5b29262aa4206be6f9ed81924033d161a",
+      "scope": "New image scripts/CAS and six profiles/both slots,102 phase calls; mount/property/insmod/input/Binder fixtures; no physical motor or device settings."
+    },
+    {
+      "name": "MTP-datetime-parse-validation",
+      "evidence": "logs/mtp-datetime.json",
+      "count": 80,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Actual MtpUtils compiled with UBSan; independent Python UTC oracle, host libc/timezones, invalid input leaves output unchanged; no target RTC or transport.",
+      "evidence_sha256": "b6abf4e6947a557e54fc19924da7e11c778f1cf64cb3f492c4049cad34c5ae43"
+    },
+    {
+      "name": "MTP-datetime-object-upload",
+      "evidence": "logs/mtp-datetime-objects.json",
+      "count": 46,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Production server/database/packets/storage, real chroot files/inotify/threads, USB peer fixture; four new upload mtimes and42 existing cases; no physical USB.",
+      "evidence_sha256": "7c6735bf6fdd0b5d796845a823542729b5944e8f923adf5c8b63e72bdce19e55"
+    },
+    {
+      "name": "MTP-datetime-transfer-regression",
+      "evidence": "logs/mtp-datetime-transfers.json",
+      "count": 48,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Production move/copy/rescan regression under host ASan/UBSan and USB fixtures; no phone.",
+      "evidence_sha256": "f545a22ab4d5a4e7045e9f967d6a70772746a85ebbddc114a9b84a5f0059aa68"
+    },
+    {
+      "name": "MTP-datetime-same-image-profile-runtime",
+      "evidence": "logs/mtp-datetime-profile-runtime.json",
+      "evidence_sha256": "c605c87c9bf333591c8abbb785ec39b22521a73cd2a503d13faa59abce6a0b76",
+      "count": 9,
+      "result": "pass",
+      "grade": "S2/S3",
+      "scope": "Actual new image scripts/CAS, six profiles and both slots,102 phase calls. Mount/property/insmod/input/Binder fixtures, no device settings or motor."
+    },
+    {
+      "name": "GUI-haptics-request-trace",
+      "evidence": "logs/haptics-request-trace.json",
+      "count": 14,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Real owner/FF production traces on syscall fixtures; successful request ABI unchanged at8 durations; no kernel/DSP/motor.",
+      "evidence_sha256": "199cb432f327c4f7d1e502e77bea3203e70fec72180f6a700bef3c9d5cd6586c"
+    },
+    {
+      "name": "GUI-haptics-trace-route-regression",
+      "evidence": "logs/haptics-request-trace-route.json",
+      "count": 24,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Real hardware backend/router/FF with private sysfs/input and injected ioctls; error codes,short write,retry,parameter trace; no hardware.",
+      "evidence_sha256": "d8e23e5e25c7ca381c18e0ac734cbde029cd397b412d95f7794cbddb95264075"
+    },
+    {
+      "name": "GUI-haptics-trace-worker-FF-regression",
+      "evidence": "logs/haptics-request-trace-worker-ff.json",
+      "count": 4,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Real owner plus FF with gated erase/release/upload/play faults; device I/O fixtures.",
+      "evidence_sha256": "8f7204eb8bd7327cfde5e7e8b5f6f854edfdcf3b9f075c7d30c51627b0ce24fa"
+    },
+    {
+      "name": "haptics-request-trace-same-image-profile-runtime",
+      "evidence": "logs/haptics-request-trace-profile-runtime.json",
+      "evidence_sha256": "0f162bb2b517ceaf6b409c596b6a62bf4d1e1f46138af8972c616b5a12caa6f5",
+      "count": 9,
+      "result": "pass",
+      "grade": "S2/S3",
+      "scope": "Actual current image scripts/CAS, six profiles and both slots,102 phase calls. Mount/property/insmod/input/Binder fixtures; no physical touch, settings storage, or motor."
+    },
+    {
+      "name": "GUI-settings-storage-joined",
+      "evidence": "logs/settings-joined.json",
+      "evidence_sha256": "f435b8efcf4b3f724ed817a36246453bd7456580ae1b197331177c70c99461c8",
+      "count": 22,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Production LVGL row/pointer callback -> twrp_settings_store -> DataManager -> real partition lookup -> InfoManager and host files in private chroot at exact /mnt/vendor/persist/TWRP. Mount/IsMounted, Android metadata/properties, navigation/hardware are fixtures. Old lookup-only control fails22/22; no device settings conclusion."
+    },
+    {
+      "name": "MTP-atomic-upload-objects",
+      "evidence": "logs/mtp-atomic-objects.json",
+      "evidence_sha256": "18a557229644e2b8044a4d28ee733144eecc0a555cb8b13f06cf21677ebd4f41",
+      "count": 68,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs. Atomic upload host files; no physical USB or decrypted-media integration."
+    },
+    {
+      "name": "MTP-atomic-upload-transfer-regression",
+      "evidence": "logs/mtp-atomic-transfers.json",
+      "evidence_sha256": "dc071599f39759fb0fa0a20c19780dea0542574206909206d2facc17d41a11bd",
+      "count": 48,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs. Atomic upload host files; no physical USB or decrypted-media integration."
+    },
+    {
+      "name": "MTP-atomic-upload-same-image-profile-runtime",
+      "evidence": "logs/mtp-atomic-profile-runtime.json",
+      "evidence_sha256": "6484d650e42fe3850e5eab5e8a62096c7f529ae6c997823d2af3a407c5718633",
+      "count": 9,
+      "result": "pass",
+      "grade": "S2/S3",
+      "scope": "Current image scripts/CAS, six profiles both slots,102 calls; mount/property/insmod/input/Binder fixtures. No physical USB, settings or motor."
+    },
+    {
+      "name": "GUI-timezone-failure-rollback",
+      "evidence": "logs/timezone-retry.json",
+      "evidence_sha256": "3520b826a814e9700787e5140564361e0ebdd34c3fab9a2f8fbd4c1845d141b5",
+      "count": 17,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Real LVGL timezone callback, settings adapter and libc TZ changes; DataManager I/O is a fixture.\n\nNo phone, RTC, persist mount, property service, complete GUI route or disk rollback.\n"
+    },
+    {
+      "name": "GUI-timezone-settings-joined-regression",
+      "evidence": "logs/timezone-settings-joined.json",
+      "evidence_sha256": "f3c16347419ecac9058de49b7ef29ed819325b3f3734e61ddc7c87ab008ee01d",
+      "count": 22,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Join real LVGL rows/callback, settings adapter, DataManager, partition lookup and InfoManager.\n\nPrivate host files only. Partition Mount/IsMounted, Android properties/metadata,\npage navigation and hardware sinks remain fixtures. No device or actual mount.\n"
+    },
+    {
+      "name": "GUI-timezone-settings-row-regression",
+      "evidence": "logs/timezone-settings-row.json",
+      "evidence_sha256": "b4fcae9597cecc01d59d0ef822405695b97289bb645984659693790667a1b04a",
+      "count": 20,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Actual LVGL pointer dispatch and general-settings callback; storage/hardware substituted."
+    },
+    {
+      "name": "GUI-timezone-haptics-route-regression",
+      "evidence": "logs/timezone-haptics-route.json",
+      "evidence_sha256": "1d83d2f38adcb8df48426a3cb85876a5730e7d1ae12c327e84928a28fbc72d90",
+      "count": 24,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run the production settings -> haptics router -> FF path on host fixtures.\n\nActual minui/backend source is compiled. Sysfs/input paths point into a private\ntemporary directory; ioctl/property/storage boundaries are substitutes. No real\ninput device, driver, motor, HAL or calibration data is accessed."
+    },
+    {
+      "name": "GUI-timezone-language-theme-regression",
+      "evidence": "logs/timezone-language-theme.json",
+      "evidence_sha256": "eccbc35ae4c68fcb6b091accc50ddea3220d33debfb5c11c0cfd0f867f021488",
+      "count": 9,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Real GUI2 language/theme callbacks with LVGL dispatch and failing storage fixtures.\n\nThis checks in-memory rollback and retry after failures before disk publication.\nIt does not execute DataManager, actual persist, the full shell or a phone.\n"
+    },
+    {
+      "name": "GUI-timezone-status-regression",
+      "evidence": "logs/timezone-status-regression.json",
+      "count": 28,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Execute production battery, temperature, clock policy and status parsing.\n\nSysfs is redirected to disposable files. Wall/monotonic clocks and DataManager\nare substitutes. No real clock is readjusted, no Health HAL or hardware is used.",
+      "evidence_sha256": "66651383e5a1bbe9b1a1421d793d411466c92bc062497e3b8dd45a9efe1a3fb5"
+    },
+    {
+      "name": "GUI-timezone-same-image-profile-runtime",
+      "evidence": "logs/timezone-profile-runtime.json",
+      "evidence_sha256": "875f274ebefc52acb466a7b1ee6780770b241733e0943995b41d6b3e00f54b08",
+      "count": 9,
+      "result": "pass",
+      "grade": "S2/S3",
+      "scope": "Current image scripts/CAS, six profiles both slots,102 calls; mount/property/insmod/input/Binder fixtures. No physical settings, RTC, USB or motor."
+    },
+    {
+      "name": "GUI-haptics-probe-route",
+      "evidence": "logs/haptics-probe-route.json",
+      "evidence_sha256": "d304c77225d3d3fcd25ca9b3d66d047579a3b2a960021b8bf44f18423aec4338",
+      "count": 28,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run the production settings -> haptics router -> FF path on host fixtures.\n\nActual minui/backend source is compiled. Sysfs/input paths point into a private\ntemporary directory; ioctl/property/storage boundaries are substitutes. No real\ninput device, driver, motor, HAL or calibration data is accessed."
+    },
+    {
+      "name": "GUI-haptics-probe-worker-FF",
+      "evidence": "logs/haptics-probe-worker-ff.json",
+      "evidence_sha256": "3656a5624607df7016f828e8374fa827afb615682c0ea9c97554427fe9dab71b",
+      "count": 6,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run the production settings -> haptics router -> FF path on host fixtures.\n\nActual minui/backend source is compiled. Sysfs/input paths point into a private\ntemporary directory; ioctl/property/storage boundaries are substitutes. No real\ninput device, driver, motor, HAL or calibration data is accessed."
+    },
+    {
+      "name": "GUI-haptics-probe-trace-ABI",
+      "evidence": "logs/haptics-probe-trace-abi.json",
+      "evidence_sha256": "a18897b787e96af2c984aa2203957e3e064f80fcd790842d212f34a2ed6cca65",
+      "count": 14,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Check production request trace semantics and unchanged FF ABI on syscall fixtures.\n\nNo physical motor, driver, kernel scheduling or device log is executed.\n"
+    },
+    {
+      "name": "GUI-haptics-probe-same-image-runtime",
+      "evidence": "logs/haptics-probe-profile-runtime.json",
+      "evidence_sha256": "f698ecbba746a06d350bbb890a17cff87a6bd9fb52d370f540ca47326484c4ba",
+      "count": 9,
+      "result": "pass",
+      "grade": "S2/S3",
+      "scope": "Current image scripts/CAS, six profiles both slots,102 phase calls; mount/property/insmod/input/Binder fixtures. No physical vibration or device settings."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-mailbox-error-review",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/haptics-mailbox-error-review.json",
+      "evidence_sha256": "b7c44e95b861c9117211a421c04e2ed2cb7561ec1b2dbfc4fc4bf79f15dcc530",
+      "count": 32,
+      "scope": "Original mailbox retry, pm_enter and stop-worker error branches; register/PM-return/lock/sleep/recovery-helper/pm-exit fixtures. No PM-core, I2C, DSP, hardware acknowledgement or motor execution. Field fault windows are temporal observations without transaction identity."
+    },
+    {
+      "name": "MTP-transaction-cancel-control",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/mtp-transaction-control.json",
+      "count": 73,
+      "evidence_sha256": "9124ad316309b511a6f10e5fdfa078a11a561810797adc109f151c581cabf5f3",
+      "scope": "Transaction Cancel software and current-source regression only; control ep0 and server peer are separate fixtures. No real USB, DSP, motor or full-goal completion."
+    },
+    {
+      "name": "MTP-transaction-cancel-negative-control",
+      "grade": "S1/S2",
+      "result": "expected-failure",
+      "evidence": "logs/mtp-transaction-control-before.json",
+      "count": 73,
+      "evidence_sha256": "3a6ef4b78b75b2221273e3c36f7327ffef88c3467135f3b50a396ec601274fbb",
+      "scope": "Transaction Cancel software and current-source regression only; control ep0 and server peer are separate fixtures. No real USB, DSP, motor or full-goal completion."
+    },
+    {
+      "name": "MTP-transaction-server-lifetime",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/mtp-transaction-server.json",
+      "count": 68,
+      "evidence_sha256": "ad3156163334f0831bdb7762d29207986f0b2cb2c8ec16492790fe5dba8e0b66",
+      "scope": "Transaction Cancel software and current-source regression only; control ep0 and server peer are separate fixtures. No real USB, DSP, motor or full-goal completion."
+    },
+    {
+      "name": "MTP-transaction-transfer-regression",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/mtp-transaction-transfers.json",
+      "count": 48,
+      "evidence_sha256": "02878efcfafb9abbe461f240a2eac9e345162ec87cb3ca7b53b6b01328eb941e",
+      "scope": "Transaction Cancel software and current-source regression only; control ep0 and server peer are separate fixtures. No real USB, DSP, motor or full-goal completion."
+    },
+    {
+      "name": "MTP-transaction-event-regression",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/mtp-transaction-events.json",
+      "count": 62,
+      "evidence_sha256": "0b0b350a05faee60e9f5e15481263297fb97c53b7466b2381e44d0a471c10b8c",
+      "scope": "Transaction Cancel software and current-source regression only; control ep0 and server peer are separate fixtures. No real USB, DSP, motor or full-goal completion."
+    },
+    {
+      "name": "MTP-transaction-transport-regression",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/mtp-transaction-transport.json",
+      "count": null,
+      "evidence_sha256": "5de58f0b22be5ac06f35059a54232b3568b40dd5fdb9dd340fcb1ff17c06ca5c",
+      "scope": "Transaction Cancel software and current-source regression only; control ep0 and server peer are separate fixtures. No real USB, DSP, motor or full-goal completion."
+    },
+    {
+      "name": "MTP-transaction-same-image-profile-runtime",
+      "grade": "S2/S3",
+      "result": "pass",
+      "evidence": "logs/mtp-transaction-profile-runtime-image.json",
+      "count": 9,
+      "evidence_sha256": "d52f1d526e36db2984d2cd8f5d2bf2fb093b7f97fedb065b84595d8a8f262e97",
+      "scope": "Transaction Cancel software and current-source regression only; control ep0 and server peer are separate fixtures. No real USB, DSP, motor or full-goal completion."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-custom-callback",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/haptics-custom-callback-review.json",
+      "evidence_sha256": "4796834b557db26aae67e62edb7a95bea8fe043e1a10c4286b4c6aa6ee1d25a3",
+      "count": 12,
+      "scope": "Stock service CUSTOM bytes through original post-probe upload callback, original address/length checks, bounded copy fixture, worker/start/cleanup. No privileged usercopy/page isolation, kernel input core, actual allocation/PM, DSP, timer or motor."
+    },
+    {
+      "name": "stock-ARM64-OS2-OS3-haptics-probe-upload-join",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/haptics-legacy-probe-upload-join.json",
+      "evidence_sha256": "380296f354ab933d5694704f6044fa81e4f7afbb35f4b7d4963e6468b8fac7ff",
+      "count": 20,
+      "scope": "Four original legacy probe contexts execute through stock normal WMFW parse and five parameter loaders; exact raw bytes/addresses checked. All paths fail deliberately before complete DSP config/input. Explicit synthetic B2 identity, regmap ROM/packed algorithm-table reads, mailbox ACK, power/kernel fixtures; original remove instructions execute with teardown services substituted; no DSP or motor."
+    },
+    {
+      "name": "stock-ARM64-OS2-OS3-haptics-config-input-selftest",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/haptics-legacy-config-input-join.json",
+      "evidence_sha256": "b2e932c245e78efd573705e25f8bd8562d0c324831cf4349179ec73e40708376",
+      "count": 44,
+      "scope": "Four original legacy probe contexts execute stock firmware/parameters, full DSP configuration, IRQ/input setup and built-in upload/start/erase under explicit B2 identity, regmap/all-FF sequences/mailbox/PM/kernel/input/ordered-queue fixtures. Original remove executes. Start mailbox-5 still leaves probe0 and upload/erase status0; no completion services, DSP, physical IRQ or motor proof."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-service-init-review",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/haptics-service-init-review.json",
+      "evidence_sha256": "2fdc392a8832290fd10dc3eac3a16692a8c6732de01c58529327f19839323117",
+      "count": 30,
+      "scope": "Original input-discovery constructor prefix through0x13084 and separate FF backend constructor; actual stock property declarations pinned. Calibration restore is recorded but substituted, remaining outer constructor/XML/thread/backend dispatch is not executed. Directory/ioctl/properties/mixer/libc++/custom_wave/allocation fixtures; no full service, ALSA, DSP or motor."
+    },
+    {
+      "name": "mtp-reset-control",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/mtp-reset-control.json",
+      "evidence_sha256": "aaa820a6931ffda7a50bad4d97c4c49c6eec34f97175b1d2f43f1e4129fe83ff",
+      "scope": "Production FunctionFS SETUP/status and event framing; emulated ep0 I/O, no UDC.",
+      "count": 80
+    },
+    {
+      "name": "mtp-reset-server",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/mtp-reset-server.json",
+      "evidence_sha256": "eabe88278ed241a00a1bfcd793e4b6b5989dc666060a6106971a1e1921f9111b",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs.",
+      "count": 78
+    },
+    {
+      "name": "mtp-reset-transfers",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/mtp-reset-transfers.json",
+      "evidence_sha256": "498b3a99b192115b495b6bd386d7ac808de180eb08476962c77651a48588159c",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs.",
+      "count": 48
+    },
+    {
+      "name": "mtp-reset-events",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/mtp-reset-events.json",
+      "evidence_sha256": "18f6c13e1a544ccf6d7b4535b00a9f0c298135233d8d17d7631b9be23ad82b86",
+      "scope": "Production native/compat FunctionFS event lifecycle, host pipes and AIO fault boundaries.",
+      "count": 62
+    },
+    {
+      "name": "mtp-reset-control-before",
+      "grade": "S1/S2",
+      "result": "expected-failure",
+      "evidence": "logs/mtp-reset-control-before.json",
+      "evidence_sha256": "fbcaf64138e855886e0a16d34e3dc194faa1b7d9fe6828a7d32c85bb51ba226a",
+      "scope": "Production FunctionFS SETUP/status and event framing; emulated ep0 I/O, no UDC.",
+      "count": 80,
+      "failed_cases": 3
+    },
+    {
+      "name": "mtp-reset-server-before",
+      "grade": "S1/S2",
+      "result": "expected-failure",
+      "evidence": "logs/mtp-reset-server-before.json",
+      "evidence_sha256": "dec2a5d2e746460a75c89e5bfa1a3dc910d25b792dc21b81765595e2a779fdcd",
+      "scope": "Run production MTP server/database/packet/storage code with a memory USB peer.\n\nReal private host files, inotify and threads; no phone or physical USB/configfs.",
+      "count": 10,
+      "failed_cases": 9
+    },
+    {
+      "name": "mtp-reset-transport",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/mtp-reset-transport.json",
+      "evidence_sha256": "c6d0a2cfe050e4fcd8bc2170bb6cce23f730d1978b6e449746b877af3a04700d",
+      "scope": "Compile the actual MTP sources with property/logging substitutes, no USB."
+    },
+    {
+      "name": "mtp-reset-profile-runtime-image",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/mtp-reset-profile-runtime-image.json",
+      "evidence_sha256": "99416edb12f8fc12400cd79b1395ceadebb63793b992531a5a89f229417fcdd1",
+      "count": 102,
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-audio-peer-review",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-audio-peer-review.json",
+      "evidence_sha256": "aef08604223608fcaf1371d3a15348f3ae6444b7955ec049d2932bff763ada93",
+      "count": 34,
+      "scope": "Execute the original OS4 audio peer for the captured vibrator startup packet.\n\nOriginal socket handler, ResourceManager notification, MiModulePrimary stream\ntraversal and updateA2HMode execute. Singleton initialization is supplied as\ncomplete. Socket I/O, mutexes, weak-reference acquisition, stream/usecase and app\npolicy, setA2HParameter and logging are fixtures. Atomic release runs serially;\nthere is no live Android service, real audio stream, ALSA, DSP or motor.\nUnknown calls or execution outside the reviewed functions fail closed."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-ASP-FF-joined",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-asp-ff-join-review.json",
+      "evidence_sha256": "828d891cd4c118e922c6867ab1dc69b67a18b01ecb1558e8c4689013f3fc2dac",
+      "count": 14,
+      "scope": "Join original OS4 A1 probe, ASP clock callback and production FF in one VM.\n\nStock DT/firmware, original clk_en/asp_start/swap_ext_clk/set_pll_loop and FF\nupload/play/start/mailbox IRQ run. Codec topology, 3072000Hz BCLK, PLL read0,\n13-jiffy stop timeout, register I/O/mailbox ACK, kernel PM/locks and serialized\nqueues are explicit fixtures. No actual ALSA dispatcher, DAPM scheduling, clock,\nDSP, input core, electrical output or motor is executed. Writes never invent\nreadback. Failure scenarios test control flow, not working or silent hardware."
+    },
+    {
+      "name": "stock-ARM64-OS4-haptics-PCM-FF-joined",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/haptics-pcm-ff-join-review.json",
+      "evidence_sha256": "25b5f98b4eb7c60144cc81df9d566406f3062e86dc92c5a70d2b8bc79363e72e",
+      "count": 12,
+      "scope": "Join original codec/control/DAI/PCM widget setup to production A1 FF.\n\nOriginal codec driver/component probe, ASP Mode1/PCM Slot1 setters, hw_params,\nasp_params/clk_en/asp_rx and FF callbacks/workers/IRQ execute in one VM.\nMFD/ALSA pointers, register services, codec allocation/registration, format-width\nlookup/string comparison, hw_params memory (48kHz/S24_LE/one or two channels), PM/mailbox/timeouts,\nserial widget order/queues and supplied IRQ messages are explicit fixtures.\nThe stock service front end is mono; real backend negotiation is not executed.\nThere is no physical clock, ALSA dispatcher/DAPM, DSP or motor execution."
+    },
+    {
+      "name": "backup-digest-atomic-publication",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/digest-publication.json",
+      "evidence_sha256": "3a5a43e2539f48316845f3d1e0ef47ddb799ada6716e9d8972d9cf548f23fb1c",
+      "count": 54,
+      "scope": "Execute actual digest driver/hash and BackupPartition caller on private files.\n\nBoringSSL, serialization, ordinary file I/O, rename, fork and process exit run.\nMounts/UI/partition data creation/Android metadata/libbase helpers are fixtures.\nSyscall-boundary failures and process exits do not simulate target power loss.\n"
+    },
+    {
+      "name": "backup-digest-atomic-negative-control",
+      "grade": "S1/S2",
+      "result": "expected-fail",
+      "evidence": "logs/digest-publication-before.json",
+      "evidence_sha256": "af578315d60a1a644f80790c643d19d2cb7493a80a51900bdb8d58529cef4df2",
+      "count": 54,
+      "scope": "Execute actual digest driver/hash and BackupPartition caller on private files.\n\nBoringSSL, serialization, ordinary file I/O, rename, fork and process exit run.\nMounts/UI/partition data creation/Android metadata/libbase helpers are fixtures.\nSyscall-boundary failures and process exits do not simulate target power loss.\n"
+    },
+    {
+      "name": "backup-completion-manifest",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/backup-manifest-core.json",
+      "evidence_sha256": "dfa89cc688f1e8044d0f2ea259247bf0907a848552981bec03ea22c721d57f84",
+      "count": 17,
+      "scope": "Production helper with real private files; fork exit is not power-loss proof."
+    },
+    {
+      "name": "backup-manager-completion",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/backup-manifest-session-final.json",
+      "evidence_sha256": "b35c452fc960038afc6e3aa45bbee4a8e44701272566060bd1900f357706c533",
+      "count": 55,
+      "scope": "Production RunBackup/tar session; archive writer, digest and mounts are fixtures."
+    },
+    {
+      "name": "restore-manager-completion-preflight",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/backup-manifest-restore-final.json",
+      "evidence_sha256": "a71a49ce2e0409bbc39b7d685e4e54362ca5b9e46309f1956eab94e504027316",
+      "count": 56,
+      "scope": "Production restore manager/digest; target blocks are private regular files."
+    },
+    {
+      "name": "current-image-profile-activation",
+      "grade": "S2/S3",
+      "result": "pass",
+      "evidence": "logs/ce-lifecycle-profile-runtime.json",
+      "evidence_sha256": "04393a223f244b71f313f147b45a46e0c17e170cbdd8e617aaec0c3963aba498",
+      "count": 9,
+      "scope": "Same-image six-profile/two-slot shell replay; services are fixtures."
+    },
+    {
+      "name": "current-image-module-lifecycle",
+      "grade": "S2/S3",
+      "result": "pass",
+      "evidence": "logs/ce-lifecycle-module-state.json",
+      "evidence_sha256": "73d1f0f2f2001ef55a5e4e9cdd9ad919699f80b865bf27344576e02784c9259f",
+      "count": 4,
+      "scope": "Same-image module lifecycle fixtures, no kernel insertion."
+    },
+    {
+      "name": "current-image-haptics-policy",
+      "grade": "S1/S3",
+      "result": "pass",
+      "evidence": "logs/backup-manifest-haptics-policy.json",
+      "evidence_sha256": "59c1de5d8d33b0ff7276e9a6ff8cbff517b38b89dbfc63673fe4f43a1dc02e92",
+      "count": 12,
+      "scope": "Image policy queries; no device policy load."
+    },
+    {
+      "name": "current-image-usb-policy",
+      "grade": "S1/S3",
+      "result": "pass",
+      "evidence": "logs/backup-manifest-usb-policy.json",
+      "evidence_sha256": "6095e0ee154034778ec5db8e241a5e7f67803dd5c0fb24b2f95b8daff7f3ef55",
+      "count": 53,
+      "scope": "Image policy queries; no USB controller."
+    },
+    {
+      "name": "current-image-init-validation",
+      "grade": "S1/S3",
+      "result": "pass",
+      "evidence": "logs/backup-manifest-init.json",
+      "evidence_sha256": "3aa367aba723db563b2225b9898ccc993c128c74cd45c34c851c527268c73f3b",
+      "count": 6,
+      "scope": "Init syntax/service gating, no Android init boot."
+    },
+    {
+      "name": "OTG-controller-discovery",
+      "evidence": "logs/otg-discovery.json",
+      "count": 12,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Execute production hotplug/resync/coldboot and wildcard child discovery.\n\nStatic host executable runs inside private temporary chroots with ordinary\nfiles and symlinks representing USB and UFS paths. stat block mode, filesystem\nclassification, size, mount/unmount and FindActualBlockDevice are explicit\nboundaries; original FindWildcardBlockDevices is executed. No phone or real\nblock/mount I/O. Includes shipped fstab pattern and an 85-partition UFS fixture.\n",
+      "evidence_sha256": "0b9745f346390c81b86aa8f23b2637508085254fd7e34ca1e05d5c85b04a39a8"
+    },
+    {
+      "name": "OTG-discovery-before-negative-control",
+      "evidence": "logs/otg-discovery-before.json",
+      "count": 8,
+      "grade": "S2",
+      "result": "expected_failures",
+      "scope": "Execute production hotplug/resync/coldboot and wildcard child discovery.\n\nStatic host executable runs inside private temporary chroots with ordinary\nfiles and symlinks representing USB and UFS paths. stat block mode, filesystem\nclassification, size, mount/unmount and FindActualBlockDevice are explicit\nboundaries; original FindWildcardBlockDevices is executed. No phone or real\nblock/mount I/O. Includes shipped fstab pattern and an 85-partition UFS fixture.\n",
+      "evidence_sha256": "0b1c5051f2433b391c1dde1d54dfaf12e85243400a615dce390d0644d0deedb6"
+    },
+    {
+      "name": "OTG-selection-regression",
+      "evidence": "logs/otg-discovery-selection.json",
+      "count": 15,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Run production storage selection plus real UpdateSize with storage/I/O doubles.\n\nNo host or phone mount/block I/O. Real recursive transaction lock and scope\nlifetimes execute; statfs/df/media sizes, presence changes and settings are\nexplicit fixtures. Tests selection failure semantics, not USB host discovery.\n",
+      "evidence_sha256": "7a6c8e97310c053a1d2048aa1ae20f0bf4a39bcfa62f3ba5e2afdea53305a088"
+    },
+    {
+      "name": "OTG-settings-joined-regression",
+      "evidence": "logs/otg-discovery-settings-joined.json",
+      "count": 22,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Join real LVGL rows/callback, settings adapter, DataManager, partition lookup and InfoManager.\n\nPrivate host files only. Partition Mount/IsMounted, Android properties/metadata,\npage navigation and hardware sinks remain fixtures. No device or actual mount.\n",
+      "evidence_sha256": "4b06f2e4fb288afd216d85363e69b22fe23f2e994718ad0b3829d2317b7fccb1"
+    }
+  ],
+  "not_yet_completed": [
+    "OS4 stable automatic ordinary-report startup/GUI/resume; manual raw0 intervention restores215 real input events. New touch/settings image untested.",
+    "security-service actual ARM64 symbol relocation and precise runtime namespace, synthetic crypto volumes; six-profile dependency lists and independent real linker relocation controls now covered",
+    "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
+    "MTP remaining media metadata/directory date semantics (file epoch0 and timestamp-error publication now covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
+    "backup/restore real archive codec/GUI and sparse-hole/progress behavior, actual filesystem power-loss durability and content authenticity; new-backup completion manifests and restore rejection are covered by17 helper,55 RunBackup and56 RunRestore host cases but do not prove sudden power-loss behavior",
+    "full GUI/PartitionManager write/format/repair lifecycle and I/O faults; current-image tools17 historical cases, e2fsck result146 assertions and current-image wrapper/lookup/Repair/ExecCmd/ARM64 checker7 joined cases covered with explicit unmount/device/presentation fixtures; real mounts/full GUI still pending",
+    "RTC cold-start read failures/drift fixtures",
+    "video target ARM64 codec/display-shadow sampling integration, real storage/codec fault behavior, hour-scale stability and seek/index performance (bounded12.5s multi-cluster/keyframe correctness covered), GUI player rendering and full-resolution performance; host frames/queue/failure recovery plus independent FFmpeg native decode and72 short input seeks covered",
+    "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
+    "full ramdisk merge/init/LP boot simulation",
+    "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
+    "full-page UI routes and complete ZIP/OTA payload/sideload paths; image worker/manager/sparse route40 host cases and updater command/fork/exec/progress/wait22 cases now covered separately, with discovery/slot/mount/progress boundaries. No full package verification, GUI click, target ARM64 updater or USB acceptance."
+  ],
+  "hardware_unverified": [
+    "motor output",
+    "MiTEE/RPMB/wrapped-key actual decryption",
+    "Windows USB enumeration",
+    "touch wake latency",
+    "power consumption",
+    "OS4 stable physical touch (user reports failure)"
+  ],
+  "additional_checks": [
+    {
+      "name": "per-sample-crypto-ELF",
+      "grade": "S1",
+      "evidence": "docs/crypto-compatibility.json",
+      "scope": "All five named samples; static strong-symbol closure only; no actual TEE call",
+      "evidence_sha256": "295dcca3d17d1ae715808c02de7401e0002d4340531e1f1f784f61b8e09e7595"
+    },
+    {
+      "name": "profile-assets",
+      "grade": "S0/S1",
+      "evidence": "dtsrc/O1_asic_dual/profiles/inventory.json",
+      "scope": "Five profiles packaged; source provenance. Actual-image activation simulation recorded separately.",
+      "evidence_sha256": "361a7dcea9283ec35b246497748ef3c8b51bb603ba4e0da1ae81acd8072db5e9"
+    },
+    {
+      "name": "five-sample-required-partitions-and-config-resources",
+      "grade": "S0/S1",
+      "evidence": "docs/system-resource-inventory.json",
+      "scope": "All requested partition hashes verified during extraction; system-family directory inventories and selected identity/init/VINTF/linker/fstab bytes. Not arbitrary APK/framework execution or complete ZIP signature verification.",
+      "evidence_sha256": "1c2f0573022217cf6d6dcf528a6af90fe79924e22bc9f1798367f67b73421511"
+    },
+    {
+      "name": "archive-codec-pipeline-repeat-1",
+      "grade": "S2",
+      "count": 4,
+      "result": "pass",
+      "evidence": "logs/archive-pipeline-repeat-1.json",
+      "scope": "Four actual parallel encrypted split pipelines repeated after an observed short-read failure; same production/test hashes as final 46-case suite.",
+      "evidence_sha256": "176c7749a9e216276a1bdfeaedb806e90636e228daba6208ed3f04fbe896019a"
+    },
+    {
+      "name": "archive-codec-pipeline-repeat-2",
+      "grade": "S2",
+      "count": 4,
+      "result": "pass",
+      "evidence": "logs/archive-pipeline-repeat-2.json",
+      "scope": "Four actual parallel encrypted split pipelines repeated after an observed short-read failure; same production/test hashes as final 46-case suite.",
+      "evidence_sha256": "4361e9b0575097999f6d3a92df47a2756901ff1aebd8dcc91ee6b1fd9cd6dd7c"
+    },
+    {
+      "name": "archive-codec-pipeline-repeat-3",
+      "grade": "S2",
+      "count": 4,
+      "result": "pass",
+      "evidence": "logs/archive-pipeline-repeat-3.json",
+      "scope": "Four actual parallel encrypted split pipelines repeated after an observed short-read failure; same production/test hashes as final 46-case suite.",
+      "evidence_sha256": "bce647f1e9a601804d7ab452a581944a2a20c44abd8f9570e197582ca2157c63"
+    },
+    {
+      "name": "archive-codec-pipeline-repeat-4",
+      "grade": "S2",
+      "count": 4,
+      "result": "pass",
+      "evidence": "logs/archive-pipeline-repeat-4.json",
+      "scope": "Four actual parallel encrypted split pipelines repeated after an observed short-read failure; same production/test hashes as final 46-case suite.",
+      "evidence_sha256": "db91afbeb2af575781948337447137333acce2f8421aabd60304adb650ab013a"
+    },
+    {
+      "name": "archive-codec-pipeline-repeat-5",
+      "grade": "S2",
+      "count": 4,
+      "result": "pass",
+      "evidence": "logs/archive-pipeline-repeat-5.json",
+      "scope": "Four actual parallel encrypted split pipelines repeated after an observed short-read failure; same production/test hashes as final 46-case suite.",
+      "evidence_sha256": "c6b53f41a0e52aa1da0367a19dd56d3a6f1e31d67025bd57e99bcc6ae991f34f"
+    },
+    {
+      "name": "touch-window-log-analysis",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/touch-window-analysis-test.json",
+      "count": 10,
+      "evidence_sha256": "4202e07d1bf44ab38409dc80814a657be571e41fe308142f5885ba11fdeeee46",
+      "scope": "Synthetic log triage, not kernel or controller execution"
+    },
+    {
+      "name": "stock-OS4-cached-touch-info-inspection",
+      "grade": "S1/S2",
+      "result": "pass",
+      "evidence": "logs/touch-cached-info-audit.json",
+      "count": 2,
+      "evidence_sha256": "173e77524551d9dfb53170cbf577ade53ea895615822353ae7b8a75b2098dd86",
+      "scope": "Static original callback/attribute inspection only"
+    },
+    {
+      "name": "OS4-action-correlated-touch-observation",
+      "evidence": "logs/touch-action-runtime-observation.json",
+      "result": "observed; unresolved",
+      "grade": "field-observation",
+      "evidence_sha256": "01d50ad2b3a7c5c27cbc63f072f9e1a96910301c0aefea8f98a744f826c7f563"
+    },
+    {
+      "name": "OS4-v1-raw-report-field-observation",
+      "evidence": "logs/touch-v1-debug-observation.json",
+      "result": "observed; raw report mismatch; recovery unverified",
+      "grade": "field-observation",
+      "evidence_sha256": "67cc93fa4d076b8dc2eb8cf4ebd3e985a8ff42a681817ce4f37b79ee50e6af7a"
+    },
+    {
+      "name": "touch-debug-collector-private-execution",
+      "evidence": "logs/touch-debug-collector-test.json",
+      "result": "pass",
+      "grade": "S2",
+      "evidence_sha256": "0058d4ab7359f520c236a428aeff5b499b4ee6d0d1fac12fe23205a8ee78fcaa"
+    },
+    {
+      "name": "profile-ARM64-linker-dependency-and-relocation-controls",
+      "evidence": "logs/profile-linker-arm64.json",
+      "result": "pass within documented boundaries",
+      "grade": "S2",
+      "evidence_sha256": "195d62cebdcf7cb77b58fd859e904c22c5c803a5d3caf2ac69649035cf65b382"
+    },
+    {
+      "name": "current-GUI-haptics-owner-FF",
+      "evidence": "logs/haptics-current-owner-ff.json",
+      "evidence_sha256": "f1ddd14ddabdce1b49e7d6467e59b4d27683440cab81a8caa39766031e40b373",
+      "grade": "S2",
+      "result": "pass",
+      "count": 6,
+      "scope": "Run the production settings -> haptics router -> FF path on host fixtures.\n\nActual minui/backend source is compiled. Sysfs/input paths point into a private\ntemporary directory; ioctl/property/storage boundaries are substitutes. No real\ninput device, driver, motor, HAL or calibration data is accessed."
+    },
+    {
+      "name": "current-GUI-haptics-request-trace-ABI",
+      "evidence": "logs/haptics-current-trace.json",
+      "evidence_sha256": "ee9a105a20217a6ab31d8dc534d89781633cb7bee7c9429a5cea73d7169d8569",
+      "grade": "S2",
+      "result": "pass",
+      "count": 14,
+      "scope": "Check production request trace semantics and unchanged FF ABI on syscall fixtures.\n\nNo physical motor, driver, kernel scheduling or device log is executed.\n"
+    },
+    {
+      "name": "current-settings-index-navigation",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/settings-navigation.json",
+      "count": 45,
+      "evidence_sha256": "398c2befb05e15d6485183d8f6ade31b67c7b238e1cfd9f3cec377ee12cd34e2",
+      "scope": "Real LVGL settings index, cards, page host/transition/scroll and original dispatch callback.\n\nDestination navigation is recorded, not executed. Metrics/fonts and hardware are\nhost fixtures; this does not prove Android touch, persistence or destination pages.\n"
+    },
+    {
+      "name": "current-mount-list-presentation",
+      "grade": "S2",
+      "result": "pass",
+      "evidence": "logs/mount-list-chain.json",
+      "count": 6,
+      "evidence_sha256": "1b003490807dd0def3cdcc7a59c53e067c82c7fc1af75e6dbd16ec444bd11034",
+      "scope": "Production mount/storage list branches, snapshots, backend and LVGL builders.\n\nPartition classification and presence are fixtures derived from the shipped\nfstab inventory, not executed fstab parsing or real block discovery. Only mount\nand storage branches of GetPartitionList are compiled; unrelated branches are\nomitted. No mounting, GUI pointer dispatch, actual storage or phone is accessed.\n"
+    },
+    {
+      "name": "current-image-repair-tool-chain",
+      "grade": "S2/S3",
+      "result": "pass",
+      "evidence": "logs/repair-tool-chain.json",
+      "count": 7,
+      "evidence_sha256": "067066fc2a00e21c51386f45696c715c8dd9065406cb9e9919d9f2a181561fea",
+      "scope": "Join production repair wrapper/partition lookup/Repair/ExecCmd to delivered ARM64 e2fsck.\n\nAll targets are newly created regular files in a private chroot. Partition\nunmount/device resolution and operation presentation are explicit fixtures;\nthere is no GUI, real mount, physical block device, phone, FBE or power-loss test.\nThe /system/bin/e2fsck compatibility launcher execs the same-image ARM64 tool\nthrough QEMU and the same-image Android linker/libraries, preserving its status.\n"
+    },
+    {
+      "name": "six-sample-stock-NV-fstab-provenance",
+      "grade": "S0/S1",
+      "result": "pass",
+      "count": 12,
+      "evidence": "logs/stock-nv-fstab-audit.json",
+      "evidence_sha256": "fcf154b587ebb10e8b58d4054e20e14c470a689737ba86ddbcd75cf1e6336e1e",
+      "scope": "Trace NV declarations to six stock recovery/vendor_boot ramdisks.\n\nOriginal OTA manifest hashes establish image identity, not actual partition\npresence, contents, purpose or appropriateness of exposing a GUI action.\n"
+    },
+    {
+      "name": "current-module-state-reference-review",
+      "grade": "S0/S1/S2",
+      "result": "pass",
+      "count": 3,
+      "evidence": "logs/module-state-reference-current.json",
+      "evidence_sha256": "8b186834569ddaf9c61b714c4a9e84e9210526cc9592038a165bdeed5e5f51c8",
+      "scope": "Review upstream module-state semantics and bind existing current shell tests.\n\nExecutes the original v6.6 show_initstate leaf with a host structure/sysfs\nfixture; inspects original load/sysfs ordering. Six original kernel byte-string\nchecks are interface corroboration only. No downstream loader, kernel module\ninit, asynchronous probe, device input, DSP or motor is executed.\n"
+    },
+    {
+      "name": "MTP-upload-time-negative-control",
+      "evidence": "logs/mtp-upload-time-before.json",
+      "count": 10,
+      "result": "expected_failures",
+      "grade": "S2",
+      "scope": "Same16 file timestamp scenarios against preserved pre0049 source;10 assertion failures, no timeout counted.",
+      "evidence_sha256": "d87c67e0ddc55c84346378bab63d8597c22bd52cbff07af09258f27b2633e8c1"
+    },
+    {
+      "name": "CE-original-Recovery-vold-lifecycle",
+      "evidence": "logs/ce-lifecycle.json",
+      "result": "pass",
+      "count": 15,
+      "grade": "S2",
+      "scope": "Join original Recovery user control and vold CE cache/lock/unlock methods.\n\nActual methods: DecryptDevice, MarkUserDecrypted, CheckUsersDecryptionStatus,\nMarkDataLocked, Decrypt_CE_storage, fscrypt_unlock/lock_ce_storage and\nevict_user_keys. Key derivation/Gatekeeper/TEE, key reads/install/evict ioctls,\nfilesystem preparation, properties and mounts are explicit fixtures. No phone,\nreal keys, fscrypt kernel, parent-bound profile protocol or actual remount.\n",
+      "evidence_sha256": "f02480070495000f0017ed199ab7d016848a2c052e32946b213f1c46c24df02c"
+    },
+    {
+      "name": "CE-lifecycle-before-control",
+      "evidence": "logs/ce-lifecycle-before.json",
+      "result": "expected_failures",
+      "count": 3,
+      "grade": "S2",
+      "scope": "Join original Recovery user control and vold CE cache/lock/unlock methods.\n\nActual methods: DecryptDevice, MarkUserDecrypted, CheckUsersDecryptionStatus,\nMarkDataLocked, Decrypt_CE_storage, fscrypt_unlock/lock_ce_storage and\nevict_user_keys. Key derivation/Gatekeeper/TEE, key reads/install/evict ioctls,\nfilesystem preparation, properties and mounts are explicit fixtures. No phone,\nreal keys, fscrypt kernel, parent-bound profile protocol or actual remount.\n",
+      "evidence_sha256": "1f1629a92aadbf6761990174632c031245164473c3f8addd652c692d30902b4f"
+    },
+    {
+      "name": "sparse-flash",
+      "evidence": "logs/sparse-flash.json",
+      "result": "pass",
+      "count": 40,
+      "grade": "S2",
+      "scope": "Execute production sparse-image entry with real AOSP sparse parser/writer.\n\nAll I/O stays in disposable ordinary files. fstat/BLKGETSIZE64/ftruncate describe\none file as a block target; discard is a recorded no-op. Size discovery is a\nfixture, raw routing intentionally not run. No manager/GUI/slot/USB execution,\nphysical block I/O, target ARM64 execution or power-loss durability proof.\n",
+      "evidence_sha256": "bdc9d85837541243a2ed65a9028fddd8a1d1213f891471ab7cf57990b5c4cc48"
+    },
+    {
+      "name": "sparse-flash-before",
+      "evidence": "logs/sparse-flash-before.json",
+      "result": "expected_failures",
+      "count": 27,
+      "grade": "S2",
+      "scope": "Execute production sparse-image entry with real AOSP sparse parser/writer.\n\nAll I/O stays in disposable ordinary files. fstat/BLKGETSIZE64/ftruncate describe\none file as a block target; discard is a recorded no-op. Size discovery is a\nfixture, raw routing intentionally not run. No manager/GUI/slot/USB execution,\nphysical block I/O, target ARM64 execution or power-loss durability proof.\n",
+      "evidence_sha256": "40111e075c288bbceef41fc03b302fe035a27ff5e40039fea864a2fead443138"
+    },
+    {
+      "name": "sparse-flash-raw-regression",
+      "evidence": "logs/sparse-flash-raw-regression.json",
+      "result": "pass",
+      "count": 65,
+      "grade": "S2",
+      "scope": "Execute actual TWPartition BackupImage/RestoreImage/RawReadWrite methods.\n\nUses real disposable file contents and AOSP unique_fd/scopeguard. fstat/BLKGETSIZE64\ndescribe one ordinary fixture file as a partition; BLKDISCARD is emulated on that\nfile only. File I/O/commit faults and cancellation are injected at syscall boundaries.\nPartition discovery, UI progress sink, filesystem-kind lookup and default metadata\nare substitutes. No physical block device, Android storage or phone is accessed.",
+      "evidence_sha256": "6c30e769771dc956a8387458f0adac79d0b8d3e96aa9388a65387a93a9d078b9"
+    },
+    {
+      "name": "sparse-flash-profile-runtime",
+      "evidence": "logs/sparse-flash-profile-runtime.json",
+      "result": "pass",
+      "count": 9,
+      "grade": "S2",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation.",
+      "evidence_sha256": "c77af466b26ba49479f1e1094daab992790b956a37a88c9f2cf1423d1fe217d7"
+    },
+    {
+      "name": "sparse-flash-module-state",
+      "evidence": "logs/sparse-flash-module-state.json",
+      "result": "pass",
+      "count": 4,
+      "grade": "S2",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init.",
+      "evidence_sha256": "4716f852816b8c0d9c339c9653ac04a6e91beefcefe438cfcf2c48a7aae9d795"
+    },
+    {
+      "name": "image-install-chain",
+      "evidence": "logs/image-install-chain.json",
+      "result": "pass",
+      "count": 40,
+      "grade": "S2",
+      "scope": "Run actual image-install worker/thread -> manager -> partition -> libsparse.\n\nUses production public backend header, lifecycle, filename routing, manager\ntarget lookup and slot override. Real sparse parser/writer and private file\ncontents execute. DataManager, progress/console, source mounts, target capacity,\npartition size/device resolution and UpdateSystemDetails are explicit doubles.\nNo ZIP, raw transfer, repacker, GUI widgets, boot-control service, physical block\ndevice, USB, target ARM64 or power-loss execution. A/B resolution is a fixture.\n",
+      "evidence_sha256": "20c959e097b1602fd56684a3d93fc2862fa414ba10d8411f2bd0d3435d07ee94"
+    },
+    {
+      "name": "zip-updater",
+      "evidence": "logs/zip-updater.json",
+      "result": "pass",
+      "count": 22,
+      "grade": "S2",
+      "scope": "Execute production ZIP updater command, fork/exec pipe parser and child wait.\n\nThe compiled host updater only emits protocol/creates a private marker. Real\nfork, execve, pipe, stdio and waitpid execute; pipe/fork/fdopen failure injection\nis explicit. Progress sink is checked, logs are captured. No package extraction,\nZIP signature/digest verification, payload/OTA engine, device or USB execution.\n",
+      "evidence_sha256": "b93a2487c2278af0df0cb9ff386143751548e4253829a78271ca5185a28f3abb"
+    },
+    {
+      "name": "zip-updater-before",
+      "evidence": "logs/zip-updater-before.json",
+      "result": "expected_failures",
+      "count": 14,
+      "grade": "S2",
+      "scope": "Execute production ZIP updater command, fork/exec pipe parser and child wait.\n\nThe compiled host updater only emits protocol/creates a private marker. Real\nfork, execve, pipe, stdio and waitpid execute; pipe/fork/fdopen failure injection\nis explicit. Progress sink is checked, logs are captured. No package extraction,\nZIP signature/digest verification, payload/OTA engine, device or USB execution.\n",
+      "evidence_sha256": "6b10a473d1115e927945884e1fa5c2112e803f696077694a5b33ed78c728c4e3"
+    },
+    {
+      "name": "updater-protocol-profile-runtime",
+      "evidence": "logs/updater-protocol-profile-runtime.json",
+      "result": "pass",
+      "count": 9,
+      "grade": "S2",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation.",
+      "evidence_sha256": "aeb685ef550d212befe4e1ee348fde516ab0e8a8273202e6ef2bf70c307ce1df"
+    },
+    {
+      "name": "updater-protocol-module-state",
+      "evidence": "logs/updater-protocol-module-state.json",
+      "result": "pass",
+      "count": 4,
+      "grade": "S2",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init.",
+      "evidence_sha256": "4c79582149b375679d077f50903452a52b7798da3475140c86f85dfccc45ba0d"
+    },
+    {
+      "name": "zip-install-chain",
+      "evidence": "logs/zip-install-chain.json",
+      "evidence_sha256": "cf8829ef16e403f7756b25adfb34dc9374ad05bf1e439be5ec2cdd262e2b9608",
+      "result": "pass",
+      "count": 36,
+      "grade": "S2",
+      "scope": "Execute actual TWinstall_zip -> mapped package -> ZIP/verifier/digest -> updater.\n\nNative x86_64 builds of the current AOSP ZIP and TWRP sources run in a private\nchroot with ordinary files and locally generated test keys. Actual BoringSSL\nhost archive and AOSP host libbase/log/libc++ are hashed dependencies. Property,\nDataManager/progress and unmount are doubles. ABI-named updaters contain host\ncode solely to check selection; no ARM64/OTA payload/GUI/sideload/device run.\n"
+    },
+    {
+      "name": "zip-install-chain-before",
+      "evidence": "logs/zip-install-chain-before.json",
+      "evidence_sha256": "ef935a7d41100cad29b8a7ad34b26fce68c078f206b30f11993fe0c348d33b77",
+      "result": "expected_failures",
+      "count": 6,
+      "grade": "S2",
+      "scope": "Execute actual TWinstall_zip -> mapped package -> ZIP/verifier/digest -> updater.\n\nNative x86_64 builds of the current AOSP ZIP and TWRP sources run in a private\nchroot with ordinary files and locally generated test keys. Actual BoringSSL\nhost archive and AOSP host libbase/log/libc++ are hashed dependencies. Property,\nDataManager/progress and unmount are doubles. ABI-named updaters contain host\ncode solely to check selection; no ARM64/OTA payload/GUI/sideload/device run.\n"
+    },
+    {
+      "name": "zip-selection-updater-regression",
+      "evidence": "logs/zip-selection-updater-regression.json",
+      "evidence_sha256": "99cdec236ca6fd238a1f74f2c1ecbd49dc0914a4503f0928bde366660ae0a02c",
+      "result": "pass",
+      "count": 22,
+      "grade": "S2",
+      "scope": "Execute production ZIP updater command, fork/exec pipe parser and child wait.\n\nThe compiled host updater only emits protocol/creates a private marker. Real\nfork, execve, pipe, stdio and waitpid execute; pipe/fork/fdopen failure injection\nis explicit. Progress sink is checked, logs are captured. No package extraction,\nZIP signature/digest verification, payload/OTA engine, device or USB execution.\n"
+    },
+    {
+      "name": "zip-selection-profile-runtime",
+      "evidence": "logs/zip-selection-profile-runtime.json",
+      "evidence_sha256": "5b3670f76b9da963219f3b02511364403c56b3ff3543220b61576bd6d9bc9631",
+      "result": "pass",
+      "count": 9,
+      "grade": "S2",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "zip-selection-module-state",
+      "evidence": "logs/zip-selection-module-state.json",
+      "evidence_sha256": "ea97d4e5d8a633d59e80ae34b546ccae1d1d119271f7defeb1d413d5c49a6236",
+      "result": "pass",
+      "count": 4,
+      "grade": "S2",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
+    },
+    {
+      "name": "nv-mount-policy",
+      "evidence": "logs/nv-mount-policy.json",
+      "evidence_sha256": "f8b2314c7ee7ff599e7be2175111e85f7ae1dffc702095b6d917b194dabcbba4",
+      "count": 26,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Execute original GUI mount list/action methods with explicit core doubles.\n\nNo real mount, device or settings access. Confirms NV/protection rows are hidden\nand stale/manual toggle calls are rejected in both directions, including a\nresolved alias. Core mounting remains outside this UI policy.\n"
+    },
+    {
+      "name": "nv-mount-policy-before",
+      "evidence": "logs/nv-mount-policy-before.json",
+      "evidence_sha256": "bb8983e5f7c6b3384fefb7721b5f686c231445503094ef4dfde0008f0592e203",
+      "count": 17,
+      "result": "expected_failures",
+      "grade": "S2",
+      "scope": "Execute original GUI mount list/action methods with explicit core doubles.\n\nNo real mount, device or settings access. Confirms NV/protection rows are hidden\nand stale/manual toggle calls are rejected in both directions, including a\nresolved alias. Core mounting remains outside this UI policy.\n"
+    },
+    {
+      "name": "nv-mount-list-chain",
+      "evidence": "logs/nv-mount-list-chain.json",
+      "evidence_sha256": "7b65c1866bcf23cdba9d999745ace5d4d86fc08958c428cabce1ccb4072c144a",
+      "count": 6,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Production mount/storage list branches, snapshots, backend and LVGL builders.\n\nPartition classification and presence are fixtures derived from the shipped\nfstab inventory, not executed fstab parsing or real block discovery. Only mount\nand storage branches of GetPartitionList are compiled; unrelated branches are\nomitted. No mounting, GUI pointer dispatch, actual storage or phone is accessed.\n"
+    },
+    {
+      "name": "nv-policy-profile-runtime",
+      "evidence": "logs/nv-policy-profile-runtime.json",
+      "evidence_sha256": "8260a40fa67d547a2d1e3bec92b033eecbf84457ae3ffb4d4117a2e64ecb973f",
+      "count": 9,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "nv-policy-module-state",
+      "evidence": "logs/nv-policy-module-state.json",
+      "evidence_sha256": "e30af7133ca8468c365b1d0791d14dafddd082ea1a7d7d9d1067fcd8695253b0",
+      "count": 4,
+      "result": "pass",
+      "grade": "S2",
+      "scope": "Run production shell against module state races, never actual insmod.\n\nReal OTA bytes, private sysfs/property fixtures. Sleep is substituted with\ndeterministic state transitions to exercise the bounded wait without timing\nflakiness. Unknown fixture operations fail. Does not run kernel module init."
+    }
+  ],
+  "source_review_followups": [
+    "Archive metadata: arbitrary application xattrs, final directory timestamps, SELinux/capability errors, real fscrypt mapping, extension allocation cleanup and complete archive path containment remain pending.",
+    "Restore preflight, backup cancellation/child ownership/.info ordering, actual archive codecs/split roundtrips, and new-backup completion manifests/volume inventory have independent host coverage. Real GUI integration, sparse-hole/progress behavior, FlashImage/repacker cancellation state, filesystem power-loss durability and post-preflight media changes remain pending. Legacy OAES CBC is unauthenticated. No rollback of already restored blocks; inode checks cannot eliminate all external path races. Per-digest atomic sidecar publication is covered by54 real file/hash/caller cases; this does not establish full manager/codec/GUI integration or power-loss recovery.",
+    "MTP: move/copy/rescan and cached-directory overflow/root reconstruction now have 48 host cases. Atomic SendObject publication now covered by68 host cases; crash orphan recovery, target power-loss semantics and complete media format/date metadata remain pending. FunctionFS single-worker event queue, cancellation and retry deadlines now have 62 production host cases. Actual init property scheduling with simulated configfs/services, readiness loss, ADB recovery and sideload ownership now have 42 cases. Control framing/status/event batching now have 66 host cases. Transaction matching, session reset, bulk AIO cancellation/drain, compat ep0 dispatch, decrypted-storage publication, full caller/mount/decrypted-storage integration and physical UDC remain pending. Descriptor-relative file operations prevent link traversal, but concurrent external tree changes and partial source removal are not rollback transactions."
+  ],
+  "settings_regression_before_fix": {
+    "evidence": "logs/settings-before-fix.json",
+    "evidence_sha256": "2b9dcdc7b050d0683de4b6c77767ebd485e38b3503626602bf73ae4cae3a4ea8",
+    "count": 19,
+    "failed": 12,
+    "scope": "Initial suite; mount-failure and backup-without-persist added afterward."
+  },
+  "multiuser_regression_before_fix": {
+    "evidence": "logs/multiuser-core-before.json",
+    "count": 18,
+    "failed": 10,
+    "scope": "Same core cases on the previous implementation; DE/CE provider and properties are substitutes.",
+    "evidence_sha256": "eacf9ead27d8566ebfbc0f9cbf540b09b34e5d029e74d7b36f4ea02622ad2653"
+  },
+  "multiuser_identity_regression_before_fix": {
+    "evidence": "logs/multiuser-backend-before-mode-fix.log",
+    "scope": "Rejected earlier backend redirected a selected secondary user to owner 0 if global FBE state changed. Final backend retains the captured ID.",
+    "evidence_sha256": "69cd40d4f846b8c68656e8ba573a496cd30ae603e13047de67676ea4f4552ce0"
+  },
+  "status_regression_before_fix": {
+    "evidence": "logs/status-readings-before.json",
+    "count": 23,
+    "failed": 13,
+    "scope": "Initial 23-case suite before fixes. The concurrent-cache case was added afterward.",
+    "evidence_sha256": "e4964b6471813db5ebaccc2947a10686502fef782afb369339a35cd2e85bdbd6"
+  },
+  "status_cache_regression_before_fix": {
+    "evidence": "logs/status-readings-before-cache-lock.json",
+    "count": 24,
+    "failed": 1,
+    "scope": "Concurrent production cache reader failed before mutex protection; no hardware access.",
+    "evidence_sha256": "253d648f21744ee88642c416e30df4d3bc9551f1f54aad8d8d91de8b6e189181"
+  },
+  "haptics_regression_before_fix": {
+    "evidence": "logs/haptics-route-before.json",
+    "evidence_sha256": "4a3a5507072fdf7b6471cc64723b1237273739a8f964b8ced221428dc76d1a8b",
+    "count": 22,
+    "failed": 15,
+    "scope": "Same host fixture contract; includes capability and routing policy changes, not 15 independently proven hardware causes."
+  },
+  "haptics_ui_before_fix": {
+    "evidence": "logs/haptics-ui-before.json",
+    "evidence_sha256": "f83faefcaaa5ff719f5cf9b95d5ea5f8910fad27f3add757c73cc2805fffde14",
+    "count": 21,
+    "failed": 11,
+    "scope": "Same actual LVGL fixtures: five duplicate callbacks plus related cancellation/count cases; not independent hardware failure causes."
+  },
+  "archive_restore_before_fix": {
+    "evidence": "logs/archive-restore-before.json",
+    "count": 30,
+    "failed": 17,
+    "evidence_sha256": "3e5bfb94905fcab0537394ef3a6074cf9c63ae11940633b725d5235d796f04d3",
+    "scope": "Same 30-case host harness against preserved original libtar sources; these are failing cases, not 17 independent root causes."
+  },
+  "raw_image_before_fix": {
+    "evidence": "logs/raw-image-before.json",
+    "evidence_sha256": "9480eeca79980e8a51e4fd3e7148519a2b3452988648cbbdc1d678478922fcd9",
+    "count": 65,
+    "failed": 43,
+    "scope": "Same host fixture expectations on original production methods; 43 failed cases are not 43 independent defects. Linux block-device O_TRUNC semantics are emulated."
+  },
+  "operation_feedback_before_fix": {
+    "evidence": "logs/operation-feedback-before.json",
+    "evidence_sha256": "e2f67f9aae18dd20d2c88b684eedec2bf00012b505ec0843e495c312abde23ff",
+    "count": 64,
+    "failed": 25,
+    "scope": "Identical fixture and shared source hashes, original operation.cpp; cases repeat defects across timing paths and build flags, not 25 independent root causes."
+  },
+  "restore_session_before_fix": {
+    "evidence": "logs/restore-session-before.json",
+    "evidence_sha256": "108dbe0d76afe071bb174dc6947b854e57aaf159ac27f93c62c16ce1f64aebc0",
+    "count": 54,
+    "failed": 45,
+    "scope": "Same fixture on original manager/digest source. Failures combine defects and preflight contracts; normal raw, parent/child and split cases also pass on original code."
+  },
+  "backup_session_before_fix": {
+    "evidence": "logs/backup-session-before.json",
+    "count": 55,
+    "failed": 35,
+    "scope": "Same host fixture against preserved manager/tar/GUI sources; 35 failed scenarios include repeated defects. Invalid signal targets are intercepted, timeout fixtures are killed only through cwd-verified pidfds.",
+    "evidence_sha256": "7dc4180a0fabc708c8a653261eb4dd18af877c9e1183c934ed3b7b95978ec604"
+  },
+  "archive_pipeline_before_fix": {
+    "evidence": "logs/archive-pipeline-before.json",
+    "count": 46,
+    "failed": 31,
+    "scope": "Same complete host harness against saved production codec sources; 31 failing scenarios include repeated AES EOF deadlocks and contracts, not independent hardware defects. Timeout cleanup confined to private fixture via verified pidfds.",
+    "evidence_sha256": "c45c4506941901115907be50064925194cc76deb478f417b7d185b2be58bdecf"
+  },
+  "mtp_objects_before_fix": {
+    "evidence": "logs/mtp-objects-before.json",
+    "evidence_sha256": "29cbca954080a0cdf7375764ce537564d50df111e72f18792bb88117b67b1d36",
+    "count": 42,
+    "failed": 28,
+    "scope": "Same host harness and reference-source hashes against preserved MTP code. Failed scenarios include repeated defects/contracts; no physical USB or phone tests."
+  },
+  "mtp_transfers_before_fix": {
+    "evidence": "logs/mtp-transfers-before.json",
+    "evidence_sha256": "5681544a464f2715e82d6f94d197a24c423da8d9e9a05b2fb002e96634263ff9",
+    "count": 48,
+    "failed": 36,
+    "scope": "Identical host fixtures on the previous MTP implementation. Failing cases combine missing functionality and error-path contracts; not independent hardware failures."
+  },
+  "mtp_events_before_fix": {
+    "evidence": "logs/mtp-events-before.json",
+    "evidence_sha256": "4640240d5da100f57d2d9c765194435e9d853a822674c16b24c5dbac03dfae8a",
+    "count": 62,
+    "failed": 56,
+    "scope": "Identical 62-case host harness on the saved pre-event-lifecycle sources; failures include ordering/resource/lifecycle contracts, not independent hardware causes."
+  },
+  "mtp_event_completion_before_fix": {
+    "evidence": "logs/mtp-events-completion-before.json",
+    "evidence_sha256": "6d80d197630933950569805a8d1d584c21ba1817ecfb8729a88ecd01f03440ae",
+    "count": 6,
+    "failed": 6,
+    "scope": "Intermediate implementation stopped on temporary AIO completion errors; six cases use the same harness as the final full suite. Source snapshot bytes verified identical to original compile inputs."
+  },
+  "usb_init_before_fix": {
+    "evidence": "logs/usb-init-before.json",
+    "evidence_sha256": "5092b987099ace0a01251615dae1256dbadd7ff45b5bd85133c0075388bea273",
+    "count": 42,
+    "failed": 33,
+    "scope": "Same harness against preserved common/device rc. New helper is linked but unused by old rc. Hardware boundaries are simulated."
+  },
+  "mtp_control_before_fix": {
+    "evidence": "logs/mtp-control-before.json",
+    "evidence_sha256": "2e9f1cc8b8e87f1bdd42685c2c0b1ea368a7a7762291f9b23049ce68e9bf54d6",
+    "count": 66,
+    "failed": 60,
+    "scope": "Identical harness against preserved production source. Repeated failure modes across inputs, not 60 independent defects."
+  },
+  "mtp_caller_before_fix": {
+    "evidence": "logs/mtp-caller-before.json",
+    "evidence_sha256": "d37947b4e99d96c35ef63ab9ba12e6afae32abc3f7f5cd2c51c6467c0718c2fd",
+    "count": 40,
+    "failed": 24,
+    "scope": "Identical harness against preserved source; case failures are not independent defect counts."
+  },
+  "mtp_receiver_before_fix": {
+    "evidence": "logs/mtp-receiver-before.json",
+    "evidence_sha256": "98e744370226ea3f6163ca93a733017473a1087ec426e483d5ebeb341ad03579",
+    "count": 11,
+    "failed": 4,
+    "scope": "Identical harness against preserved source; case failures are not independent defect counts."
+  },
+  "haptics_outstanding": [
+    "OS2/OS3 original probe/config/input/built-in selftest is now joined in44 cases across four modules, using original normal WMFW/parameters and actual callbacks/workers. Probe returns0 under explicit ACK and also under start mailbox-5; no completion service executes in those scenarios. B2 identity/ROM+PM+HALO+logger+count registers/all-FF sequences/kernel IRQ/input/PM/FIFO queue remain fixtures. Actual per-device identity/state/calibration, IRQ message/complete waits, vendor kernel concurrency, DSP and motor remain unverified; successful simulation is not successful hardware initialization.",
+    "post-PLL chip identification and regmap failures covered; OS4 exact normal/calibration DSP parser, coefficient init and get_reg now executed with explicit regmap/algorithm-table fixtures; no actual DSP execution",
+    "OS4 original probe/config/postboost/runtime-PM/logger/ASP/IRQ/input and built-in FF upload/start/erase self-test have subsequent joined ARM64 suites; failures are injected and kernel/PM/regmap/mailbox/DSP remain fixtures, so this does not execute DSP or hardware. Registered mailbox handlers and active erase waits use explicit single-waiter completion counters and sequential context-preserving queue/IRQ boundaries; matching done unblocks erase, wrong completion/read/ACK faults time out, late done permits retry, new start resets prior complete_all. Physical IRQ delivery, full DSP execution and concurrent Linux PM/input/workqueue remain unverified. OS2/OS3 exact normal/calibration firmware parser and resolver-to-FF upload callback are joined in 60 cases; original normal/calib parameter loaders/parsers in 48 cases; original probe prefix executes four modules across pinctrl, PLL and ID-read failure branches plus a path through the exact cs40l26.wmfw request, where firmware absence is injected, in 16 cases total. A subsequent20-case original probe-to-upload join now executes WMFW and five parameter loaders in the same context through injected first MEM_RDY failure. Pre-config accepts supplied state1/2; state3 repeated10 times fails-22 before parse. This supersedes the earlier status-poll-only exploratory boundary, without establishing actual DSP readiness. Subsequent44 legacy cases now execute complete config,27 IRQ child registrations,input callback installation and original built-in upload/start/erase in the same context; kernel IRQ/input/PM/FIFO work and all-FF sequence reads are fixtures. Start mailbox-5 still permits probe0. Actual IRQ delivery/completion, vendor kernel concurrency and motor remain unverified. Earlier16/20 evidence wrongly labeled remove body unexecuted/intercepted: it executes original instructions with kernel teardown services substituted; both reports were corrected and rerun. Independent byte audit finds the seven ODM firmware/parameter files identical across six extracted OS2/OS3/OS4 samples, but this does not prove runtime publication/request or DSP load. Original relocated regmap chip pre callback/PM/status read executed, post pointer is null. Upstream reference ignores pre return; actual kernel regmap status/mask/nested-IRQ dispatch not executed; upstream6.18 FF erase/flush C is bridged to A1 stop worker before erase16 cases; actual vendor core/concurrency still unknown. Stop-only completion can time out while flush returns0; field43 erase_ret0 contradicts applying that mechanism to current captured silence.",
+    "full-page GUI routes and non-GUI completion integration; shutdown still waits for started kernel I/O",
+    "User raw-off field dmesg contains43 SINE uploads returning0,43 start-worker done logs and43 paired TRIGGER_CP/COMPLETE_MBOX logs. Six VBST brownout/clear pairs, five first-attempt mailbox-write errors, one early stop;36 cycles show neither brownout nor early stop. The five errors precede PM state2 done, stop done, erase_ret0 and later playback logs in time only; no TID/transaction ID establishes the failed call final status or recovery. Original mailbox/pm_enter/stop execution now covers32 cases: write/read exhaustion returns-62, busy exhaustion-110, mailbox failure can still print stop done, PM-entry failure returns early without done. No hardware acknowledgement, electrical displacement, caller/GUI identity, calibration readback or motor output proof; NACK causal role remains unresolved.",
+    "OS4 field chip0x40A260/A1 now joined in one original probe/config/selftest and production FF/IRQ/erase context (16 cases across two samples), with original ROM resolved and explicit A1 pre/post-load PM states. Stock DT requests F0=130Hz and Q=0; errata/Q/firmware write errors prevent input. Production80ms SINE succeeds only under supplied done and times out without it. Register/PM/kernel/completion/sequence fixtures remain; actual stored/persist values, DSP behavior and physical output dependency unknown. No synthetic calibration writes or physical root cause established.",
+    "OS4 original SVC/DVL get callbacks and file defaults reviewed: SVC FLAGS=0, DVL EN=1 after parameters; audio XML separately requests SVC=1. No actual controller readback or audio core/DSP execution; no justified production control change. See logs/haptics-algorithm-defaults-review.json.",
+    "Original OS4 service mixer list consumer and ordinary on entry executed in 20 bounded cases. Wave31 effect route requests SVC0/Source0->1; mixer set errors still return0 and cache suppresses retry. Ordinary on80/300ms with calibration flag set/null callback bypasses mixer and submits CUSTOM31. No ALSA/DAPM/DSP or physical output; missing mixer toggle not established as required for ordinary on. See logs/haptics-service-route-review.json. Subsequent30 cases execute original constructor discovery prefix and separate FF backend constructor, not full startup: restore is called before capability ioctl, Cirrus and audio flags use independent properties, mixer_open failure retains FF fd/Cirrus flag; custom_wave read or key failure leaves id-1. Restore body and global sysfs path are explicit boundaries; outer constructor after0x13084, XML/thread dispatch and ordinary-on connection from construction remain uncovered. See logs/haptics-service-init-review.json. Subsequent26 PCM/AAC initialization cases execute original library-vector setup, actual selector/PCM/data construction and mapped AAC init body, then ordinary-on in the partial context. Explicitly skipped alternate-device/config-map range, supplied XML long-id/restore-complete flag, libc/math/loader/worker fixtures remain; AWA init only recorded. Constructor continues after AAC init errors-2/-1/11; ordinary-on still requests gain100/CUSTOM31/play with mixer/library/init failures. No extra mixer/power writes in executed initialization ranges; no justified Recovery PCM enable. Full service thread/XML/backend lifecycle and hardware dependency remain uncovered; see logs/haptics-pcm-init-review.json. Subsequent14 service-tail cases now execute original hash static init, dynamic-effect thread construction, XML consumers and first idle worker to timed-wait, followed by ordinary-on using XML-derived long-id. Library-vector/PCM/data/AAC remains same partial context; alternate-device/config map and calibration body skipped, libxml/Android Thread/refcount/ALSA/socket are fixtures. Original tinyalsa frame conversion leaf executes with captured config and synthetic1024-frame handle. Idle worker requests audio socket plus Source=PCM/ASP/TDM controls and PCM0/9, so earlier ordinary-on/no-mixer evidence cannot rule out background initialization dependency. Array write-5 skips controls yet still opens PCM; socket timeout retries twice then continues; Thread run-11 still consumes XML and permits ordinary-on but worker is not scheduled. XML absent/no-long retains stock35; normal31 and synthetic42 reach CUSTOM requests. Serial scheduling is explicit, AAC worker and real ALSA/DAPM/driver/DSP/motor not executed. Next: ASP-to-FF state relation and audio-socket peer handling; no justified production PCM writes. See logs/haptics-service-tail-review.json. Subsequent34 original audio-peer cases consume the captured72-byte request in each OS4 libaudioserviceimpl. Socket handler, ResourceManager, ModulePrimary, updateA2HMode and serial atomic release execute; singleton/stream/usecase/app policy and socket/lock/setA2HParameter are explicit fixtures. Number42 updates vibrator-stream activity; unknown-command/read-error/EOF also emit0100. Eligible synthetic stream off requests Haptics Source2 when app allowed,0 when denied; active notification makes no setA2HParameter request. ACK is not hardware readiness. Real media policy, ASP-to-FF relationship, ALSA/DAPM/DSP/motor remain unknown; no justified production PCM enable. See logs/haptics-audio-peer-review.json. Subsequent14 A1 probe/ASP/production-FF joined cases execute original clk_en/asp_start/swap_ext_clk/set_pll_loop, then identical production80ms SINE upload/start and supplied TRIGGER_CP/COMPLETE_MBOX. No-ASP and enabled/error cases all request identical five FF writes and mailbox0x01800081; no purely software ASP-enable gate established. ASP-active is set before initialization, remains1 after errors; failed resume after done can leave state1/count0/completion saturated. Stop wait13jiffies timeout only warns before clock switch; callback can return0. Synthetic3.072MHz BCLK/PLL0, codec topology, regmap/PM/mailbox/kernel/IRQ and serial queues remain explicit boundaries; gain remains probe default100, lower-gain worker not covered. This does not rule out electrical/PCM/DSP output dependency. Next actual ASP params/PCM register changes and per-device calibration/readback, not blind PCM enable. See logs/haptics-asp-ff-join-review.json. Subsequent12 original A1 codec/PCM/FF joined cases execute codec driver/component probe, stock service Mode1/Slot1 put callbacks, set_tdm_slot/hw_params/component_set_sysclk, params/clock/RX widgets and production80ms SINE/IRQ in one VM. Original callbacks derive slots2/3,24-bit word/32-bit slot and1.536MHz mono-shaped or3.072MHz two-channel fixture, reducing hand-filled codec cache assumptions; actual backend negotiation remains unknown. All four asp_params updates may fail-5 yet callback returns0; RX first/last update failure returns-5 and partial successful requests are not rolled back. No-widgets and setup/error contexts still send identical five FF writes/mailbox. MFD/component/DAI layouts, zero allocation/string/format-width, regmap/PM/mailbox/timeouts, widget order/queues and IRQ remain fixtures; no DAPM dispatcher/audio/DSP/electrical output. Codec/DAI arena is disjoint from firmware descriptors. Shared software paths still cannot select physical cause; prioritize per-device calibration/readback/output state instead of more synthetic success. See logs/haptics-pcm-ff-join-review.json.",
+    "Original OS4 SINE upload now joined to actual normal-WMFW parser/coefficient resolver (46 cases); real BUZZ2 addresses and low16 algorithm matching verified. 8ms/64 becomes125Hz/64 with duration ceil(ms/4). No register readback, DSP execution or motor evidence; physical cause remains unknown. See logs/haptics-sine-coefficients-review.json.",
+    "Six stock DTs resolve VA=mldo8(vin=always-on mbuck10), active-low reset GPIO105 and level-low IRQ GPIO46. Modules request VP/VA; all DTs lack VP, field dummy warning consistent but electrical cause unproven. Extracted OS4 init rc contains no Cirrus output enable write; binary runtime writers/actual voltages/boost/reset/output remain unknown. No invented VP supply or GPIO writes.",
+    "Original OS4 service restore now bridged to same post-probe A1/B2 store context14 cases: A1 accepts synthetic z/f0/q; B2 rejects q; invalid f0/PM/register errors reach stdio failure but original service continues. Valid restoration then production SINE still uses20/125/64; no DSP simulation or electrical proof; actual per-device persist/readback unknown. No justified production restore yet.",
+    "OS4 stock WMDR43-wave table independently decoded and matched original probe parser10 scenarios; long31 type12 offset1916 length7 has exact data digest. Original CUSTOM31/42 accepted using parsed count at regmap boundary,43 rejected. Additional12 cases connect stock service/XML CUSTOM31 bytes through original post-probe upload callback allocation/address/length checks and explicit bounded copy boundary to worker/start; residual copy/address failure returns-14, allocation failure-12, index43-22, original cleanup clears temporary effect/frees allocation and no failed request plays. This is not privileged usercopy or real task/page isolation. DSP wave count/output, real input core, gain/timer/service lifecycle and physical motor remain unverified; no production waveform switch justified.",
+    "Four OS2/OS3 normal/calibration parsers use stock packed algorithm tables at explicit read boundary, normal original FF callback/worker resolves0x280701c/14/18 and writes20/125/64. Header/table/firmware-write/coefficient-write/name-missing failures covered; missing name returns-14. Actual input core, PM, start/IRQ/DSP/motor still unverified. See logs/haptics-legacy-firmware-join.json.",
+    "OS2/OS3 original coefficient loader48 cases after stock firmware parse: normal5 files/34 raw writes; calib4 files/28 writes. Main missing/header/write and SVC write failures warn then continue/return0; allocation fails-12. Stock calib files emit revision warnings while accepting selected regions. No actual DSP parameter state or physical motor evidence; see logs/haptics-legacy-parameters-join.json."
+  ],
+  "touch_outstanding": {
+    "priority": "P0",
+    "user_report": "OS4 stable: user confirms touch generates no input report on the latest installed image; OS4.0.4 recovery bundle indexed",
+    "status": "User raw0 intervention restores real coordinates (215 events/7 press-release pairs); maintained boot policy built, automatic cold boot/GUI/resume unverified.",
+    "next": [
+      "Verify automatic ordinary-report request and GUI/resume behavior; mode1004 delayed worker can enable raw, but real trigger unknown. Wrapper raw cache starts at1 and is not controller truth.",
+      "original Synaptics DT/panel/connect/background now calls original Xiaomi panel/input registration through separate ARM64 spaces with explicit pointer/callback bridge. Input allocation/registration null causes original worker write to 0x2c0 before null check in both OS4; actual input core, complete callback sharing/kernel linking, IRQ scheduling and physical root cause remain unverified. Full firmware command generation is covered under synthetic controller acknowledgements",
+      "controller report/IC-mode acceptance, actual IRQ/completion and kernel concurrency remain unmodeled; original pending work is now executed at notification flush with saved/restored CPU context. Sequential pending flush does not lose transitions in tested healthy cases, but failed resume followed by duplicate on remains configurationless; physical root cause unknown",
+      "actual profile/cache publication and bootloader ramdisk merge remain unexecuted; static supplied inputs show no early touch module source"
+    ],
+    "host_validation": "96 same-image phase calls; 6 dependency plans; initial/late input to GUI; 88 stock OS4 ARM64 connect/mode/reflash/ISR/parser cases; no physical device; 62 stock config/probe cases and 2 original dijun overlay/firmware checks; 58 stock SPI probe/DT-child/GPIO/power/reset and joined probe-to-ISR cases; new image 24 module-state phase calls with bounded coming/live/going races and six cache profiles; 86 stock SPI transport/allocation/completion/detect-selector cases; 22 original Xiaomi panel-setup cases including persistent zero-lockdown loop bounded by emulator budget; 50 stock Xiaomi wrapper panel/input/raw-mode cases; callback failure hidden by successful sysfs byte-count path; 90 original message/event/ISR cases: v1 byte fragments, v2 command response fixture; empty-report stale output replay and hidden report-allocation failure reproduced for both OS4 modules; two stock vendor_boot/current recovery static load-order checks; no physical boot/init execution; 78 original v2 command/framing/CRC/retry and config-app-ISR cases; physical transport bytes remain synthetic; 44 joined original v2 detect/connect/app-info/configuration/mode/background/ISR cases; firmware request/update, panel and kernel services remain fixtures; 32 joined v2 startup/panel/DT/report-mode/ISR cases, six executing original flash-area/identify/boot-info/boot-config-read and mode return; physical responses remain synthetic; 26 original stock-firmware container/CRC/build-config comparison and joined background cases; matching image executes no-write path and restores synthetic configuration; differing image stops at original flash-access identify timeout; 32 original reflash block-check/erase/write/reset and joined background failure cases; exact erase geometry and first two stock-byte programming chunks checked, injected failures throughout; missing config remains eventless after input registration even with application reset response; 26 complete stock programming/reset/background cases: 625 programming requests and 2 erase requests independently checked, config-only 25 requests; reset-bootloader returns update0 yet input/config0/no events, post-update config timeout/empty also input/no events; retry after last configuration write error executes 1250 checked requests; updated same-image 9-test profile runtime includes three haptics-input states; 6 dependency plans assert touch closure before haptics-specific closure; refreshed same-image 9-test profile runtime covers missing/immediate/delayed haptics input registration; six plans check touch dependency closure before haptics-specific closure; user-provided OS4.0.4 runtime bundle parsed for event3 touch registration and absent live ABS_MT trace; no live input attempt correlated to GUI delivery"
+  },
+  "module_state_before_fix": {
+    "evidence": "logs/current-module-state-before.json",
+    "evidence_sha256": "ad4cd14d7c72e83c1a86c9a94fd213c7e9cfc32ad89e88e62d8bde5ba3cbc906",
+    "count": 4,
+    "failures": 14,
+    "scope": "Same harness and fixtures; original script; 14 failing subtest assertions in four groups."
+  },
+  "settings_user_report": {
+    "status": "specific software defects fixed; current field failure unresolved",
+    "defect": "GetRootPath truncation prevented nested persist lookup/mount; no /mnt partition in dijun fstab. Shared Flush then refused settings saves.",
+    "fix": "0028 longest boundary-matching mount/alias, mount/unmount use selected owner",
+    "evidence": "logs/nested-partition-path-test.json",
+    "before": "logs/nested-partition-path-before.json",
+    "scope": "31 production-method assertions; 13 fail before, zero after. No device mount or settings change.",
+    "latest_retry_fix": {
+      "patch": "0038-settings-failed-apply-retry.patch",
+      "evidence": "logs/settings-retry.json",
+      "cases": 9,
+      "before_failures": 4,
+      "scope": "Failed language/theme flush restores prior memory value, allowing retry. Store fixtures; no persist or motor acceptance."
+    }
+  },
+  "haptics_state_collection": {
+    "instructions": "docs/HAPTICS-STATE-COLLECTION.md",
+    "powershell": "scripts/collect-haptics-state.ps1",
+    "shell": "scripts/collect-haptics-state.sh",
+    "status": "prepared_offline_not_run_on_device",
+    "scope": "Current OS4 only for driver attribute reads; other profiles skip unreviewed attributes and record partial. Own mounted persist calibration, DSP state/FW and protection-algorithm parameter only; no generic FF gain readback. No sysfs writes/playback/calibration/mounts. Register reads may wake DSP."
+  },
+  "partition_operation_paths": {
+    "status": "software_fix_built_hardware_unverified",
+    "patch": "dtsrc/O1_asic_dual/patches/0029-nested-partition-operations.patch",
+    "documentation": "docs/PARTITION-OPERATION-PATHS.md",
+    "scope": "Real manager routing methods, private partition doubles, no real filesystem tools, wipes, mounts or device access. Nested paths,system alias,subpartition failure propagation and cache fallback result. Underlying WipeDataCache removal error checking remains incomplete."
+  },
+  "filesystem_tools": {
+    "image_sha256": "1c0813cf324d76be52e588e4dd3358c1c104946841e393aef84df2d951437adc",
+    "evidence": "logs/filesystem-tools-image-test.json",
+    "limitations": [
+      "QEMU uname exposes host kernel; not an Android kernel feature check.",
+      "Linker uses private LD_LIBRARY_PATH; production namespace and SELinux untested.",
+      "No GUI/PartitionManager operation, mount, encryption, discard or physical I/O.",
+      "No claim of complete F2FS data-content readback or kernel casefold behavior."
+    ],
+    "full_lifecycle": "pending"
+  },
+  "repair_exit_status": {
+    "patch": "dtsrc/O1_asic_dual/patches/0030-e2fsck-corrected-result.patch",
+    "before": "logs/repair-exit-status-before.json",
+    "after": "logs/repair-exit-status.json",
+    "full_lifecycle": "pending",
+    "joined_tool_evidence": "logs/repair-tool-chain.json",
+    "joined_tool_scope": "Production wrapper/partition routing/Repair/output ExecCmd with current-image ARM64 e2fsck via QEMU in private chroot:7 cases. Real unmount, complete GUI and hardware lifecycle remain pending."
+  },
+  "haptics_diagnostic": {
+    "binary": "tools/haptics-diagnostic/haptics-diagnostic-arm64",
+    "sha256": "0ddb868161a9ea53e51f85e165a92d7979e78dedd1c83d528ed79cd54e0f1837",
+    "modes": [
+      "inspect",
+      "Recovery SINE",
+      "reviewed OS4 stock-long CUSTOM31/gain100"
+    ],
+    "physical_result": "unverified",
+    "production_image_changed": false,
+    "limitations": "CUSTOM replay0 stops by erase after1..1000ms; kernel blocking can exceed duration; gain100 persists, prior gain unreadable; no automatic firmware verification; not a root-cause conclusion."
+  },
+  "clock_failure": {
+    "patch": "dtsrc/O1_asic_dual/patches/0031-clock-read-failure.patch",
+    "before": "logs/clock-failure-status-before.json",
+    "after": "logs/clock-failure-status-regression.json",
+    "scope": "Display conversion failures/recovery and wall clock jumps; not kernel RTC/hctosys/drift calibration."
+  },
+  "mtp_datetime": {
+    "status": "software_parser_and_host_upload_verified",
+    "patch": "0039-mtp-datetime-offset-validation.patch",
+    "before": "logs/mtp-datetime-before.json",
+    "before_cases": 79,
+    "before_failures": 48,
+    "current": "logs/mtp-datetime.json",
+    "current_cases": 80,
+    "limits": "Input fraction exactly one digit; explicit offset hours0..23/minutes0..59; omitted offset retains local timezone/DST. Invalid modified date keeps current upload time as existing caller behavior. Outbound formatting and other MTP metadata remain separate gaps.",
+    "remaining": [
+      "Atomic replacement during SendObject",
+      "Valid epoch0 is still used as modified-time sentinel by caller",
+      "Outbound formatDateTime error handling and explicit offset",
+      "Full media format/date properties",
+      "Physical USB and decrypted storage integration"
+    ]
+  },
+  "haptics_diagnostic_matrix": {
+    "status": "prepared_offline_no_device_execution",
+    "host_cases": 47,
+    "arm64_cases": 18,
+    "archive": "tools/haptics-diagnostic-os4.zip",
+    "archive_sha256": "24d54aee3f09e81bc61d78e54088c1c9cf7076989f86f7d894be0f6151e57a2a",
+    "modes": {
+      "--play": "SINE, no gain write",
+      "--sine-gain100": "same SINE, gain100",
+      "--custom-existing-gain": "CUSTOM{0,31}, no gain write",
+      "--stock-long": "same CUSTOM, gain100"
+    },
+    "limits": "Explicit gain persists across close. No gain readback/reset; no automatic four-mode playback; no physical result, no production change."
+  },
+  "haptics_request_trace": {
+    "patch": "0040-haptics-request-trace.patch",
+    "status": "software_instrumentation_verified_no_hardware_result",
+    "scope": "Worker-only begin/end/expired, sequence/latest replacement count, age/elapsed/monotonic time; FF parameters and erase/upload/play/close before/after with saved errno,pid/tid. GUI and FF sequence namespaces independent; no strict cross-caller causal ID. Log I/O is not asynchronous and can slow worker if output blocks. No automatic suppression/capture/calibration or changed FF bytes."
+  },
+  "mtp_atomic_upload": {
+    "patch": "0041-mtp-atomic-upload.patch",
+    "evidence": "logs/mtp-atomic-objects.json",
+    "cases": 68,
+    "new_atomic_cases": 22,
+    "baseline": "logs/mtp-atomic-before.json",
+    "baseline_failures": 5,
+    "scope": "Actual server/database/storage/inotify and chroot files with memory USB peer and I/O failures.",
+    "limits": "Rename is publication boundary; directory fsync failure warns after complete replacement. Crash leaves private staging file; no cross-restart orphan recovery or power-loss/USB/hardware proof. No arbitrary hidden filename exclusion: observer suppresses exact registered staging paths only."
+  },
+  "timezone_save_rollback": {
+    "patch": "0042-timezone-failed-save-rollback.patch",
+    "cases": 17,
+    "old_callback_failures": 11,
+    "scope": "Actual LVGL dispatch, callback, settings adapter and DataManager timezone-environment method; DataManager values/disk and property service are fixtures. Exact custom TZ restored after failure; pending UI choices retained.",
+    "limits": "Rollback uses existing set API; if storage published then directory fsync failed, disk may hold complete new values. RTC/property failure propagation/concurrent settings changes/full GUI and device settings remain unresolved."
+  },
+  "haptics_probe_interrupt": {
+    "patch": "0043-haptics-preserve-fd-on-probe-interrupt.patch",
+    "route_cases": 28,
+    "old_failures": 2,
+    "worker_FF_cases": 6,
+    "trace_ABI_cases": 14,
+    "scope": "Existing FF fd capability query EINTR/EAGAIN preserves cached availability and owning fd; no retry spin. ENODEV/EBADF still close/reprobe. Actual FF code with syscall fixtures.",
+    "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
+  },
+  "current_delivery": {
+    "evidence": "logs/nv-mount-policy-delivery.json",
+    "scope": "NV manual mount policy26/old17failures, list6, 751 build sources and same-image script replay. Full12-group goal remains active.",
+    "hardware": "unverified"
+  },
+  "delivery_evidence_refresh": {
+    "date": "2026-11-12",
+    "scope": "Refresh same-image policy/init/module state checks; retain historical reports. Physical haptics, automatic touch and settings fault remain unresolved. Full audit is not passed.",
+    "previous_check_bindings": [
+      {
+        "name": "binary-policy",
+        "evidence": "logs/module-state-policy-regression.json",
+        "evidence_sha256": "bbba4c86084a8936aec104b78cd7051ab4a24f5b8cd16f18e12354cfcd09c328"
+      },
+      {
+        "name": "init-scripts",
+        "evidence": "logs/module-state-init-verification.json",
+        "evidence_sha256": "87efe6c58a598f5125015e76a4f9a96eac35e5de8cb500ad969150ce2b829aaa"
+      },
+      {
+        "name": "USB-helper-binary-policy",
+        "evidence": "logs/module-state-helper-policy.json",
+        "evidence_sha256": "4a6498bf44146f761c733e981bb7e9fa956e35acc4c6c536d0242008929dca1c"
+      },
+      {
+        "name": "module-initialization-lifecycle",
+        "evidence": "logs/module-state-image-test.json",
+        "evidence_sha256": "d273803edf025d7ff82bcec824d4e29fe80a8f17e0fc65160ad57dfca2b46048"
+      },
+      {
+        "name": "actual-image-profile-activation",
+        "evidence": "logs/haptics-input-profile-runtime-image.json",
+        "evidence_sha256": "2f99bc70210e1845a6173f2c55831ff9155570a8ca9c9476a61e38bcb686a6ea"
+      }
+    ],
+    "previous_module_negative_control": {
+      "evidence": "logs/module-state-before.json",
+      "evidence_sha256": "60f11a641572acd81b1709cc80d2b5ec5d040e0a2c6bef6dfbb05771a9b1b79b",
+      "count": 4,
+      "failures": 14,
+      "scope": "Same harness and fixtures; original script; 14 failing subtest assertions in four groups."
+    },
+    "freshness_inventory": "logs/evidence-freshness-current.json",
+    "diagnostic_initial_full_audit": "logs/unified-current-diagnostic.log"
+  },
+  "digest_atomic_publication": {
+    "evidence": "logs/digest-publication.json",
+    "evidence_sha256": "3a5a43e2539f48316845f3d1e0ef47ddb799ada6716e9d8972d9cf548f23fb1c",
+    "count": 54,
+    "before_evidence": "logs/digest-publication-before.json",
+    "before_count": 54,
+    "before_failures": 44,
+    "previous_image": {
+      "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-reset.img",
+      "sha256": "046ab9e356e5301661daa4ff7dd6a29504cee7706ee32da0353d988f7e6a4e27"
+    },
+    "previous_check_bindings": [
+      {
+        "name": "binary-policy",
+        "evidence": "logs/current-haptics-policy.json",
+        "evidence_sha256": "bc0c976f1c1e218a7e1668609d138d4948f7fe660943c95a0d306142e18e2034"
+      },
+      {
+        "name": "init-scripts",
+        "evidence": "logs/current-profile-init.json",
+        "evidence_sha256": "f73172b504511d8fea76d9f7b57fc7d0472ef72effa2c0be85e865590c408a4d"
+      },
+      {
+        "name": "USB-helper-binary-policy",
+        "evidence": "logs/current-usb-policy.json",
+        "evidence_sha256": "6e3aa87a7ebfb3f5bf8ad013a4ceb3ebfcb2b0fd3075942b035330897e0553a8"
+      },
+      {
+        "name": "actual-image-profile-activation",
+        "evidence": "logs/current-profile-runtime.json",
+        "evidence_sha256": "b681387a0f50f998ec8f2ed9306b4c238127546f0ef42d985633d1e70a4f0714"
+      },
+      {
+        "name": "module-initialization-lifecycle",
+        "evidence": "logs/current-module-state-recheck.json",
+        "evidence_sha256": "d7efc638e9ddfebcd82cf7ea2d275d1279f34f2ecee3a7db499144f9f6a9e03b"
+      },
+      {
+        "name": "restore-session-preflight",
+        "evidence": "logs/restore-session.json",
+        "evidence_sha256": "c2edc6965a9228cd0175be4af1303ff536f06a66793f42d77a7fa84c3265cb07"
+      },
+      {
+        "name": "backup-session-cancellation",
+        "evidence": "logs/backup-session.json",
+        "evidence_sha256": "893d85c62b979c2a9764f09cbb62328895b0ccc4056f7d74c0235a2f0bfc5106"
+      }
+    ],
+    "delivery_audit": "logs/digest-atomic-delivery.json",
+    "freshness_inventory": "logs/digest-atomic-evidence-freshness.json",
+    "scope": "Real per-sidecar hash/I/O publication and original BackupPartition caller; whole-backup completion manifest is separately covered; archive bytes and target power-loss durability remain unverified."
+  },
+  "current_haptics_evidence_recheck": {
+    "date": "2026-11-12",
+    "previous_bindings": "logs/current-haptics-evidence-index-before.json",
+    "scope": "Re-executed current host haptics suites and verified existing same-image profile/module/policy/init reports before rebinding. Historical evidence retained. Physical vibration/settings/touch unresolved; full unified audit not passed.",
+    "current_trace": "logs/haptics-current-trace.json"
+  },
+  "settings_field_observation": {
+    "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-backup-manifest.img",
+    "image_sha256": "9a1b057d001821b0d9a908c003c3810f5295e6fa500e1716f59ae50364126123",
+    "date": "2026-11-12",
+    "source": "User message in this conversation",
+    "observation": "User confirms settings functions are now normal with recovery-dijun-unified-backup-manifest.img. Stop speculative settings fixes.",
+    "scope": "User-observed settings behavior; not independent verification of every setting or other functions."
+  },
+  "mount_list_field_observation": {
+    "date": "2026-11-12",
+    "image_sha256": "9a1b057d001821b0d9a908c003c3810f5295e6fa500e1716f59ae50364126123",
+    "source": "User message in this conversation",
+    "observation": "User supplied11 screenshots: internal673GB plus many0B /storage/usbotg-sda/sdb/sdc/sdd partition paths.",
+    "status": "Discovery bug reproduced and fixed offline; new candidate not hardware tested",
+    "static_inventory": "logs/shipped-mount-inventory.json",
+    "host_chain": "logs/mount-list-chain.json",
+    "boundary": "Supplied classification and presence; original list/snapshot/backend/LVGL builders. Not actual fstab parsing, current runtime partition list or complete GUI.",
+    "stock_NV_provenance": "logs/stock-nv-fstab-audit.json",
+    "discovery_evidence": "logs/otg-discovery.json",
+    "discovery_before": "logs/otg-discovery-before.json"
+  },
+  "module_state_reference_review": {
+    "evidence": "logs/module-state-reference-current.json",
+    "evidence_sha256": "8b186834569ddaf9c61b714c4a9e84e9210526cc9592038a165bdeed5e5f51c8",
+    "scope": "Review upstream module-state semantics and bind existing current shell tests.\n\nExecutes the original v6.6 show_initstate leaf with a host structure/sysfs\nfixture; inspects original load/sysfs ordering. Six original kernel byte-string\nchecks are interface corroboration only. No downstream loader, kernel module\ninit, asynchronous probe, device input, DSP or motor is executed.\n",
+    "executed_leaf_cases": 3,
+    "static_ordering_checks": 7,
+    "stock_kernel_interfaces": 6,
+    "historical_review": "logs/module-state-review.json"
+  },
+  "otg_discovery": {
+    "baseline_image_sha256": "9a1b057d001821b0d9a908c003c3810f5295e6fa500e1716f59ae50364126123",
+    "user_evidence": "11 screenshots in conversation; internal673GB plus 0B /storage/usbotg-sda/sdb/sdc/sdd partitions through sdc85",
+    "diagnosis": "First-wildcard truncation accepts all /devices/platform/soc controllers; complete-pattern matching now shared by hotplug/resync/coldboot. GUI recognizes actual /storage/usbotg-* paths.",
+    "patch": "dtsrc/O1_asic_dual/patches/0048-otg-controller-discovery.patch",
+    "status": "offline_fixed_hardware_unverified",
+    "scope": "Discovery and presentation only. NV fstab declarations retained; settings baseline user confirmation preserved; vibration is not current priority.",
+    "prior_image_limitation": "Prior image/provenance no longer present after build; compare preserved pre-sync device tree specifications and saved original source files. Current741 source map checked directly. No new prior-binary equality claim."
+  },
+  "mtp_upload_time": {
+    "status": "software_fixed_offline",
+    "patch": "dtsrc/O1_asic_dual/patches/0049-mtp-upload-timestamp.patch",
+    "semantics": "optional time_t distinguishes valid epoch0 from absent/invalid timestamp. Failed file timestamp application aborts before publication; old destination preserved. Skip timestamp after failed receive.",
+    "boundaries": "Private host files/inotify/production server/database with memory USB peer; no physical endpoint drain, directory-date handling, power loss or Windows enumeration.",
+    "profile_runtime": "logs/mtp-upload-time-profile-runtime.json",
+    "module_state": "logs/mtp-upload-time-module-state.json",
+    "evidence": "logs/mtp-upload-time-objects.json",
+    "before": "logs/mtp-upload-time-before.json",
+    "transfers": "logs/mtp-upload-time-transfers.json"
+  },
+  "ce_lifecycle": {
+    "status": "failed-decrypt-cleanup-fixed-offline",
+    "patch": "dtsrc/O1_asic_dual/patches/0050-decrypt-failure-ce-cleanup.patch",
+    "semantics": "Failed credential provider may have installed CE before prepare fails; core now requests eviction for selected user and diagnoses failure. Original vold evict_user_keys erases cache even if ioctl fixture fails; not physical relock proof.",
+    "vold_commit": "e7e26ed2ffd9ad0469a05515cfd91940a3366d19",
+    "evidence": "logs/ce-lifecycle.json",
+    "before": "logs/ce-lifecycle-before.json",
+    "core": "logs/ce-lifecycle-multiuser-core.json",
+    "boundaries": "TEE/parent-bound child-profile protocol, key unwrap/read/install/evict ioctls, fscrypt prepare and real remount are explicit fixtures or not exercised.",
+    "profile_runtime": "logs/ce-lifecycle-profile-runtime.json",
+    "module_state": "logs/ce-lifecycle-module-state.json"
+  },
+  "sparse_flash": {
+    "status": "capacity-and-completion-fixed-offline",
+    "patch": "dtsrc/O1_asic_dual/patches/0051-sparse-image-capacity-and-commit.patch",
+    "evidence": "logs/sparse-flash.json",
+    "before": "logs/sparse-flash-before.json",
+    "raw_regression": "logs/sparse-flash-raw-regression.json",
+    "boundaries": "private host files, block-stat/capacity/discard doubles; full manager/GUI/slots, ZIP/update-binary/sideload, CRC/authenticity and physical persistence remain unverified"
+  },
+  "installation_chain": {
+    "status": "host-zip-chain-and-ABI-selection-covered-offline",
+    "patch": "dtsrc/O1_asic_dual/patches/0052-updater-protocol-validation.patch",
+    "image_route": "logs/image-install-chain.json",
+    "updater": "logs/zip-updater.json",
+    "before": "logs/zip-updater-before.json",
+    "boundaries": "Native host traditional ZIP chain includes current package/signature/digest/extraction/fork/exec; ABI-named updater is host code. DataManager/progress/property/unmount are fixtures. Separate image-route suite. No ARM updater, AB payload/update_engine, full backend/GUI queue, sideload/FUSE or physical writes.",
+    "selection_patch": "dtsrc/O1_asic_dual/patches/0053-zip-updater-abi-selection.patch",
+    "zip_chain": "logs/zip-install-chain.json",
+    "zip_chain_before": "logs/zip-install-chain-before.json",
+    "updater_current_regression": "logs/zip-selection-updater-regression.json"
+  },
+  "os4_haptics_user_confirmation": {
+    "date": "2026-11-12",
+    "observation": "User states OS4 haptics invocation is normal.",
+    "scope": "User confirmation of OS4 invocation; not all-profile/physical acceptance.",
+    "priority": "Not the current investigation focus"
+  },
+  "manual_nv_mount_policy": {
+    "patch": "dtsrc/O1_asic_dual/patches/0054-restrict-manual-nv-mounts.patch",
+    "status": "offline_fixed",
+    "scope": "Hide NV/proinfo/protection in GUI mount list and reject backend toggle in both directions; normalized path and resolved aliases. Internal fstab/core access retained. Not privileged-shell access control.",
+    "evidence": "logs/nv-mount-policy.json",
+    "before": "logs/nv-mount-policy-before.json",
+    "lvgl": "logs/nv-mount-list-chain.json"
+  },
+  "github_publication": {
+    "repository": "https://github.com/xiatian410/xringo1-twrp",
+    "policy": "User-authorized public source publication and synchronization after each coherent future change batch; no compiled artifacts/blobs/private keys/raw logs.",
+    "workflow": "scripts/sync_github.py --push",
+    "documentation": "docs/GITHUB-PUBLICATION.md"
+  }
+}

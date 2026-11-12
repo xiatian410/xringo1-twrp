@@ -1,0 +1,663 @@
+diff --git a/twrpTar.cpp b/twrpTar.cpp
+index f19d918..5f32053 100755
+--- a/twrpTar.cpp
++++ b/twrpTar.cpp
+@@ -35,6 +35,8 @@
+ #include <libgen.h>
+ #include <sys/mman.h>
+ #include <sys/ioctl.h>
++#include <sys/resource.h>
++#include <sys/syscall.h>
+ #include <zlib.h>
+ #include <semaphore.h>
+ #include <android-base/file.h>
+@@ -64,6 +66,44 @@
+ 
+ using namespace std;
+ 
++namespace {
++// A codec pipe may return less than one tar block without reaching EOF.
++// libtar requires a complete requested block, or a genuine EOF/error.
++ssize_t readArchive(int fd, void* buffer, size_t size) {
++	size_t total = 0;
++	while (total < size) {
++		const ssize_t count = read(fd, static_cast<char*>(buffer) + total, size - total);
++		if (count < 0 && errno == EINTR) continue;
++		if (count < 0) return -1;
++		if (count == 0) break;
++		total += count;
++	}
++	return static_cast<ssize_t>(total);
++}
++
++// AES runs in-process after fork, so O_CLOEXEC alone cannot release inherited
++// pipe ends. Other archive threads may own those ends; keep only stdio here.
++bool prepareCodecChild(int input, int output) {
++	if (dup2(input, STDIN_FILENO) < 0 || dup2(output, STDOUT_FILENO) < 0) return false;
++#ifdef __NR_close_range
++	if (syscall(__NR_close_range, 3U, ~0U, 0U) == 0) return true;
++#endif
++	struct rlimit limit{};
++	if (getrlimit(RLIMIT_NOFILE, &limit) != 0 || limit.rlim_cur == RLIM_INFINITY) return false;
++	for (rlim_t fd = 3; fd < limit.rlim_cur; ++fd) close(static_cast<int>(fd));
++	return true;
++}
++
++bool waitCodec(pid_t& pid, bool stop) {
++	if (pid <= 0) { pid = 0; return true; }
++	if (stop) kill(pid, SIGKILL);
++	int status = 0;
++	const int result = TWFunc::WaitForChild(pid, &status, "archive codec");
++	pid = 0;
++	return result == 0;
++}
++}  // namespace
++
+ twrpTar::twrpTar(void) {
+ 	use_encryption = 0;
+ 	userdata_encryption = 0;
+@@ -76,10 +116,16 @@ twrpTar::twrpTar(void) {
+ 	include_root_dir = true;
+ 	tar_type.openfunc = open;
+ 	tar_type.closefunc = close;
+-	tar_type.readfunc = read;
++	tar_type.readfunc = readArchive;
++	tar_type.writefunc = write;
+ 	input_fd = -1;
+ 	output_fd = -1;
+ 	backup_exclusions = NULL;
++	progress_pipe_fd = -1;
++	fd = -1;
++	t = nullptr;
++	thread_id = 0;
++	part_settings = nullptr;
+ 
+ #ifdef USE_FSCRYPT
+ 	fscrypt_set_mode();
+@@ -185,6 +231,9 @@ int twrpTar::createTarFork(BackupProcess* backup_process) {
+ 				if (de->d_type == DT_DIR) {
+ 					item_len = strlen(de->d_name);
+ 					if (userdata_encryption && ((item_len >= 3 && strncmp(de->d_name, "app", 3) == 0) || (item_len >= 6 && strncmp(de->d_name, "dalvik", 6) == 0))) {
++						TarItem.fn = FileName;
++						TarItem.thread_id = regular_thread_id;
++						RegularList.push_back(TarItem);
+ 						ret = Generate_TarList(FileName, &RegularList, &target_size, &regular_thread_id);
+ 						if (ret < 0) {
+ 							LOGINFO("Error in Generate_TarList with regular list!\n");
+@@ -192,7 +241,7 @@ int twrpTar::createTarFork(BackupProcess* backup_process) {
+ 							closedir(d);
+ 							exit_child(-1);
+ 						}
+-						file_count = (unsigned long long)(ret);
++						file_count += (unsigned long long)(ret);
+ 						regular_size += backup_exclusions->Get_Folder_Size(FileName);
+ 					} else {
+ 						encrypt_size += backup_exclusions->Get_Folder_Size(FileName);
+@@ -233,6 +282,11 @@ int twrpTar::createTarFork(BackupProcess* backup_process) {
+ 						// Do nothing, we added these to RegularList earlier
+ 					} else {
+ 						FileName = tardir + "/" + de->d_name;
++						// Preserve the top-level directory's mode and Android xattrs,
++						// just as Generate_TarList preserves nested directories.
++						TarItem.fn = FileName;
++						TarItem.thread_id = enc_thread_id;
++						EncryptList.push_back(TarItem);
+ 						ret = Generate_TarList(FileName, &EncryptList, &target_size, &enc_thread_id);
+ 						if (ret < 0) {
+ 							LOGINFO("Error in Generate_TarList with encrypted list!\n");
+@@ -465,17 +519,17 @@ int twrpTar::createTarFork(BackupProcess* backup_process) {
+ }
+ 
+ int twrpTar::extractTarFork() {
+-	int status = 0;
++	BackupProcess restore_process;
+ 	pid_t tar_fork_pid;
+ 	int progress_pipe[2];
+ 
+-	if (pipe(progress_pipe) < 0) {
++	if (pipe2(progress_pipe, O_CLOEXEC) < 0) {
+ 		LOGINFO("Error creating progress tracking pipe\n");
+ 		gui2_console::log_error("restore_error");
+ 		return -1;
+ 	}
+ 
+-	tar_fork_pid = fork();
++	tar_fork_pid = restore_process.Fork(PartitionManager.stop_backup);
+ 	if (tar_fork_pid >= 0) // fork was successful
+ 	{
+ 		if (tar_fork_pid == 0) // child process
+@@ -496,7 +550,7 @@ int twrpTar::extractTarFork() {
+ 				twrpTar tars[9];
+ 				pthread_t tar_thread[9];
+ 				pthread_attr_t tattr;
+-				unsigned thread_count = 0, i, start_thread_id = 1;
++				unsigned i, start_thread_id = 1;
+ 				int ret, thread_error = 0;
+ 				void *thread_return;
+ 
+@@ -549,9 +603,8 @@ int twrpTar::extractTarFork() {
+ 					_exit(-1);
+ 				}*/
+ 				for (i = start_thread_id; i < 9; i++) {
+-					snprintf(actual_filename, sizeof(actual_filename), temp.c_str(), i, 0);
++					snprintf(actual_filename, sizeof(actual_filename), "%s%u%02i", basefn.c_str(), i, 0);
+ 					if (TWFunc::IsPathExists(actual_filename)) {
+-						thread_count++;
+ 						tars[i].basefn = basefn;
+ 						tars[i].setpassword(password);
+ 						tars[i].thread_id = i;
+@@ -572,10 +625,11 @@ int twrpTar::extractTarFork() {
+ 						}
+ 						usleep(100000); // Need a short delay before starting the next thread or the threads will never finish for some reason.
+ 					} else {
+-						break;
++						continue;
+ 					}
+ 				}
+-				for (i = start_thread_id; i < thread_count + start_thread_id; i++) {
++				for (i = start_thread_id; i < 9; i++) {
++					if (tars[i].basefn.empty()) continue;
+ 					if (tars[i].thread_id == i) {
+ 						if (pthread_join(tar_thread[i], &thread_return)) {
+ 							LOGINFO("Error joining thread %i\n", i);
+@@ -610,20 +664,23 @@ int twrpTar::extractTarFork() {
+ 		}
+ 		else // parent process
+ 		{
+-			unsigned long long fs, size_backup = 0;
++			uint64_t fs, size_backup = 0;
++			int read_result;
+ 
+ 			// Parent closes output side
+ 			close(progress_pipe[1]);
+ 
+ 			// Read progress data from children
+-			while (read(progress_pipe[0], &fs, sizeof(fs)) > 0) {
++			while ((read_result = restore_process.ReadProgress(progress_pipe[0], fs)) > 0) {
+ 				size_backup += fs;
+ 				part_settings->progress->UpdateSize(size_backup);
+ 			}
+ 			close(progress_pipe[0]);
+ 			part_settings->progress->UpdateDisplayDetails(true);
+ 
+-			if (TWFunc::WaitForChild(tar_fork_pid, &status, "extractTarFork()") != 0)
++			if (read_result < 0) restore_process.Terminate();
++			const int child_result = restore_process.Wait();
++			if (read_result < 0 || child_result != 0)
+ 				return -1;
+ 		}
+ 	}
+@@ -649,7 +706,6 @@ int twrpTar::Generate_TarList(string Path, std::vector<TarListStruct> *TarList,
+ 	d = opendir(Path.c_str());
+ 	if (d == NULL) {
+ 		gui2_console::log_error("error_opening_strerr", Path, strerror(errno));
+-		closedir(d);
+ 		return -1;
+ 	}
+ 	while ((de = readdir(d)) != NULL) {
+@@ -683,16 +739,30 @@ int twrpTar::Generate_TarList(string Path, std::vector<TarListStruct> *TarList,
+ }
+ 
+ int twrpTar::extractTar() {
+-	char* charRootDir = (char*) tardir.c_str();
+-	if (openTar() == -1)
+-		return -1;
+-	if (tar_extract_all(t, charRootDir, &progress_pipe_fd) != 0) {
+-		LOGINFO("Unable to extract tar archive '%s'\n", tarfn.c_str());
+-		gui2_console::log_error("restore_error");
+-		return -1;
++	if (openTar() != 0) return -1;
++	bool ok = tar_extract_all(t, const_cast<char*>(tardir.c_str()), &progress_pipe_fd) == 0;
++	if (ok) {
++		// Finish the stream, checking both codec trailers and tar padding.
++		// In the legacy CBC format an appended partial chunk may decrypt to
++		// garbage without a padding error; nonzero bytes after tar EOT fail.
++		char trailing[4096];
++		for (;;) {
++			const ssize_t count = read(t->fd, trailing, sizeof(trailing));
++			if (count < 0 && errno == EINTR) continue;
++			if (count <= 0) { if (count < 0) ok = false; break; }
++			if (!std::all_of(trailing, trailing + count, [](char byte) { return byte == 0; })) {
++				ok = false;
++				break;
++			}
++		}
+ 	}
+-	if (tar_close(t) != 0) {
+-		LOGINFO("Unable to close tar file\n");
++	if (tar_close(t) != 0) ok = false;
++	t = nullptr;
++	const bool pigz_ok = waitCodec(pigz_pid, !ok);
++	const bool aes_ok = waitCodec(oaes_pid, !ok || !pigz_ok);
++	if (input_fd >= 0) { if (close(input_fd) != 0) ok = false; input_fd = -1; }
++	if (!ok || !pigz_ok || !aes_ok) {
++		LOGERR("Archive extraction or codec validation failed\n");
+ 		gui2_console::log_error("restore_error");
+ 		return -1;
+ 	}
+@@ -742,7 +812,7 @@ int twrpTar::tarList(std::vector<TarListStruct> *TarList, unsigned thread_id) {
+ 	if (split_archives) {
+ 		basefn = tarfn;
+ 		temp = basefn + "%i%02i";
+-		snprintf(actual_filename, sizeof(actual_filename), temp.c_str(), thread_id, archive_count);
++		snprintf(actual_filename, sizeof(actual_filename), "%s%u%02i", basefn.c_str(), thread_id, archive_count);
+ 		tarfn = actual_filename;
+ 		include_root_dir = true;
+ 	} else {
+@@ -772,12 +842,12 @@ int twrpTar::tarList(std::vector<TarListStruct> *TarList, unsigned thread_id) {
+ 					}
+ 					archive_count++;
+ 					gui2_console::info("split_thread", thread_id, archive_count + 1);
+-					if (archive_count > 999) {
++					if (archive_count > 99) {
+ 						LOGINFO("Too many archives for thread %i\n", thread_id);
+ 						gui2_console::log_error("backup_error");
+ 						return -4;
+ 					}
+-					snprintf(actual_filename, sizeof(actual_filename), temp.c_str(), thread_id, archive_count);
++					snprintf(actual_filename, sizeof(actual_filename), "%s%u%02i", basefn.c_str(), thread_id, archive_count);
+ 					tarfn = actual_filename;
+ 					if (createTar() != 0) {
+ 						LOGINFO("Error creating tar '%s' for thread %i\n", tarfn.c_str(), thread_id);
+@@ -823,7 +893,7 @@ void* twrpTar::extractMulti(void *cookie) {
+ 	int archive_count = 0;
+ 	string temp = threadTar->basefn + "%i%02i";
+ 	char actual_filename[PATH_MAX];
+-	snprintf(actual_filename, sizeof(actual_filename), temp.c_str(), threadTar->thread_id, archive_count);
++	snprintf(actual_filename, sizeof(actual_filename), "%s%u%02i", threadTar->basefn.c_str(), threadTar->thread_id, archive_count);
+ 	while (TWFunc::IsPathExists(actual_filename)) {
+ 		threadTar->tarfn = actual_filename;
+ 		if (threadTar->extract() != 0) {
+@@ -832,7 +902,7 @@ void* twrpTar::extractMulti(void *cookie) {
+ 		}
+ 		archive_count++;
+ 		// The next name not existing is the bound, a count silently truncated.
+-		snprintf(actual_filename, sizeof(actual_filename), temp.c_str(), threadTar->thread_id, archive_count);
++		snprintf(actual_filename, sizeof(actual_filename), "%s%u%02i", threadTar->basefn.c_str(), threadTar->thread_id, archive_count);
+ 	}
+ 	LOGINFO("Thread ID %i finished successfully.\n", threadTar->thread_id);
+ 	return (void*)0;
+@@ -841,7 +911,7 @@ void* twrpTar::extractMulti(void *cookie) {
+ int twrpTar::addFilesToExistingTar(vector <string> files, string fn) {
+ 	char* charTarFile = (char*) fn.c_str();
+ 
+-	if (tar_open(&t, charTarFile, NULL, O_CLOEXEC | O_RDONLY | O_LARGEFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, TWTAR_FLAGS) == -1)
++	if (tar_open(&t, charTarFile, &tar_type, O_CLOEXEC | O_RDONLY | O_LARGEFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, TWTAR_FLAGS) == -1)
+ 		return -1;
+ 	removeEOT(charTarFile);
+ 	if (tar_open(&t, charTarFile, NULL, O_CLOEXEC | O_WRONLY | O_APPEND | O_LARGEFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, TWTAR_FLAGS) == -1)
+@@ -915,10 +985,8 @@ int twrpTar::createTar() {
+ 					close(pipes[i]); // close all
+ 				return -1;
+ 			} else if (oaes_pid == 0) {
+-				dup2(pipes[2], STDIN_FILENO);
+-				dup2(output_fd, STDOUT_FILENO);
+-				TWFunc::AesEncryptStream(password);
+-				_exit(0);
++				if (!prepareCodecChild(pipes[2], output_fd)) _exit(1);
++				_exit(TWFunc::AesEncryptStream(password) ? 0 : 1);
+ 			} else {
+ 				// Parent
+ 				close(pipes[0]);
+@@ -1010,10 +1078,8 @@ int twrpTar::createTar() {
+ 			close(oaesfd[1]);
+ 			return -1;
+ 		} else if (oaes_pid == 0) {
+-			dup2(oaesfd[0], STDIN_FILENO); // remap stdin
+-			dup2(output_fd, STDOUT_FILENO); // remap stdout to output file
+-			TWFunc::AesEncryptStream(password);
+-			_exit(0);
++			if (!prepareCodecChild(oaesfd[0], output_fd)) _exit(1);
++			_exit(TWFunc::AesEncryptStream(password) ? 0 : 1);
+ 		} else {
+ 			// Parent
+ 			close(oaesfd[0]); // close parent input
+@@ -1080,10 +1146,8 @@ int twrpTar::openTar() {
+ 				close(pipes[i]); // close all
+ 			return -1;
+ 		} else if (oaes_pid == 0) {
+-			dup2(input_fd, STDIN_FILENO);
+-			dup2(pipes[1], STDOUT_FILENO);
+-			TWFunc::AesDecryptStream(password);
+-			_exit(0);
++			if (!prepareCodecChild(input_fd, pipes[1])) _exit(1);
++			_exit(TWFunc::AesDecryptStream(password) ? 0 : 1);
+ 		} else {
+ 			// Parent
+ 			pigz_pid = fork();
+@@ -1110,7 +1174,7 @@ int twrpTar::openTar() {
+ 				close(pipes[1]);
+ 				close(pipes[3]);
+ 				fd = pipes[2];
+-				if (tar_fdopen(&t, fd, charRootDir, NULL, O_CLOEXEC | O_RDONLY | O_LARGEFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, TWTAR_FLAGS) != 0) {
++				if (tar_fdopen(&t, fd, charRootDir, &tar_type, O_CLOEXEC | O_RDONLY | O_LARGEFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, TWTAR_FLAGS) != 0) {
+ 					close(fd);
+ 					LOGINFO("tar_fdopen failed\n");
+ 					gui2_console::log_error("restore_error");
+@@ -1144,15 +1208,13 @@ int twrpTar::openTar() {
+ 			return -1;
+ 		} else if (oaes_pid == 0) {
+ 			// Child
+-			dup2(oaesfd[1], STDOUT_FILENO); // remap stdout
+-			dup2(input_fd, STDIN_FILENO); // remap input fd to stdin
+-			TWFunc::AesDecryptStream(password);
+-			_exit(0);
++			if (!prepareCodecChild(input_fd, oaesfd[1])) _exit(1);
++			_exit(TWFunc::AesDecryptStream(password) ? 0 : 1);
+ 		} else {
+ 			// Parent
+ 			close(oaesfd[1]); // close parent output
+ 			fd = oaesfd[0];   // copy parent input
+-			if (tar_fdopen(&t, fd, charRootDir, NULL, O_CLOEXEC | O_RDONLY | O_LARGEFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, TWTAR_FLAGS) != 0) {
++			if (tar_fdopen(&t, fd, charRootDir, &tar_type, O_CLOEXEC | O_RDONLY | O_LARGEFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, TWTAR_FLAGS) != 0) {
+ 				close(fd);
+ 				LOGINFO("tar_fdopen failed\n");
+ 				gui2_console::log_error("restore_error");
+@@ -1198,7 +1260,7 @@ int twrpTar::openTar() {
+ 			// Parent
+ 			close(pigzfd[1]); // close parent output
+ 			fd = pigzfd[0];   // copy parent input
+-			if (tar_fdopen(&t, fd, charRootDir, NULL, O_CLOEXEC | O_RDONLY | O_LARGEFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, TWTAR_FLAGS) != 0) {
++			if (tar_fdopen(&t, fd, charRootDir, &tar_type, O_CLOEXEC | O_RDONLY | O_LARGEFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, TWTAR_FLAGS) != 0) {
+ 				close(fd);
+ 				LOGINFO("tar_fdopen failed\n");
+ 				gui2_console::log_error("restore_error");
+@@ -1206,7 +1268,7 @@ int twrpTar::openTar() {
+ 			}
+ 		}
+ 	} else  {
+-		if (tar_open(&t, charTarFile, NULL, O_CLOEXEC | O_RDONLY | O_LARGEFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, TWTAR_FLAGS) != 0) {
++		if (tar_open(&t, charTarFile, &tar_type, O_CLOEXEC | O_RDONLY | O_LARGEFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, TWTAR_FLAGS) != 0) {
+ 			LOGERR("Unable to open tar archive '%s'\n", charTarFile);
+ 			gui2_console::log_error("restore_error");
+ 			return -1;
+@@ -1250,40 +1312,27 @@ int twrpTar::addFile(string fn, bool include_root) {
+ }
+ 
+ int twrpTar::closeTar() {
+-	LOGINFO("Closing tar\n");
++	if (!t) return -1;
+ 	flush_libtar_buffer(t->fd);
+-	if (tar_append_eof(t) != 0) {
+-		LOGINFO("tar_append_eof(): %s\n", strerror(errno));
+-		tar_close(t);
+-		return -1;
+-	}
+-	if (tar_close(t) != 0) {
+-		LOGINFO("Unable to close tar archive: '%s'\n", tarfn.c_str());
+-		return -1;
+-	}
+-	if (current_archive_type > 0) {
+-		int status;
+-		if (pigz_pid > 0 && TWFunc::WaitForChild(pigz_pid, &status, "pigz") != 0)
+-			return -1;
+-		if (oaes_pid > 0 && TWFunc::WaitForChild(oaes_pid, &status, "aes") != 0)
+-			return -1;
+-	}
++	bool ok = tar_append_eof(t) == 0;
++	if (current_archive_type == UNCOMPRESSED && fsync(t->fd) != 0) ok = false;
++	if (tar_close(t) != 0) ok = false;
++	t = nullptr;
++	const bool pigz_ok = waitCodec(pigz_pid, !ok);
++	const bool aes_ok = waitCodec(oaes_pid, !ok || !pigz_ok);
+ 	free_libtar_buffer();
+-	if (use_compression && !use_encryption) {
+-		string gzname = tarfn + ".gz";
+-		if (TWFunc::IsPathExists(gzname)) {
+-			rename(gzname.c_str(), tarfn.c_str());
+-		}
++	ok = ok && pigz_ok && aes_ok;
++	tw_set_default_metadata(tarfn.c_str());
++	if (output_fd >= 0) {
++		if (fsync(output_fd) != 0) ok = false;
++		if (close(output_fd) != 0) ok = false;
++		output_fd = -1;
+ 	}
+-	if (TWFunc::GetFileSize(tarfn) == 0) {
+-		gui2_console::log_error("backup_size", tarfn);
++	if (input_fd >= 0) { if (close(input_fd) != 0) ok = false; input_fd = -1; }
++	if (!ok || TWFunc::GetFileSize(tarfn) == 0) {
++		LOGERR("Archive writer or codec failed before completion\n");
+ 		return -1;
+ 	}
+-	tw_set_default_metadata(tarfn.c_str());
+-	if (input_fd >= 0)
+-		close(input_fd);
+-	if (output_fd >= 0)
+-		close(output_fd);
+ 	return 0;
+ }
+ 
+@@ -1334,18 +1383,18 @@ uint64_t twrpTar::get_size() {
+ 		temp = basefn + "%i%02i";
+ 		tarfn += "000";
+ 		thread_id = 0;
+-		snprintf(actual_filename, sizeof(actual_filename), temp.c_str(), thread_id, archive_count);
++		snprintf(actual_filename, sizeof(actual_filename), "%s%u%02i", basefn.c_str(), thread_id, archive_count);
+ 		if (!TWFunc::IsPathExists(actual_filename)) {
+ 			LOGERR("Unable to locate '%s' or '%s'\n", basefn.c_str(), tarfn.c_str());
+ 			return 0;
+ 		}
+ 		for (int i = 0; i < 9; i++) {
+ 			archive_count = 0;
+-			snprintf(actual_filename, sizeof(actual_filename), temp.c_str(), i, archive_count);
++			snprintf(actual_filename, sizeof(actual_filename), "%s%i%02i", basefn.c_str(), i, archive_count);
+ 			while (TWFunc::IsPathExists(actual_filename)) {
+ 				total_restore_size += uncompressedSize(actual_filename);
+ 				archive_count++;
+-				snprintf(actual_filename, sizeof(actual_filename), temp.c_str(), i, archive_count);
++				snprintf(actual_filename, sizeof(actual_filename), "%s%i%02i", basefn.c_str(), i, archive_count);
+ 			}
+ 		}
+ 		InfoManager backup_info(tarfn + ".info");
+@@ -1385,8 +1434,7 @@ string pigzDecryptedListing(const string& filename, const string& password) {
+ 		close(aes_write.get());
+ 		close(pigz_read.get());
+ 		close(pigz_write.get());
+-		TWFunc::AesDecryptStream(password);
+-		_exit(0);
++		_exit(TWFunc::AesDecryptStream(password) ? 0 : 1);
+ 	}
+ 
+ 	pid_t pigz_pid = fork();
+diff --git a/tarWrite.cpp b/tarWrite.cpp
+index bc32d82..5d9cd1f 100644
+--- a/tarWrite.cpp
++++ b/tarWrite.cpp
+@@ -29,13 +29,13 @@
+ 
+ namespace {
+ // File-scope state (tartype_t carries no closure pointer for the libtar callbacks).
+-bool flush_pending = false;
+-int eot_count = -1;
+-std::vector<unsigned char> write_buffer;
+-size_t buffer_size = 4096;
+-size_t buffer_loc = 0;
+-int buffer_status = 0;  // 0: none, 1: buffered, 2: flush requested
+-int prog_pipe = -1;
++thread_local bool flush_pending = false;
++thread_local int eot_count = -1;
++thread_local std::vector<unsigned char> write_buffer;
++thread_local size_t buffer_size = 4096;
++thread_local size_t buffer_loc = 0;
++thread_local int buffer_status = 0;  // 0: none, 1: buffered, 2: flush requested
++thread_local int prog_pipe = -1;
+ constexpr uint64_t kProgressSize = T_BLOCKSIZE;
+ }  // namespace
+ 
+diff --git a/twrp_functions.cpp b/twrp_functions.cpp
+index 207691c..a7771b8 100644
+--- a/twrp_functions.cpp
++++ b/twrp_functions.cpp
+@@ -140,11 +140,15 @@ std::string TWFunc::GetPath(const std::string& path) {
+ }
+ 
+ int TWFunc::WaitForChild(const pid_t pid, int* status, const std::string& child_name, const bool show_errors) {
+-  if (const pid_t rc_pid = waitpid(pid, status, 0); rc_pid > 0) {
++  if (pid <= 0 || status == nullptr) return -1;
++  pid_t rc_pid;
++  do { rc_pid = waitpid(pid, status, 0); } while (rc_pid < 0 && errno == EINTR);
++  if (rc_pid == pid) {
+     if (WIFSIGNALED(*status)) {
+       if (show_errors) gui2_console::log_error("pid_signal", child_name, WTERMSIG(*status)); // Seg fault or some other non-graceful termination
+       return -1;
+     }
++    if (!WIFEXITED(*status)) return -1;
+     if (WEXITSTATUS(*status) == 0) {
+       LOGINFO("%s process ended with RC=%d\n", child_name.c_str(), WEXITSTATUS(*status)); // Success
+     } else {
+@@ -153,9 +157,10 @@ int TWFunc::WaitForChild(const pid_t pid, int* status, const std::string& child_
+     }
+   } else {
+     // no PID returned
+-    if (errno == ECHILD)
++    if (errno == ECHILD) {
+       LOGERR("%s no child process exist\n", child_name.c_str());
+-    else {
++      return -1;
++    } else {
+       LOGERR("%s Unexpected error %d\n", child_name.c_str(), errno);
+       return -1;
+     }
+@@ -257,12 +262,12 @@ int TWFunc::TryDecryptingFile(const std::string& fn, const std::string& password
+   return Oaes::TryDecryptingFile(fn, password);
+ }
+ 
+-void TWFunc::AesEncryptStream(const std::string& password) {
+-  Oaes::EncryptStream(password);
++bool TWFunc::AesEncryptStream(const std::string& password) {
++  return Oaes::EncryptStream(password);
+ }
+ 
+-void TWFunc::AesDecryptStream(const std::string& password) {
+-  Oaes::DecryptStream(password);
++bool TWFunc::AesDecryptStream(const std::string& password) {
++  return Oaes::DecryptStream(password);
+ }
+ 
+ uint64_t TWFunc::GetFileSize(const std::string& path) {
+diff --git a/twrp_functions.hpp b/twrp_functions.hpp
+index a11dc78..ee241ca 100644
+--- a/twrp_functions.hpp
++++ b/twrp_functions.hpp
+@@ -90,10 +90,10 @@ public:
+   static int TryDecryptingFile(const std::string &fn, const std::string &password);
+ 
+   // Encrypt stdin to stdout using the OAES chunked format
+-  static void AesEncryptStream(const std::string& password);
++  static bool AesEncryptStream(const std::string& password);
+ 
+   // Decrypt stdin to stdout using the OAES chunked format
+-  static void AesDecryptStream(const std::string& password);
++  static bool AesDecryptStream(const std::string& password);
+ 
+   // Returns the size of a file
+   static uint64_t GetFileSize(const std::string& path);
+diff --git a/oaes/oaes.cpp b/oaes/oaes.cpp
+index 8a94796..f4f8a9a 100644
+--- a/oaes/oaes.cpp
++++ b/oaes/oaes.cpp
+@@ -60,10 +60,11 @@ static ssize_t DecryptChunk(const uint8_t* chunk, size_t chunk_len, uint8_t* out
+ 	if (cipher_len % 16 != 0 || cipher_len > out_cap) return -1;
+ 	EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+ 	if (!ctx) return -1;
+-	EVP_DecryptInit_ex(ctx, cipher, NULL, key, chunk + 16);
+-	EVP_CIPHER_CTX_set_padding(ctx, 0);
++
+ 	int out_len = 0, final_len = 0;
+-	bool ok = EVP_DecryptUpdate(ctx, out, &out_len, chunk + 32, cipher_len) &&
++	bool ok = EVP_DecryptInit_ex(ctx, cipher, NULL, key, chunk + 16) &&
++		EVP_CIPHER_CTX_set_padding(ctx, 0) &&
++		EVP_DecryptUpdate(ctx, out, &out_len, chunk + 32, cipher_len) &&
+ 		EVP_DecryptFinal_ex(ctx, out + out_len, &final_len);
+ 	EVP_CIPHER_CTX_free(ctx);
+ 	if (!ok) return -1;
+@@ -95,19 +96,26 @@ int TryDecryptingFile(const std::string& filename, const std::string& password)
+ 	if (plain_len < 0) { free(output); return 0; }
+ 	if (plain_len >= 2 && output[0] == 0x1f && output[1] == 0x8b) { free(output); return 3; }
+ 	if (plain_len >= 262 && !strncmp((char*)output + 257, "ustar", 5)) { free(output); return 2; }
++	// Empty tar archives (including unused encryption thread groups) contain
++	// two zero end blocks instead of a ustar header.
++	if (plain_len >= 1024 && std::all_of(output, output + 1024, [](uint8_t b) { return b == 0; })) {
++		free(output); return 2;
++	}
+ 	free(output);
+ 	return 1;
+ }
+ 
+-void EncryptStream(const std::string& password) {
++bool EncryptStream(const std::string& password) {
+ 	uint8_t key[32]; size_t key_len;
+ 	PrepareKey(password, key, &key_len);
+ 	const EVP_CIPHER* cipher = Cipher(key_len);
+ 	uint8_t input[4064], output[4096];
+ 	uint8_t iv[16];
+-	int random_fd = open("/dev/urandom", O_RDONLY);
+-	if (random_fd >= 0) { ReadFull(random_fd, iv, sizeof(iv)); close(random_fd); }
+-	else memset(iv, 0, sizeof(iv));
++	int random_fd = open("/dev/urandom", O_RDONLY | O_CLOEXEC);
++	if (random_fd < 0) return false;
++	const ssize_t random_size = ReadFull(random_fd, iv, sizeof(iv));
++	close(random_fd);
++	if (random_size != sizeof(iv)) return false;
+ 	ssize_t n;
+ 	while ((n = ReadFull(STDIN_FILENO, input, sizeof(input))) > 0) {
+ 		memcpy(output, kHeader, 16); output[6] = 2;
+@@ -116,28 +124,34 @@ void EncryptStream(const std::string& password) {
+ 		memcpy(output + 16, iv, sizeof(iv));
+ 		for (size_t i = 0; i < pad; ++i) input[n + i] = i + 1;
+ 		EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+-		if (!ctx) return;
+-		EVP_EncryptInit_ex(ctx, cipher, NULL, key, iv);
+-		EVP_CIPHER_CTX_set_padding(ctx, 0);
++		if (!ctx) return false;
++
+ 		int out_len = 0, final_len = 0;
+-		EVP_EncryptUpdate(ctx, output + 32, &out_len, input, n + pad);
+-		EVP_EncryptFinal_ex(ctx, output + 32 + out_len, &final_len);
++		const bool ok = EVP_EncryptInit_ex(ctx, cipher, NULL, key, iv) &&
++			EVP_CIPHER_CTX_set_padding(ctx, 0) &&
++			EVP_EncryptUpdate(ctx, output + 32, &out_len, input, n + pad) &&
++			EVP_EncryptFinal_ex(ctx, output + 32 + out_len, &final_len);
+ 		EVP_CIPHER_CTX_free(ctx);
+-		if (WriteFull(STDOUT_FILENO, output, 32 + out_len + final_len) < 0) return;
++		if (!ok) return false;
++		if (WriteFull(STDOUT_FILENO, output, 32 + out_len + final_len) < 0) return false;
+ 		memcpy(iv, output + 32 + out_len + final_len - sizeof(iv), sizeof(iv));
+ 	}
++	return n == 0;
+ }
+ 
+-void DecryptStream(const std::string& password) {
++bool DecryptStream(const std::string& password) {
+ 	uint8_t key[32]; size_t key_len;
+ 	PrepareKey(password, key, &key_len);
+ 	const EVP_CIPHER* cipher = Cipher(key_len);
+ 	uint8_t input[4096], output[4096];
++	bool have_chunk = false;
+ 	ssize_t n;
+ 	while ((n = ReadFull(STDIN_FILENO, input, sizeof(input))) > 0) {
++		have_chunk = true;
+ 		ssize_t plain_len = DecryptChunk(input, n, output, sizeof(output), cipher, key);
+-		if (plain_len < 0 || WriteFull(STDOUT_FILENO, output, plain_len) < 0) return;
++		if (plain_len < 0 || WriteFull(STDOUT_FILENO, output, plain_len) < 0) return false;
+ 	}
++	return n == 0 && have_chunk;
+ }
+ 
+ }
+diff --git a/oaes/oaes.hpp b/oaes/oaes.hpp
+index a5abc5e..96a9224 100644
+--- a/oaes/oaes.hpp
++++ b/oaes/oaes.hpp
+@@ -5,8 +5,8 @@
+ 
+ namespace Oaes {
+ int TryDecryptingFile(const std::string& filename, const std::string& password);
+-void EncryptStream(const std::string& password);
+-void DecryptStream(const std::string& password);
++bool EncryptStream(const std::string& password);
++bool DecryptStream(const std::string& password);
+ }
+ 
+ #endif

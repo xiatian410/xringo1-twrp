@@ -1,0 +1,6 @@
+#
+# Copyright (C) 2025 The Android Open Source Project
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+# Lunch choices are defined in AndroidProducts.mk via COMMON_LUNCH_CHOICES

@@ -1,0 +1,9 @@
+# The 6.18 firmware loader overrides the caller's credentials with kernel
+# credentials. Making only recovery/ueventd permissive cannot authorize its
+# system:firmware_load check. Ramdisk files are rootfs; mounted vendor/odm
+# firmware is vendor_file; userspace fallback uses the kernel's own context.
+# Requires 0006-kernel-firmware-permission.patch in system/sepolicy.
+recovery_only(`
+    allow kernel { self rootfs vendor_file }:system firmware_load;
+    r_dir_file(kernel, vendor_file)
+')

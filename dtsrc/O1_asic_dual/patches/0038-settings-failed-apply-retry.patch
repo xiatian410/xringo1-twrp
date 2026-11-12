@@ -1,0 +1,33 @@
+--- a/gui2/gui2.cpp
++++ b/gui2/gui2.cpp
+@@ -775,9 +775,12 @@
+ 
+   if (settings == nullptr) return;
+ 
+-  if (!settings->set_persistent("tw_language", language_code(pending_language)) ||
+-      !settings->flush())
+-    return;
++  const std::string previous_language = settings->get_string("tw_language", "en");
++  if (!settings->set_persistent("tw_language", language_code(pending_language))) return;
++  if (!settings->flush()) {
++    settings->set_persistent("tw_language", previous_language);
++    return;
++  }
+ 
+   current_language = pending_language;
+   if (console != nullptr) console->retranslate(language_code(current_language));
+@@ -5919,8 +5922,12 @@
+     return;
+   const auto* value = static_cast<const int*>(lv_event_get_user_data(event));
+   if (value == nullptr || (*value == 0) == theme_is_dark()) return;
+-  if (!settings->set_persistent("tw_gui2_theme", std::to_string(*value)) || !settings->flush())
+-    return;
++  const std::string previous_theme = settings->get_string("tw_gui2_theme", "0");
++  if (!settings->set_persistent("tw_gui2_theme", std::to_string(*value))) return;
++  if (!settings->flush()) {
++    settings->set_persistent("tw_gui2_theme", previous_theme);
++    return;
++  }
+   // The card that was tapped is among what the rebuild deletes.
+   lv_async_call(rebuild_for_theme, nullptr);
+ }

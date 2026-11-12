@@ -1,0 +1,198 @@
+--- a/mtp/IMtpDatabase.h
++++ b/mtp/IMtpDatabase.h
+@@ -18,6 +18,7 @@
+ #define _I_MTP_DATABASE_H
+ 
+ #include "MtpTypes.h"
++#include <string>
+ 
+ namespace android {
+ 
+@@ -40,6 +41,10 @@
+     // Called to report success or failure of the SendObject file transfer.
+     virtual void                    endSendObject(MtpObjectHandle handle,
+                                             bool succeeded) = 0;
++
++    // Creates a private sibling under the database observer lock. The caller
++    // owns the fd and removes or publishes the path before endSendObject.
++    virtual int createSendObjectFile(MtpObjectHandle handle, std::string& path) = 0;
+ 
+     // Called to rescan a file, such as after an edit.
+     virtual void                    rescanFile(const char* path,
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -1117,6 +1117,7 @@
+     int ret, initialData;
+     bool isCanceled = false;
+     struct stat sstat = {};
++    std::string temporary;
+ 
+     auto start = std::chrono::steady_clock::now();
+ 
+@@ -1151,7 +1152,7 @@
+     }
+ 
+     mtp_file_range  mfr;
+-    mfr.fd = open(mSendObjectFilePath, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
++    mfr.fd = mDatabase->createSendObjectFile(mSendObjectHandle, temporary);
+     if (mfr.fd < 0) {
+         result = MTP_RESPONSE_GENERAL_ERROR;
+         goto done;
+@@ -1213,11 +1214,26 @@
+         errno = EIO;
+     }
+     if (ret >= 0 && fsync(mfr.fd) != 0) ret = -1;
+-    closeObjFd(mfr.fd, mSendObjectFilePath);
++    if (close(mfr.fd) != 0) ret = -1;
++
++    // Only a complete, synced and closed file replaces the visible object.
++    // A failed receive never truncates or unlinks the previous destination.
++    if (ret >= 0 && rename(temporary.c_str(), mSendObjectFilePath) != 0) ret = -1;
++    if (ret >= 0) {
++        // Rename has committed. A directory-sync error cannot restore the old
++        // inode; retain the complete new object and report uncertain durability.
++        const auto slash = temporary.find_last_of('/');
++        const std::string parent = temporary.substr(0, slash);
++        const int directory = open(parent.c_str(), O_RDONLY | O_DIRECTORY | O_CLOEXEC);
++        if (directory < 0 || fsync(directory) != 0) {
++            ALOGW("Mtp upload published but directory sync failed: %s", strerror(errno));
++        }
++        if (directory >= 0) close(directory);
++    }
+ 
+     if (ret < 0) {
+         ALOGE("Mtp receive file got error %s", strerror(errno));
+-        unlink(mSendObjectFilePath);
++        unlink(temporary.c_str());
+         if (isCanceled)
+             result = MTP_RESPONSE_TRANSACTION_CANCELLED;
+         else
+--- a/mtp/twrp/TwrpMtpDatabase.hpp
++++ b/mtp/twrp/TwrpMtpDatabase.hpp
+@@ -43,6 +43,7 @@
+ 
+     void endSendObject(MtpObjectHandle handle,
+                        bool succeeded) override;
++    int createSendObjectFile(MtpObjectHandle handle, std::string& path) override;
+ 
+     MtpObjectHandleList* getObjectList(MtpStorageID storage_id,
+                                        MtpObjectFormat format,
+--- a/mtp/twrp/TwrpMtpDatabase.cpp
++++ b/mtp/twrp/TwrpMtpDatabase.cpp
+@@ -197,6 +197,12 @@
+     return storage_map_[storage_id]->BeginSendObject(path, format, parent, 0, 0);
+ }
+ 
++int TwrpMtpDatabase::createSendObjectFile(MtpObjectHandle handle, std::string& path) {
++    for (auto* storage : storage_map_ | std::views::values)
++        if (storage->OwnsObject(handle)) return storage->CreateSendObjectFile(handle, path);
++    return -1;
++}
++
+ void TwrpMtpDatabase::endSendObject(const MtpObjectHandle handle, const bool succeeded) {
+     MtpStringBuffer path_buf;
+     MtpObjectFormat format = 0;
+@@ -204,10 +210,8 @@
+     if (int64_t file_length = 0; getObjectFilePath(handle, path_buf, file_length, format) ==
+                                 MTP_RESPONSE_OK)
+         path = static_cast<const char*>(path_buf);
+-    // Unlinking a failed transfer's half-written file is MtpServer's job (it
+-    // does so in doSendObject).  Doing it here as well would also fire when
+-    // the transfer never started at all, deleting the untouched original of
+-    // an abandoned overwrite.
++    // The server owns its staging file. Never unlink the destination here:
++    // failure or abandonment must preserve an existing complete object.
+     MTPD("endSendObject() %s\n", path);
+     for (const auto& storage : storage_map_ | std::views::values)
+         storage->EndSendObject(path, handle, format, succeeded);
+--- a/mtp/twrp/TwrpMtpStorage.hpp
++++ b/mtp/twrp/TwrpMtpStorage.hpp
+@@ -86,6 +86,7 @@
+     std::unordered_map<MtpObjectHandle, MtpEntry*> node_index_;   // every handle -> MtpEntry* (O(1) lookup)
+     std::string mtp_storage_parent_;
+     MtpObjectHandle handle_currently_sending_ = 0;
++    std::map<MtpObjectHandle, std::string> sending_files_;
+     int inotify_fd_ = -1;
+     std::map<int, MtpObjectHandle> inotify_map_;                   // inotify wd -> directory handle
+     bool send_events_ = false;
+@@ -125,6 +126,7 @@
+     int RenameObject(MtpObjectHandle handle, const std::string& new_name);
+     MtpObjectHandle BeginSendObject(const char* path, MtpObjectFormat format,
+                                     MtpObjectHandle parent, uint64_t size, time_t modified);
++    int CreateSendObjectFile(MtpObjectHandle handle, std::string& path);
+     MtpObjectHandleList* GetObjectList(MtpStorageID storage_id, MtpObjectHandle parent,
+                                       MtpObjectFormat format = 0);
+     int GetNumObjects(MtpObjectHandle parent);
+--- a/mtp/twrp/TwrpMtpStorage.cpp
++++ b/mtp/twrp/TwrpMtpStorage.cpp
+@@ -291,7 +291,10 @@
+         while (!ec && iterator != end) {
+             const auto child_status = iterator->symlink_status(ec);
+             if (ec) break;
+-            if (fs::is_directory(child_status) || fs::is_regular_file(child_status))
++            const auto child_path = iterator->path().string();
++            const bool staging = std::any_of(sending_files_.begin(), sending_files_.end(),
++                [&](const auto& item) { return item.second == child_path; });
++            if (!staging && (fs::is_directory(child_status) || fs::is_regular_file(child_status)))
+                 observed.emplace(iterator->path().filename().string(), fs::is_directory(child_status));
+             iterator.increment(ec);
+         }
+@@ -434,6 +437,23 @@
+     handle_currently_sending_ = entry->handle;
+ 
+     return entry->handle;
++}
++
++int TwrpMtpStorage::CreateSendObjectFile(MtpObjectHandle handle, std::string& path) {
++    const std::lock_guard guard(tree_mutex_);
++    auto* entry = FindNode(handle);
++    if (!entry || entry->is_dir || handle != handle_currently_sending_ ||
++        sending_files_.contains(handle)) return -1;
++    std::string temporary = (fs::path(GetNodePath(entry)).parent_path() /
++                             ".mtp-upload-XXXXXX").string();
++    // Creation and registration share the observer lock: no inotify event or
++    // enumeration can expose the partial object between these operations.
++    const int fd = mkstemp(temporary.data());
++    if (fd < 0) return -1;
++    fcntl(fd, F_SETFD, FD_CLOEXEC);
++    sending_files_[handle] = temporary;
++    path = temporary;
++    return fd;
+ }
+ 
+ int TwrpMtpStorage::CreateDb() {
+@@ -601,6 +621,12 @@
+             continue;
+         }
+         const fs::path& item = de.path();
++        if (std::any_of(sending_files_.begin(), sending_files_.end(),
++                       [&](const auto& entry) { return entry.second == item.string(); })) {
++            it.increment(ec);
++            if (ec) return -1;
++            continue;
++        }
+         MtpEntry* node = AddNewNode(is_dir, dir_entry, item.filename());
+         AddProperties(node, item, storageID);
+         it.increment(ec);
+@@ -721,6 +747,9 @@
+     // fs::path::filename replaces POSIX basename()
+     const std::string event_name = fs::path(event->name).filename().string();
+     const auto mask = event->mask;
++    const auto event_path = (fs::path(GetNodePath(dir)) / event_name).string();
++    if (std::any_of(sending_files_.begin(), sending_files_.end(),
++                   [&](const auto& item) { return item.second == event_path; })) return;
+     MtpEntry* entry = FindEntryByName(dir, event_name);
+ 
+     // The send guard exists only to hide the file the host is uploading right
+@@ -818,6 +847,11 @@
+         // node is gone by now: a guard that outlives its transfer would keep
+         // swallowing every later inotify event for that node.
+         if (handle_currently_sending_ == handle) handle_currently_sending_ = 0;
++        if (auto it = sending_files_.find(handle); it != sending_files_.end()) {
++            std::error_code ec;
++            // Keep a failed cleanup hidden for this storage's lifetime.
++            if (!fs::exists(it->second, ec) && !ec) sending_files_.erase(it);
++        }
+ 
+         if (MtpEntry* entry = FindNode(handle)) {
+             if (succeeded) {

@@ -1,0 +1,109 @@
+--- a/gui2/backend/twrp_mount_backend.cpp
++++ b/gui2/backend/twrp_mount_backend.cpp
+@@ -21,47 +21,67 @@
+ 
+ // GUIAction::mountsystemtoggle
+ int mountsystemtoggle(const std::string& arg) {
+-  int op_status = 0;
+-  bool remount_system = PartitionManager.IsMountedByPath(PartitionManager.GetAndroidRootPath());
+-  bool remount_vendor = PartitionManager.IsMountedByPath("/vendor");
+-
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  const auto publish = android::base::make_scope_guard([] {
++    PartitionManager.RefreshPartitionListSnapshots();
++  });
+   operation_start("Toggle System Mount");
+-  if (!PartitionManager.UnmountByPath(PartitionManager.GetAndroidRootPath(), true)) {
+-    op_status = 1;  // fail
+-  } else {
+-    TWPartition* Part = PartitionManager.FindPartitionByPath(PartitionManager.GetAndroidRootPath());
+-    if (Part) {
+-      if (arg == "0") {
+-        DataManager::SetValue("tw_mount_system_ro", 0);
+-        Part->ChangeMountReadOnly(false);
+-      } else {
+-        DataManager::SetValue("tw_mount_system_ro", 1);
+-        Part->ChangeMountReadOnly(true);
++  int op_status = 1;
++  const auto finish = android::base::make_scope_guard([&] { operation_end(op_status); });
++  if (arg != "0" && arg != "1") return op_status;
++
++  TWPartition* system = PartitionManager.FindPartitionByPath(PartitionManager.GetAndroidRootPath());
++  if (system == nullptr) {
++    LOGERR("System mount mode: system partition unavailable\n");
++    return op_status;
++  }
++  TWPartition* vendor = PartitionManager.FindPartitionByPath("/vendor");
++  struct target {
++    TWPartition* partition;
++    bool mounted;
++    bool read_only;
++    bool unmounted = false;
++  };
++  std::vector<target> targets;
++  targets.push_back({ system, system->IsMounted(), system->IsReadOnly() });
++  if (vendor != nullptr && vendor != system)
++    targets.push_back({ vendor, vendor->IsMounted(), vendor->IsReadOnly() });
++
++  const bool read_only = arg == "1";
++  auto restore = [&] {
++    // First remove any new-mode mounts, then restore each original policy.
++    // A failed unmount must not be disguised by changing its policy flag.
++    for (auto& item : targets) {
++      if (!item.unmounted) continue;
++      if (item.partition->IsMounted() && !item.partition->Unmount(true)) {
++        LOGERR("System mount mode: rollback unmount failed\n");
++        continue;
+       }
+-      if (remount_system) {
+-        Part->Mount(true);
+-      }
+-      op_status = 0;  // success
+-    } else {
+-      op_status = 1;  // fail
+-    }
+-    Part = PartitionManager.FindPartitionByPath("/vendor");
+-    if (Part) {
+-      if (arg == "0") {
+-        Part->ChangeMountReadOnly(false);
+-      } else {
+-        Part->ChangeMountReadOnly(true);
+-      }
+-      if (remount_vendor) {
+-        Part->Mount(true);
+-      }
+-      op_status = 0;  // success
+-    } else {
+-      op_status = 1;  // fail
+-    }
+-  }
+-
+-  operation_end(op_status);
++      item.partition->ChangeMountReadOnly(item.read_only);
++      if (item.mounted && !item.partition->Mount(true))
++        LOGERR("System mount mode: rollback remount failed\n");
++    }
++  };
++  // Unmount both targets before changing either policy, including a mounted
++  // vendor on a device whose system is currently unmounted.
++  for (auto& item : targets) {
++    if (item.mounted && !item.partition->Unmount(true)) {
++      LOGERR("System mount mode: unmount failed\n");
++      restore();
++      return op_status;
++    }
++    item.unmounted = true;
++  }
++  for (auto& item : targets) item.partition->ChangeMountReadOnly(read_only);
++  for (auto& item : targets) {
++    if (item.mounted && !item.partition->Mount(true)) {
++      LOGERR("System mount mode: requested remount failed\n");
++      restore();
++      return op_status;
++    }
++  }
++  DataManager::SetValue("tw_mount_system_ro", read_only ? 1 : 0);
++  op_status = 0;
+   return op_status;
+ }
+ 

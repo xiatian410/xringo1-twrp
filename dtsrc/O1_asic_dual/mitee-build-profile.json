@@ -1,0 +1,18 @@
+{
+  "system": {
+    "source": "imgs/firmware/system/system/build.prop",
+    "sha256": "2aa13cde9f9fd7999f07c01c3f9b099a7fd22d4fd67f33b78866523550c958dd",
+    "properties": {
+      "ro.build.version.release": "17",
+      "ro.build.version.security_patch": "2026-09-01"
+    }
+  },
+  "vendor": {
+    "source": "imgs/firmware/vendor/build.prop",
+    "sha256": "5336d4f7db3f56958a2e57d2994e84ebeb05d363ba5e60d203daa9712843eede",
+    "properties": {
+      "ro.vendor.build.security_patch": "2026-09-01",
+      "ro.product.first_api_level": "35"
+    }
+  }
+}

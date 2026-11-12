@@ -1,0 +1,32 @@
+{
+  "/system_root/system/build.prop": {
+    "source": "firmware/samples/os4-current/analysis/system-resources/system/system/build.prop",
+    "sha256": "2aa13cde9f9fd7999f07c01c3f9b099a7fd22d4fd67f33b78866523550c958dd",
+    "role": "system"
+  },
+  "/vendor/build.prop": {
+    "source": "firmware/samples/os4-current/analysis/vendor/build.prop",
+    "sha256": "5336d4f7db3f56958a2e57d2994e84ebeb05d363ba5e60d203daa9712843eede",
+    "role": "vendor"
+  },
+  "/odm/etc/build.prop": {
+    "source": "firmware/samples/os4-current/analysis/odm/etc/build.prop",
+    "sha256": "f2facdd3c4a191f31c56ad234a73e5038ccdf1cc2cffcf0ba4b75734494832c9",
+    "role": "odm"
+  },
+  "/vendor/etc/fstab.O1_asic": {
+    "source": "firmware/samples/os4-current/analysis/vendor/etc/fstab.O1_asic",
+    "sha256": "194edcd3eab480dac5cd3cbf12903cd386848ef935781835ba7d7088843b4ab2",
+    "role": "fstab"
+  },
+  "/vendor_dlkm/lib/modules/synaptics_tcm2.ko": {
+    "source": "firmware/samples/os4-current/analysis/vendor_dlkm/lib/modules/synaptics_tcm2.ko",
+    "sha256": "dc2b7631bdac52d6c2152abb465aab7842e232da1bbf20958113b6c26d94b7bf",
+    "role": "touch"
+  },
+  "/vendor_dlkm/lib/modules/xring_audio_hw_third.ko": {
+    "source": "firmware/samples/os4-current/analysis/vendor_dlkm/lib/modules/xring_audio_hw_third.ko",
+    "sha256": "969a17203bf56c3d5b46e3a3ee1827cb3579aaa423c2fc21508e73d2548650f6",
+    "role": "haptics"
+  }
+}

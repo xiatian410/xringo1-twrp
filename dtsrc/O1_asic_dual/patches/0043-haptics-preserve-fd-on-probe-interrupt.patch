@@ -1,0 +1,19 @@
+--- a/twrpminui/force_feedback.cpp
++++ b/twrpminui/force_feedback.cpp
+@@ -218,7 +218,15 @@
+     std::lock_guard<std::mutex> lock(ff_mutex);
+     if (ff_haptics_fd >= 0) {
+         unsigned long bits = 0;
+-        if (ioctl(ff_haptics_fd, EVIOCGBIT(0, sizeof(bits)), &bits) < 0) reset_ff();
++        if (ioctl(ff_haptics_fd, EVIOCGBIT(0, sizeof(bits)), &bits) < 0) {
++            const int error = errno;
++            // A read-only capability query interrupted by a signal says
++            // nothing about the descriptor's lifetime. Closing it would erase
++            // its active effect. Preserve the cached capability and let the
++            // next poll query again, with no unbounded retry loop here.
++            if (error == EINTR || error == EAGAIN) return true;
++            reset_ff();
++        }
+     }
+     return open_ff_haptics() >= 0;
+ }

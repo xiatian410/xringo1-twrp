@@ -1,0 +1,96 @@
+--- a/mtp/IMtpHandle.h
++++ b/mtp/IMtpHandle.h
+@@ -16,6 +16,7 @@
+ #ifndef _IMTP_HANDLE_H
+ #define _IMTP_HANDLE_H
+ 
++#include <stdint.h>
+ #include "f_mtp.h"
+ 
+ namespace android {
+@@ -34,6 +35,11 @@
+     // Return 0 if operation is successful, or -1 else
+     virtual int start(bool ptp) = 0;
+ 
++    // Server-owned command lifetime, including its data and response phases.
++    // Transports without userspace control-request handling need no tracking.
++    virtual void beginTransaction(uint32_t) {}
++    virtual void endTransaction() {}
++
+     virtual void close() = 0;
+ 
+     virtual ~IMtpHandle() {}
+--- a/mtp/MtpFfsHandle.h
++++ b/mtp/MtpFfsHandle.h
+@@ -21,6 +21,7 @@
+ #include <android-base/unique_fd.h>
+ #include <linux/aio_abi.h>
+ #include <errno.h>
++#include <atomic>
+ #include <mutex>
+ #include <deque>
+ #include <pthread.h>
+@@ -65,6 +66,8 @@
+     static int getPacketSize(int ffs_fd);
+ 
+     bool mCanceled = false;
++    // Bit 32 distinguishes idle from an active transaction with ID zero.
++    std::atomic<uint64_t> mActiveTransaction{0};
+     bool mBatchCancel;
+ 
+     // start/close are serialized; event producers only take mEventMutex.
+@@ -104,6 +107,11 @@
+     int waitEvents(struct io_buffer *buf, int min_events, struct io_event *events, int *counter);
+ 
+ public:
++    void beginTransaction(uint32_t id) override {
++        mActiveTransaction.store((uint64_t{1} << 32) | id);
++    }
++    void endTransaction() override { mActiveTransaction.store(0); }
++
+     int read(void *data, size_t len) override;
+     int write(const void *data, size_t len) override;
+ 
+--- a/mtp/MtpFfsHandle.cpp
++++ b/mtp/MtpFfsHandle.cpp
+@@ -284,9 +284,16 @@
+                 errno = EPROTO;
+                 return -1;
+             }
+-        }
+-        // Preserve the existing bulk interruption contract. Matching the
+-        // transaction ID and resetting the server session are separate work.
++            uint32_t transaction;
++            memcpy(&transaction, data.data() + sizeof(cancellation), sizeof(transaction));
++            // A delayed cancel for a finished command must not abort the next
++            // transfer. The OUT data stage is acknowledged even when idle or
++            // when its transaction differs from the active server command.
++            if (mActiveTransaction.load() != ((uint64_t{1} << 32) | le32toh(transaction)))
++                return 0;
++        }
++        // Interrupt only a matching Cancel. Reset retains its existing
++        // interruption contract; complete session reset is separate work.
+         errno = ECANCELED;
+         return -1;
+     }
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -17,6 +17,7 @@
+ #include <algorithm>
+ #include <android-base/logging.h>
+ #include <android-base/properties.h>
++#include <android-base/scopeguard.h>
+ #include <chrono>
+ #include <dirent.h>
+ #include <errno.h>
+@@ -201,6 +202,10 @@
+         MtpOperationCode operation = mRequest.getOperationCode();
+         MtpTransactionID transaction = mRequest.getTransactionID();
+         mEventTransaction = transaction;
++        mHandle->beginTransaction(transaction);
++        auto transactionGuard = android::base::make_scope_guard([this]() {
++            mHandle->endTransaction();
++        });
+ 
+         ALOGV("operation: %s", MtpDebug::getOperationCodeName(operation));
+         // FIXME need to generalize this

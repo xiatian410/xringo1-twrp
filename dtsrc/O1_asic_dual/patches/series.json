@@ -1,0 +1,337 @@
+{
+  "repositories": {
+    "bootable/recovery": {
+      "commit": "a93a12ec107265ab9c3c7fe3e4f96c8740a01337",
+      "patches": [
+        {
+          "file": "../0001-generic-kms-plane-selection.patch",
+          "sha256": "2465686a330441d7b8e7068f9400700f66798bbfa693e862b79a7e2501cfefe1"
+        },
+        {
+          "file": "../0002-preserve-preexisting-persist-mount.patch",
+          "sha256": "60d8ff92e1f5d8d6958793ce4c9f4cb41f2299dbbd8ef428bc5d9097548c6861"
+        },
+        {
+          "file": "../0003-device-timezone-default.patch",
+          "sha256": "ee9c8101ba844adf41c29811cd9769c6e84ad1cb69fd28407d67d4f81aa3a93d"
+        },
+        {
+          "file": "../0004-rapid-power-screen-toggle.patch",
+          "sha256": "53f2e3f6e65d54abe3641e1d80f1e97ce6c563f568afe705db0912c989582910"
+        },
+        {
+          "file": "../0005-cirrus-sine-haptics.patch",
+          "sha256": "0047987292dbaef0e94cb6ddcc58c083b47bc9c5624bf801426ff69a83549c9b"
+        },
+        {
+          "file": "../0007-noncritical-keystore.patch",
+          "sha256": "8fa4c2e4a4ca740cd1ccf892788140dd56387e6859908d5680e85249bd8df59a"
+        },
+        {
+          "file": "../0008-mtp-ffs-readiness.patch",
+          "sha256": "96290ee8213f6698ec4fc88a4a7160692d1a6b3ea6e71f6815ee8cc18ccdd439"
+        },
+        {
+          "file": "../0009-exact-profile-runtime.patch",
+          "sha256": "75b091cd62423c47c1e8c03d60e359355372e8252fc081b5651f87c539cd7f47"
+        },
+        {
+          "file": "../0010-atomic-settings-persistence.patch",
+          "sha256": "e51f253dcc3e790620cba569e23a6f05ae7e2fc5c3e23e570c722caf099a2205"
+        },
+        {
+          "file": "../0011-multiuser-discovery-and-selection.patch",
+          "sha256": "8f0593b24b3cf8f9caae01fdb1e46ecfdaf8419a5b7188ee0aed3ba1a9cf3885"
+        },
+        {
+          "file": "../0012-status-reading-validation.patch",
+          "sha256": "975071201bad091d856b1f8ee247f36352d90a3a30b78eeb19625a734c3942f0"
+        },
+        {
+          "file": "../0013-haptics-runtime-routing.patch",
+          "sha256": "174062d174361eceb63a402ae17d390c97a930954db170bb0ad4e7a8ce2a4fd6"
+        },
+        {
+          "file": "../0014-ui-feedback-and-cancel.patch",
+          "sha256": "f3854c3a5f3f99801b14b42777fcf18dd10244205307fce2631bdba71b5b2dd8"
+        },
+        {
+          "file": "../0015-archive-restore-validation.patch",
+          "sha256": "cbb5a93e1182f6632d73010f44d3342f5bcb2dbcc60bf0f70338a1c5ff7adf18"
+        },
+        {
+          "file": "../0016-raw-image-transfer-validation.patch",
+          "sha256": "8b3552d17f100a6e032ad2b449e7200b1ef396e13a6cad343237eb6ee1bff8f4"
+        },
+        {
+          "file": "../0017-operation-completion-feedback.patch",
+          "sha256": "bc044a782ea82f9768065dac65f28dd56ae3a96fbce0b3d40884f96f56a0cca9"
+        },
+        {
+          "file": "../0018-restore-session-preflight.patch",
+          "sha256": "a63d187ff9a7067d5a7629150db8717a8d31d9539edce82226b3a584f84abb00"
+        },
+        {
+          "file": "../0019-backup-session-cancellation.patch",
+          "sha256": "36a970bdb5c834f722f8f6ace2fa09b15b03b4e79f641124aa0c1022a9ea3c1e"
+        },
+        {
+          "file": "../0020-archive-codec-pipelines.patch",
+          "sha256": "3add11cb2569ce19006b7d5a8d1ac7095b599f47c853549a07181b47c79138b0"
+        },
+        {
+          "file": "../0021-mtp-object-lifecycle.patch",
+          "sha256": "4ffb1fdee078f397f48328f8de1486f89196599bd5ed244b22f2b013f6541aa8"
+        },
+        {
+          "file": "../0022-mtp-transfer-reconciliation.patch",
+          "sha256": "a4d48e004afd52fbf36000c798fa3c1d3d1aa194b2222509759d5699c5e29fe8"
+        },
+        {
+          "file": "../0023-mtp-event-lifecycle.patch",
+          "sha256": "facd931b5e6b17b951365265e6bd2d4b4d879b3dbed6aedee22bda11d9cb6ddf"
+        },
+        {
+          "file": "../0024-usb-configfs-reconciliation.patch",
+          "sha256": "83fcc98787dda2d2d07aa4dd32a8289836e654317b7087a51aa34eab85561fac"
+        },
+        {
+          "file": "../0025-mtp-control-framing.patch",
+          "sha256": "cd2e3da4c798130d9267eec9c17500b653b3516773dba39482e14dbd84aa4471"
+        },
+        {
+          "file": "0026-mtp-caller-lifecycle.patch",
+          "sha256": "59f78551d1f256b6fac5481f3cd602645da3c7803ed4b9b98e7357072d699e9a"
+        },
+        {
+          "file": "0027-gui-haptics-worker.patch",
+          "sha256": "4162f84f05a6f91ec7ac843b4c8965fde309fe526caa6c48ec79fe385a020550"
+        },
+        {
+          "file": "0028-nested-partition-paths.patch",
+          "sha256": "7db166928c1cec18fd881dab6503b773d54a860f4cb80f8c87c194e251fe5d93"
+        },
+        {
+          "file": "0029-nested-partition-operations.patch",
+          "sha256": "4cf91656727d1fb5b58a98d0c084719e2434511632612e1f04088993c60c8b3a"
+        },
+        {
+          "file": "0030-e2fsck-corrected-result.patch",
+          "sha256": "d7c42e2e625786d46da9e38fa585e9c53caf29cf39bdbf229f2ad2e980b36bc5"
+        },
+        {
+          "file": "0031-clock-read-failure.patch",
+          "sha256": "d0fe4d005d405e18718b8dbad1e841f169dfb5bba59c13d1ad89ceb9024cc6f9"
+        },
+        {
+          "file": "0032-recording-close-result.patch",
+          "sha256": "045fbb57baa401a3c44978da3dfe18eeb5123392e7140590a8cdfb1266e88652"
+        },
+        {
+          "file": "0033-settings-row-hit-area.patch",
+          "sha256": "7bc58e3fb4a1809218e8bfffcfa4738c4b0b2999781dec1498c6b3b245385559"
+        },
+        {
+          "file": "0034-mount-mode-transaction.patch",
+          "sha256": "1c3ce388c6314407203c74f7e33bcba43b987a705af1a9d1d82b37af5317c6c7"
+        },
+        {
+          "file": "0035-storage-selection-failure.patch",
+          "sha256": "8f876ac5fe7472211ad75274321ac3fa82c11ed689721e6759fc279d66acdeb9"
+        },
+        {
+          "file": "0036-cpu-thermal-identity.patch",
+          "sha256": "b8347c72e44e6939d8c2e4c64285e040627e5204b031f7d05da204ebe1be2922"
+        },
+        {
+          "file": "0037-status-temperature-ui.patch",
+          "sha256": "16b33b63179fc10b260d17ea3e6083e8d2f1524ee55193d045189cd136e83b0b"
+        },
+        {
+          "file": "0038-settings-failed-apply-retry.patch",
+          "sha256": "e23599dd7680af0ed6decbc04f9ffa2db06c7f0278d064f02adb8e8dd8c5bf51"
+        },
+        {
+          "file": "0039-mtp-datetime-offset-validation.patch",
+          "sha256": "d4b728721ca5f9ebfb8d313716c293f8c5c9016bcadd6f66f8e201ac34a14e6e"
+        },
+        {
+          "file": "0040-haptics-request-trace.patch",
+          "sha256": "9944a6b5ae8fbd4dcf01437d71b1d81627e4b568c759653b1a6704e74e57a2fe"
+        },
+        {
+          "file": "0041-mtp-atomic-upload.patch",
+          "sha256": "d6c05b053efa852ff5c9f08d97038df0adf23542441b597c6eb95ca739e58fcf"
+        },
+        {
+          "file": "0042-timezone-failed-save-rollback.patch",
+          "sha256": "0b263a3266015ee7b9fe0d1f0ac4d9a6533833119beace234d36db9ea7ef86b6"
+        },
+        {
+          "file": "0043-haptics-preserve-fd-on-probe-interrupt.patch",
+          "sha256": "d5a36cf3807fa4c44d78a8cde67ed32677bac59c2b3a8d7e3a3cb0f1c2fbeb21"
+        },
+        {
+          "file": "0044-mtp-transaction-cancel.patch",
+          "sha256": "0a8272c8fe0ef8a34154c7af1e348adf2264322faf1a837fff082d93ac9ee12e"
+        },
+        {
+          "file": "0045-mtp-reset-session.patch",
+          "sha256": "7f0c7c2c4e5f3cdc2b28f9917f1b8561ad94a5ab9f647f25e066aab3413458db"
+        },
+        {
+          "file": "0046-atomic-backup-digests.patch",
+          "sha256": "54c394d5262c75e9aa253c68a7dbd6bd52a2c06d9ad5a579a8fdcc8ea5968917"
+        },
+        {
+          "file": "0047-backup-completion-manifest.patch",
+          "sha256": "8f9a7e1a75711556619c39e88ecafc4ebef833c882f43a6425a1e739f1beb761"
+        },
+        {
+          "file": "0048-otg-controller-discovery.patch",
+          "sha256": "e640ee0951d0e8e24e4fb19ae0686ac930383c0b1d270928c9ec46022f74f83f"
+        },
+        {
+          "file": "0049-mtp-upload-timestamp.patch",
+          "sha256": "8ec283a9ceea3a8122ab2ca61c62e1c1829fffd234e1de30f3657c3a8d31b5c1"
+        },
+        {
+          "file": "0050-decrypt-failure-ce-cleanup.patch",
+          "sha256": "fc8279ff1d3671380616470d6a8747cbf8f5624c84e560773cef737fce11c758"
+        },
+        {
+          "file": "0051-sparse-image-capacity-and-commit.patch",
+          "sha256": "f3af6ee50b343ac73c4cb9296cd8c8841c99cf60f3f6c7bda9c071845fa212dd"
+        },
+        {
+          "file": "0052-updater-protocol-validation.patch",
+          "sha256": "4ac299862c160851837d87689b8a8e6cef96c6267c19ccb983c76d90a7270d29"
+        },
+        {
+          "file": "0053-zip-updater-abi-selection.patch",
+          "sha256": "cff7772e66b3dd06295b30e0abb2fe0b602f7ff4e496de5322f26f45a657bd96"
+        },
+        {
+          "file": "0054-restrict-manual-nv-mounts.patch",
+          "sha256": "05adb303f4b48a442771aad9a59c9e7cbf0988a480a892a47df73de6e1f83741"
+        }
+      ],
+      "result_files": {
+        "data.cpp": "31e8b291343978d3cba40b29d8edbe11a96ed9f2c67c878f2b85d94710d11df5",
+        "etc/init/keystore2.rc": "aa28727dfc718c059b926215f1fcfa9917132265dc01fbd329dcb928a783768e",
+        "gui2/app/screen_actions.cpp": "188556ece804fedc23d4d9c2214418de89f49caa4560405dc41e9bcfd5577da1",
+        "gui2/gui2_input.cpp": "3504c83906edf8192d0ff717d35a6f6c38770282cba8fd56ec24ebcd55dbe625",
+        "partition.cpp": "eb2e69b75b82518e15f20777402f9e87a46ba3ecbaae8ed9f955f64610f1eae3",
+        "twrpminui/force_feedback.cpp": "f7bdb5f50e5ef9d0ecd2ab161fa8f6143292c1207f064147a2db94b080d86f41",
+        "twrpminui/graphics_drm.cpp": "61611757cc147b2f925ed52c6f73334acd7ae11d7fa3954d720cbeb8d47d0447",
+        "mtp/MtpFfsHandle.cpp": "65f9c45e4cc3ac14dcf8c03aa96c94c59983a10d80bf29b38d2d1e3f15836fe3",
+        "mtp/MtpFfsHandle.h": "9b50fd469f77b356be35a23a322ca090d3506f7cf822772900a72ed902d46782",
+        "mtp/MtpFfsCompatHandle.cpp": "cb07a57987f6d3933395e044ba095343074b53ed9fc22ecd342b6e11eb70c5e9",
+        "mtp/MtpDescriptors.cpp": "7b24102682e809c455ed1ebcef0a2defdab37abefd1ba692485b650d87a77025",
+        "kernel_module_loader.cpp": "c93c4ca499648217be225a165b37f506ea3e5f7165389b532621b5e4292a4af6",
+        "partitionmanager.cpp": "8c5d463b64afbd738efde535e0c91207acdd7bcfa8e797dc025a89f19690dc00",
+        "infomanager.cpp": "7f1fe90502a85952125c67f2b4613329b19aa095ad649ba221331a48d171e495",
+        "Android.bp": "1f705f027a005452faf679686a43d3900779c5aee98fc95ebdc2600202a6da2a",
+        "gui2/backend/decrypt_backend.h": "a6ec26538be3ba26af9c449960752b4ad91bcdf6fa15a2027cfdb915c0fc7945",
+        "gui2/backend/twrp_decrypt_backend.cpp": "44fcb069c6c0a90e9642505ef5a0e4d7ed862728b330f6026964c6619d1741cd",
+        "gui2/backend/twrp_decrypt_backend.h": "04981432ab630686863a3ba810b8cb5bb2d05884e0ebe82a0b401a1af5e8beab",
+        "gui2/gui2.cpp": "352f2bd701f4b24155142b2a46800ef8a979410dc52c95f9a4cc4f59810904a8",
+        "gui2/i18n/en.cpp": "f5e87f8bf67a3e2926578e39d6a2999c59474080b7b8bf93e1377b6b2143762b",
+        "gui2/i18n/i18n.h": "aa9b311694cc4cc200d458353201e341d86dd23ff40c7aa537f7ae64f06ec2cc",
+        "gui2/i18n/ru.cpp": "b64f01c049be61f69b5ef082fea16a591c1ae064d184815df16650e28f609a89",
+        "gui2/i18n/zh_cn.cpp": "2aad5bdba6d1b00628661e49f0851f9b2279178c4283bb08108907bc03e2a86f",
+        "gui2/i18n/zh_tw.cpp": "d2c9a0afc58237a95d3f6a5abdf31918accc48288338b4f0be33c61e1c9e7d03",
+        "gui2/pages/decrypt_page.cpp": "0a91c9295da9e64f15099a67f4c11a26ce67c30ec9d11c5e27fc7149ef08227a",
+        "gui2/pages/decrypt_page.h": "a0b337a0813d646af6f70dea67b122063f819d6917ee8b311c64c9ca8e081897",
+        "gui2/pages/page_router.h": "4b3850d8f395fb7944eec077e2b4715ab8e7dc3743f17d6eabfcca8fb0ff7326",
+        "gui2/pages/page_state.h": "0f7ba76b94a7fa0bfd43277f8a8d247a202275975338b4db1c153457ad76c02b",
+        "twrp.cpp": "1657efdc05d0ae23ed5128d27dab522be9f26e7ebd581260301a0eef3ebfaf57",
+        "gui2/backend/status_backend.cpp": "5b62ad4a677ea2c1ad53f670a737c7813406c1a88b837972ce56f43a68918a3e",
+        "twrpminui/haptics.cpp": "62399d18e29969e4a27bf37c6fe924dd8536912a8c6e0f548d56fb3e5230a0af",
+        "gui2/backend/twrp_hardware_settings.cpp": "98863b74240108e4734a4e638bc4b6e0ec77d2eaa2bab98abdcea71cab936bf2",
+        "gui2/core/ui_event_guard.cpp": "41c0c412e972b79fbb97ba4ecadd0cc40e556e13cd44dc01bb67886eb9663f13",
+        "gui2/core/ui_event_guard.h": "c8d413ddae3cc2c7f1ed0a9691b0282d8ed5a90f9b9881459ea73b14fa6597f0",
+        "gui2/components/keyboard.cpp": "8ce7f769be4a4c7d528e7b209d233d7915f26840bca51effbccefe7dc97fe550",
+        "gui2/components/swipe_slider.cpp": "c4d7eee908432f4aba1a9ae52abfb0db0d8c5b187f82c3de8f130cf226e5eb94",
+        "libtar/block.c": "73f7891968ed29ea41d8831009ce2e0331e088635cf99e5f2243d48982472f4a",
+        "libtar/extract.c": "dd3766a00afcd2168d209f2d9001e8577b54145bc8b278c4d46078b2f96a28f5",
+        "gui2/backend/twrp_operation.cpp": "a2aaa78468023cd7a2024334ef995838702a5b6904686ec0665c12f142cd1ace",
+        "partitions.hpp": "0af825b63f8a247ce7a5b2cffd34d22ccff5b3b965595694cbe5d04349433944",
+        "digest/twrp_digest_driver.cpp": "6e2e62e3fdf570be857ac5b62c6befcd8474633f736dcca5a8f2a2ad5ec55ab5",
+        "digest/twrp_digest_driver.hpp": "266f16b28f4d3ace274a5ea42253ee993fd6790ce323a8e5b79e885f2e9a6fa4",
+        "twrpTar.cpp": "c21fd4a2a6621b23b215265f0434f90e17221b5d21cd6c5e3601bc19d91cf149",
+        "twrpTar.hpp": "b388e4ee12ee6b024eda0ba4056b1395ec5cdfc1f6bc209063c9f7b5477c0e8a",
+        "gui2/backend/twrp_backup_backend.cpp": "925155463e34f59103a0b94473363638cb47afb35f80ea782da065eb2e2c985e",
+        "backup_process.hpp": "5d4a5d4973bba52d7a796dee1ed5e3d8258cebfb438dad33cfbcbb964b1ee225",
+        "twrpRepacker.cpp": "4b95330ee0cff1df83da0231da203365121be14be2830fefbb4772b0b5c727c7",
+        "tarWrite.cpp": "c7ae8b3f27403eb2df3b0ee697988b1542f44350c6f0adc7aa8a4bc86612130a",
+        "twrp_functions.cpp": "c7cfa9ac027981f2a4f1eca4a59210b1a05dc46cd12e2b86198f87116324d469",
+        "twrp_functions.hpp": "0ade98e9c0c6bcdc61ca273ed96163ac15baa8fe20777d3063114d293475475d",
+        "oaes/oaes.cpp": "306acbfddd40512ba8c0ad0b7ad8afc86533425625e6a875f95d0a3ae4e1e356",
+        "oaes/oaes.hpp": "256c988afbd924a12db4bdaa4c9c35475dda92b53676cf7693f64e36de0ed3c4",
+        "mtp/IMtpDatabase.h": "bbe651b95e206c307ba4b9e9d6c57225697dcc6667bf508bf8d5ac3c59548086",
+        "mtp/MtpServer.cpp": "c707050e1940f121f3e8a5fe7f678c22e98b4b39fb79275a60ef7eb1327b921c",
+        "mtp/MtpServer.h": "b68e12ce781037259cec58ff2c838e780173f8d78d396fcffec2f3b8fc43a13b",
+        "mtp/twrp/TwrpMtpDatabase.cpp": "9abf68632a54fc69580c4bbd7a45d620e0a237c84ba3304f754af16d56d05739",
+        "mtp/twrp/TwrpMtpDatabase.hpp": "0ffaf9304ae67e9dd3b755593b9ea15b2ff5d2e16b05508401b38882c7735a2b",
+        "mtp/twrp/TwrpMtpStorage.cpp": "ef708e9af3a7ec0af3795a431a627b56f514d42473de592ca182040f86c86f30",
+        "mtp/twrp/TwrpMtpStorage.hpp": "423d6d6b6f6b4007c251a37c3c16ce7df1ffbae1b41abf1810713b703b367a1c",
+        "mtp/MtpUtils.cpp": "dfa7b9844c350ee5468805a8bde4babc0638a67dbf590a30cc075f8ba11c9a0e",
+        "mtp/MtpUtils.h": "23f233d41237c5fae6452e19414cb849f972055ea6071be2682f934405a755b8",
+        "etc/init.rc": "98d2f6766432b57480e5a794c98efb5d277a8913f594173196de7bb82b3fedfc",
+        "gui2/backend/twrp_mount_backend.cpp": "60e33450b99f6126420bb84d9b96bdb56b466cf81680036a2fbbfe5932f53223",
+        "mtp/twrp/TwrpMtp.cpp": "a1fe31a835f206f8079b12024d62f51a856e0732a6c7fc738c9d7306f4bfefd8",
+        "mtp/twrp/TwrpMtpServer.cpp": "8b480b43055ef430603c20da78156e196b7a63989d78e386ef073d27e51f2135",
+        "mtp/MtpProcess.h": "2826d315d63bae5082bf16fb672be994044eb232c684b43d151cf88ebe6c4f03",
+        "gui2/backend/twrp_hardware_settings.h": "f0ed145d4564b93159b14f412e502fe72a4edfb2bcab920e580f671cc6a51824",
+        "gui2/backend/hardware_settings.h": "393d3a9eb7eb78e3c9d40a6448f8add012e2311af58a01659274380505805895",
+        "twrpminui/force_feedback.h": "0f14e649e737f76867e737fb91e1469f4aafa91bd038762782b1008c613a6796",
+        "gui2/backend/haptics_controller.cpp": "689264952e45617c746570de7fcd8cd34980e09a7af0eaf04b30197aae181a3e",
+        "gui2/backend/haptics_controller.h": "375f516bb401e3e69411f5387ae021774e5c6dc59fc02822e4473fc224d9a0f1",
+        "gui2/backend/webm_vp8.cpp": "a8bea7cda9396ad6dba52147bbe7ea7ad06cb85805ac7cc61b055a0abafe3130",
+        "gui2/components/check_row.cpp": "aa33470ec91d1924cb858c99b576206930ec5a3347ab4315d096e766824cce31",
+        "gui2/backend/status_backend.h": "8779adc4834c2cd8e5a9a370a25a847c2e70abf4c15bc60af2030d6082deda38",
+        "gui2/shell/status_bar.cpp": "c2d49cd959df3d5315fad89bc9683a2ad9a18fe5e4357158ecb1337bab691d85",
+        "gui2/shell/status_bar.h": "1ecb3d3ca1fa3cda0e1cc5de75908eac7e87f47722a5a5427b30a7f83edee883",
+        "gui2/backend/settings_store.h": "6886473f7a177484c35120aa252176a926e33681e3ce85366b3f47f9616cd59f",
+        "gui2/backend/twrp_settings_store.h": "9f6e2fdc19dbd6e68fa2215fd2dc949408eea14c0f51e9df31d3b2f136558600",
+        "gui2/backend/twrp_settings_store.cpp": "caaa26e2f20950f1ba52d8a0b9457b9e931dc9978c0f28fc7872a08511d6d1ab",
+        "mtp/IMtpHandle.h": "ee0992ec8bd862cdac3c2bfc8ae39f6cab877aaeb0451e314f692b05929c8f54",
+        "backup_manifest.hpp": "220b34f93914e59c06a20e91876afcfbadca7aca3f254ca1dbb7988d30f39f22",
+        "gui2/backend/mount_backend.h": "4cc5e65d3baae879156e640672cc79b55f4abeeee2cd9b58b60af38361c68ebb",
+        "sysfs_device_match.hpp": "66987f6f13e174bb22ce057d022006b1eb0fe2cfa3069046c51e30f72063e941",
+        "twrpinstall/twinstall.cpp": "b78718bfbea5937d800deb975c5d915007606e29bcb7d5b63ed6fe093dd73c3a"
+      }
+    },
+    "system/sepolicy": {
+      "commit": "372f37fc90e86824e2f25500ac26f3e2b468c11a",
+      "patches": [
+        {
+          "file": "../0006-kernel-firmware-permission.patch",
+          "sha256": "9c10c5b8cbd51e033057eb1e62a9612e8c09c2e38a367609f16304c781be4c1b"
+        }
+      ],
+      "result_files": {
+        "private/access_vectors": "109feb7d769e3f85eb2a2ca32df4c1c93d98cc5cda4735b49ffdeb80a3e85c38"
+      }
+    },
+    "external/tinyxml2": {
+      "commit": "7485b22521f577cf944e5687361548d8993d8d2c",
+      "patches": [],
+      "result_files": {
+        "Android.bp": "42cdd08e0811d8eb828aad6f4a4cf51857b558288f8f20734a0578f796a639e2",
+        "tinyxml2.cpp": "d5a7fd2ad255d716c4d2a64d5686f90c7e27a8285c49c59a5d105cb400bdf703",
+        "tinyxml2.h": "02f2389feb67fbb3efe42aaa6942034bc7d54695f357c5aac3cbd2f78a06ca4a"
+      }
+    },
+    "system/vold": {
+      "commit": "e7e26ed2ffd9ad0469a05515cfd91940a3366d19",
+      "patches": [],
+      "result_files": {
+        "FsCrypt.cpp": "1110e021bb37cb5e16c33528a26f7f6b239fdbce045e36aa863ffe9ca169ea81",
+        "Decrypt.cpp": "a38e2440f2a033435c822c44e35a9be1ef8d5ad11f8b16ba4e32ff8077047dc6",
+        "Android.bp": "bb073d5ee838770abbf2f6a4af96012b5580d77bfc552c4d7995ef935725bcb2"
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -2102,6 +2102,11 @@
+ 
+       return 0;
+     }
++    // The provider can install a CE policy before preparing user directories.
++    // A later failure must not leave that user cached as unlocked: the next
++    // attempt would otherwise skip key authentication/installation in vold.
++    if (!fscrypt_lock_ce_storage(user_id))
++      LOGERR("Failed to evict CE keys after unsuccessful decrypt for user %d\n", user_id);
+     gui2_console::log_error("decrypt_user_fail_fbe", user_id);
+ #else
+     LOGERR("FBE support is not present\n");

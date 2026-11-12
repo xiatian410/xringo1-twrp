@@ -1,0 +1,215 @@
+diff --git a/mtp/MtpFfsHandle.cpp b/mtp/MtpFfsHandle.cpp
+--- a/mtp/MtpFfsHandle.cpp
++++ b/mtp/MtpFfsHandle.cpp
+@@ -17,6 +17,8 @@
+ #include <android-base/logging.h>
+ #include <android-base/properties.h>
+ #include <asyncio/AsyncIO.h>
++#include <algorithm>
++#include <array>
+ #include <dirent.h>
+ #include <chrono>
+ #include <errno.h>
+@@ -53,11 +55,6 @@
+ 
+ struct timespec ZERO_TIMEOUT = { 0, 0 };
+ 
+-struct mtp_device_status {
+-    uint16_t  wLength;
+-    uint16_t  wCode;
+-};
+-
+ } // anonymous namespace
+ 
+ namespace android {
+@@ -174,97 +171,126 @@
+ }
+ 
+ int MtpFfsHandle::handleEvent() {
+-
+     std::vector<usb_functionfs_event> events(FFS_NUM_EVENTS);
+     usb_functionfs_event *event = events.data();
+     int nbytes = TEMP_FAILURE_RETRY(::read(mControl, event,
+                 events.size() * sizeof(usb_functionfs_event)));
+     if (nbytes == -1) {
++        // A setup may have been superseded between poll and read.
++        if (errno == EAGAIN || errno == EIDRM) return 0;
+         return -1;
+     }
+-    int ret = 0;
++    if (nbytes == 0) { errno = ESHUTDOWN; return -1; }
++    if (nbytes % sizeof(*event) != 0) { errno = EPROTO; return -1; }
++    int error = 0;
+     for (size_t n = nbytes / sizeof *event; n; --n, ++event) {
+         switch (event->type) {
+         case FUNCTIONFS_BIND:
+         case FUNCTIONFS_ENABLE:
+-            ret = 0;
+-            errno = 0;
+             break;
+         case FUNCTIONFS_UNBIND:
+         case FUNCTIONFS_DISABLE:
+-            errno = ESHUTDOWN;
+-            ret = -1;
++            // Disconnect wins over a cancellation in the same batch. A later
++            // ENABLE must not revive this generation's in-flight bulk request.
++            error = ESHUTDOWN;
+             break;
+         case FUNCTIONFS_SETUP:
+-            if (handleControlRequest(&event->u.setup) == -1)
+-                ret = -1;
++            if (handleControlRequest(&event->u.setup) == -1 && error == 0)
++                error = errno ? errno : EIO;
+             break;
+         case FUNCTIONFS_SUSPEND:
+         case FUNCTIONFS_RESUME:
+             break;
+         default:
+             LOG(ERROR) << "Mtp Event " << event->type << " (unknown)";
+-        }
+-    }
+-    return ret;
++            if (error == 0) error = EPROTO;
++        }
++    }
++    if (error) { errno = error; return -1; }
++    return 0;
+ }
+ 
+ int MtpFfsHandle::handleControlRequest(const struct usb_ctrlrequest *setup) {
+-    uint8_t type = setup->bRequestType;
+-    uint8_t code = setup->bRequest;
+-    uint16_t length = setup->wLength;
+-    uint16_t index = setup->wIndex;
+-    uint16_t value = setup->wValue;
+-    std::vector<char> buf;
+-    buf.resize(length);
+-
+-    if (!(type & USB_DIR_IN)) {
+-        if (::read(mControl, buf.data(), length) != length) {
+-            PLOG(ERROR) << "Mtp error ctrlreq read data";
+-        }
+-    }
+-
+-    if ((type & USB_TYPE_MASK) == USB_TYPE_CLASS && index == 0 && value == 0) {
+-        switch(code) {
+-        case MTP_REQ_RESET:
+-        case MTP_REQ_CANCEL:
+-            errno = ECANCELED;
+-            return -1;
+-        //    break;
+-        case MTP_REQ_GET_DEVICE_STATUS:
+-        {
+-            if (length < sizeof(struct mtp_device_status) + 4) {
+-                errno = EINVAL;
++    const uint8_t type = setup->bRequestType;
++    const uint8_t code = setup->bRequest;
++    const uint16_t length = le16toh(setup->wLength);
++    const bool input = (type & USB_DIR_IN) != 0;
++    auto stall = [&]() {
++        // FunctionFS stalls a pending SETUP on a wrong-direction ep0 access.
++        // Do this BEFORE consuming an OUT data stage. EL2HLT means the stall
++        // was issued; EIDRM means the host already replaced this SETUP.
++        ssize_t result = input ? TEMP_FAILURE_RETRY(::read(mControl, nullptr, 0))
++                               : TEMP_FAILURE_RETRY(::write(mControl, nullptr, 0));
++        if (result < 0 && (errno == EL2HLT || errno == EIDRM)) return 0;
++        if (result >= 0) errno = EIO;
++        return -1;
++    };
++    // wIndex is the FunctionFS-local interface number (including when MTP is
++    // part of an ADB composite device). All our speed descriptors use zero.
++    if ((type & ~USB_DIR_IN) != (USB_TYPE_CLASS | USB_RECIP_INTERFACE) ||
++        le16toh(setup->wIndex) != 0 || le16toh(setup->wValue) != 0)
++        return stall();
++
++    if (code == MTP_REQ_GET_DEVICE_STATUS) {
++        if (!input) return stall();
++        // Two header words, followed by the existing two 16-bit endpoint
++        // parameters for a device-initiated cancellation. Never size this by
++        // sizeof(pointer), or allocate using the host's requested length.
++        std::array<uint16_t, 4> status{};
++        const size_t size = mCanceled ? sizeof(status) : 2 * sizeof(uint16_t);
++        status[0] = htole16(size);
++        status[1] = htole16(mCanceled ? MTP_RESPONSE_TRANSACTION_CANCELLED : MTP_RESPONSE_OK);
++        if (mCanceled) {
++            const int fds[] = {mBulkIn.get(), mBulkOut.get()};
++            for (size_t i = 0; i < 2; ++i) {
++                usb_endpoint_descriptor desc{};
++                // Query the actual speed descriptor. REVMAP is not an
++                // endpoint address on all FunctionFS implementations.
++                if (TEMP_FAILURE_RETRY(ioctl(fds[i], FUNCTIONFS_ENDPOINT_DESC, &desc)) < 0 ||
++                    desc.bDescriptorType != USB_DT_ENDPOINT ||
++                    (desc.bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) != USB_ENDPOINT_XFER_BULK ||
++                    (desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK) == 0 ||
++                    (desc.bEndpointAddress & 0x70) != 0 ||
++                    (desc.bEndpointAddress & USB_DIR_IN) != (i == 0 ? USB_DIR_IN : 0)) {
++                    LOG(ERROR) << "MTP control status: endpoint descriptor unavailable";
++                    return stall();
++                }
++                status[i + 2] = htole16(desc.bEndpointAddress);
++            }
++        }
++        const size_t send = std::min<size_t>(length, size);
++        const ssize_t result = TEMP_FAILURE_RETRY(::write(mControl, status.data(), send));
++        if (result < 0) return errno == EIDRM ? 0 : -1;
++        if (static_cast<size_t>(result) != send) { errno = EIO; return -1; }
++        // The host may first ask just for the header, then allocate a complete
++        // reply. Keep cancellation pending until the full reply was delivered.
++        if (send == size) mCanceled = false;
++        return 0;
++    }
++
++    if (code == MTP_REQ_CANCEL || code == MTP_REQ_RESET) {
++        const size_t expected = code == MTP_REQ_CANCEL ? 6 : 0;
++        if (input || length != expected) return stall();
++        std::array<uint8_t, 6> data{};
++        const ssize_t result = TEMP_FAILURE_RETRY(::read(mControl, data.data(), expected));
++        if (result < 0) return errno == EIDRM ? 0 : -1;
++        // A short control packet is one failed transfer, not a byte stream to
++        // finish by reading the next SETUP event into this payload.
++        if (static_cast<size_t>(result) != expected) { errno = EPROTO; return -1; }
++        if (code == MTP_REQ_CANCEL) {
++            uint16_t cancellation;
++            memcpy(&cancellation, data.data(), sizeof(cancellation));
++            if (le16toh(cancellation) != MTP_EVENT_CANCEL_TRANSACTION) {
++                errno = EPROTO;
+                 return -1;
+             }
+-            struct mtp_device_status *st = reinterpret_cast<struct mtp_device_status*>(buf.data());
+-            st->wLength = htole16(sizeof(st));
+-            if (mCanceled) {
+-                st->wLength += 4;
+-                st->wCode = MTP_RESPONSE_TRANSACTION_CANCELLED;
+-                uint16_t *endpoints = reinterpret_cast<uint16_t*>(st + 1);
+-                endpoints[0] = ioctl(mBulkIn, FUNCTIONFS_ENDPOINT_REVMAP);
+-                endpoints[1] = ioctl(mBulkOut, FUNCTIONFS_ENDPOINT_REVMAP);
+-                mCanceled = false;
+-            } else {
+-                st->wCode = MTP_RESPONSE_OK;
+-            }
+-            length = st->wLength;
+-            break;
+-        }
+-        default:
+-            LOG(ERROR) << "Unrecognized Mtp class request! " << code;
+-        }
+-    } else {
+-        LOG(ERROR) << "Unrecognized request type " << type;
+-    }
+-
+-    if (type & USB_DIR_IN) {
+-        if (::write(mControl, buf.data(), length) != length) {
+-            PLOG(ERROR) << "Mtp error ctrlreq write data";
+-        }
+-    }
+-    return 0;
++        }
++        // Preserve the existing bulk interruption contract. Matching the
++        // transaction ID and resetting the server session are separate work.
++        errno = ECANCELED;
++        return -1;
++    }
++    return stall();
+ }
+ 
+ bool MtpFfsHandle::configureEndpoints(bool ptp) {

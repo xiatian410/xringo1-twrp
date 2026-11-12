@@ -1,0 +1,43 @@
+# Started explicitly after exact-profile verification and RAM publication.
+# No interface declarations: lazy start must not precede profile selection.
+# oneshot prevents repeated crashes from creating an unbounded restart loop.
+on property:init.svc.dijun-tee-supplicant=stopped && property:twrp.crypto.ready=1
+    setprop twrp.crypto.ready 0
+    setprop twrp.profile.state service-lost
+
+on property:init.svc.dijun-keymint=stopped && property:twrp.crypto.ready=1
+    setprop twrp.crypto.ready 0
+    setprop twrp.profile.state service-lost
+
+on property:init.svc.dijun-gatekeeper=stopped && property:twrp.crypto.ready=1
+    setprop twrp.crypto.ready 0
+    setprop twrp.profile.state service-lost
+
+on property:init.svc.keystore2=restarting && property:twrp.crypto.ready=1
+    setprop twrp.crypto.ready 0
+    setprop twrp.profile.state service-lost
+
+service dijun-tee-supplicant /vendor/bin/tee-supplicant
+    disabled
+    oneshot
+    user system
+    group system secure_element nfc
+    capabilities SYS_RAWIO
+    seclabel u:r:recovery:s0
+    setenv LD_LIBRARY_PATH /system/lib64/mitee:/system/lib64
+
+service dijun-keymint /vendor/bin/hw/android.hardware.security.keymint@3.0-service.mitee
+    disabled
+    oneshot
+    user system
+    group system drmrpc
+    seclabel u:r:recovery:s0
+    setenv LD_LIBRARY_PATH /system/lib64/mitee:/system/lib64
+
+service dijun-gatekeeper /vendor/bin/hw/android.hardware.gatekeeper-service.mitee
+    disabled
+    oneshot
+    user system
+    group system
+    seclabel u:r:recovery:s0
+    setenv LD_LIBRARY_PATH /system/lib64/mitee:/system/lib64

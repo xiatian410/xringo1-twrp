@@ -1,0 +1,188 @@
+--- a/gui2/backend/status_backend.cpp
++++ b/gui2/backend/status_backend.cpp
+@@ -11,6 +11,18 @@
+   status_snapshot snapshot;
+   if (settings_ == nullptr) return snapshot;
+   snapshot.time_text = settings_->get_string("tw_time", "");
++
++  if (settings_->get_int("tw_no_cpu_temp", 0) == 0) {
++    const std::string temperature = settings_->get_string("tw_cpu_temp", "");
++    int degrees = 0;
++    const auto [end, error] = std::from_chars(
++        temperature.data(), temperature.data() + temperature.size(), degrees);
++    if (error == std::errc{} && end == temperature.data() + temperature.size() &&
++        degrees >= -273 && degrees <= 1000) {
++      snapshot.cpu_temperature_c = degrees;
++      snapshot.cpu_temperature_valid = true;
++    }
++  }
+ 
+   // The producer writes "<capacity>%[+]"; older producers used a trailing
+   // space. Missing/invalid readings use -1 and must not appear as 0% or 100%.
+--- a/gui2/backend/status_backend.h
++++ b/gui2/backend/status_backend.h
+@@ -12,10 +12,12 @@
+   int battery_percentage = 0;
+   bool charging = false;
+   bool battery_valid = false;
++  int cpu_temperature_c = 0;
++  bool cpu_temperature_valid = false;
+ };
+ 
+-// The status bar values the legacy theme shows: tw_time, and tw_battery as the
+-// battery monitor in twrp.cpp writes it.
++// DataManager supplies tw_cpu_temp in Celsius; the battery monitor supplies
++// tw_battery. Invalid or disabled readings remain independent of each other.
+ class status_backend final {
+  public:
+   explicit status_backend(settings_store* settings) : settings_(settings) {}
+--- a/gui2/shell/status_bar.cpp
++++ b/gui2/shell/status_bar.cpp
+@@ -62,15 +62,27 @@
+   lv_label_set_text(view.time_label, "");
+   lv_obj_set_style_text_color(view.time_label, metrics.primary_text, LV_PART_MAIN);
+   lv_obj_set_style_text_font(view.time_label, metrics.status_font, LV_PART_MAIN);
++  lv_label_set_long_mode(view.time_label, LV_LABEL_LONG_CLIP);
++  lv_obj_set_clickable(view.time_label, false);
++
++  view.temperature_label = lv_label_create(view.root);
++  lv_label_set_text(view.temperature_label, "");
++  lv_obj_set_style_text_color(view.temperature_label, metrics.secondary_text, LV_PART_MAIN);
++  lv_obj_set_style_text_font(view.temperature_label, metrics.status_font, LV_PART_MAIN);
++  lv_obj_set_clickable(view.temperature_label, false);
++  lv_obj_set_hidden(view.temperature_label, true);
+ 
+   view.battery_value = lv_label_create(view.root);
+   lv_label_set_text(view.battery_value, "--%");
+   lv_obj_set_style_text_color(view.battery_value, metrics.primary_text, LV_PART_MAIN);
+   lv_obj_set_style_text_font(view.battery_value, metrics.status_font, LV_PART_MAIN);
++  lv_obj_set_clickable(view.battery_value, false);
++  lv_obj_set_hidden(view.battery_value, true);
+ 
+   view.battery_icon = gui2_components::create_svg_image(view.root, &kGui2IconBattery100,
+                                                         gui2_core::ui_px(72), gui2_core::ui_px(48));
+   gui2_components::tint_on_surface(view.battery_icon, metrics.primary_text);
++  lv_obj_set_hidden(view.battery_icon, true);
+ 
+   // The icon art is drawn in black; tint it like the text beside it.
+   view.wifi_icon = gui2_components::create_svg_image(view.root, &kGui2IconWifi,
+@@ -85,6 +97,8 @@
+   lv_label_set_text(view.recording_indicator, recording_text == nullptr ? "" : recording_text);
+   lv_obj_set_style_text_color(view.recording_indicator, metrics.danger, LV_PART_MAIN);
+   lv_obj_set_style_text_font(view.recording_indicator, metrics.status_font, LV_PART_MAIN);
++  lv_label_set_long_mode(view.recording_indicator, LV_LABEL_LONG_CLIP);
++  lv_obj_set_clickable(view.recording_indicator, false);
+   lv_obj_set_hidden(view.recording_indicator, true);
+ 
+   layout_status_bar(view, metrics);
+@@ -96,18 +110,50 @@
+   const int content_height = metrics.status_height - metrics.status_top_padding;
+   const int y =
+       metrics.status_top_padding + (content_height - metrics.status_font->line_height) / 2;
+-  lv_obj_align(view.time_label, LV_ALIGN_TOP_LEFT, metrics.outer_margin, y);
+-  if (view.recording_indicator != nullptr)
+-    lv_obj_align_to(view.recording_indicator, view.time_label, LV_ALIGN_OUT_RIGHT_MID,
+-                    gui2_core::ui_px(12), 0);
+-  if (view.battery_value != nullptr) {
++  const int gap = gui2_core::ui_px(12);
++  int right = metrics.width - metrics.outer_margin;
++  if (view.battery_value != nullptr && !lv_obj_has_flag(view.battery_value, LV_OBJ_FLAG_HIDDEN)) {
+     lv_obj_align(view.battery_value, LV_ALIGN_TOP_RIGHT, -metrics.outer_margin, y);
+     if (view.battery_icon != nullptr)
+       lv_obj_align_to(view.battery_icon, view.battery_value, LV_ALIGN_OUT_LEFT_MID,
+                       -gui2_core::ui_px(12), 0);
+-    if (view.wifi_icon != nullptr && view.battery_icon != nullptr)
+-      lv_obj_align_to(view.wifi_icon, view.battery_icon, LV_ALIGN_OUT_LEFT_MID,
+-                      -gui2_core::ui_px(12), 0);
++    lv_obj_update_layout(view.root);
++    right = lv_obj_get_x(view.battery_icon != nullptr ? view.battery_icon : view.battery_value) - gap;
++  }
++  if (view.wifi_icon != nullptr && !lv_obj_has_flag(view.wifi_icon, LV_OBJ_FLAG_HIDDEN)) {
++    lv_obj_set_pos(view.wifi_icon, right - lv_obj_get_width(view.wifi_icon),
++                    y + (metrics.status_font->line_height - lv_obj_get_height(view.wifi_icon)) / 2);
++    right = lv_obj_get_x(view.wifi_icon) - gap;
++  }
++
++  // Bound variable-width text before placing optional readings. Recording has
++  // priority over temperature when a narrow screen cannot fit both.
++  lv_obj_set_width(view.time_label, LV_SIZE_CONTENT);
++  lv_obj_update_layout(view.root);
++  const bool recording = view.recording_indicator != nullptr &&
++                         !lv_obj_has_flag(view.recording_indicator, LV_OBJ_FLAG_HIDDEN);
++  const int time_space = right - metrics.outer_margin -
++                         (recording ? metrics.status_font->line_height + gap : 0);
++  lv_obj_set_width(view.time_label,
++                   std::max(1, std::min(lv_obj_get_width(view.time_label), time_space)));
++  lv_obj_align(view.time_label, LV_ALIGN_TOP_LEFT, metrics.outer_margin, y);
++  lv_obj_update_layout(view.root);
++  int left = metrics.outer_margin + lv_obj_get_width(view.time_label) + gap;
++  if (recording) {
++    lv_obj_set_width(view.recording_indicator, LV_SIZE_CONTENT);
++    lv_obj_update_layout(view.root);
++    lv_obj_set_width(view.recording_indicator,
++                     std::max(1, std::min(lv_obj_get_width(view.recording_indicator), right - left)));
++    lv_obj_set_pos(view.recording_indicator, left, y);
++    lv_obj_update_layout(view.root);
++    left += lv_obj_get_width(view.recording_indicator) + gap;
++  }
++  if (view.temperature_label != nullptr) {
++    lv_obj_update_layout(view.root);
++    const int width = lv_obj_get_width(view.temperature_label);
++    const bool fits = lv_label_get_text(view.temperature_label)[0] != '\0' && right - left >= width;
++    lv_obj_set_hidden(view.temperature_label, !fits);
++    if (fits) lv_obj_set_pos(view.temperature_label, left + (right - left - width) / 2, y);
+   }
+ }
+ 
+@@ -122,23 +168,26 @@
+ void update_status_bar(const status_bar_view& view, const gui2_core::ui_metrics& metrics,
+                        const gui2_backend::status_snapshot& snapshot) {
+   if (view.time_label != nullptr) lv_label_set_text(view.time_label, snapshot.time_text.c_str());
+-  if (view.battery_value == nullptr || view.battery_icon == nullptr) return;
+-  if (!snapshot.battery_valid) {
+-    lv_obj_set_hidden(view.battery_value, true);
+-    lv_obj_set_hidden(view.battery_icon, true);
+-    return;
++  if (view.temperature_label != nullptr) {
++    char temperature_text[24] = {};
++    if (snapshot.cpu_temperature_valid)
++      std::snprintf(temperature_text, sizeof(temperature_text), "%d°C", snapshot.cpu_temperature_c);
++    lv_label_set_text(view.temperature_label, temperature_text);
+   }
+-
+-  char battery_text[16];
+-  std::snprintf(battery_text, sizeof(battery_text), "%d%%", snapshot.battery_percentage);
+-  lv_label_set_text(view.battery_value, battery_text);
+-  lv_image_set_src(view.battery_icon,
+-                   gui2_svg_get_raster(
+-                       battery_icon_for(snapshot.battery_percentage, snapshot.charging),
+-                       lv_obj_get_width(view.battery_icon), lv_obj_get_height(view.battery_icon)));
++  if (view.battery_value != nullptr && view.battery_icon != nullptr) {
++    lv_obj_set_hidden(view.battery_value, !snapshot.battery_valid);
++    lv_obj_set_hidden(view.battery_icon, !snapshot.battery_valid);
++    if (snapshot.battery_valid) {
++      char battery_text[16];
++      std::snprintf(battery_text, sizeof(battery_text), "%d%%", snapshot.battery_percentage);
++      lv_label_set_text(view.battery_value, battery_text);
++      lv_image_set_src(view.battery_icon,
++                       gui2_svg_get_raster(
++                           battery_icon_for(snapshot.battery_percentage, snapshot.charging),
++                           lv_obj_get_width(view.battery_icon), lv_obj_get_height(view.battery_icon)));
++    }
++  }
+   layout_status_bar(view, metrics);
+-  lv_obj_set_hidden(view.battery_value, false);
+-  lv_obj_set_hidden(view.battery_icon, false);
+ }
+ 
+ }  // namespace gui2_shell
+--- a/gui2/shell/status_bar.h
++++ b/gui2/shell/status_bar.h
+@@ -10,6 +10,7 @@
+ struct status_bar_view {
+   lv_obj_t* root = nullptr;
+   lv_obj_t* time_label = nullptr;
++  lv_obj_t* temperature_label = nullptr;
+   lv_obj_t* battery_value = nullptr;
+   lv_obj_t* battery_icon = nullptr;
+   lv_obj_t* recording_indicator = nullptr;

@@ -1,0 +1,272 @@
+{
+  "status": "PASS",
+  "scope": "All requested partition hashes verified during extraction; system-family directory inventories and selected identity/init/VINTF/linker/fstab bytes. Not arbitrary APK/framework execution or complete ZIP signature verification.",
+  "samples": {
+    "os2-final": {
+      "verified_required_partitions": [
+        "boot",
+        "init_boot",
+        "vendor_boot",
+        "recovery",
+        "dtbo",
+        "vendor_dlkm",
+        "system_dlkm",
+        "odm_dlkm",
+        "vendor",
+        "odm",
+        "system",
+        "system_ext",
+        "product",
+        "mi_ext"
+      ],
+      "absent_required_partitions": [
+        "mi_product"
+      ],
+      "system_resources": {
+        "system": {
+          "sha256": "39223d05b578b123c840049ed1896488763a33f8e7b8d4ac9603846cc00a9c3b",
+          "directory_entries": 3686,
+          "extracted_resources": 95
+        },
+        "system_ext": {
+          "sha256": "c011ba4359e9f6aaaa8018e743b68e95b32feb1336b231b1d3acdd0d798d0f66",
+          "directory_entries": 1310,
+          "extracted_resources": 41
+        },
+        "product": {
+          "sha256": "c4b09eb2c0bf98feff77d01754043f8b90d118c6a8691fe17ec8c68cc53f0bc6",
+          "directory_entries": 1694,
+          "extracted_resources": 4
+        },
+        "mi_ext": {
+          "sha256": "7a85acdd5e14d4f8a6f4258ef6c1c640f50ed65ca1264b7409c0a4c8909efa40",
+          "directory_entries": 46,
+          "extracted_resources": 2
+        }
+      }
+    },
+    "os2-initial": {
+      "verified_required_partitions": [
+        "boot",
+        "init_boot",
+        "vendor_boot",
+        "recovery",
+        "dtbo",
+        "vendor_dlkm",
+        "system_dlkm",
+        "odm_dlkm",
+        "vendor",
+        "odm",
+        "system",
+        "system_ext",
+        "product",
+        "mi_ext"
+      ],
+      "absent_required_partitions": [
+        "mi_product"
+      ],
+      "system_resources": {
+        "system": {
+          "sha256": "84fa006ae1312ff3c0447b7d6f1c3156e02043129901241a4bd9d92a4ab4d4fb",
+          "directory_entries": 3686,
+          "extracted_resources": 95
+        },
+        "system_ext": {
+          "sha256": "9b4895b1cda039b4b9ee1e11c5b8bc931497fea55670a1daa18b503fbadf673c",
+          "directory_entries": 1300,
+          "extracted_resources": 41
+        },
+        "product": {
+          "sha256": "7be434538b43f1152b1836cfa3c5a2863194b93cfc28f606b263e447f79b166c",
+          "directory_entries": 1687,
+          "extracted_resources": 4
+        },
+        "mi_ext": {
+          "sha256": "85b5fe9c720d3a398873d3ad92d5fccf8482731b7a6b22e966cb5672d4b63bb0",
+          "directory_entries": 46,
+          "extracted_resources": 2
+        }
+      }
+    },
+    "os3-final": {
+      "verified_required_partitions": [
+        "boot",
+        "init_boot",
+        "vendor_boot",
+        "recovery",
+        "dtbo",
+        "vendor_dlkm",
+        "system_dlkm",
+        "odm_dlkm",
+        "vendor",
+        "odm",
+        "system",
+        "system_ext",
+        "product",
+        "mi_ext"
+      ],
+      "absent_required_partitions": [
+        "mi_product"
+      ],
+      "system_resources": {
+        "system": {
+          "sha256": "9bb0e93c2ff6a3a44e778c7c1956ab1d7de149b8894f5c9c79cd0bebec69c0ca",
+          "directory_entries": 4293,
+          "extracted_resources": 101
+        },
+        "system_ext": {
+          "sha256": "34986773e808f3212a7825045b7b57da9f0b88dc064198d6e9f806b694bc2285",
+          "directory_entries": 1891,
+          "extracted_resources": 52
+        },
+        "product": {
+          "sha256": "46f2689f9f8f94ff5250a2819f1002d18eb7d3b4fb62dbb22bc12796453631cc",
+          "directory_entries": 2349,
+          "extracted_resources": 5
+        },
+        "mi_ext": {
+          "sha256": "2688f763186081adfb96d890a6ee4e4678e79ab070a10f87bf975edc0f3083fd",
+          "directory_entries": 138,
+          "extracted_resources": 2
+        }
+      }
+    },
+    "os3-initial": {
+      "verified_required_partitions": [
+        "boot",
+        "init_boot",
+        "vendor_boot",
+        "recovery",
+        "dtbo",
+        "vendor_dlkm",
+        "system_dlkm",
+        "odm_dlkm",
+        "vendor",
+        "odm",
+        "system",
+        "system_ext",
+        "product",
+        "mi_ext"
+      ],
+      "absent_required_partitions": [
+        "mi_product"
+      ],
+      "system_resources": {
+        "system": {
+          "sha256": "0b49b15d2f41646675604e5d7dd7b28c4113c673a32cf7d906c6ef5907c1617c",
+          "directory_entries": 3744,
+          "extracted_resources": 100
+        },
+        "system_ext": {
+          "sha256": "b8f556c44127457e42866ede3bfb423510d90cc9fc60260ae82d0080aebdbd11",
+          "directory_entries": 1410,
+          "extracted_resources": 46
+        },
+        "product": {
+          "sha256": "c5b69179b26820a0c6b16747828cb568943011f3c0045ffa65f63f2119c898fd",
+          "directory_entries": 2272,
+          "extracted_resources": 5
+        },
+        "mi_ext": {
+          "sha256": "ee7ff0666ecbba855b14c9be90ddf29e86b75bad17ade66aa9a24bccee836038",
+          "directory_entries": 92,
+          "extracted_resources": 2
+        }
+      }
+    },
+    "os4-current": {
+      "verified_required_partitions": [
+        "boot",
+        "init_boot",
+        "vendor_boot",
+        "recovery",
+        "dtbo",
+        "vendor_dlkm",
+        "system_dlkm",
+        "odm_dlkm",
+        "vendor",
+        "odm",
+        "system",
+        "system_ext",
+        "product",
+        "mi_ext",
+        "mi_product"
+      ],
+      "absent_required_partitions": [],
+      "system_resources": {
+        "system": {
+          "sha256": "9618beb29cab49ae19f10a63c4dd4784b6e115a25ea2ac79b5e918d590d64e6a",
+          "directory_entries": 4619,
+          "extracted_resources": 107
+        },
+        "system_ext": {
+          "sha256": "0cc6a297cc35685591a36d43fddc6116f07c87ba4d1678102c9538569b87a02f",
+          "directory_entries": 2037,
+          "extracted_resources": 64
+        },
+        "product": {
+          "sha256": "11549ee9f86f5448a6921803e8fc686ce997aeb11059da00456d8b798e14fd43",
+          "directory_entries": 1986,
+          "extracted_resources": 6
+        },
+        "mi_ext": {
+          "sha256": "13f2dff5a7573a2159678ac23a861f8f978a5bce81f557fa04ccb498becda72e",
+          "directory_entries": 167,
+          "extracted_resources": 2
+        },
+        "mi_product": {
+          "sha256": "19f7aad1284a0620aecd6ba9edd159640a6e3116a976a7a007c9c07f625f4b21",
+          "directory_entries": 22,
+          "extracted_resources": 1
+        }
+      }
+    },
+    "os4-stable": {
+      "verified_required_partitions": [
+        "boot",
+        "init_boot",
+        "vendor_boot",
+        "recovery",
+        "dtbo",
+        "vendor_dlkm",
+        "system_dlkm",
+        "odm_dlkm",
+        "vendor",
+        "odm",
+        "system",
+        "system_ext",
+        "product",
+        "mi_ext",
+        "mi_product"
+      ],
+      "absent_required_partitions": [],
+      "system_resources": {
+        "system": {
+          "sha256": "63bfdb9f2a240f67947f944b0e0502ba0373676c993ab0a71873354e44bcda99",
+          "directory_entries": 4624,
+          "extracted_resources": 106
+        },
+        "system_ext": {
+          "sha256": "589fdb4f0feb26328e51a05462ee64ced51a38de3ff6774d1f61de1b32ae94e0",
+          "directory_entries": 2030,
+          "extracted_resources": 60
+        },
+        "product": {
+          "sha256": "068d4f9b25ca5d06f9d65aa02614b8dc332263d13ef4f36528549e9b23f2ab7e",
+          "directory_entries": 1990,
+          "extracted_resources": 6
+        },
+        "mi_ext": {
+          "sha256": "dacaefcc37940548a25cc0bd027325d1d384dd4ea9630387455d2bbc461cd937",
+          "directory_entries": 171,
+          "extracted_resources": 2
+        },
+        "mi_product": {
+          "sha256": "49b9a8b349c24f13716cfb6e0df9e1239f61893047c9250e27acfb168c073832",
+          "directory_entries": 22,
+          "extracted_resources": 1
+        }
+      }
+    }
+  }
+}

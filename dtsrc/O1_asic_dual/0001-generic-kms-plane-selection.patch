@@ -1,0 +1,65 @@
+diff --git a/twrpminui/graphics_drm.cpp b/twrpminui/graphics_drm.cpp
+index 5283b54..264b9e1 100644
+--- a/twrpminui/graphics_drm.cpp
++++ b/twrpminui/graphics_drm.cpp
+@@ -184,6 +184,20 @@ static bool is_primary_plane(int fd, uint32_t blob_id) {
+   return primary;
+ }
+ 
++/* TWRP: CLO/SDE advertises the pipe role through the "capabilities" blob, but a
++ * generic KMS driver (e.g. xring-drm) has no such property and only publishes
++ * the standard immutable "type" enum. Accept either signal, otherwise no plane
++ * is ever selected and display init fails with "found 0/N primary planes". */
++static bool plane_is_primary(int fd, const Plane& plane) {
++  for (uint32_t j = 0; j < plane.props->count_props; ++j) {
++    const std::string name = plane.props_info[j]->name;
++    const uint64_t value = plane.props->prop_values[j];
++    if (name == "capabilities" && is_primary_plane(fd, value)) return true;
++    if (name == "type" && value == DRM_PLANE_TYPE_PRIMARY) return true;
++  }
++  return false;
++}
++
+ static int find_plane_prop_id(uint32_t obj_id, const char *prop_name,
+                               Plane *plane_res) {
+   int i, j = 0;
+@@ -747,10 +761,18 @@ int MinuiBackendDrm::Initdisplay(DrmConnector index) {
+     if (name == "SDE_DEMURA_INIT_CFG_V1" || name == "SDE_DEMURA_INIT_CFG_V3") demura_prop_name = name;
+   }
+   // CLO: extract topology and select pipes in reverse population order.
++  bool topology_found = false;
+   for (uint32_t i = 0; i < conn_res.props->count_props; ++i) {
+-    if (!strcmp(conn_res.props_info[i]->name, "mode_properties"))
++    if (!strcmp(conn_res.props_info[i]->name, "mode_properties")) {
+       number_of_lms = get_topology_lm_number(drm_fd, conn_res.props->prop_values[i]);
++      topology_found = true;
++    }
+   }
++  // TWRP: without the CLO topology blob the mixer count is meaningless. A
++  // generic KMS driver drives the whole connector from a single primary plane,
++  // so mirror one pipe instead of CLO's DEFAULT_NUM_LMS and the per-pipe
++  // horizontal split in AtomicPopulatePlane (which would duplicate a slice).
++  if (!topology_found) number_of_lms = 1;
+   if (number_of_lms == 0 || number_of_lms > NUM_PLANES) {
+     fprintf(stderr, "TWRP DRM: invalid mixer count %u on display %d\n", number_of_lms, index);
+     return -1;
+@@ -770,10 +792,7 @@ int MinuiBackendDrm::Initdisplay(DrmConnector index) {
+     } // TWRP: do not attach another connector's pipes.
+     bool primary = false;
+     if (load_properties(candidate.plane->plane_id, DRM_MODE_OBJECT_PLANE, &candidate)) {
+-      for (uint32_t j = 0; j < candidate.props->count_props; ++j) {
+-        if (!strcmp(candidate.props_info[j]->name, "capabilities"))
+-          primary = is_primary_plane(drm_fd, candidate.props->prop_values[j]);
+-      }
++      primary = plane_is_primary(drm_fd, candidate);
+     }
+     if (primary) {
+       plane_res[selected++] = candidate;
+@@ -787,6 +806,7 @@ int MinuiBackendDrm::Initdisplay(DrmConnector index) {
+       drmModeFreePlane(candidate.plane);
+     }
+   }
++  if (!topology_found && selected > 0) number_of_lms = selected;
+   if (selected != number_of_lms) {
+     fprintf(stderr, "TWRP DRM: display %d found %u/%u primary planes for CRTC index %d\n",
+             index, selected, number_of_lms, drm[index].crtc_index);

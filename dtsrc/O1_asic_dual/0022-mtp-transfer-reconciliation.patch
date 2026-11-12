@@ -1,0 +1,974 @@
+diff --git a/mtp/IMtpDatabase.h b/mtp/IMtpDatabase.h
+index 9bdd327..573573f 100644
+--- a/mtp/IMtpDatabase.h
++++ b/mtp/IMtpDatabase.h
+@@ -107,16 +107,11 @@ public:
+ 
+     virtual MtpProperty*            getDevicePropertyDesc(MtpDeviceProperty property) = 0;
+ 
+-    virtual MtpResponseCode         beginMoveObject(MtpObjectHandle handle, MtpObjectHandle newParent,
+-                                            MtpStorageID newStorage) = 0;
+-
+-    virtual void                    endMoveObject(MtpObjectHandle oldParent, MtpObjectHandle newParent,
+-                                            MtpStorageID oldStorage, MtpStorageID newStorage,
+-                                            MtpObjectHandle handle, bool succeeded) = 0;
+-
+-    virtual MtpResponseCode         beginCopyObject(MtpObjectHandle handle, MtpObjectHandle newParent,
+-                                            MtpStorageID newStorage) = 0;
+-    virtual void                    endCopyObject(MtpObjectHandle handle, bool succeeded) = 0;
++    // One serialized filesystem/database operation. A copied object receives a
++    // new handle; a moved object retains its handle, including cached children.
++    virtual MtpResponseCode         transferObject(MtpObjectHandle handle, MtpObjectHandle newParent,
++                                            MtpStorageID newStorage, bool copy,
++                                            MtpObjectHandle& resultHandle) = 0;
+ 
+     // TWRP: build the recovery object tree when a storage is added.
+     virtual bool                    createDB(MtpStorage* storage, MtpStorageID storageID) = 0;
+diff --git a/mtp/MtpServer.cpp b/mtp/MtpServer.cpp
+index 17c8135..503b84d 100755
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -1090,149 +1090,22 @@ MtpResponseCode MtpServer::doSendObjectInfo() {
+ }
+ 
+ MtpResponseCode MtpServer::doMoveObject() {
+-    if (!hasStorage())
+-        return MTP_RESPONSE_GENERAL_ERROR;
+-    if (mRequest.getParameterCount() < 3)
+-        return MTP_RESPONSE_INVALID_PARAMETER;
+-    MtpObjectHandle objectHandle = mRequest.getParameter(1);
+-    MtpStorageID storageID = mRequest.getParameter(2);
+-    MtpStorage* storage = getStorage(storageID);
+-    MtpObjectHandle parent = mRequest.getParameter(3);
+-    if (!storage)
+-        return MTP_RESPONSE_INVALID_STORAGE_ID;
+-    MtpStringBuffer path;
+-    MtpResponseCode result;
+-
+-    MtpStringBuffer fromPath;
+-    int64_t fileLength;
+-    MtpObjectFormat format;
+-    MtpObjectInfo info(objectHandle);
+-    result = mDatabase->getObjectInfo(objectHandle, info);
+-    if (result != MTP_RESPONSE_OK)
+-        return result;
+-    result = mDatabase->getObjectFilePath(objectHandle, fromPath, fileLength, format);
+-    if (result != MTP_RESPONSE_OK)
+-        return result;
+-
+-    // special case the root
+-    if (parent == 0) {
+-        path.set(storage->getPath());
+-    } else {
+-        int64_t parentLength;
+-        MtpObjectFormat parentFormat;
+-        result = mDatabase->getObjectFilePath(parent, path, parentLength, parentFormat);
+-        if (result != MTP_RESPONSE_OK)
+-            return result;
+-        if (parentFormat != MTP_FORMAT_ASSOCIATION)
+-            return MTP_RESPONSE_INVALID_PARENT_OBJECT;
+-    }
+-
+-    if (path[path.size() - 1] != '/')
+-        path.append("/");
+-    path.append(info.mName);
+-
+-    result = mDatabase->beginMoveObject(objectHandle, parent, storageID);
+-    if (result != MTP_RESPONSE_OK)
+-        return result;
+-
+-    if (info.mStorageID == storageID) {
+-        ALOGV("Moving file from %s to %s", (const char*)fromPath, (const char*)path);
+-        if (renameTo(fromPath, path)) {
+-            PLOG(ERROR) << "rename() failed from " << fromPath << " to " << path;
+-            result = MTP_RESPONSE_GENERAL_ERROR;
+-        }
+-    } else {
+-        ALOGV("Moving across storages from %s to %s", (const char*)fromPath, (const char*)path);
+-        if (format == MTP_FORMAT_ASSOCIATION) {
+-            int ret = makeFolder((const char *)path);
+-            ret += copyRecursive(fromPath, path);
+-            if (ret) {
+-                result = MTP_RESPONSE_GENERAL_ERROR;
+-            } else {
+-                deletePath(fromPath);
+-            }
+-        } else {
+-            if (copyFile(fromPath, path)) {
+-                result = MTP_RESPONSE_GENERAL_ERROR;
+-            } else {
+-                deletePath(fromPath);
+-            }
+-        }
+-    }
+-
+-    // If the move failed, undo the database change
+-    mDatabase->endMoveObject(info.mParent, parent, info.mStorageID, storageID, objectHandle,
+-            result == MTP_RESPONSE_OK);
+-
+-    return result;
++    if (mRequest.getParameterCount() != 3) return MTP_RESPONSE_INVALID_PARAMETER;
++    auto* storage = getStorage(mRequest.getParameter(2));
++    if (!storage) return MTP_RESPONSE_INVALID_STORAGE_ID;
++    MtpObjectHandle result_handle = kInvalidObjectHandle;
++    return mDatabase->transferObject(mRequest.getParameter(1), mRequest.getParameter(3),
++                                     storage->getStorageID(), false, result_handle);
+ }
+ 
+ MtpResponseCode MtpServer::doCopyObject() {
+-    if (!hasStorage())
+-        return MTP_RESPONSE_GENERAL_ERROR;
+-    MtpResponseCode result = MTP_RESPONSE_OK;
+-    if (mRequest.getParameterCount() < 3)
+-        return MTP_RESPONSE_INVALID_PARAMETER;
+-    MtpObjectHandle objectHandle = mRequest.getParameter(1);
+-    MtpStorageID storageID = mRequest.getParameter(2);
+-    MtpStorage* storage = getStorage(storageID);
+-    MtpObjectHandle parent = mRequest.getParameter(3);
+-    if (!storage)
+-        return MTP_RESPONSE_INVALID_STORAGE_ID;
+-    MtpStringBuffer path;
+-
+-    MtpStringBuffer fromPath;
+-    int64_t fileLength;
+-    MtpObjectFormat format;
+-    MtpObjectInfo info(objectHandle);
+-    result = mDatabase->getObjectInfo(objectHandle, info);
+-    if (result != MTP_RESPONSE_OK)
+-        return result;
+-    result = mDatabase->getObjectFilePath(objectHandle, fromPath, fileLength, format);
+-    if (result != MTP_RESPONSE_OK)
+-        return result;
+-
+-    // special case the root
+-    if (parent == 0) {
+-        path.set(storage->getPath());
+-    } else {
+-        int64_t parentLength;
+-        MtpObjectFormat parentFormat;
+-        result = mDatabase->getObjectFilePath(parent, path, parentLength, parentFormat);
+-        if (result != MTP_RESPONSE_OK)
+-            return result;
+-        if (parentFormat != MTP_FORMAT_ASSOCIATION)
+-            return MTP_RESPONSE_INVALID_PARENT_OBJECT;
+-    }
+-
+-    // check space first
+-    if ((uint64_t) fileLength > storage->getFreeSpace())
+-        return MTP_RESPONSE_STORAGE_FULL;
+-
+-    if (path[path.size() - 1] != '/')
+-        path.append("/");
+-    path.append(info.mName);
+-
+-    MtpObjectHandle handle = mDatabase->beginCopyObject(objectHandle, parent, storageID);
+-    if (handle == kInvalidObjectHandle) {
+-        return MTP_RESPONSE_GENERAL_ERROR;
+-    }
+-
+-    ALOGV("Copying file from %s to %s", (const char*)fromPath, (const char*)path);
+-    if (format == MTP_FORMAT_ASSOCIATION) {
+-        int ret = makeFolder((const char *)path);
+-        ret += copyRecursive(fromPath, path);
+-        if (ret) {
+-            result = MTP_RESPONSE_GENERAL_ERROR;
+-        }
+-    } else {
+-        if (copyFile(fromPath, path)) {
+-            result = MTP_RESPONSE_GENERAL_ERROR;
+-        }
+-    }
+-
+-    mDatabase->endCopyObject(handle, result);
+-    mResponse.setParameter(1, handle);
++    if (mRequest.getParameterCount() != 3) return MTP_RESPONSE_INVALID_PARAMETER;
++    auto* storage = getStorage(mRequest.getParameter(2));
++    if (!storage) return MTP_RESPONSE_INVALID_STORAGE_ID;
++    MtpObjectHandle result_handle = kInvalidObjectHandle;
++    const auto result = mDatabase->transferObject(mRequest.getParameter(1), mRequest.getParameter(3),
++                                                 storage->getStorageID(), true, result_handle);
++    if (result == MTP_RESPONSE_OK) mResponse.setParameter(1, result_handle);
+     return result;
+ }
+ 
+diff --git a/mtp/MtpUtils.cpp b/mtp/MtpUtils.cpp
+index 9d957d4..0c86fc3 100644
+--- a/mtp/MtpUtils.cpp
++++ b/mtp/MtpUtils.cpp
+@@ -19,6 +19,11 @@
+ #include <android-base/logging.h>
+ #include <android-base/unique_fd.h>
+ #include <dirent.h>
++#include <filesystem>
++#include <linux/fs.h>
++#include <sys/syscall.h>
++#include <cerrno>
++#include <cstring>
+ #include <fcntl.h>
+ #include <string>
+ #include <sys/sendfile.h>
+@@ -113,150 +118,172 @@ int makeFolder(const char *path) {
+     return ret;
+ }
+ 
+-/**
+- * Copies target path and all children to destination path.
+- *
+- * Returns 0 on success or a negative value indicating number of failures
+- */
+-int copyRecursive(const char *fromPath, const char *toPath) {
+-    int ret = 0;
+-    string fromPathStr(fromPath);
+-    string toPathStr(toPath);
++namespace {
++using android::base::unique_fd;
+ 
+-    DIR* dir = opendir(fromPath);
+-    if (!dir) {
+-        PLOG(ERROR) << "opendir " << fromPath << " failed";
+-        return -1;
++// Walk absolute path components without following links, including parents.
++// Every recursive operation below remains anchored to these directory fds.
++unique_fd OpenParent(const char* path, std::string& leaf) {
++    std::filesystem::path p(path);
++    if (!p.is_absolute() || p.filename().empty() || p.filename() == "." || p.filename() == "..") {
++        errno = EINVAL;
++        return unique_fd();
+     }
+-    if (fromPathStr[fromPathStr.size()-1] != '/')
+-        fromPathStr += '/';
+-    if (toPathStr[toPathStr.size()-1] != '/')
+-        toPathStr += '/';
+-
+-    struct dirent* entry;
+-    while ((entry = readdir(dir))) {
+-        const char* name = entry->d_name;
++    leaf = p.filename().string();
++    unique_fd fd(open("/", O_RDONLY | O_DIRECTORY | O_CLOEXEC));
++    for (const auto& component : p.parent_path().relative_path()) {
++        if (component == "..") { errno = EINVAL; return unique_fd(); }
++        if (component == "." || component.empty()) continue;
++        fd.reset(openat(fd.get(), component.c_str(), O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC));
++        if (fd.get() < 0) return fd;
++    }
++    return fd;
++}
+ 
+-        // ignore "." and ".."
+-        if (name[0] == '.' && (name[1] == 0 || (name[1] == '.' && name[2] == 0))) {
+-            continue;
+-        }
+-        string oldFile = fromPathStr + name;
+-        string newFile = toPathStr + name;
++bool SameEntry(int parent, const char* name, const struct stat& expected) {
++    struct stat current{};
++    return fstatat(parent, name, &current, AT_SYMLINK_NOFOLLOW) == 0 &&
++           current.st_dev == expected.st_dev && current.st_ino == expected.st_ino;
++}
+ 
+-        if (entry->d_type == DT_DIR) {
+-            ret += makeFolder(newFile.c_str());
+-            ret += copyRecursive(oldFile.c_str(), newFile.c_str());
+-        } else {
+-            ret += copyFile(oldFile.c_str(), newFile.c_str());
+-        }
++bool DeleteAt(int parent, const char* name) {
++    struct stat before{};
++    if (fstatat(parent, name, &before, AT_SYMLINK_NOFOLLOW) != 0) return false;
++    if (!S_ISDIR(before.st_mode)) return unlinkat(parent, name, 0) == 0;
++    unique_fd fd(openat(parent, name, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC));
++    if (fd.get() < 0) return false;
++    DIR* dir = fdopendir(dup(fd.get()));
++    if (!dir) return false;
++    bool ok = true;
++    for (;;) {
++        errno = 0;
++        auto* entry = readdir(dir);
++        if (!entry) { if (errno) ok = false; break; }
++        if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..")) continue;
++        if (!DeleteAt(fd.get(), entry->d_name)) { ok = false; break; }
+     }
+     closedir(dir);
+-    return ret;
++    return ok && SameEntry(parent, name, before) && unlinkat(parent, name, AT_REMOVEDIR) == 0;
+ }
+ 
+-int copyFile(const char *fromPath, const char *toPath) {
+-    auto start = std::chrono::steady_clock::now();
+-
+-    android::base::unique_fd fromFd(open(fromPath, O_RDONLY));
+-    if (fromFd == -1) {
+-        PLOG(ERROR) << "Failed to open copy from " << fromPath;
+-        return -1;
+-    }
+-    android::base::unique_fd toFd(open(toPath, O_CREAT | O_WRONLY, FILE_PERM));
+-    if (toFd == -1) {
+-        PLOG(ERROR) << "Failed to open copy to " << toPath;
+-        return -1;
++bool FitsLimitAt(int parent, const char* name, uint64_t max_size) {
++    unique_fd fd(openat(parent, name, O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC));
++    struct stat st{};
++    if (fd.get() < 0 || fstat(fd.get(), &st) != 0) return false;
++    if (S_ISREG(st.st_mode)) {
++        if (static_cast<uint64_t>(st.st_size) <= max_size) return true;
++        errno = EFBIG;
++        return false;
+     }
+-    off_t offset = 0;
+-
+-    struct stat sstat = {};
+-    if (stat(fromPath, &sstat) == -1)
+-        return -1;
+-
+-    off_t length = sstat.st_size;
+-    int ret = 0;
+-
+-    while (offset < length) {
+-        ssize_t transfer_length = std::min(length - offset, (off_t) FILE_COPY_SIZE);
+-        ret = sendfile(toFd, fromFd, &offset, transfer_length);
+-        if (ret != transfer_length) {
+-            ret = -1;
+-            PLOG(ERROR) << "Copying failed!";
+-            break;
+-        }
++    if (!S_ISDIR(st.st_mode)) { errno = EOPNOTSUPP; return false; }
++    DIR* dir = fdopendir(dup(fd.get()));
++    if (!dir) return false;
++    bool ok = true;
++    for (;;) {
++        errno = 0;
++        auto* entry = readdir(dir);
++        if (!entry) { if (errno) ok = false; break; }
++        if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..")) continue;
++        if (!FitsLimitAt(fd.get(), entry->d_name, max_size)) { ok = false; break; }
+     }
+-    auto end = std::chrono::steady_clock::now();
+-    std::chrono::duration<double> diff = end - start;
+-    LOG(DEBUG) << "Copied a file with MTP. Time: " << diff.count() << " s, Size: " << length <<
+-        ", Rate: " << ((double) length) / diff.count() << " bytes/s";
+-    chown(toPath, getuid(), FILE_GROUP);
+-    access_ok(toPath);
+-    return ret == -1 ? -1 : 0;
++    const int saved = errno;
++    closedir(dir);
++    errno = saved;
++    return ok;
+ }
+ 
+-void deleteRecursive(const char* path) {
+-    string pathStr(path);
+-    if (pathStr[pathStr.size()-1] != '/') {
+-        pathStr += '/';
++bool CopyAt(int from_parent, const char* from, int to_parent, const char* to, uint64_t max_size) {
++    unique_fd input(openat(from_parent, from, O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC));
++    struct stat original{};
++    if (input.get() < 0 || fstat(input.get(), &original) != 0) return false;
++    const bool directory = S_ISDIR(original.st_mode);
++    if (!directory && !S_ISREG(original.st_mode)) { errno = EOPNOTSUPP; return false; }
++    if (!directory && max_size && static_cast<uint64_t>(original.st_size) > max_size) {
++        errno = EFBIG;
++        return false;
+     }
+-
+-    DIR* dir = opendir(path);
+-    if (!dir) {
+-        PLOG(ERROR) << "opendir " << path << " failed";
+-        return;
++    if (directory && mkdirat(to_parent, to, DIR_PERM) != 0) return false;
++    unique_fd output(openat(to_parent, to, O_CLOEXEC | O_NOFOLLOW |
++                           (directory ? O_RDONLY | O_DIRECTORY : O_WRONLY | O_CREAT | O_EXCL), FILE_PERM));
++    if (output.get() < 0) {
++        if (directory) unlinkat(to_parent, to, AT_REMOVEDIR);
++        return false;
+     }
+-
+-    struct dirent* entry;
+-    while ((entry = readdir(dir))) {
+-        const char* name = entry->d_name;
+-
+-        // ignore "." and ".."
+-        if (name[0] == '.' && (name[1] == 0 || (name[1] == '.' && name[2] == 0))) {
+-            continue;
++    struct stat created{};
++    bool ok = fstat(output.get(), &created) == 0;
++    if (directory && ok) {
++        DIR* dir = fdopendir(dup(input.get()));
++        ok = dir != nullptr;
++        if (dir) {
++            for (;;) {
++                errno = 0;
++                auto* entry = readdir(dir);
++                if (!entry) { if (errno) ok = false; break; }
++                if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..")) continue;
++                if (!CopyAt(input.get(), entry->d_name, output.get(), entry->d_name, max_size)) {
++                    ok = false;
++                    break;
++                }
++            }
++            closedir(dir);
+         }
+-        string childPath = pathStr + name;
+-        int success;
+-        if (entry->d_type == DT_DIR) {
+-            deleteRecursive(childPath.c_str());
+-            success = rmdir(childPath.c_str());
+-        } else {
+-            success = unlink(childPath.c_str());
++    } else if (ok) {
++        off_t offset = 0;
++        while (offset < original.st_size) {
++            const size_t count = std::min<off_t>(FILE_COPY_SIZE, original.st_size - offset);
++            const ssize_t copied = sendfile(output.get(), input.get(), &offset, count);
++            if (copied < 0 && errno == EINTR) continue;
++            if (copied <= 0) { if (copied == 0) errno = EIO; ok = false; break; }
++        }
++        struct stat after{};
++        if (ok && (fstat(input.get(), &after) != 0 || after.st_size != original.st_size ||
++                   after.st_mtim.tv_sec != original.st_mtim.tv_sec ||
++                   after.st_mtim.tv_nsec != original.st_mtim.tv_nsec)) {
++            errno = EIO;
++            ok = false;
+         }
+-        access_ok(childPath.c_str());
+-        if (success == -1)
+-            PLOG(ERROR) << "Deleting path " << childPath << " failed";
+     }
+-    closedir(dir);
++    const struct timespec times[] = { original.st_atim, original.st_mtim };
++    if (ok && (fchown(output.get(), getuid(), FILE_GROUP) != 0 ||
++               fchmod(output.get(), directory ? DIR_PERM : FILE_PERM) != 0 ||
++               futimens(output.get(), times) != 0 || fsync(output.get()) != 0)) ok = false;
++    if (close(output.release()) != 0) ok = false;
++    if (!ok) {
++        const int saved = errno;
++        if (SameEntry(to_parent, to, created)) DeleteAt(to_parent, to);
++        errno = saved;
++    }
++    return ok;
+ }
+-
+-bool deletePath(const char* path) {
+-    struct stat statbuf;
+-    int success;
+-    if (stat(path, &statbuf) == 0) {
+-        if (S_ISDIR(statbuf.st_mode)) {
+-            // rmdir will fail if the directory is non empty, so
+-            // there is no need to keep errors from deleteRecursive
+-            deleteRecursive(path);
+-            success = rmdir(path);
+-        } else {
+-            success = unlink(path);
+-        }
+-    } else {
+-        PLOG(ERROR) << "deletePath stat failed for " << path;
+-        return false;
++} // namespace
++
++bool transferPath(const char* from, const char* to, bool copy, uint64_t max_file_size) {
++    std::string source_name, target_name;
++    auto source = OpenParent(from, source_name), target = OpenParent(to, target_name);
++    if (source.get() < 0 || target.get() < 0) return false;
++    struct stat original{};
++    if (fstatat(source.get(), source_name.c_str(), &original, AT_SYMLINK_NOFOLLOW) != 0 ||
++        (!S_ISDIR(original.st_mode) && !S_ISREG(original.st_mode))) return false;
++    if (max_file_size && !FitsLimitAt(source.get(), source_name.c_str(), max_file_size)) return false;
++    if (!copy) {
++        if (syscall(__NR_renameat2, source.get(), source_name.c_str(), target.get(), target_name.c_str(),
++                    RENAME_NOREPLACE) == 0) return fsync(target.get()) == 0 && fsync(source.get()) == 0;
++        if (errno != EXDEV) return false;
+     }
+-    if (success == -1)
+-        PLOG(ERROR) << "Deleting path " << path << " failed";
+-    access_ok(path);
+-    return success == 0;
++    if (!CopyAt(source.get(), source_name.c_str(), target.get(), target_name.c_str(), max_file_size))
++        return false;
++    // Publish/sync the complete destination before any source deletion. A
++    // failed source cleanup retains both copies and reports failure.
++    if (fsync(target.get()) != 0) return false;
++    if (!copy && (!SameEntry(source.get(), source_name.c_str(), original) ||
++                  !DeleteAt(source.get(), source_name.c_str()))) return false;
++    return copy || fsync(source.get()) == 0;
+ }
+ 
+-int renameTo(const char *oldPath, const char *newPath) {
+-    int ret = rename(oldPath, newPath);
+-    access_ok(oldPath);
+-    access_ok(newPath);
+-    return ret;
++bool deletePath(const char* path) {
++    std::string name;
++    auto parent = OpenParent(path, name);
++    return parent.get() >= 0 && DeleteAt(parent.get(), name.c_str());
+ }
+ 
+ // Calls access(2) on the path to update underlying filesystems,
+diff --git a/mtp/MtpUtils.h b/mtp/MtpUtils.h
+index 21f5df0..addf72d 100644
+--- a/mtp/MtpUtils.h
++++ b/mtp/MtpUtils.h
+@@ -31,10 +31,10 @@ bool parseDateTime(const char* dateTime, time_t& outSeconds);
+ void formatDateTime(time_t seconds, char* buffer, int bufferLength);
+ 
+ int makeFolder(const char *path);
+-int copyRecursive(const char *fromPath, const char *toPath);
+-int copyFile(const char *fromPath, const char *toPath);
++// Never replaces an existing destination. On a cross-filesystem move, a
++// complete copy is retained if deleting the source fails (returns failure).
++bool transferPath(const char* from, const char* to, bool copy, uint64_t max_file_size);
+ bool deletePath(const char* path);
+-int renameTo(const char *oldPath, const char *newPath);
+ 
+ void closeObjFd(int fd, const char *path);
+ }; // namespace android
+diff --git a/mtp/twrp/TwrpMtpDatabase.cpp b/mtp/twrp/TwrpMtpDatabase.cpp
+index 40b7d02..5502021 100644
+--- a/mtp/twrp/TwrpMtpDatabase.cpp
++++ b/mtp/twrp/TwrpMtpDatabase.cpp
+@@ -759,38 +759,25 @@ void TwrpMtpDatabase::endDeleteObject(MtpObjectHandle handle, bool succeeded) {
+     }
+ }
+ 
+-void TwrpMtpDatabase::rescanFile([[maybe_unused]] const char* path,
+-                                 [[maybe_unused]] MtpObjectHandle handle,
+-                                 [[maybe_unused]] MtpObjectFormat format) {
+-    MTPD("TwrpMtpDatabase::rescanFile not implemented yet\n");
+-}
+-
+-MtpResponseCode TwrpMtpDatabase::beginMoveObject([[maybe_unused]] MtpObjectHandle handle,
+-                                                 [[maybe_unused]] MtpObjectHandle new_parent,
+-                                                 [[maybe_unused]] MtpStorageID new_storage) {
+-    MTPD("TwrpMtpDatabase::beginMoveObject not implemented yet\n");
+-    return MTP_RESPONSE_INVALID_OBJECT_HANDLE;
+-}
+-
+-void TwrpMtpDatabase::endMoveObject([[maybe_unused]] MtpObjectHandle old_parent,
+-                                    [[maybe_unused]] MtpObjectHandle new_parent,
+-                                    [[maybe_unused]] MtpStorageID old_storage,
+-                                    [[maybe_unused]] MtpStorageID new_storage,
+-                                    [[maybe_unused]] MtpObjectHandle handle,
+-                                    [[maybe_unused]] bool succeeded) {
+-    MTPD("TwrpMtpDatabase::endMoveObject not implemented yet\n");
++void TwrpMtpDatabase::rescanFile(const char* path, MtpObjectHandle handle,
++                               [[maybe_unused]] MtpObjectFormat format) {
++    for (auto [id, storage] : storage_map_) {
++        if (storage->RescanObject(handle, path)) break;
++    }
+ }
+ 
+-MtpResponseCode TwrpMtpDatabase::beginCopyObject([[maybe_unused]] MtpObjectHandle handle,
+-                                                 [[maybe_unused]] MtpObjectHandle new_parent,
+-                                                 [[maybe_unused]] MtpStorageID new_storage) {
+-    MTPD("TwrpMtpDatabase::beginCopyObject not implemented yet\n");
++MtpResponseCode TwrpMtpDatabase::transferObject(MtpObjectHandle handle, MtpObjectHandle new_parent,
++                                              MtpStorageID new_storage, bool copy,
++                                              MtpObjectHandle& result_handle) {
++    result_handle = kInvalidObjectHandle;
++    if (handle == 0 || handle == kInvalidObjectHandle) return MTP_RESPONSE_INVALID_OBJECT_HANDLE;
++    auto destination = storage_map_.find(new_storage);
++    if (destination == storage_map_.end()) return MTP_RESPONSE_INVALID_STORAGE_ID;
++    for (auto [id, source] : storage_map_) {
++        if (source->OwnsObject(handle))
++            return source->TransferObject(handle, *destination->second, new_parent, copy, result_handle);
++    }
+     return MTP_RESPONSE_INVALID_OBJECT_HANDLE;
+ }
+ 
+-void TwrpMtpDatabase::endCopyObject([[maybe_unused]] MtpObjectHandle handle,
+-                                    [[maybe_unused]] bool succeeded) {
+-    MTPD("TwrpMtpDatabase::endCopyObject not implemented yet\n");
+-}
+-
+-}
+\ No newline at end of file
++} // namespace android
+diff --git a/mtp/twrp/TwrpMtpDatabase.hpp b/mtp/twrp/TwrpMtpDatabase.hpp
+index 8a9132c..b4d00ab 100644
+--- a/mtp/twrp/TwrpMtpDatabase.hpp
++++ b/mtp/twrp/TwrpMtpDatabase.hpp
+@@ -117,17 +117,9 @@ public:
+                     MtpObjectHandle handle,
+                     MtpObjectFormat format) override;
+ 
+-    MtpResponseCode beginMoveObject(MtpObjectHandle handle, MtpObjectHandle new_parent,
+-                                    MtpStorageID new_storage) override;
+-
+-    void endMoveObject(MtpObjectHandle old_parent, MtpObjectHandle new_parent,
+-                       MtpStorageID old_storage, MtpStorageID new_storage,
+-                       MtpObjectHandle handle, bool succeeded) override;
+-
+-    MtpResponseCode beginCopyObject(MtpObjectHandle handle, MtpObjectHandle new_parent,
+-                                    MtpStorageID new_storage) override;
+-
+-    void endCopyObject(MtpObjectHandle handle, bool succeeded) override;
++    MtpResponseCode transferObject(MtpObjectHandle handle, MtpObjectHandle new_parent,
++                                  MtpStorageID new_storage, bool copy,
++                                  MtpObjectHandle& result_handle) override;
+ };
+ }
+ #endif
+diff --git a/mtp/twrp/TwrpMtpStorage.cpp b/mtp/twrp/TwrpMtpStorage.cpp
+index ea40dd6..2781b3f 100644
+--- a/mtp/twrp/TwrpMtpStorage.cpp
++++ b/mtp/twrp/TwrpMtpStorage.cpp
+@@ -41,12 +41,14 @@
+ #include <vector>
+ 
+ #include "../MtpDebug.h"
++#include "../MtpUtils.h"
++#include <set>
+ 
+ namespace fs = std::filesystem;
+ 
+ namespace android {
+ namespace {
+-constexpr uint32_t kWatchFlags = IN_CREATE | IN_DELETE | IN_MOVE | IN_MODIFY;
++constexpr uint32_t kWatchFlags = IN_CREATE | IN_DELETE | IN_MOVE | IN_MODIFY | IN_ATTRIB | IN_CLOSE_WRITE | IN_DELETE_SELF | IN_MOVE_SELF;
+ 
+ const MtpPropertyEntry* FindProperty(const MtpEntry* entry, MtpPropertyCode property) {
+     for (const auto& p : entry->properties) {
+@@ -78,6 +80,9 @@ void AddProperties(MtpEntry* entry, const std::string& path, const MtpStorageID
+     // The properties are a complete snapshot of the entry, so a re-read of the
+     // same entry (re-sent object, renamed object) replaces them instead of
+     // appending a second, stale set.
++    const auto* previous_uid = FindProperty(entry, MTP_PROPERTY_PERSISTENT_UID);
++    const uint64_t puid = previous_uid ? previous_uid->value_int :
++        (static_cast<uint64_t>(storageID) << 32) + entry->handle;
+     entry->properties.clear();
+     struct stat st{};
+     int mFormat = MTP_FORMAT_UNDEFINED; // file
+@@ -88,7 +93,6 @@ void AddProperties(MtpEntry* entry, const std::string& path, const MtpStorageID
+         if (S_ISDIR(st.st_mode)) mFormat = MTP_FORMAT_ASSOCIATION; // folder
+     }
+ 
+-    const uint64_t puid = (static_cast<uint64_t>(storageID) << 32) + entry->handle;
+ 
+     entry->properties.push_back({MTP_PROPERTY_STORAGE_ID, MTP_TYPE_UINT32,
+                                  static_cast<uint64_t>(storageID), ""});
+@@ -182,6 +186,163 @@ TwrpMtpStorage::~TwrpMtpStorage() {
+     // root_ destructor handles all tree cleanup automatically via unique_ptr cascade
+ }
+ 
++bool TwrpMtpStorage::OwnsObject(MtpObjectHandle handle) {
++    const std::lock_guard guard(tree_mutex_);
++    return handle != 0 && node_index_.contains(handle);
++}
++
++void TwrpMtpStorage::ForgetSubtreeIndex(const MtpEntry* entry) {
++    std::vector<MtpObjectHandle> handles;
++    CollectSubtreeHandles(entry, handles);
++    for (auto it = inotify_map_.begin(); it != inotify_map_.end();) {
++        if (std::ranges::find(handles, it->second) == handles.end()) { ++it; continue; }
++        inotify_rm_watch(inotify_fd_, it->first);
++        it = inotify_map_.erase(it);
++    }
++    for (auto handle : handles) { node_index_.erase(handle); dir_index_.erase(handle); }
++}
++
++void TwrpMtpStorage::IndexMovedTree(MtpEntry* entry) {
++    node_index_[entry->handle] = entry;
++    AddProperties(entry, GetNodePath(entry), getStorageID());
++    if (entry->is_dir) {
++        dir_index_[entry->handle] = entry;
++        if (entry->already_read) AddInotify(entry);
++        for (auto& [handle, child] : entry->children) IndexMovedTree(child.get());
++    }
++}
++
++MtpResponseCode TwrpMtpStorage::TransferObject(MtpObjectHandle handle, TwrpMtpStorage& destination,
++                                               MtpObjectHandle parent, bool copy,
++                                               MtpObjectHandle& result_handle) {
++    std::vector<PendingEvent> source_events, destination_events;
++    MtpResponseCode result = MTP_RESPONSE_OK;
++    {
++        // The server serializes requests/storage removals. Lock both observer
++        // trees for the entire filesystem operation so no intermediate event
++        // can delete the source handle or publish a half-copied subtree.
++        std::unique_lock source_lock(tree_mutex_, std::defer_lock);
++        std::unique_lock destination_lock(destination.tree_mutex_, std::defer_lock);
++        if (this == &destination) source_lock.lock();
++        else std::lock(source_lock, destination_lock);
++        auto* entry = FindNode(handle);
++        if (!entry || handle == 0) return MTP_RESPONSE_INVALID_OBJECT_HANDLE;
++        auto* target_parent = destination.FindTree(parent);
++        if (!target_parent) return MTP_RESPONSE_INVALID_PARENT_OBJECT;
++        auto* old_parent = FindNode(entry->parent);
++        if (!old_parent) return MTP_RESPONSE_INVALID_OBJECT_HANDLE;
++        if (!copy && this == &destination && target_parent == old_parent) {
++            result_handle = handle;
++            return MTP_RESPONSE_OK;
++        }
++        const auto source_path = fs::path(GetNodePath(entry)).lexically_normal();
++        const auto target_path = (fs::path(destination.GetNodePath(target_parent)) / entry->name).lexically_normal();
++        // Also catches overlapping storage roots, not just ancestry in one tree.
++        const auto relative = target_path.lexically_relative(source_path);
++        if (target_path == source_path || (entry->is_dir && !relative.empty() && *relative.begin() != ".."))
++            return MTP_RESPONSE_INVALID_PARENT_OBJECT;
++        std::error_code ec;
++        const auto source_type = fs::symlink_status(source_path, ec);
++        if (ec || (entry->is_dir ? !fs::is_directory(source_type) : !fs::is_regular_file(source_type)))
++            return MTP_RESPONSE_INVALID_OBJECT_HANDLE;
++        const auto target_type = fs::symlink_status(target_path, ec);
++        if ((!ec && target_type.type() != fs::file_type::not_found) || (ec && ec.value() != ENOENT))
++            return MTP_RESPONSE_ACCESS_DENIED;
++        if (FindEntryByName(target_parent, entry->name)) return MTP_RESPONSE_ACCESS_DENIED;
++        const auto name = entry->name;
++        if (!transferPath(source_path.c_str(), target_path.c_str(), copy, destination.getMaxFileSize())) {
++            const int error = errno;
++            MTPE("MTP transfer failed from %s to %s: %s\n", source_path.c_str(), target_path.c_str(), strerror(error));
++            // A cross-device move can leave a complete destination and a
++            // partially removed source. Expose reality, retaining either copy.
++            ReconcileDirectory(old_parent, source_events);
++            destination.ReconcileDirectory(target_parent, destination_events);
++            result = error == ENOSPC ? MTP_RESPONSE_STORAGE_FULL :
++                     error == EFBIG ? MTP_RESPONSE_OBJECT_TOO_LARGE : MTP_RESPONSE_GENERAL_ERROR;
++        } else if (copy) {
++            auto* added = destination.AddNewNode(entry->is_dir, target_parent, name);
++            AddProperties(added, target_path, destination.getStorageID());
++            result_handle = added->handle;
++            destination_events.push_back({MTP_EVENT_OBJECT_ADDED, added->handle});
++        } else {
++            ForgetSubtreeIndex(entry);
++            auto owned = std::move(old_parent->children.at(handle));
++            old_parent->children.erase(handle);
++            owned->parent = target_parent->handle;
++            auto* moved = owned.get();
++            target_parent->children.emplace(handle, std::move(owned));
++            destination.IndexMovedTree(moved);
++            result_handle = handle;
++            destination_events.push_back({MTP_EVENT_OBJECT_INFO_CHANGED, handle});
++        }
++    }
++    SendEvents(server_, source_events);
++    SendEvents(destination.server_, destination_events);
++    return result;
++}
++
++int TwrpMtpStorage::ReconcileDirectory(MtpEntry* dir, std::vector<PendingEvent>& events) {
++    const auto path = fs::path(GetNodePath(dir));
++    std::error_code ec;
++    const auto status = fs::symlink_status(path, ec);
++    std::map<std::string, bool> observed;
++    if (!ec && fs::is_directory(status)) {
++        fs::directory_iterator iterator(path, ec), end;
++        while (!ec && iterator != end) {
++            const auto child_status = iterator->symlink_status(ec);
++            if (ec) break;
++            if (fs::is_directory(child_status) || fs::is_regular_file(child_status))
++                observed.emplace(iterator->path().filename().string(), fs::is_directory(child_status));
++            iterator.increment(ec);
++        }
++        if (ec) return -1; // Never erase a tree after a partial failed enumeration.
++    } else if (ec && ec.value() != ENOENT) {
++        return -1;
++    }
++    std::vector<MtpObjectHandle> remove;
++    for (auto& [handle, child] : dir->children) {
++        auto found = observed.find(child->name);
++        if (handle != handle_currently_sending_ &&
++            (found == observed.end() || found->second != child->is_dir)) remove.push_back(handle);
++    }
++    for (auto handle : remove) {
++        std::vector<MtpObjectHandle> gone;
++        CollectSubtreeHandles(FindNode(handle), gone);
++        DeleteFile(handle);
++        for (auto id : gone) events.push_back({MTP_EVENT_OBJECT_REMOVED, id});
++    }
++    for (auto [name, is_dir] : observed) {
++        auto* entry = FindEntryByName(dir, name);
++        const bool added = entry == nullptr;
++        if (added) entry = AddNewNode(is_dir, dir, name);
++        if (entry->handle == handle_currently_sending_) continue;
++        const auto before = entry->properties;
++        AddProperties(entry, path / name, getStorageID());
++        if (added || before != entry->properties)
++            events.push_back({static_cast<MtpEventCode>(added ? MTP_EVENT_OBJECT_ADDED : MTP_EVENT_OBJECT_INFO_CHANGED), entry->handle});
++        if (is_dir && entry->already_read) ReconcileDirectory(entry, events);
++    }
++    dir->already_read = !ec && fs::is_directory(status);
++    if (dir->already_read) AddInotify(dir);
++    return dir->already_read ? 0 : -1;
++}
++
++bool TwrpMtpStorage::RescanObject(MtpObjectHandle handle, const char* path) {
++    std::vector<PendingEvent> events;
++    {
++        const std::lock_guard guard(tree_mutex_);
++        auto* entry = FindNode(handle);
++        if (!entry || handle == 0) return false;
++        if (!path || fs::path(path).lexically_normal() != fs::path(GetNodePath(entry)).lexically_normal()) return false;
++        // Scan the containing directory to handle disappearance or type changes
++        // as well as metadata changes. Preserve all unchanged object handles.
++        auto* parent = FindNode(entry->parent);
++        if (parent) ReconcileDirectory(parent, events);
++    }
++    SendEvents(server_, events);
++    return true;
++}
++
+ int TwrpMtpStorage::RenameObject(const MtpObjectHandle handle, const std::string& new_name) {
+     MTPD("TwrpMtpStorage::RenameObject, handle: %u, new name: '%s'\n", handle, new_name.c_str());
+     // The inotify thread reports this same rename as an IN_MOVED_FROM/IN_MOVED_TO
+@@ -506,18 +667,11 @@ int TwrpMtpStorage::InotifyLoop() {
+             size_t offset = 0;
+             while (offset < events.size() && !inotify_thread_kill_) {
+                 const auto* event = reinterpret_cast<const inotify_event*>(events.data() + offset);
+-                // An event that is about the watch itself - IN_IGNORED,
+-                // IN_DELETE_SELF, IN_MOVE_SELF, IN_UNMOUNT, IN_Q_OVERFLOW - has no
+-                // name, so the len test below keeps it out of HandleInotifyEvent().
+-                // Of those, only the overflow needs reporting: it means events were
+-                // dropped and what the tree shows may be out of date.
+-                if ((event->mask & IN_Q_OVERFLOW) != 0) {
+-                    MTPE("inotify queue overflowed, events were lost\n");
+-                } else if (event->len != 0) {
+-                    MTPD("inotify event: wd: %i, mask: %x, name: %s\n", event->wd, event->mask,
+-                         event->name);
+-                    HandleInotifyEvent(event);
++                if (events.size() - offset < kEventSize || event->len > events.size() - offset - kEventSize) {
++                    MTPE("Truncated inotify event\n");
++                    break;
+                 }
++                HandleInotifyEvent(event);
+                 offset += kEventSize + event->len;
+             }
+         }
+@@ -539,6 +693,11 @@ void TwrpMtpStorage::HandleInotifyEvent(const inotify_event* event) {
+ 
+ void TwrpMtpStorage::HandleInotifyEventLocked(const inotify_event* event,
+                                               std::vector<PendingEvent>& events) {
++    if (event->mask & IN_Q_OVERFLOW) {
++        MTPE("MTP inotify overflow: reconciling cached directories\n");
++        ReconcileDirectory(&root_, events);
++        return;
++    }
+     const auto it = inotify_map_.find(event->wd);
+     if (it == inotify_map_.end()) {
+         MTPE("unable to locate inotify_wd: %i\n", event->wd);
+@@ -553,6 +712,12 @@ void TwrpMtpStorage::HandleInotifyEventLocked(const inotify_event* event,
+     }
+     MTPD("inotify dir: %p '%s'\n", static_cast<void*>(dir), dir->name.c_str());
+ 
++    if (event->len == 0) {
++        if (event->mask & IN_IGNORED) inotify_map_.erase(event->wd);
++        if (event->mask & (IN_DELETE_SELF | IN_MOVE_SELF | IN_UNMOUNT | IN_IGNORED))
++            ReconcileDirectory(dir, events);
++        return;
++    }
+     // fs::path::filename replaces POSIX basename()
+     const std::string event_name = fs::path(event->name).filename().string();
+     const auto mask = event->mask;
+@@ -614,32 +779,11 @@ void TwrpMtpStorage::HandleInotifyEventLocked(const inotify_event* event,
+         } else {
+             MTPD("inotify already removed.\n");
+         }
+-    } else if (mask & IN_MODIFY) {
+-        MTPD("inotify item %s modified.\n", event->name);
+-        if (entry != nullptr) {
+-            const MtpPropertyEntry* size_prop = FindProperty(entry, MTP_PROPERTY_OBJECT_SIZE);
+-            const uint64_t original_size = size_prop != nullptr ? size_prop->value_int : 0;
+-            std::error_code ec;
+-            uint64_t new_size = 0;
+-            if (const auto sz = fs::file_size(GetNodePath(entry), ec); !ec) {
+-                new_size = static_cast<uint64_t>(sz);
+-            }
+-            if (original_size != new_size) {
+-                MTPD("size changed from %llu to %llu on mtp_id: %u\n", original_size, new_size,
+-                     entry->handle);
+-                UpdateProperty(entry, MTP_PROPERTY_OBJECT_SIZE, new_size, "", MTP_TYPE_UINT64);
+-                if (send_events_) events.push_back({MTP_EVENT_OBJECT_PROP_CHANGED, entry->handle});
+-            }
+-        } else {
+-            MTPE("inotify modified item not found\n");
++    } else if (mask & (IN_MODIFY | IN_CLOSE_WRITE | IN_ATTRIB)) {
++        if (entry && entry->handle != handle_currently_sending_) {
++            AddProperties(entry, GetNodePath(entry), getStorageID());
++            if (send_events_) events.push_back({MTP_EVENT_OBJECT_INFO_CHANGED, entry->handle});
+         }
+-    } else if (mask & (IN_DELETE_SELF | IN_MOVE_SELF)) {
+-        // TODO: is this always already handled by IN_DELETE for the parent dir?
+-        // Yes, for every entry but the storage root: neither of these two carries
+-        // a name, so InotifyLoop never forwards them here, and a directory that
+-        // goes away is always reported by its parent's IN_DELETE / IN_MOVED_FROM.
+-        // That is the same set of events MtpStorageManager watches: its observer
+-        // mask has no DELETE_SELF and no MOVE_SELF either.
+     }
+ }
+ 
+@@ -788,19 +932,18 @@ int TwrpMtpStorage::GetObjectInfo(const MtpObjectHandle handle, MtpObjectInfo& i
+     const MtpEntry* entry = FindNode(handle);
+     if (!entry) return -1;
+ 
+-    // lstat() supplies only the size and the modification time; the type comes
+-    // from the tree, which is also what GetObjectFilePath reports, so the two
+-    // answers for one object cannot disagree once its file is gone.
++    // Do not report a vanished/replaced object as an empty regular file.
+     struct stat st{};
+     const std::string path = GetNodePath(entry);
+     if (lstat(path.c_str(), &st) != 0) {
+         MTPD("GetObjectInfo: lstat '%s' failed: %s\n", path.c_str(), strerror(errno));
++        return -1;
+     }
++    if (entry->is_dir ? !S_ISDIR(st.st_mode) : !S_ISREG(st.st_mode)) return -1;
+ 
+     info.mStorageID = getStorageID();
+     info.mParent = entry->parent;
+     info.mFormat = entry->is_dir ? MTP_FORMAT_ASSOCIATION : MTP_FORMAT_UNDEFINED;
+-    // st stays zeroed when lstat() fails, so a vanished file reports size 0.
+     const uint64_t size = st.st_size > 0 ? st.st_size : 0;
+     info.mCompressedSize = static_cast<uint32_t>(std::min<uint64_t>(size, 0xFFFFFFFF));
+     info.mDateModified = st.st_mtime;
+@@ -823,9 +966,10 @@ int TwrpMtpStorage::GetObjectFilePath(const MtpObjectHandle handle, MtpStringBuf
+     const MtpEntry* entry = FindNode(handle);
+     if (!entry) return -1;
+ 
+-    std::error_code ec;
+-    const auto size = fs::file_size(GetNodePath(entry), ec);
+-    out_file_length = ec ? 0 : static_cast<int64_t>(size);
++    struct stat st{};
++    if (lstat(GetNodePath(entry).c_str(), &st) != 0 ||
++        (entry->is_dir ? !S_ISDIR(st.st_mode) : !S_ISREG(st.st_mode))) return -1;
++    out_file_length = entry->is_dir ? 0 : st.st_size;
+     out_file_path.set(GetNodePath(entry).c_str());
+     MTPD("outFilePath: %s\n", static_cast<const char*>(out_file_path));
+     out_format = entry->is_dir ? MTP_FORMAT_ASSOCIATION : MTP_FORMAT_UNDEFINED;
+@@ -972,4 +1116,4 @@ void TwrpMtpStorage::QueryChildProperties(std::vector<PropEntry>& results, const
+         }
+     }
+ }
+-}
+\ No newline at end of file
++}
+diff --git a/mtp/twrp/TwrpMtpStorage.hpp b/mtp/twrp/TwrpMtpStorage.hpp
+index faf4b61..946942d 100644
+--- a/mtp/twrp/TwrpMtpStorage.hpp
++++ b/mtp/twrp/TwrpMtpStorage.hpp
+@@ -49,6 +49,7 @@ struct MtpPropertyEntry {
+     MtpDataType data_type = 0;
+     uint64_t value_int = 0;
+     std::string value_str;
++    bool operator==(const MtpPropertyEntry&) const = default;
+ };
+ 
+ // A filesystem entry (file or directory).  Directory entries own their
+@@ -106,6 +107,10 @@ private:
+     void HandleInotifyEventLocked(const inotify_event* event, std::vector<PendingEvent>& events);
+     void StartInotifyThread();
+     int InotifyLoop();
++    int ReconcileDirectory(MtpEntry* dir, std::vector<PendingEvent>& events);
++    void IndexMovedTree(MtpEntry* entry);
++    void ForgetSubtreeIndex(const MtpEntry* entry);
++
+ 
+ public:
+     TwrpMtpStorage(MtpStorageID id, const char* file_path,
+@@ -113,6 +118,10 @@ public:
+                    MtpServer* ref_server);
+     ~TwrpMtpStorage() override;
+ 
++    bool OwnsObject(MtpObjectHandle handle);
++    bool RescanObject(MtpObjectHandle handle, const char* path);
++    MtpResponseCode TransferObject(MtpObjectHandle handle, TwrpMtpStorage& destination,
++                                  MtpObjectHandle parent, bool copy, MtpObjectHandle& result_handle);
+     int RenameObject(MtpObjectHandle handle, const std::string& new_name);
+     MtpObjectHandle BeginSendObject(const char* path, MtpObjectFormat format,
+                                     MtpObjectHandle parent, uint64_t size, time_t modified);

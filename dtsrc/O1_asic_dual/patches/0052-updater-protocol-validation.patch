@@ -1,0 +1,135 @@
+--- a/twrpinstall/twinstall.cpp
++++ b/twrpinstall/twinstall.cpp
+@@ -23,9 +23,11 @@
+ #endif
+ 
+ #include <ctype.h>
++#include <cmath>
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <limits.h>
++#include <signal.h>
+ #include <sys/mman.h>
+ #include <sys/stat.h>
+ #include <sys/wait.h>
+@@ -118,11 +120,36 @@
+ }
+ 
+ 
++static bool ParseUpdaterFraction(const char* value, float* result) {
++	if (!value || !*value) return false;
++	char* end = nullptr;
++	errno = 0;
++	const float parsed = strtof(value, &end);
++	if (errno == ERANGE || end == value || *end != '\0' || !std::isfinite(parsed) ||
++		parsed < 0 || parsed > 1) return false;
++	*result = parsed;
++	return true;
++}
++
++static bool ParseUpdaterSeconds(const char* value, int* result) {
++	if (!value || !*value) return false;
++	char* end = nullptr;
++	errno = 0;
++	const long parsed = strtol(value, &end, 10);
++	if (errno == ERANGE || end == value || *end != '\0' || parsed < 0 || parsed > INT_MAX)
++		return false;
++	*result = static_cast<int>(parsed);
++	return true;
++}
++
+ static int Run_Update_Binary(const char *path, int* wipe_cache, zip_type ztype) {
+ 	int ret_val, pipe_fd[2], status, zip_verify;
+ 	char buffer[1024];
+ 	FILE* child_data;
+-	pipe(pipe_fd);
++	if (pipe(pipe_fd) != 0) {
++		LOGERR("Unable to create updater pipe: %s\n", strerror(errno));
++		return INSTALL_ERROR;
++	}
+ 
+ 	std::vector<std::string> args;
+     if (ztype == UPDATE_BINARY_ZIP_TYPE) {
+@@ -146,6 +173,12 @@
+ 		chr_args[i] = args[i].c_str();
+ 
+ 	pid_t pid = fork();
++	if (pid < 0) {
++		LOGERR("Unable to start updater: %s\n", strerror(errno));
++		close(pipe_fd[0]);
++		close(pipe_fd[1]);
++		return INSTALL_ERROR;
++	}
+ 	if (pid == 0) {
+ 		close(pipe_fd[0]);
+ 		execve(chr_args[0], const_cast<char**>(chr_args), environ);
+@@ -158,6 +191,14 @@
+ 
+ 	DataManager::GetValue(TW_SIGNED_ZIP_VERIFY_VAR, zip_verify);
+ 	child_data = fdopen(pipe_fd[0], "r");
++	if (!child_data) {
++		LOGERR("Unable to open updater output stream: %s\n", strerror(errno));
++		close(pipe_fd[0]);
++		kill(pid, SIGKILL);
++		TWFunc::WaitForChild(pid, &status, "Updater");
++		return INSTALL_ERROR;
++	}
++	bool protocol_error = false;
+ 	while (fgets(buffer, sizeof(buffer), child_data) != NULL) {
+ 		char* command = strtok(buffer, " \n");
+ 		if (command == NULL) {
+@@ -166,8 +207,14 @@
+ 			char* fraction_char = strtok(NULL, " \n");
+ 			char* seconds_char = strtok(NULL, " \n");
+ 
+-			float fraction_float = strtof(fraction_char, NULL);
+-			int seconds_float = strtol(seconds_char, NULL, 10);
++			float fraction_float;
++			int seconds_float;
++			if (!ParseUpdaterFraction(fraction_char, &fraction_float) ||
++				!ParseUpdaterSeconds(seconds_char, &seconds_float)) {
++				LOGERR("Invalid updater progress command\n");
++				protocol_error = true;
++				continue;
++			}
+ 
+ 			if (zip_verify)
+ 				DataManager::ShowProgress(fraction_float * (1 - VERIFICATION_PROGRESS_FRACTION), seconds_float);
+@@ -175,7 +222,12 @@
+ 				DataManager::ShowProgress(fraction_float, seconds_float);
+ 		} else if (strcmp(command, "set_progress") == 0) {
+ 			char* fraction_char = strtok(NULL, " \n");
+-			float fraction_float = strtof(fraction_char, NULL);
++			float fraction_float;
++			if (!ParseUpdaterFraction(fraction_char, &fraction_float)) {
++				LOGERR("Invalid updater set_progress command\n");
++				protocol_error = true;
++				continue;
++			}
+ 			DataManager::SetProgress(fraction_float, true);
+ 		} else if (strcmp(command, "ui_print") == 0) {
+ 			char* display_value = strtok(NULL, "\n");
+@@ -189,15 +241,20 @@
+ 		} else if (strcmp(command, "clear_display") == 0) {
+ 			// Do nothing, not supported by TWRP
+ 		} else if (strcmp(command, "log") == 0) {
+-			printf("%s\n", strtok(NULL, "\n"));
++			const char* message = strtok(NULL, "\n");
++			printf("%s\n", message ? message : "");
+ 		} else {
+ 			LOGERR("unknown command [%s]\n", command);
+ 		}
+ 	}
+-	fclose(child_data);
++	if (ferror(child_data)) {
++		LOGERR("Unable to read updater output\n");
++		protocol_error = true;
++	}
++	if (fclose(child_data) != 0) protocol_error = true;
+ 
+ 	int waitrc = TWFunc::WaitForChild(pid, &status, "Updater");
+-	if (waitrc != 0)
++	if (waitrc != 0 || protocol_error)
+ 		return INSTALL_ERROR;
+ 
+ 	return INSTALL_SUCCESS;

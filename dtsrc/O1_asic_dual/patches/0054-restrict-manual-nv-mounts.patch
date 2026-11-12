@@ -1,0 +1,57 @@
+--- a/gui2/backend/twrp_mount_backend.cpp
++++ b/gui2/backend/twrp_mount_backend.cpp
+@@ -135,15 +135,25 @@
+ 
+   std::vector<mount_target> result;
+   result.reserve(list.size());
+-  for (const PartitionList& entry : list)
++  for (const PartitionList& entry : list) {
++    if (is_restricted_mount_path(entry.mount_point)) continue;
+     result.push_back({ is_otg_path(entry.mount_point) ? otg_name(entry.mount_point, list) :
+                        entry.display_name, entry.mount_point, entry.selected });
++  }
+   return result;
+ }
+ 
+ // GUIPartitionList::NotifySelect for the "mount" list.
+ bool twrp_mount_backend::set_mounted(const std::string& mount_point, bool mounted) {
+   twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  // Reject stale/manual requests as well as filtering the visible list. Check
++  // the resolved partition too, so aliases cannot expose an internal NV target.
++  const TWPartition* target = PartitionManager.FindPartitionByPath(mount_point);
++  if (is_restricted_mount_path(mount_point) ||
++      (target && is_restricted_mount_path(target->mount_point_))) {
++    LOGERR("Manual mount changes are disabled for NV/protection partitions\n");
++    return false;
++  }
+   // Publish the actual state before the GUI consumes the worker result.
+   const auto publish = android::base::make_scope_guard([] {
+     PartitionManager.RefreshPartitionListSnapshots();
+--- a/gui2/backend/mount_backend.h
++++ b/gui2/backend/mount_backend.h
+@@ -2,9 +2,25 @@
+ #define GUI2_BACKEND_MOUNT_BACKEND_H
+ 
+ #include <string>
++#include <filesystem>
+ #include <vector>
+ 
+ namespace gui2_backend {
++
++// Internal provisioning/NV filesystems are not manual GUI mount targets.
++// Keep their fstab/core access for device services and explicit maintenance.
++inline bool is_restricted_mount_path(const std::string& path) {
++  if (path.empty()) return false;
++  const auto normalized = std::filesystem::path(path.front() == '/' ? path : "/" + path)
++                              .lexically_normal().string();
++  for (const auto* root : {"/nvram", "/proinfo", "/nvdata", "/nvcfg", "/protect_f", "/protect_s",
++                           "/mnt/vendor/nvram", "/mnt/vendor/proinfo", "/mnt/vendor/nvdata",
++                           "/mnt/vendor/nvcfg", "/mnt/vendor/protect_f", "/mnt/vendor/protect_s"}) {
++    const std::string base(root);
++    if (normalized == base || normalized.starts_with(base + "/")) return true;
++  }
++  return false;
++}
+ 
+ inline bool is_otg_path(const std::string& path) {
+   for (const auto* root : {"/usbotg", "/usb-otg", "/usb_otg", "/storage/usbotg"}) {

@@ -1,0 +1,11 @@
+# Root-level boot HAL rc was not imported by recovery init.
+# Register the existing service so BootControlClient can resolve its manifest.
+on fs
+    start vendor.boot-xring
+
+service vendor.boot-xring /system/bin/hw/android.hardware.boot-service.xring.recovery
+    class early_hal
+    user root
+    group root
+    seclabel u:r:recovery:s0
+    interface aidl android.hardware.boot.IBootControl/default

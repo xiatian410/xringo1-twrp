@@ -1,0 +1,62 @@
+--- a/gui2/components/check_row.cpp
++++ b/gui2/components/check_row.cpp
+@@ -3,6 +3,7 @@
+ #include <algorithm>
+ 
+ #include "core/ui_helpers.h"
++#include "core/ui_event_guard.h"
+ 
+ namespace gui2_components {
+ 
+@@ -11,6 +12,27 @@
+ int control_size(const gui2_core::ui_metrics& metrics) {
+   const int header_height = std::max(1, metrics.text_font->line_height);
+   return std::clamp(header_height * 3 / 2, gui2_core::ui_px(64), gui2_core::ui_px(88));
++}
++
++void row_click_cb(lv_event_t* event) {
++  if (!gui2_core::accept_click(event, false)) return;
++  auto* toggle = static_cast<lv_obj_t*>(lv_event_get_user_data(event));
++  if (toggle == nullptr || lv_obj_has_state(toggle, LV_STATE_DISABLED)) return;
++  if (lv_obj_has_state(toggle, LV_STATE_CHECKED))
++    lv_obj_remove_state(toggle, LV_STATE_CHECKED);
++  else
++    lv_obj_add_state(toggle, LV_STATE_CHECKED);
++  // Keep the original control as the business callback target, including its
++  // rollback on failed persistence. The row owns one hit area for both parts.
++  lv_obj_send_event(toggle, LV_EVENT_VALUE_CHANGED, nullptr);
++}
++
++void bind_row(lv_obj_t* card, lv_obj_t* toggle) {
++  lv_obj_remove_flag(toggle, LV_OBJ_FLAG_CLICKABLE);
++  lv_obj_remove_flag(toggle, LV_OBJ_FLAG_CHECKABLE);
++  lv_obj_set_clickable(card, true);
++  gui2_core::add_press_cancel_guard(card);
++  lv_obj_add_event_cb(card, row_click_cb, LV_EVENT_CLICKED, toggle);
+ }
+ 
+ // Keeps the label and control centred when a grid row stretches the card.
+@@ -50,6 +72,7 @@
+ 
+   lv_obj_t* text = lv_label_create(card);
+   lv_label_set_text(text, label == nullptr ? "" : label);
++  lv_obj_set_clickable(text, false);
+   lv_label_set_long_mode(text, LV_LABEL_LONG_WRAP);
+   lv_obj_set_size(text, text_width, text_height);
+   lv_obj_set_pos(text, side_padding, (row_height - text_height) / 2);
+@@ -103,6 +126,7 @@
+   if (checked) lv_obj_add_state(toggle, LV_STATE_CHECKED);
+   if (event_callback != nullptr)
+     lv_obj_add_event_cb(toggle, event_callback, LV_EVENT_VALUE_CHANGED, user_data);
++  bind_row(card, toggle);
+   return toggle;
+ }
+ 
+@@ -141,6 +165,7 @@
+   if (checked) lv_obj_add_state(toggle, LV_STATE_CHECKED);
+   if (event_callback != nullptr)
+     lv_obj_add_event_cb(toggle, event_callback, LV_EVENT_VALUE_CHANGED, user_data);
++  bind_row(card, toggle);
+   return toggle;
+ }
+ 

@@ -1,0 +1,54 @@
+# MTP 对象数据库与会话适配
+
+日期：2026-11-11。补丁：[0021-mtp-object-lifecycle.patch](../dtsrc/O1_asic_dual/0021-mtp-object-lifecycle.patch)。当前候选和哈希见[模拟报告](../simulation-report.md)。本组只运行主机夹具，没有连接手机。
+
+## 修正内容
+
+| 原行为 | 当前行为 |
+|---|---|
+| 移除存储只删除 server 列表项，数据库与目录监视仍保留 | 同步撤销数据库、对象句柄和监视线程；空存储返回空指针，重复 ID 和无效根目录不发布 |
+| 全存储查询只返回首个存储；递归属性查询遗漏尚未展开的子目录 | 合并各存储结果，递归加载子目录，落实目录/普通文件格式过滤；depth=1 包含对象自身和直接子项 |
+| 删除前先删除数据库记录，文件系统删除失败后原文件失去句柄 | 先验证句柄，仅在删除成功后移除记录 |
+| 重命名可覆盖已有目标，两个句柄随后指向同一文件 | 使用 renameat2(RENAME_NOREPLACE) 拒绝冲突；拒绝根目录、空名、点目录和带路径分隔符的名字 |
+| USB 断线后会话状态和待上传对象保留 | 清理会话、未完成上传预约和编辑状态，使新会话能够重新打开 |
+| 多个目录监视线程复用同一个事件包 | 每次创建独立事件包，并串行发送；会话开关和事务编号使用原子状态 |
+| 上传初始数据短写、中断、长度不符或同步失败可能误报成功 | 累计短写、重试 EINTR，检查包类型/操作/事务、实际文件长度及 fsync；失败进入清理路径 |
+| 根目录上传绕过父路径核对；目录创建失败保留预约节点 | 所有父句柄都核对路径；文件和目录失败后移除不存在对象的预约 |
+| 初次扫描及目录事件把符号链接、FIFO 等当作普通对象 | 只发布目录和普通文件；部分读取偏移超过 EOF 时拒绝，避免剩余长度下溢 |
+
+枚举、格式和深度语义对照本地 AOSP `frameworks/base/media/java/android/mtp/MtpStorageManager.java` 与 `MtpDatabase.java`；两份参考文件哈希记录在测试报告。普通文件当前仍使用通用格式，不据扩展名推断全部媒体类型。
+
+## 实际执行与结果
+
+[测试驱动](../tests/mtp_objects_test.py)编译 14 份生产 C++ 源码，包含 MtpServer 请求分发、数据包编解码、TwrpMtpDatabase 和 TwrpMtpStorage。每个场景在独立临时 chroot 中使用真实文件、inotify 和线程；USB 收发、属性和 Android 日志接口由主机替身提供。
+
+[42 项最终报告](../logs/mtp-objects.json)全部通过，[同一测试的旧源码对照](../logs/mtp-objects-before.json)有 28 项失败。失败数包含同一缺陷的多个场景，不能解读为 28 个独立硬件故障。
+
+- 枚举：根目录、递归、多个存储、数量、属性递归、格式过滤和 depth=1。
+- 文件往返：上传下载、60,000 字节跨初始包与后续数据传输、目录上传、部分读取越界。
+- 失败处理：放弃上传、断线、ENOSPC、声明长度不符、后端假成功短文件、短写、EINTR、零写、fsync 失败、mkdir 失败。
+- 生命周期：成功/失败删除、成功/冲突重命名、根目录和点名称拒绝、父目录不匹配、移除/重新添加存储、空存储、重复 ID、根目录缺失、新会话重连。
+- 外部变化：新建/修改/删除、子目录删除、初次及后续发现符号链接/FIFO、6 个线程共 3,000 条对象事件的完整性。
+
+ASan/UBSan 启用；LSan 因私有 chroot 中无法检查 `/proc` 而关闭，本组不证明无内存泄漏。Android ARM64 编译与镜像内共享库一致性另行检查，主机通过不替代目标平台编译。首次目标编译发现有符号长度比较警告，已在确认长度非负后转换为 size_t，保留[失败日志](../logs/build-unified-mtp-objects-sign-compare-failure.log)。
+
+复现：
+
+```bash
+python3 tests/mtp_objects_test.py
+python3 tests/mtp_objects_test.py --source backups/mtp-objects-pre-fix --report logs/mtp-objects-before.json
+```
+
+第二条为负向对照，预期非零。写入只发生在本次创建的私有目录内。
+
+## 使用与边界
+
+内部媒体完成解密和挂载后，从挂载/存储页面启用 MTP；未解密的媒体不能作为可访问目录发布。实际入口与其他功能见[使用说明](../FEATURE-USAGE.md)，此前 native/compat FunctionFS 传输验证见[MTP 传输适配](MTP-ADAPTATION.md)。
+
+本组没有执行 Android init/configfs、物理 USB 或 Windows 枚举。内存 USB 对端在发送时不阻塞，不能证明真实事件端点阻塞时的移除/关闭一定有界；后续 [事件生命周期](MTP-EVENTS-ADAPTATION.md)已提供独立生产传输回放，实际 UDC 仍为 U。解密后目录发布、取消事件及 ADB 恢复也不能仅由此组会话测试宣称完成。
+
+后续 [0022 转移与重建](MTP-TRANSFERS-ADAPTATION.md)已实现 MoveObject/CopyObject/rescan、inotify 溢出与根目录变化，48 项通过。本页 42 项仍在新代码上通过。剩余媒体格式/日期属性、解密后发布与撤销、USB 控制请求待补；configfs 双 ready 另有后续独立回放；事件线程退出已有独立回放。覆盖已有同名文件时尚未采用临时文件原子提交，上传失败可能影响旧内容；发现之后的路径被外部替换为符号链接也仍存在竞态。当前排除符号链接不等于已完成所有路径约束。整项 MTP 目标保持未完成。
+
+后续 [USB configfs 与服务交接](USB-CONFIGFS-ADAPTATION.md)使用真实 init 调度和生产 helper 完成 42 项回放；实际 USB 控制器、Windows、完整旁加载和 MTP 调用者确认仍不由此证明。
+
+后续0039补齐上传日期解析：原42项加4项日期落盘共46项通过；直接MtpUtils80项与转移48项另记，见[MTP日期范围](MTP-DATETIME-ADAPTATION.md)。原子上传覆盖、输出日期、完整元数据及现场USB仍未完成。

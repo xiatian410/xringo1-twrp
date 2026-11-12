@@ -1,0 +1,13 @@
+diff --git a/private/access_vectors b/private/access_vectors
+index f91c1a4..5fa082e 100644
+--- a/private/access_vectors
++++ b/private/access_vectors
+@@ -376,6 +376,8 @@ class system
+ 	syslog_console
+ 	module_request
+ 	module_load
++	# Linux 6.18 checks this for both direct and userspace firmware loading.
++	firmware_load
+ }
+ 
+ #

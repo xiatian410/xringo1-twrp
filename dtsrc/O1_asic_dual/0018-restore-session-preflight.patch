@@ -1,0 +1,471 @@
+diff --git a/partitionmanager.cpp b/partitionmanager.cpp
+index a170ed4..73017f0 100755
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -25,6 +25,7 @@
+ #include <linux/netlink.h>
+ #include <linux/types.h>
+ #include <sys/mount.h>
++#include <sys/ioctl.h>
+ #include <sys/poll.h>
+ #include <sys/socket.h>
+ #include <sys/stat.h>
+@@ -43,6 +44,7 @@
+ #include <format>
+ #include <fstream>
+ #include <map>
++#include <limits>
+ #include <memory>
+ #include <optional>
+ #include <ranges>
+@@ -1279,157 +1281,152 @@ bool TWPartitionManager::RunBackup() {
+ }
+ 
+ bool TWPartitionManager::RestorePartition(PartitionSettings* part_settings) const {
+-  time_t Start, Stop;
+-
++  if (!part_settings || !part_settings->part || CheckBackupCancel()) return false;
+   TWFunc::SetPerformanceMode(true);
+-
+-  time(&Start);
+-
+-  if (!part_settings->part->Restore(part_settings)) {
+-    TWFunc::SetPerformanceMode(false);
+-    return false;
+-  }
+-  if (part_settings->part->has_sub_partition_) {
+-    const TWPartition* parentPart = part_settings->part;
+-
+-    for (TWPartition* subpart : partitions_) {
+-      part_settings->part = subpart;
+-      if (subpart->is_sub_partition_ && subpart->sub_partition_of_ == parentPart->mount_point_) {
+-        part_settings->part = subpart;
+-        part_settings->part->SetBackupFileName(
+-            std::format("{}.{}.win", part_settings->part->backup_name_,
+-                        part_settings->part->current_file_system_));
+-        if (!subpart->Restore(part_settings)) {
+-          TWFunc::SetPerformanceMode(false);
+-          return false;
+-        }
+-      }
+-    }
+-  }
+-  time(&Stop);
+-  TWFunc::SetPerformanceMode(false);
+-  gui2_console::info("restore_part_done", part_settings->part->backup_display_name_, static_cast<int>(difftime(Stop, Start)));
+-
++  auto performance = android::base::make_scope_guard([] { TWFunc::SetPerformanceMode(false); });
++  const time_t start = time(nullptr);
++  // RunRestore flattened and checked parents and children before the first write.
++  if (!part_settings->part->Restore(part_settings) || CheckBackupCancel()) return false;
++  gui2_console::info("restore_part_done", part_settings->part->backup_display_name_,
++                     static_cast<int>(difftime(time(nullptr), start)));
+   return true;
+ }
+ 
+-int TWPartitionManager::RunRestore(const std::string& restore_name) const {
+-  time_t rStart, rStop;
+-  time(&rStart);
+-  std::string restore_list, restore_path;
+-  size_t start_pos = 0, end_pos;
+-
++int TWPartitionManager::RunRestore(const std::string& restore_name) {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  // This is a new session; a completed, cancelled backup must not poison it.
++  stop_backup = false;
++  const time_t start = time(nullptr);
++  auto clear_progress = android::base::make_scope_guard([] {
++    DataManager::SetValue("tw_file_progress", "");
++  });
+   PartitionSettings part_settings = {
+-    .part = nullptr,
+     .backup_folder = restore_name,
+-    .total_restore_size = 0,
+-    .partition_count = 0,
+     .pm_method = PartitionManagerOp::kRestore,
+   };
+-
+   gui2_console::info("restore_started");
+   gui2_console::info("restore_folder", restore_name);
+-
+   if (!MountCurrentStorage(true)) return false;
+ 
+-  int check_digest;
++  std::string restore_list;
++  DataManager::GetValue("tw_restore_selected", restore_list);
++  std::vector<TWPartition*> plan;
++  auto add_target = [&](TWPartition* part) {
++    if (std::find(plan.begin(), plan.end(), part) == plan.end()) plan.push_back(part);
++  };
++  for (const auto& path : TWFunc::SplitString(restore_list, ';', true)) {
++    TWPartition* part = FindPartitionByPath(path);
++    if (!part) {
++      gui2_console::log_error("restore_unable_locate", path);
++      return false;
++    }
++    add_target(part);
++    if (part->has_sub_partition_) {
++      for (TWPartition* child : partitions_) {
++        // SetRestoreFiles clears stale names; only children represented in this
++        // backup are implicit targets. Explicit selections still must exist.
++        if (child->is_sub_partition_ && child->sub_partition_of_ == part->mount_point_ &&
++            !child->backup_file_name_.empty()) add_target(child);
++      }
++    }
++  }
++  if (plan.empty()) {
++    gui2_console::log_error("no_part_restore");
++    return false;
++  }
++
++  int check_digest = 0;
+   DataManager::GetValue(TW_SKIP_DIGEST_CHECK_VAR, check_digest);
+   if (check_digest > 0) {
+-    // Check Digest files first before restoring to ensure that all of them match before starting a restore
+     TWFunc::GuiOperationText(TW_VERIFY_DIGEST_TEXT, gui2_console::text("verifying_digest"));
+     gui2_console::info("verifying_digest");
+   } else {
+     gui2_console::info("skip_digest");
+   }
+   gui2_console::info("calc_restore");
+-  DataManager::GetValue("tw_restore_selected", restore_list);
+-
+-  if (!restore_list.empty()) {
+-    end_pos = restore_list.find(';', start_pos);
+-    while (end_pos != std::string::npos && start_pos < restore_list.size()) {
+-      restore_path = restore_list.substr(start_pos, end_pos - start_pos);
+-      part_settings.part = FindPartitionByPath(restore_path);
+-      if (part_settings.part) {
+-        if (part_settings.part->mount_read_only_) {
+-          gui2_console::log_error("restore_read_only", part_settings.part->backup_display_name_);
+-          return false;
+-        }
+-
+-        auto full_filename = fs::path(part_settings.backup_folder) / part_settings.part->
+-                             backup_file_name_;
+-
+-        if (tw_get_default_metadata(GetAndroidRootPath().c_str()) != 0) {
+-          gui2_console::warning("restore_system_context", GetAndroidRootPath());
+-        }
+-
+-        if (check_digest > 0 && !TwrpDigestDriver::CheckDigest(full_filename)) return false;
+-        part_settings.partition_count++;
+-        part_settings.total_restore_size += part_settings.part->GetRestoreSize(&part_settings);
+-        if (part_settings.part->has_sub_partition_) {
+-          const TWPartition* parentPart = part_settings.part;
+-
+-          for (TWPartition* subpart : partitions_) {
+-            part_settings.part = subpart;
+-            if (subpart->is_sub_partition_ && subpart->sub_partition_of_ == parentPart->
+-                mount_point_) {
+-              if (check_digest > 0 && !TwrpDigestDriver::CheckDigest(full_filename)) return false;
+-              part_settings.total_restore_size += subpart->GetRestoreSize(&part_settings);
+-            }
+-          }
+-        }
+-      } else {
+-        gui2_console::log_error("restore_unable_locate", restore_path);
++  if (tw_get_default_metadata(GetAndroidRootPath().c_str()) != 0)
++    gui2_console::warning("restore_system_context", GetAndroidRootPath());
++
++  uint64_t total_size = 0;
++  for (TWPartition* part : plan) {
++    if (CheckBackupCancel()) return false;
++    if (part->mount_read_only_) {
++      gui2_console::log_error("restore_read_only", part->backup_display_name_);
++      return false;
++    }
++    if (!part->is_present_ || part->backup_file_name_.empty() ||
++        fs::path(part->backup_file_name_).filename() != part->backup_file_name_) {
++      LOGERR("Restore preflight: target or backup name unavailable for '%s'\n", part->mount_point_.c_str());
++      return false;
++    }
++    const std::string full = fs::path(restore_name) / part->backup_file_name_;
++    // Disabling checksums does not disable archive existence/type checks.
++    const auto files = TwrpDigestDriver::GetBackupFiles(full);
++    if (!files) return false;
++    part_settings.part = part;
++    const std::string file_system = part->GetRestoreFileSystem(&part_settings);
++    if (!TWPartition::IsFileSystem(file_system) && file_system != "emmc") {
++      LOGERR("Restore preflight: unsupported filesystem for '%s'\n", full.c_str());
++      return false;
++    }
++    if (file_system == "emmc" && (files->size() != 1 || files->front() != full)) {
++      LOGERR("Restore preflight: split raw image is not supported '%s'\n", full.c_str());
++      return false;
++    }
++    uint64_t raw_size = 0;
++    if (file_system == "emmc") {
++      std::error_code size_error;
++      raw_size = fs::file_size(full, size_error);
++      const android::base::unique_fd target(TEMP_FAILURE_RETRY(open(
++          part->actual_block_device_.c_str(), O_RDONLY | O_CLOEXEC | O_NONBLOCK)));
++      struct stat st{};
++      uint64_t capacity = 0;
++      if (size_error || target < 0 || fstat(target.get(), &st) != 0 || !S_ISBLK(st.st_mode) ||
++          TEMP_FAILURE_RETRY(ioctl(target.get(), BLKGETSIZE64, &capacity)) != 0 ||
++          raw_size == 0 || raw_size > capacity) {
++        LOGERR("Restore preflight: raw image target capacity unavailable or insufficient '%s'\n", full.c_str());
++        return false;
+       }
+-      start_pos = end_pos + 1;
+-      end_pos = restore_list.find(';', start_pos);
+     }
++    if (check_digest > 0) {
++      for (const auto& file : *files) {
++        if (CheckBackupCancel() || !TwrpDigestDriver::CheckFileDigest(file)) return false;
++      }
++    }
++    const uint64_t size = file_system == "emmc" ? raw_size : part->GetRestoreSize(&part_settings);
++    if (size > std::numeric_limits<uint64_t>::max() - total_size) {
++      LOGERR("Restore preflight: total size overflow\n");
++      return false;
++    }
++    total_size += size;
+   }
+-
+-  if (part_settings.partition_count == 0) {
+-    gui2_console::log_error("no_part_restore");
+-    return false;
+-  }
+-
++  part_settings.partition_count = static_cast<int>(plan.size());
+   gui2_console::info("restore_part_count", part_settings.partition_count);
+-  gui2_console::info("total_restore_size", UnitConversion::FormatBytes(part_settings.total_restore_size));
+-  DataManager::SetProgress(0.0);
+-  ProgressTracking progress(part_settings.total_restore_size);
++  gui2_console::info("total_restore_size", UnitConversion::FormatBytes(total_size));
++  ProgressTracking progress(total_size);
+   part_settings.progress = &progress;
+-
+-  start_pos = 0;
+-  if (!restore_list.empty()) {
+-    end_pos = restore_list.find(';', start_pos);
+-    while (end_pos != std::string::npos && start_pos < restore_list.size()) {
+-      restore_path = restore_list.substr(start_pos, end_pos - start_pos);
+-
+-      part_settings.part = FindPartitionByPath(restore_path);
+-      if (part_settings.part) {
+-        part_settings.partition_count++;
+-        if (!RestorePartition(&part_settings)) return false;
+-      } else {
+-        gui2_console::log_error("restore_unable_locate", restore_path);
+-      }
+-      start_pos = end_pos + 1;
+-      end_pos = restore_list.find(';', start_pos);
+-    }
++  DataManager::SetProgress(0.0);
++  for (TWPartition* part : plan) {
++    part_settings.part = part;
++    part_settings.total_restore_size = total_size;
++    if (!RestorePartition(&part_settings)) return false;
+   }
+-  TWFunc::GuiOperationText(
+-      TW_UPDATE_SYSTEM_DETAILS_TEXT, gui2_console::text("updating_system_details"));
++  TWFunc::GuiOperationText(TW_UPDATE_SYSTEM_DETAILS_TEXT, gui2_console::text("updating_system_details"));
+   tw_set_default_metadata(GetAndroidRootPath().c_str());
+   UnmountByPath(GetAndroidRootPath(), false);
+   UpdateSystemDetails();
+   UnmountMainPartitions();
+-  time(&rStop);
+-  gui2_console::highlight("restore_completed", static_cast<int>(difftime(rStop, rStart)));
+-  if (const TWPartition* DecryptData = FindPartitionByPath("/data");
+-    DecryptData && DecryptData->is_encrypted_)
++  gui2_console::highlight("restore_completed", static_cast<int>(difftime(time(nullptr), start)));
++  if (const TWPartition* data = FindPartitionByPath("/data"); data && data->is_encrypted_)
+     gui2_console::warning("reboot_after_restore");
+-  DataManager::SetValue("tw_file_progress", "");
+-
+   return true;
+ }
+ 
+ void TWPartitionManager::SetRestoreFiles(const std::string& restore_name) const {
++  twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
++  DataManager::SetValue("tw_restore_list", "");
++  DataManager::SetValue("tw_restore_selected", "");
++  for (TWPartition* part : partitions_) part->backup_file_name_.clear();
+   // Start with the default values
+   std::string restore_list;
+   bool get_date = true, check_encryption = true;
+diff --git a/partitions.hpp b/partitions.hpp
+index efd912e..f57a036 100755
+--- a/partitions.hpp
++++ b/partitions.hpp
+@@ -695,7 +695,7 @@ public:
+   bool RunBackup();
+ 
+   // Restores a backup
+-  int RunRestore(const std::string& restore_name) const;
++  int RunRestore(const std::string& restore_name);
+ 
+   void SetRestoreFiles(const std::string& restore_name) const;
+ 
+@@ -1031,4 +1031,4 @@ private:
+ 
+ extern TWPartitionManager PartitionManager;
+ 
+-#endif // TWRP_PARTITION_MANAGER
+\ No newline at end of file
++#endif // TWRP_PARTITION_MANAGER
+diff --git a/digest/twrp_digest_driver.cpp b/digest/twrp_digest_driver.cpp
+index 93538e4..3077588 100644
+--- a/digest/twrp_digest_driver.cpp
++++ b/digest/twrp_digest_driver.cpp
+@@ -25,6 +25,8 @@
+ #include <algorithm>
+ #include <cstddef>
+ #include <format>
++#include <filesystem>
++#include <map>
+ #include <optional>
+ #include <ranges>
+ #include <string>
+@@ -90,6 +92,63 @@ std::optional<StoredDigest> ParseStoredDigest(const std::string_view content) {
+ }
+ } // namespace
+ 
++std::optional<std::vector<std::string>> TwrpDigestDriver::GetBackupFiles(const std::string& filename) {
++  namespace fs = std::filesystem;
++  const fs::path base(filename);
++  const auto folder = base.has_parent_path() ? base.parent_path() : fs::path(".");
++  const std::string prefix = base.filename().string();
++  std::error_code ec;
++  fs::directory_iterator it(folder, ec), end;
++  if (ec) {
++    LOGERR("Restore preflight: cannot read backup directory '%s'\n", folder.c_str());
++    return std::nullopt;
++  }
++  bool single = false;
++  std::map<int, std::string> split;
++  for (; it != end; it.increment(ec)) {
++    if (ec) break;
++    const std::string name = it->path().filename().string();
++    if (!name.starts_with(prefix)) continue;
++    const std::string suffix = name.substr(prefix.size());
++    const bool numbered = !suffix.empty() && std::ranges::all_of(suffix, [](char c) {
++      return c >= '0' && c <= '9';
++    });
++    if (!suffix.empty() && !numbered) continue;  // sidecars are not archive parts
++    if (numbered && (suffix.size() != 3 || suffix[0] > '8')) {
++      LOGERR("Restore preflight: unsupported split archive name '%s'\n", name.c_str());
++      return std::nullopt;
++    }
++    const auto type = it->symlink_status(ec);
++    if (ec || !fs::is_regular_file(type)) {
++      LOGERR("Restore preflight: backup is not a regular file '%s'\n", name.c_str());
++      return std::nullopt;
++    }
++    const auto size = it->file_size(ec);
++    if (ec || size == 0) {
++      LOGERR("Restore preflight: empty or unreadable backup '%s'\n", name.c_str());
++      return std::nullopt;
++    }
++    if (!numbered) single = true;
++    else split.emplace((suffix[0]-'0')*100+(suffix[1]-'0')*10+suffix[2]-'0', it->path().string());
++  }
++  if (ec) return std::nullopt;
++  if (single && split.empty()) return std::vector<std::string>{filename};
++  if (single || !split.contains(0)) {
++    LOGERR("Restore preflight: missing or ambiguous backup '%s'\n", filename.c_str());
++    return std::nullopt;
++  }
++  std::vector<std::string> files;
++  for (const auto& [index, path] : split) {
++    // Groups can be absent, but extractMulti stops at a gap inside a group.
++    if (index % 100 != 0 && !split.contains(index - 1)) {
++      LOGERR("Restore preflight: gap before split archive '%s'\n", path.c_str());
++      return std::nullopt;
++    }
++    files.push_back(path);
++  }
++  return files;
++}
++
+ bool TwrpDigestDriver::CheckFileDigest(const std::string& filename) {
+   bool found = false;
+   std::string stored_digest;
+@@ -148,17 +207,10 @@ bool TwrpDigestDriver::CheckFileDigest(const std::string& filename) {
+ }
+ 
+ bool TwrpDigestDriver::CheckDigest(const std::string& full_filename) {
+-  sync();
+-  if (TWFunc::IsPathExists(full_filename)) return CheckFileDigest(full_filename);
+-  // Single file archive
+-
+-  // Split archive: check each existing part.
+-  for (const int index : std::views::iota(0, kMaxSplitArchives)) {
+-    const std::string split_filename = std::format("{}{:03}", full_filename, index);
+-    if (!TWFunc::IsPathExists(split_filename)) break;
+-    LOGINFO("split_filename: %s\n", split_filename.c_str());
+-    if (!CheckFileDigest(split_filename)) return false;
+-  }
++  const auto files = GetBackupFiles(full_filename);
++  if (!files) return false;
++  for (const auto& file : *files)
++    if (!CheckFileDigest(file)) return false;
+   return true;
+ }
+ 
+@@ -195,21 +247,10 @@ bool TwrpDigestDriver::MakeDigest(const std::string& full_filename) {
+   TWFunc::GuiOperationText(TW_GENERATE_DIGEST_TEXT, gui2_console::text("generating_digest1"));
+   gui2_console::info("generating_digest2");
+ 
+-  if (TWFunc::IsPathExists(full_filename)) return WriteDigest(full_filename);
+-
+-  // Split archive: part 0 must exist (else nothing to digest).
+-  const std::string first_part = std::format("{}{:03}", full_filename, 0);
+-  if (!TWFunc::IsPathExists(first_part)) {
+-    LOGERR("Backup file: '%s' not found!\n", first_part.c_str());
+-    return false;
+-  }
+-  if (!WriteDigest(first_part)) return false;
+-
+-  for (const int index : std::views::iota(1, kMaxSplitArchives)) {
+-    const std::string split_filename = std::format("{}{:03}", full_filename, index);
+-    if (!TWFunc::IsPathExists(split_filename)) break;
+-    if (!WriteDigest(split_filename)) return false;
+-  }
++  const auto files = GetBackupFiles(full_filename);
++  if (!files) return false;
++  for (const auto& file : *files)
++    if (!WriteDigest(file)) return false;
+ 
+   gui2_console::info("digest_created");
+   return true;
+@@ -230,4 +271,4 @@ bool TwrpDigestDriver::StreamFileToDigest(const std::string& filename, TwrpDiges
+     if (bytes <= 0) return bytes == 0;
+     digest.Update(buffer.data(), static_cast<size_t>(bytes));
+   }
+-}
+\ No newline at end of file
++}
+diff --git a/digest/twrp_digest_driver.hpp b/digest/twrp_digest_driver.hpp
+index 53bd431..9f68509 100644
+--- a/digest/twrp_digest_driver.hpp
++++ b/digest/twrp_digest_driver.hpp
+@@ -21,12 +21,18 @@
+ 
+ #include <cstddef>
+ #include <string>
++#include <optional>
++#include <vector>
+ 
+ class TwrpDigest;
+ 
+ // Creates and verifies digest files stored next to partition backups.
+ class TwrpDigestDriver {
+ public:
++  // Enumerates regular, nonempty backup files before any restore writes. Split
++  // names follow twrpTar's thread-id + two-digit part scheme (threads 0..8).
++  static std::optional<std::vector<std::string>> GetBackupFiles(const std::string& filename);
++
+   // Tries .sha2/.sha256/.md5/.md5sum; a missing digest skips the check (returns true).
+   static bool CheckFileDigest(const std::string& filename);
+ 
+@@ -51,4 +57,4 @@ private:
+   static bool StreamFileToDigest(const std::string& filename, TwrpDigest& digest);
+ };
+ 
+-#endif  // TWRP_DIGEST_DRIVER_HPP
+\ No newline at end of file
++#endif  // TWRP_DIGEST_DRIVER_HPP

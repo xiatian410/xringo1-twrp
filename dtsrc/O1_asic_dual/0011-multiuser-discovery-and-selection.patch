@@ -1,0 +1,684 @@
+diff --git a/Android.bp b/Android.bp
+index 4bb9bc2..e69ea52 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -544,6 +544,7 @@ cc_binary {
+         "libfusesideload",
+         "libgsi",
+         "libvold",
++        "libtinyxml2",
+         "libcrypto_utils"
+     ] + select(soong_config_variable("twrpGlobalVars", "include_crypto_fbe"), {
+         true: [
+diff --git a/gui2/backend/decrypt_backend.h b/gui2/backend/decrypt_backend.h
+index 5d09c2e..5c55c3d 100644
+--- a/gui2/backend/decrypt_backend.h
++++ b/gui2/backend/decrypt_backend.h
+@@ -22,6 +22,13 @@ enum class decrypt_state {
+   FAILED,
+ };
+ 
++struct decrypt_user {
++  int id = 0;
++  std::string name;
++  lock_kind kind = lock_kind::DEFAULT;
++  bool unlocked = false;
++};
++
+ class decrypt_backend {
+  public:
+   virtual ~decrypt_backend() = default;
+@@ -32,6 +39,9 @@ class decrypt_backend {
+   // What the legacy "Decrypt Data" button sets before opening the page: user
+   // 0, an empty password, and user 0's lock type.
+   virtual void select_user() = 0;
++  virtual std::vector<decrypt_user> users() = 0;
++  virtual bool select_user(int id) = 0;
++  virtual std::string selected_user_name() const = 0;
+ 
+   // Runs the attempt on a worker so the UI keeps drawing. Returns false when a
+   // previous attempt is still in flight.
+diff --git a/gui2/backend/twrp_decrypt_backend.cpp b/gui2/backend/twrp_decrypt_backend.cpp
+index f1618c0..225576a 100644
+--- a/gui2/backend/twrp_decrypt_backend.cpp
++++ b/gui2/backend/twrp_decrypt_backend.cpp
+@@ -1,6 +1,7 @@
+ #include "twrp_decrypt_backend.h"
+ 
+ #include <utility>
++#include <algorithm>
+ 
+ #include <unistd.h>
+ 
+@@ -10,6 +11,7 @@
+ #include "partitions.hpp"
+ #include "twcommon.h"
+ #include "twrp_operation.h"
++#include "twrp_operation_executor.h"
+ #include "twrpinstall/include/set_metadata.h"
+ #include "variables.h"
+ 
+@@ -24,8 +26,8 @@ bool twrp_decrypt_backend::is_encrypted() {
+   return DataManager::GetIntValue(TW_IS_ENCRYPTED) != 0;
+ }
+ 
+-lock_kind twrp_decrypt_backend::kind() {
+-  switch (DataManager::GetIntValue(TW_CRYPTO_PWTYPE)) {
++static lock_kind password_kind(int type) {
++  switch (type) {
+     case 1:
+       return lock_kind::PASSWORD;
+     case 2:
+@@ -37,9 +39,47 @@ lock_kind twrp_decrypt_backend::kind() {
+   }
+ }
+ 
++lock_kind twrp_decrypt_backend::kind() {
++  return selected_kind_;
++}
++
+ void twrp_decrypt_backend::select_user() {
+-  DataManager::SetValue("tw_crypto_user_id", "0");
+-  DataManager::SetValue(TW_CRYPTO_PWTYPE, DataManager::GetStrValue("tw_crypto_pwtype_0"));
++  if (!select_user(0) && !running_.load()) {
++    selected_id_ = -1;
++    selected_name_.clear();
++    selected_kind_ = lock_kind::DEFAULT;
++  }
++}
++
++std::vector<decrypt_user> twrp_decrypt_backend::users() {
++  std::vector<decrypt_user> result;
++  if (!DataManager::GetIntValue(TW_IS_FBE)) return result;
++  // Keep UI polling responsive while crypto or another storage operation owns
++  // the transaction domain. The caller can reopen the list once it is idle.
++  std::unique_lock transaction(twrp_operation_executor::instance().mutex(), std::try_to_lock);
++  if (!transaction.owns_lock()) return result;
++  for (const auto& user : *PartitionManager.GetUsersList())
++    result.push_back({user.user_id, user.user_name, password_kind(user.type), user.is_decrypted});
++  return result;
++}
++
++bool twrp_decrypt_backend::select_user(int id) {
++  if (running_.load()) return false;
++  if (!DataManager::GetIntValue(TW_IS_FBE)) {
++    if (id != 0) return false;
++    selected_name_ = "0";
++    selected_kind_ = password_kind(DataManager::GetIntValue("tw_crypto_pwtype_0"));
++  } else {
++    const auto available = users();
++    auto found = std::find_if(available.begin(), available.end(),
++                            [id](const auto& user) { return user.id == id; });
++    if (found == available.end()) return false;
++    selected_name_ = found->name;
++    selected_kind_ = found->kind;
++  }
++  selected_id_ = id;
++  DataManager::SetValue("tw_crypto_user_id", std::to_string(id));
++  return true;
+ }
+ 
+ void twrp_decrypt_backend::join_finished_thread() {
+@@ -47,7 +87,7 @@ void twrp_decrypt_backend::join_finished_thread() {
+ }
+ 
+ bool twrp_decrypt_backend::start(const std::string& password) {
+-  if (running_.load()) return false;
++  if (running_.load() || selected_id_ < 0) return false;
+   join_finished_thread();
+ 
+   {
+@@ -55,7 +95,7 @@ bool twrp_decrypt_backend::start(const std::string& password) {
+     state_ = decrypt_state::RUNNING;
+   }
+   running_.store(true);
+-  worker_ = std::thread(&twrp_decrypt_backend::run, this, password);
++  worker_ = std::thread(&twrp_decrypt_backend::run, this, password, selected_id_);
+   return true;
+ }
+ 
+@@ -81,34 +121,24 @@ void twrp_decrypt_backend::run_refresh() {
+   {
+     std::lock_guard<std::mutex> lock(mutex_);
+     state_ = decrypt_state::DONE;
++    running_.store(false);
+   }
+-  running_.store(false);
+ }
+ 
+ // The worker owns its password; do not publish it through global UI state.
+-void twrp_decrypt_backend::run(std::string password) {
++void twrp_decrypt_backend::run(std::string password, int user_id) {
+   int op_status = 0;
+ 
+   operation_start("Decrypt");
+   {
+-    std::string userID;
+-
+-    if (DataManager::GetIntValue(TW_IS_FBE)) {  // for FBE
+-      DataManager::GetValue("tw_crypto_user_id", userID);
+-      if (userID != "") {
+-        op_status = PartitionManager.DecryptDevice(password, atoi(userID.c_str()));
+-        if (userID != "0") {
+-          if (op_status != 0) op_status = 1;
+-          operation_end(op_status);
+-          finish(op_status);
+-          return;
+-        }
+-      } else {
+-        LOGINFO("User ID not found\n");
+-        op_status = 1;
+-      }
+-    } else {  // for FDE
+-      op_status = PartitionManager.DecryptDevice(password);
++    // Preserve the selected ID even if a storage refresh changes the global
++    // FBE flag. The core revalidates the user against the current DE state.
++    op_status = PartitionManager.DecryptDevice(password, user_id);
++    if (user_id != 0) {
++      if (op_status != 0) op_status = 1;
++      operation_end(op_status);
++      finish(op_status);
++      return;
+     }
+ 
+     if (op_status != 0)
+@@ -140,8 +170,8 @@ void twrp_decrypt_backend::finish(int op_status) {
+   {
+     std::lock_guard<std::mutex> lock(mutex_);
+     state_ = op_status == 0 ? decrypt_state::DONE : decrypt_state::FAILED;
++    running_.store(false);
+   }
+-  running_.store(false);
+ }
+ 
+ decrypt_state twrp_decrypt_backend::state() {
+diff --git a/gui2/backend/twrp_decrypt_backend.h b/gui2/backend/twrp_decrypt_backend.h
+index 073f2dd..2baf0ef 100644
+--- a/gui2/backend/twrp_decrypt_backend.h
++++ b/gui2/backend/twrp_decrypt_backend.h
+@@ -21,13 +21,16 @@ class twrp_decrypt_backend final : public decrypt_backend {
+   bool is_encrypted() override;
+   lock_kind kind() override;
+   void select_user() override;
++  std::vector<decrypt_user> users() override;
++  bool select_user(int id) override;
++  std::string selected_user_name() const override { return selected_name_; }
+   bool start(const std::string& password) override;
+   bool start_refresh() override;
+   decrypt_state state() override;
+   void acknowledge() override;
+ 
+  private:
+-  void run(std::string password);
++  void run(std::string password, int user_id);
+   void run_refresh();
+   void finish(int op_status);
+   void join_finished_thread();
+@@ -36,6 +39,9 @@ class twrp_decrypt_backend final : public decrypt_backend {
+   decrypt_state state_ = decrypt_state::IDLE;
+   std::atomic<bool> running_{ false };
+   std::thread worker_;
++  int selected_id_ = 0;
++  std::string selected_name_;
++  lock_kind selected_kind_ = lock_kind::DEFAULT;
+ };
+ 
+ }  // namespace gui2_backend
+diff --git a/gui2/gui2.cpp b/gui2/gui2.cpp
+index e308839..d8c89d2 100644
+--- a/gui2/gui2.cpp
++++ b/gui2/gui2.cpp
+@@ -677,6 +677,10 @@ static void navigate_back(void) {
+                 page_transition::POP);
+   } else if (page_router.current() == page_kind::DECRYPT) {
+     if (page_state.decrypt_prompt_ms != 0 || page_state.decrypt_during_startup) return;
++    if (page_state.decrypt_from_users) {
++      navigate_to(page_kind::DECRYPT_USERS, nullptr, page_transition::POP);
++      return;
++    }
+     if (decrypt != nullptr && decrypt->is_encrypted() && decrypt->start_refresh()) {
+       page_state.decrypt_refreshing = true;
+       page_state.decrypt_prompt_ms = 0;
+@@ -3844,7 +3848,8 @@ static void refresh_decrypt_progress(void) {
+   page_state.decrypt_refreshing = false;
+   if (refreshing || state == gui2_backend::decrypt_state::DONE) {
+     page_state.decrypt_failed = false;
+-    navigate_to(page_kind::HOME, nullptr, page_transition::FADE);
++    navigate_to(page_state.decrypt_from_users ? page_kind::DECRYPT_USERS : page_kind::HOME,
++                nullptr, page_transition::FADE);
+   } else {
+     page_state.decrypt_failed = true;
+     navigate_to(page_kind::DECRYPT, nullptr, page_transition::REPLACE);
+@@ -3916,7 +3921,34 @@ static bool data_locked(void) {
+ 
+ static void enter_decrypt_flow(page_transition transition) {
+   if (decrypt == nullptr) return;
+-  navigate_to(page_kind::DECRYPT, nullptr, transition);
++  page_state.decrypt_from_users = false;
++  const bool choose_user = !page_state.decrypt_during_startup &&
++                          transition != page_transition::NONE &&
++                          std::ranges::any_of(decrypt->users(), [](const auto& user) { return user.id != 0; });
++  navigate_to(choose_user ? page_kind::DECRYPT_USERS : page_kind::DECRYPT, nullptr, transition);
++}
++
++static void decrypt_user_event_cb(lv_event_t* event) {
++  if (lv_event_get_code(event) != LV_EVENT_CLICKED || !accept_click(event) || !decrypt) return;
++  const auto* id = static_cast<const int*>(lv_event_get_user_data(event));
++  if (!id || !decrypt->select_user(*id)) return;
++  page_state.decrypt_failed = false;
++  page_state.decrypt_from_users = true;
++  navigate_to(page_kind::DECRYPT, nullptr, page_transition::PUSH);
++}
++
++static void show_decrypt_users_page(page_transition transition) {
++  create_page_scaffold(page_kind::DECRYPT_USERS, false, strings().decrypt_users_title,
++                       strings().decrypt_users_summary, gui2_core::navigation_safe_area(), transition);
++  page_state.decrypt_users = decrypt ? decrypt->users() : std::vector<gui2_backend::decrypt_user>{};
++  gui2_pages::decrypt_users_page_options options;
++  options.content = main_content;
++  options.metrics = &ui;
++  options.strings = &strings();
++  options.users = &page_state.decrypt_users;
++  options.select_callback = decrypt_user_event_cb;
++  options.press_guard_callback = press_cancel_guard_cb;
++  gui2_pages::build_decrypt_users_page(options);
+ }
+ 
+ // The legacy "Decrypt Data" button.
+@@ -5293,7 +5325,8 @@ static void show_mount_page(page_transition transition) {
+   options.storage_callback = mount_card_event_cb;
+   options.storage_target = &kMountStorageTarget;
+   options.press_guard_callback = press_cancel_guard_cb;
+-  options.has_decrypt = data_locked();
++  options.has_decrypt = data_locked() ||
++      (decrypt && std::ranges::any_of(decrypt->users(), [](const auto& user) { return !user.unlocked; }));
+   options.decrypt_callback = mount_card_event_cb;
+   options.decrypt_target = &kMountDecryptTarget;
+   options.mtp_enabled = mount != nullptr && mount->mtp_enabled();
+@@ -5320,6 +5353,7 @@ static void show_decrypt_page(page_transition transition) {
+   options.metrics = &ui;
+   options.strings = &strings();
+   options.kind = decrypt == nullptr ? gui2_backend::lock_kind::PASSWORD : decrypt->kind();
++  options.user_name = decrypt == nullptr ? std::string() : decrypt->selected_user_name();
+   options.failed = page_state.decrypt_failed;
+   options.pattern = &page_state.decrypt_pattern;
+   options.pattern_callback = decrypt_pattern_complete;
+@@ -5709,6 +5743,9 @@ static void build_page(const gui2_pages::page_request& request) {
+     case page_kind::DECRYPT:
+       show_decrypt_page(request.transition);
+       return;
++    case page_kind::DECRYPT_USERS:
++      show_decrypt_users_page(request.transition);
++      return;
+     case page_kind::DECRYPT_PROGRESS:
+       show_decrypt_progress_page(request.transition);
+       return;
+diff --git a/gui2/i18n/en.cpp b/gui2/i18n/en.cpp
+index 632b532..3683969 100644
+--- a/gui2/i18n/en.cpp
++++ b/gui2/i18n/en.cpp
+@@ -434,7 +434,12 @@ extern const language_pack kEnglish = {
+   "Wipe log",
+   "Install ZIP",
+   "Swap back button and navigation bar",
+-  "Adopted Storage",
++  "Unlock user",
++  "Choose a user. Work profiles may use a separate credential.",
++  "Locked",
++  "Unlocked",
++  "No users with loaded device-encrypted storage were found.",
++"Adopted Storage",
+   "Unable to wipe android secure",
+   "Android Secure",
+   "(Auto Generate)",
+@@ -674,6 +679,7 @@ extern const language_pack kEnglish = {
+   "Error installing zip file '%s'",
+   "One or more zip requested a cache wipe -- Wiping cache now.",
+ 
++
+ };
+ 
+ }  // namespace gui2_i18n
+diff --git a/gui2/i18n/i18n.h b/gui2/i18n/i18n.h
+index de167e4..104688b 100644
+--- a/gui2/i18n/i18n.h
++++ b/gui2/i18n/i18n.h
+@@ -429,6 +429,11 @@ struct language_pack {
+   const char* swap_navigation;
+ 
+   // Recovery messages; appended to preserve existing UI field order.
++  const char* decrypt_users_title;
++  const char* decrypt_users_summary;
++  const char* decrypt_user_locked;
++  const char* decrypt_user_unlocked;
++  const char* decrypt_users_empty;
+   const char* adopted_storage;
+   const char* and_sec_wipe_err;
+   const char* android_secure;
+diff --git a/gui2/i18n/ru.cpp b/gui2/i18n/ru.cpp
+index 57a87c7..86d0796 100644
+--- a/gui2/i18n/ru.cpp
++++ b/gui2/i18n/ru.cpp
+@@ -434,7 +434,12 @@ extern const language_pack kRussian = {
+   "Лог очистки",
+   "Установить ZIP",
+   "Поменять местами кнопку «Назад» и панель навигации",
+-  "Adopted Storage",
++  "Разблокировать пользователя",
++  "Выберите пользователя. Для рабочего профиля могут требоваться отдельные данные входа.",
++  "Заблокирован",
++  "Разблокирован",
++  "Не найдены пользователи с загруженным хранилищем DE.",
++"Adopted Storage",
+   "Невозможно очистить android secure",
+   "Android Secure",
+   "(Создать автоматически)",
+@@ -673,6 +678,7 @@ extern const language_pack kRussian = {
+   "Ошибка совместимости ZIP с Treble!",
+   "Ошибка при установке ZIP-файла '%s'",
+   "Один или более ZIP запрашивают очистку cache -- Очистка cache...",
++
+ };
+ 
+-}  // namespace gui2_i18n
+\ No newline at end of file
++}  // namespace gui2_i18n
+diff --git a/gui2/i18n/zh_cn.cpp b/gui2/i18n/zh_cn.cpp
+index 1ba3901..e56162b 100644
+--- a/gui2/i18n/zh_cn.cpp
++++ b/gui2/i18n/zh_cn.cpp
+@@ -432,7 +432,12 @@ extern const language_pack kSimplifiedChinese = {
+   "清除日志",
+   "刷入 ZIP",
+   "交换返回键与导航栏位置",
+-  "Adopted 存储空间",
++  "解锁用户",
++  "选择要解锁的用户。工作资料可能使用独立凭据。",
++  "未解锁",
++  "已解锁",
++  "尚未发现已加载设备加密存储的用户。",
++"Adopted 存储空间",
+   "无法清除 Android Secure",
+   "Android Secure",
+   "（自动生成）",
+@@ -671,6 +676,7 @@ extern const language_pack kSimplifiedChinese = {
+   "ZIP Treble 兼容性检查失败！",
+   "安装 Zip 刷机包“%s”时出错",
+   "一个或多个刷机包请求清除 Cache -- 正在清除 Cache。",
++
+ };
+ 
+ }  // namespace gui2_i18n
+diff --git a/gui2/i18n/zh_tw.cpp b/gui2/i18n/zh_tw.cpp
+index 790c338..e648f8d 100644
+--- a/gui2/i18n/zh_tw.cpp
++++ b/gui2/i18n/zh_tw.cpp
+@@ -432,7 +432,12 @@ extern const language_pack kTraditionalChinese = {
+   "清除日誌",
+   "刷入 ZIP",
+   "交換返回鍵與導覽列位置",
+-  "Adopted 儲存空間",
++  "解鎖使用者",
++  "選擇要解鎖的使用者。工作資料可能使用獨立憑證。",
++  "未解鎖",
++  "已解鎖",
++  "尚未發現已載入裝置加密儲存空間的使用者。",
++"Adopted 儲存空間",
+   "無法清除 Android Secure",
+   "Android Secure",
+   "（自動生成）",
+@@ -672,6 +677,7 @@ extern const language_pack kTraditionalChinese = {
+   "安裝 Zip 刷機包“%s”時出錯",
+   "一個或多個刷機包請求清除 Cache -- 正在清除 Cache。",
+ 
++
+ };
+ 
+ }  // namespace gui2_i18n
+diff --git a/gui2/pages/decrypt_page.cpp b/gui2/pages/decrypt_page.cpp
+index b62c41e..d6b0bd9 100644
+--- a/gui2/pages/decrypt_page.cpp
++++ b/gui2/pages/decrypt_page.cpp
+@@ -4,12 +4,42 @@
+ 
+ #include "components/apply_button.h"
+ #include "components/icon.h"
++#include "components/setting_card.h"
+ #include "components/keyboard.h"
+ #include "core/ui_helpers.h"
+ #include "gui2_svg_assets.h"
+ 
+ namespace gui2_pages {
+ 
++void build_decrypt_users_page(const decrypt_users_page_options& options) {
++  if (!options.content || !options.metrics || !options.strings || !options.users) return;
++  const auto& metrics = *options.metrics;
++  lv_obj_t* body = lv_obj_create(options.content);
++  lv_obj_set_pos(body, metrics.content_left, 0);
++  lv_obj_set_size(body, metrics.content_width, LV_SIZE_CONTENT);
++  gui2_core::set_surface_style(body, metrics.background, LV_OPA_TRANSP);
++  lv_obj_set_style_pad_all(body, 0, LV_PART_MAIN);
++  lv_obj_set_style_pad_row(body, metrics.card_gap, LV_PART_MAIN);
++  lv_obj_set_layout(body, LV_LAYOUT_FLEX);
++  lv_obj_set_flex_flow(body, LV_FLEX_FLOW_COLUMN);
++  gui2_core::disable_scrolling(body);
++  for (const auto& user : *options.users) {
++    auto* card = gui2_components::create_setting_card(
++        body, metrics, user.name.c_str(),
++        user.unlocked ? options.strings->decrypt_user_unlocked : options.strings->decrypt_user_locked,
++        options.select_callback, &user.id, options.press_guard_callback);
++    if (card && user.unlocked) lv_obj_add_state(card, LV_STATE_DISABLED);
++  }
++  if (options.users->empty()) {
++    auto* label = lv_label_create(body);
++    lv_label_set_text(label, options.strings->decrypt_users_empty);
++    lv_obj_set_width(label, metrics.content_width);
++    lv_label_set_long_mode(label, LV_LABEL_LONG_WRAP);
++    lv_obj_set_style_text_font(label, metrics.text_font, LV_PART_MAIN);
++    lv_obj_set_style_text_color(label, metrics.primary_text, LV_PART_MAIN);
++  }
++}
++
+ decrypt_page_view build_decrypt_page(const decrypt_page_options& options) {
+   decrypt_page_view view;
+   if (options.content == nullptr || options.metrics == nullptr || options.strings == nullptr)
+@@ -53,6 +83,16 @@ decrypt_page_view build_decrypt_page(const decrypt_page_options& options) {
+       gui2_components::action_icon_art_size(badge));
+   lv_obj_center(art);
+ 
++  if (!options.user_name.empty()) {
++    auto* name = lv_label_create(view.body);
++    lv_label_set_text(name, options.user_name.c_str());
++    lv_obj_set_width(name, metrics.content_width);
++    lv_label_set_long_mode(name, LV_LABEL_LONG_WRAP);
++    lv_obj_set_style_text_align(name, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
++    lv_obj_set_style_text_font(name, metrics.text_font, LV_PART_MAIN);
++    lv_obj_set_style_text_color(name, metrics.primary_text, LV_PART_MAIN);
++  }
++
+   view.status = lv_label_create(view.body);
+   lv_obj_set_style_margin_top(view.status, metrics.card_gap * 2, LV_PART_MAIN);
+   lv_label_set_text(view.status, options.failed ? strings.decrypt_failed
+diff --git a/gui2/pages/decrypt_page.h b/gui2/pages/decrypt_page.h
+index 87c3895..77a415e 100644
+--- a/gui2/pages/decrypt_page.h
++++ b/gui2/pages/decrypt_page.h
+@@ -18,6 +18,7 @@ struct decrypt_page_options {
+   const gui2_i18n::language_pack* strings = nullptr;
+   gui2_backend::lock_kind kind = gui2_backend::lock_kind::PASSWORD;
+   bool failed = false;
++  std::string user_name;
+   gui2_components::pattern_lock* pattern = nullptr;
+   gui2_components::pattern_complete_callback pattern_callback = nullptr;
+   gui2_components::pattern_dot_callback pattern_dot_callback = nullptr;
+@@ -39,6 +40,16 @@ struct decrypt_page_view {
+ 
+ decrypt_page_view build_decrypt_page(const decrypt_page_options& options);
+ 
++struct decrypt_users_page_options {
++  lv_obj_t* content = nullptr;
++  const gui2_core::ui_metrics* metrics = nullptr;
++  const gui2_i18n::language_pack* strings = nullptr;
++  const std::vector<gui2_backend::decrypt_user>* users = nullptr;
++  lv_event_cb_t select_callback = nullptr;
++  lv_event_cb_t press_guard_callback = nullptr;
++};
++void build_decrypt_users_page(const decrypt_users_page_options& options);
++
+ }  // namespace gui2_pages
+ 
+ #endif  // GUI2_PAGES_DECRYPT_PAGE_H
+diff --git a/gui2/pages/page_router.h b/gui2/pages/page_router.h
+index e8877e9..56c8125 100644
+--- a/gui2/pages/page_router.h
++++ b/gui2/pages/page_router.h
+@@ -33,6 +33,7 @@ enum class page_id {
+   FORMAT_DATA,
+   WIPE_PROGRESS,
+   DECRYPT,
++  DECRYPT_USERS,
+   DECRYPT_PROGRESS,
+   BACKUP,
+   BACKUP_PROGRESS,
+diff --git a/gui2/pages/page_state.h b/gui2/pages/page_state.h
+index f29cf8b..f2f2bde 100644
+--- a/gui2/pages/page_state.h
++++ b/gui2/pages/page_state.h
+@@ -5,6 +5,7 @@
+ #include <cstdint>
+ 
+ #include "backend/hardware_settings.h"
++#include "backend/decrypt_backend.h"
+ #include "backend/reboot_backend.h"
+ #include "components/slider.h"
+ #include "components/keyboard.h"
+@@ -175,6 +176,8 @@ struct page_state {
+   gui2_components::keyboard backup_keyboard_widget;
+   lv_obj_t* decrypt_status = nullptr;
+   bool decrypt_failed = false;
++  bool decrypt_from_users = false;
++  std::vector<gui2_backend::decrypt_user> decrypt_users;
+   bool language_from_decrypt = false;
+   progress_page_view decrypt_progress;
+   console_window decrypt_console;
+diff --git a/partitionmanager.cpp b/partitionmanager.cpp
+index d49d4c0..a170ed4 100755
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -32,6 +32,7 @@
+ #include <sys/wait.h>
+ 
+ #include <algorithm>
++#include <android-base/scopeguard.h>
+ #include <cerrno>
+ #include <charconv>
+ #include <cstdio>
+@@ -88,7 +89,7 @@
+ 
+ #ifdef TW_INCLUDE_CRYPTO
+ #include "gui2/backend/xml/xml.h"
+-#include "gui2/third_party/rapidxml.hpp"
++#include <tinyxml2.h>
+ #ifdef TW_INCLUDE_FBE
+ #include "Decrypt.h"
+ #include "FsCrypt.h"
+@@ -1901,51 +1902,53 @@ void TWPartitionManager::PostDecrypt(const std::string& block_device) const {
+ 
+ void TWPartitionManager::ParseUsers() {
+ #ifdef TW_INCLUDE_FBE
+-  // twrp.user.<id>.decrypt is set by vold's load_all_de_keys for each user with a DE key.
+-  // Enumerate /data/system/users for <id>.xml profiles instead of polling 0..9999, then
+-  // let the property gate which of those users are in scope for decryption.
++  // DE keys, rather than optional display-name XML, define the discovered users.
++  // vold publishes a property only after installing each user's DE key.
+   const fs::path users_dir = "/data/system/users";
+-  for (std::error_code dir_ec; const auto& entry : fs::directory_iterator(users_dir, dir_ec)) {
+-    if (!entry.is_regular_file(dir_ec)) continue;
+-
+-    auto name = entry.path().filename();
+-    if (name.extension() != ".xml") continue; // also skips per-user <id>/ subdirs
+-    std::string stem = name.stem();
++  const fs::path keys_dir = "/data/misc/vold/user_keys/de";
++  std::vector<UsersStruct> discovered;
++  std::error_code dir_ec;
++  for (fs::directory_iterator it(keys_dir, dir_ec), end; !dir_ec && it != end; it.increment(dir_ec)) {
++    std::error_code entry_ec;
++    if (!fs::is_directory(it->symlink_status(entry_ec)) || entry_ec) continue;
++    const std::string stem = it->path().filename().string();
+     int user_id = 0;
+     if (auto [ptr, ec] = std::from_chars(stem.data(), stem.data() + stem.size(), user_id);
+       ec != std::errc{} || ptr != stem.data() + stem.size())
+       continue; // non-numeric id
+-    if (user_id < 0 || user_id > 9999) continue; // preserve TWRP's id-range contract
++    if (user_id < 0 || user_id > 9999 || stem != std::to_string(user_id)) continue;
+ 
+     const std::string val = android::base::GetProperty(
+         std::format("twrp.user.{}.decrypt", user_id), "-1");
+-    if (val == "-1") continue; // property still gates inclusion
++    if (val != "0" && val != "1") continue;
+ 
+-    // Resolve the display name with early returns instead of a 5-level pyramid.
++    // A missing or damaged name must not hide a user or abort recovery.
+     auto resolve_user_name = [users_dir](int id) -> std::string {
+       const std::string& id_str = std::to_string(id);
+       fs::path path = users_dir / std::format("{}.xml", id);
++      std::error_code ec;
++      if (!fs::is_regular_file(fs::symlink_status(path, ec)) || ec ||
++          fs::file_size(path, ec) > 65536 || ec) return id_str;
+ 
+       // Android 12+ stores ABX (binary XML) profiles; convert to a readable temp file.
++      std::string converted;
++      auto cleanup = android::base::make_scope_guard([&] {
++        if (!converted.empty()) { std::error_code ignored; fs::remove(converted, ignored); }
++      });
+       if (!TWFunc::CheckXmlFormat(path)) {
+-        if (std::string converted; TWFunc::AbxToXml(path, converted)) {
+-          LOGINFO("Android 12+: '%s' converted to plain XML (user %d).\n",
+-                  path.c_str(), id);
+-          path = converted;
+-        }
++        if (!TWFunc::AbxToXml(path, converted)) return id_str;
++        path = converted;
+       }
+-
+-      const std::unique_ptr<char, decltype(&free)> buf(
+-          recovery_load_xml(path.string()), free);
+-      if (!buf) return id_str; // no/empty profile -> id fallback
+-
+-      const auto doc = std::make_unique<rapidxml::xml_document<> >();
+-      doc->parse<0>(buf.get()); // non-throwing (parse_error_handler)
+-      const rapidxml::xml_node<>* user_node = doc->first_node("user");
++      if (fs::file_size(path, ec) > 65536 || ec) return id_str;
++      tinyxml2::XMLDocument doc;
++      if (doc.LoadFile(path.c_str()) != tinyxml2::XML_SUCCESS) return id_str;
++      const auto* user_node = doc.FirstChildElement("user");
+       if (!user_node) return id_str;
+-      const rapidxml::xml_node<>* name_node = user_node->first_node("name");
+-      if (!name_node) return id_str;
+-      return std::format("{} ({})", name_node->value(), id);
++      const auto* name_node = user_node->FirstChildElement("name");
++      if (!name_node || !name_node->GetText()) return id_str;
++      const std::string name = name_node->GetText();
++      if (name.empty() || name.size() > 256) return id_str;
++      return std::format("{} ({})", name, id);
+     };
+ 
+     UsersStruct user;
+@@ -1954,8 +1957,16 @@ void TWPartitionManager::ParseUsers() {
+     std::string filename; // Get_Password_Type out-param (unused)
+     user.type = android::keystore::Get_Password_Type(user_id, filename);
+     user.is_decrypted = val == "1";
+-    users_list_.push_back(user);
++    discovered.push_back(std::move(user));
++  }
++  if (dir_ec) {
++    LOGERR("Cannot enumerate FBE DE users: %s\n", dir_ec.message().c_str());
++    discovered.clear();
+   }
++  std::sort(discovered.begin(), discovered.end(), [](const auto& a, const auto& b) {
++    return a.user_id < b.user_id;
++  });
++  users_list_.swap(discovered);
+   CheckUsersDecryptionStatus();
+ #endif
+ }
