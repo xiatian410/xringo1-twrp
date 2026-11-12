@@ -1,5 +1,7 @@
 # 小米 15S Pro（dijun）TWRP 多版本适配目标与离线验收规范
 
+当前执行入口：[工作队列](docs/WORK-QUEUE.md)。根据用户对重复工作的反馈，已有证据在相关源码/输入未变时复用；新增验证必须能推动具体实现决定。下一项回到最终镜像的 OS4 自动触摸启动接续，不继续扩展震动/RTC 同类模拟，也不优先开展 MTP 目录日期支线。以下历史检查点仅供追溯，测试数增加不代表新增功能修复；完整目标保留。
+
 2026-11-12 NV与公开同步复核：当前普通GUI隐藏NVData/NVCFG/protect等目标，后台双向拒绝手动挂载/卸载（含规范化路径及解析别名），26项当前源码复核通过；保留原厂fstab和内部核心访问，不是特权访问控制。公开仓库https://github.com/xiatian410/xringo1-twrp已确认PUBLIC；后续每个连贯源码/配置/测试/文档修改批次均执行scripts/sync_github.py --push并核对远端HEAD，镜像、编译文件、原厂blob、私钥和原始设备日志不上传。详见AGENTS.md和docs/GITHUB-PUBLICATION.md。
 
 2026-11-12 RTC原厂回调证据收尾：六份vendor_boot按OTA manifest核对镜像后重读原始模块，ARM64读/设与OS4刷新共56场景通过。PMIC设置失败返回-5但软件偏移已更新；OS4刷新PMIC失败使用计数回退，reset错误传播。MMIO/PMIC/日历转换为显式夹具，不是完整probe/hctosys或物理漂移验收；无新增校时偏移或生产修改。详见docs/RTC-DRIVER-EMULATION.md；候选仍mtp-directory（215914df…）/765来源，本轮无需构建。设置及OS4震动正常确认保持，完整12组继续进行中。
