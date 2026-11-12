@@ -8,7 +8,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "43b1e761c9dee86548a4f8ef9b08e529ff5ae973f0c701d231496ea1408951dc",
+    "sha256": "4d01af7edeb64d9ca3f770e83df538a27d9c2c83887fa88744cf702d7d5a415c",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -28,7 +28,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "8ec49f9e2938bb77af85bdf88a5944cd8f7447a7ec6317ea8c73761b35510f7b",
+    "sha256": "c4fe48d256fe68068194ef9ac35d8783347396f09f95f2798e3bde77f0cc7cd3",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -1472,7 +1472,7 @@
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "062c502d6b61fed9da15a8a8be3baf7ca04d1e739a38afea92a674599288fdaf",
+    "sha256": "5df92086f059b34380b61b38463d7901f2729bba5dfc1a00281ef826ef42eef1",
     "mode": "0o644"
   },
   "tests/archive_pipeline_stubs.json": {
