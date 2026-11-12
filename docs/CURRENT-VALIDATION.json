@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-log-export.img",
-  "image_sha256": "629f19792d41e1fbc4ec0ad0b7f38bed70ba9b51f234544de4f5cd53a551bf3c",
-  "production_sources": 781,
+  "image_name": "recovery-dijun-unified-snapshot-sync.img",
+  "image_sha256": "e1e651e05787f750a310a8eaaff8da897e38043c40d8eac59b69afce2f8d3cc6",
+  "production_sources": 784,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -619,6 +619,17 @@
       "scope": "Intact ARM64 DynamicPartitionControlAndroid metadata fallback and map gating.\n\nExisting friend injects ISnapshotManager with missing metadata and map results;\ndirect preparation and AVB footer effect are explicit no-op/return boundaries.\nChecks compression caller gate; isolated map rejection is not an install defect.\nNo actual SnapshotManager, metadata, device mapping, AVB access or full OTA.\n",
       "production_fix": false,
       "snapshot_manager_executed": false
+    },
+    {
+      "name": "ARM64-SnapshotManager-state-publication",
+      "status": "PASS",
+      "cases": 16,
+      "failures": 0,
+      "local_report_sha256": "16dcb4c1a7d8060ee4fc5e7f0a7b81471e98a0b8a4bdca32792386936c51638f",
+      "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n",
+      "production_fix": true,
+      "snapshot_manager_executed": true,
+      "old_failed_checks": 4
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
@@ -626,5 +637,5 @@
     12
   ],
   "current_batch_document": "docs/OTA-OPERATION-COW.md",
-  "current_batch_groups_scope": "Metadata-unavailable fallback implementation decision only; no production change or new delivered image, real SnapshotManager still pending."
+  "current_batch_groups_scope": "Patch0069: reject SnapshotManager file fsync errors; actual ARM64 state/flags lifecycle, no devices or full OTA."
 }

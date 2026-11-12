@@ -6,14 +6,16 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-log-export.img` |
-| SHA-256 | `629f19792d41e1fbc4ec0ad0b7f38bed70ba9b51f234544de4f5cd53a551bf3c` |
-| 生产来源绑定 | 781 份 |
+| 文件 | `recovery-dijun-unified-snapshot-sync.img` |
+| SHA-256 | `e1e651e05787f750a310a8eaaff8da897e38043c40d8eac59b69afce2f8d3cc6` |
+| 生产来源绑定 | 784 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
 ## 本次候选包含的修正
+
+- **0069**：SnapshotManager 的临时文件同步失败不再继续发布并误报成功；重试 `EINTR`。实际 ARM64 状态文件生命周期 16 场景通过，旧 helper 两项 I/O 错误误报成功、两项缺少实际 EINTR 重试。共享 libsnapshot 使 init / fastbootd / Recovery / OTA 更新器均重新链接；未变的界面与 profile 证据复用。见 [状态发布](docs/OTA-OPERATION-COW.md#快照状态文件同步失败0069)。这不是完整 OTA 或断电验收。
 
 - **0068**：复制日志检查存储挂载、文件复制、内核 / logcat 获取和写入结果；任一已勾选导出失败会标为 FAILED，保留其他成功文件。13 场景通过、旧实现 11 失败，详见 [日志导出](docs/OPERATION-FEEDBACK-ADAPTATION.md#日志导出的失败状态0068)。
 

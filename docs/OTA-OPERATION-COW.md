@@ -239,3 +239,22 @@ PreparePartitionsForUpdate / BootControl 的路径和设备映射由明确替身
 初次测试误将 `-UNDEBUG` 放在构建模板的 `-DNDEBUG` 之前，断言实际被关闭，所得初次 PASS 已作废、仅本地留档；最终夹具加入编译期 NDEBUG 拒绝，并在所有生产参数之后启用断言，六场景重新通过。负向断言运行显示孤立映射失败，随后按调用方条件修正测试预期，未将夹具假设误记为生产缺陷。
 
 当前生产来源恢复并核对为 log-export 候选的 781 份绑定，交付仍为 `recovery-dijun-unified-log-export.img`（`629f19792d41e1fbc4ec0ad0b7f38bed70ba9b51f234544de4f5cd53a551bf3c`）。试验补丁和试验镜像不交付，未重编无变化的正式候选。报告 `logs/ota-recovery-fallback.json`，范围复核入口 `python3 scripts/review_recovery_fallback.py`。这新增一条实现决定的证据，不是功能修复；真实 SnapshotManager / metadata / 映射和完整 OTA 仍待完成。
+
+## 快照状态文件同步失败0069
+
+本批执行原始 ARM64 `SnapshotManager::FinishedSnapshotWrites()`，不再用该方法的返回值替身。实际 protobuf 状态读取、目录锁、snapshot 状态文件解析、forward-merge / rollback / boot 标记处理与原子写入辅助函数，均在私有临时目录执行。初始 `Initiated` 状态和 `using_snapuserd` snapshot 记录由夹具提供，不代表真实 COW 已写完；映射、分区访问、image manager 和切槽操作全部拒绝。唯一允许的 boot HAL 方法为记录 `SNAPSHOTTED` 并提供成功 / 失败结果的边界。
+
+发现原 `WriteStringToFileAtomic()` 在临时文件 `fsync` 返回错误后只记录日志，仍继续 rename 并可能返回成功。针对 `snapshot-boot.tmp` 和 `state.tmp` 分别注入一次 `EIO`，原 `FinishedSnapshotWrites()` 均返回 true。调用方 `DynamicPartitionControlAndroid::FinishUpdate()` 直接传播该结果，之后的 PostinstallRunnerAction 据此决定是否继续切槽，故这是实际错误传播缺陷。
+
+维护补丁 [0069-snapshot-state-sync-errors.patch](../dtsrc/O1_asic_dual/patches/0069-snapshot-state-sync-errors.patch) 在文件同步失败时返回 false，并以 `TEMP_FAILURE_RETRY` 重试 `EINTR`。保持目录同步的既有语义。该辅助函数由多种 libsnapshot 库共用，因此 init、fastbootd、Recovery 和 update_engine_sideload 都重新链接；没有改动签名或 AVB 策略。
+
+```bash
+python3 tests/ota_snapshot_finish.py
+python3 scripts/audit_snapshot_sync_delivery.py
+```
+
+16 个场景覆盖正常完成、wipe forward 标记、幂等调用、非法初态、缺 metadata / snapshots、损坏 snapshot protobuf、forward 写入 / rollback 移除 / boot rename / state 临时文件打开失败、HAL merge 状态拒绝、两个文件同步错误和两个 `EINTR` 重试。成功时逐字比较保留的状态字段、boot 槽位和标记；失败时检查原状态保留。旧 helper 使用同一夹具单独编译覆盖，16 项中两项 I/O 错误误报成功，另两项虽返回成功但没有实际重试同步；新 helper 全部通过。夹具编译强制开启断言，QEMU、linker、库、静态 archives、源码与输入均有摘要绑定。
+
+最终候选 `recovery-dijun-unified-snapshot-sync.img`，SHA-256 `e1e651e05787f750a310a8eaaff8da897e38043c40d8eac59b69afce2f8d3cc6`。`installclean` 后 `make -j$(nproc)`，30 并发，784 生产来源绑定、六 profile 封装通过。本地报告为 `logs/ota-snapshot-finish.json`、`logs/ota-snapshot-finish-before.json` 与 `logs/snapshot-sync-delivery.json`；原始日志和镜像不上传。
+
+**边界：** 状态组不是事务。boot 标记或 HAL merge 状态可能先于最终 state 写入保留；失败的临时文件也会保留，后续正常写入沿用既有覆盖行为。已经 `Unverified` 的幂等调用不会重新检查标记。本批不新增全组回滚，不证明断电持久性、实际 HAL、metadata 挂载、设备映射、snapuserd、合并或整份 OTA 到最终切槽的完整接续。两份原厂 payload 的既有结果仅复用未变的执行器范围，不把本批状态文件测试与它们拼接成完整安装证明。

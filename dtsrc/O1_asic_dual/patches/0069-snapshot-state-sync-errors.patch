@@ -1,0 +1,15 @@
+diff --git a/fs_mgr/libsnapshot/utility.cpp b/fs_mgr/libsnapshot/utility.cpp
+index 937cdee..eea829f 100644
+--- a/fs_mgr/libsnapshot/utility.cpp
++++ b/fs_mgr/libsnapshot/utility.cpp
+@@ -188,8 +188,9 @@ bool WriteStringToFileAtomic(const std::string& content, const std::string& path
+         }
+         // rename() without fsync() is not safe. Data could still be living on page cache. To ensure
+         // atomiticity, call fsync()
+-        if (fsync(fd) != 0) {
++        if (TEMP_FAILURE_RETRY(fsync(fd)) != 0) {
+             PLOG(ERROR) << "Failed to fsync " << tmp_path;
++            return false;
+         }
+     }
+     if (rename(tmp_path.c_str(), path.c_str()) == -1) {

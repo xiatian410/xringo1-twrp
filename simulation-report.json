@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-log-export.img",
-  "image_sha256": "629f19792d41e1fbc4ec0ad0b7f38bed70ba9b51f234544de4f5cd53a551bf3c",
-  "image_status": "Clean-built patch0068 log-export error propagation. Requested copy/capture/write failure reports FAILED; successful independent files retained. Full adaptation in progress.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-snapshot-sync.img",
+  "image_sha256": "e1e651e05787f750a310a8eaaff8da897e38043c40d8eac59b69afce2f8d3cc6",
+  "image_status": "Clean-built patch0069: SnapshotManager atomic publication rejects file fsync errors and retries EINTR. Actual ARM64 state-file lifecycle16cases /old2false-success. Full adaptation remains in progress.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance. A/B command preparation now has21-case native coverage with real ZIP and harmless engine; not payload application. VABC Init/replace/ZERO/checkpoint/Finished/Close and original snapshot reader -> materialized-file -> original asynchronous target verifier now execute10 ARM64 cases. Short input is rejected with error15; full DeltaPerformer/signed payload/SnapshotManager/snapuserd/merge remain open. Patch0065 now propagates partition finish/close errors through intact ARM64 DeltaPerformer Write (8 cases, 3 pre-fix failures); parsed manifest and writer I/O are explicit boundaries. Full payload authentication/mapping/install lifecycle remains open. Synthetic CrAU/protobuf/data streaming now runs13 ARM64 cases through original ParseManifest/InstallPlan/factory/VABC/VerifyPayload/target verifier without private-state seeding. Device mapping remains FileControl; recovery signature verification remains existing compile-time bypass, framing marker is not valid signature. Stock authenticated OTA, SnapshotManager/snapuserd and complete installer lifecycle remain open."
+    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance. A/B command preparation now has21-case native coverage with real ZIP and harmless engine; not payload application. VABC Init/replace/ZERO/checkpoint/Finished/Close and original snapshot reader -> materialized-file -> original asynchronous target verifier now execute10 ARM64 cases. Short input is rejected with error15; full DeltaPerformer/signed payload/SnapshotManager/snapuserd/merge remain open. Patch0065 now propagates partition finish/close errors through intact ARM64 DeltaPerformer Write (8 cases, 3 pre-fix failures); parsed manifest and writer I/O are explicit boundaries. Full payload authentication/mapping/install lifecycle remains open. Synthetic CrAU/protobuf/data streaming now runs13 ARM64 cases through original ParseManifest/InstallPlan/factory/VABC/VerifyPayload/target verifier without private-state seeding. Device mapping remains FileControl; recovery signature verification remains existing compile-time bypass, framing marker is not valid signature. Stock authenticated OTA, SnapshotManager/snapuserd and complete installer lifecycle remain open. Actual SnapshotManager FinishedSnapshotWrites state-file lifecycle16cases now covered; real mapping/merge/payload-to-finalization integration still open."
   ],
   "hardware_unverified": [
     "motor output",
@@ -2955,6 +2955,14 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Intact ARM64 DynamicPartitionControlAndroid metadata fallback and map gating.\n\nExisting friend injects ISnapshotManager with missing metadata and map results;\ndirect preparation and AVB footer effect are explicit no-op/return boundaries.\nChecks compression caller gate; isolated map rejection is not an install defect.\nNo actual SnapshotManager, metadata, device mapping, AVB access or full OTA.\n"
+    },
+    {
+      "name": "ARM64-SnapshotManager-state-publication",
+      "grade": "S2",
+      "evidence": "logs/ota-snapshot-finish.json",
+      "evidence_sha256": "16dcb4c1a7d8060ee4fc5e7f0a7b81471e98a0b8a4bdca32792386936c51638f",
+      "count": 16,
+      "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n"
     }
   ],
   "source_review_followups": [
@@ -3270,8 +3278,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/copylog-delivery.json",
-    "scope": "Patch0068;clean build;781 sources;six profiles;13 log-export cases /11 old failures;unchanged backup/refresh methods reused.",
+    "evidence": "logs/snapshot-sync-delivery.json",
+    "scope": "Patch0069;clean build;784 sources;six profiles;actual ARM64 SnapshotManager16cases /four old failed checks (two I/O false-success, two missing EINTR retries);unchanged GUI/profile/update_engine scope reused.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -3619,6 +3627,21 @@
       "snapshot_manager_executed": false,
       "caller_gate_source_review": true,
       "decision": "Do not change mapping gate based on isolated MapAllPartitions failure; actual verifier/factory gate on compression mode. Real SnapshotManager integration remains open."
+    },
+    "snapshot_state_publication": {
+      "document": "docs/OTA-OPERATION-COW.md#快照状态文件同步失败0069",
+      "report": "logs/ota-snapshot-finish.json",
+      "report_sha256": "16dcb4c1a7d8060ee4fc5e7f0a7b81471e98a0b8a4bdca32792386936c51638f",
+      "before": "logs/ota-snapshot-finish-before.json",
+      "patch": "0069-snapshot-state-sync-errors.patch",
+      "cases": 16,
+      "old_failures": 4,
+      "snapshot_manager_executed": true,
+      "full_ota_install": false,
+      "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n",
+      "limitation": "Existing boot marker/HAL merge status may persist after later state write failure. No multi-file rollback or physical power-loss proof.",
+      "old_false_success_io_errors": 2,
+      "old_missing_eintr_retries": 2
     }
   },
   "os4_haptics_user_confirmation": {

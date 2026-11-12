@@ -410,6 +410,19 @@
         "payload_consumer/delta_performer.cc": "27dae8d768409874f614a10e14253297fecf5219a1430ed7aee1949ee42d0a9f",
         "payload_consumer/filesystem_verifier_action.cc": "1506811dc8a7ee1e611fbe2aa3f28f07a5444d78af7a1407adf78ea090b609c3"
       }
+    },
+    "system/core": {
+      "commit": "b6e6bf192be2c4341d5dac41ccfa634d2d684816",
+      "patches": [
+        {
+          "file": "0069-snapshot-state-sync-errors.patch",
+          "sha256": "e40deb1c47d7b7ec2d2461ac4f9d8b2cab9fbb1cdfaa56752bebce2685a30536"
+        }
+      ],
+      "result_files": {
+        "fs_mgr/libsnapshot/utility.cpp": "744f52f9c8ee2f13b097fb3f72b23e731801a6513790db789bda19d0639cc351",
+        "fs_mgr/libsnapshot/snapshot.cpp": "4918ef117d71be77ac27e9c60f9f4655201c3dfcc6ca304dc5bd28b7362d3ebb"
+      }
     }
   }
 }
