@@ -462,6 +462,16 @@
       "failures": 0,
       "local_report_sha256": "50e560f868d332351683603cf0c561780b74d3e6e345144136c4488299bce16c",
       "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
+    },
+    {
+      "name": "ota-cow-roundtrip",
+      "status": "PASS",
+      "cases": 5,
+      "local_report_sha256": "040d1f0d46c124160786dc421c4e86f622710b1be72a8ff85732d535dc4be52e",
+      "scope": "Execute current Recovery ARM64 COW archive with stock OTA options on private files.\n\nThis tests the current build archive's real writer, parser and LZ4 decompressor, not SnapshotManager,\nupdate_engine scheduling, dm-user/UBLK, LP metadata, merge or an OTA install.\nThe delivered linker/shared libraries are image-bound. The archive is bound at\ntest time and is a declared engine link input, not historically hash-bound to\nthe delivered executable by the older 775-source provenance manifest.\nNo phone, device node, mount or physical block device is used.\n",
+      "stock_option_sets": 6,
+      "full_ota_install": false,
+      "archive_historically_bound_to_image": false
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",

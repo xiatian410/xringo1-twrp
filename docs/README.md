@@ -6,6 +6,8 @@
 
 ## 安装、分区与存储
 
+- [OTA 快照 COW 格式的 ARM64 往返验证](OTA-COW-ROUNDTRIP.md)
+
 - [A/B OTA 命令准备与失败收尾](AB-COMMAND-VALIDATION.md)
 - [镜像路由与 ZIP 安装链离线验收](INSTALL-CHAIN-VALIDATION.md)
 - [ZIP 安装链中的真实 ARM64 测试 updater](ZIP-ARM64-EXECUTION.md)

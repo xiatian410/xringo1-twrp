@@ -3335,7 +3335,16 @@
     "native_current_regression": "logs/zip-arm64-host-regression.json",
     "ab_command": "logs/ab-command-chain.json",
     "sideload_rejection_patch": "dtsrc/O1_asic_dual/patches/0064-sideload-synchronous-rejection.patch",
-    "sideload_rejection": "logs/sideload-rejection.json"
+    "sideload_rejection": "logs/sideload-rejection.json",
+    "cow_format_execution": {
+      "document": "docs/OTA-COW-ROUNDTRIP.md",
+      "report": "logs/ota-cow-roundtrip.json",
+      "report_sha256": "040d1f0d46c124160786dc421c4e86f622710b1be72a8ff85732d535dc4be52e",
+      "status": "PASS",
+      "cases": 5,
+      "stock_option_sets": 6,
+      "scope": "Current ARM64 build archive COW3/LZ4/64KiB write/parse/decompress on private files; delivered linker/shared libraries; archive not historically bound by image provenance; not engine/SnapshotManager/merge."
+    }
   },
   "os4_haptics_user_confirmation": {
     "date": "2026-11-12",
