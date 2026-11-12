@@ -1,0 +1,43 @@
+--- a/gui2/shell/status_bar.cpp
++++ b/gui2/shell/status_bar.cpp
+@@ -151,9 +151,13 @@
+   if (view.temperature_label != nullptr) {
+     lv_obj_update_layout(view.root);
+     const int width = lv_obj_get_width(view.temperature_label);
+-    const bool fits = lv_label_get_text(view.temperature_label)[0] != '\0' && right - left >= width;
++    // Keep the centre clear for a front camera. Readings follow the clock
++    // instead of being centred in the space between the clock and battery.
++    const int temperature_right = std::min(right, metrics.width / 2 - gap);
++    const bool fits = lv_label_get_text(view.temperature_label)[0] != '\0' &&
++                      temperature_right - left >= width;
+     lv_obj_set_hidden(view.temperature_label, !fits);
+-    if (fits) lv_obj_set_pos(view.temperature_label, left + (right - left - width) / 2, y);
++    if (fits) lv_obj_set_pos(view.temperature_label, left, y);
+   }
+ }
+ 
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -1840,13 +1840,18 @@
+       if (actual_size == 0) return false;
+ 
+       unsigned long long block_count;
++      uint64_t requested_size;
+       if (length_ < 0) {
+-        // Reduce overall size by this length
+-        block_count = actual_size / 1024LLU - length_ * -1 / 1024LLU;
++        // Avoid both signed negation overflow and unsigned subtraction wrap.
++        const uint64_t reserved = static_cast<uint64_t>(-(length_ + 1)) + 1;
++        if (reserved >= actual_size) return false;
++        requested_size = actual_size - reserved;
+       } else {
+-        // This is the size, not a size reduction
+-        block_count = length_ / 1024LLU;
++        requested_size = static_cast<uint64_t>(length_);
++        if (requested_size > actual_size) return false;
+       }
++      block_count = requested_size / 1024LLU;
++      if (block_count == 0) return false;
+       command += " " + std::to_string(block_count) + "K";
+     }
+     LOGINFO("Resize command: %s\n", command.c_str());

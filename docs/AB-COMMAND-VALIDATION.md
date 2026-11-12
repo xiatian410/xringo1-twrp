@@ -1,5 +1,7 @@
 # A/B OTA 命令准备与失败收尾
 
+2026-11-13 新增0064：原update_engine_sideload在ApplyPayload同步拒绝时仍进入loop，并传入空Error；现在使用有效Error并立即返回失败。7项定向通过，旧版4项失败，已实际编译入bounded-maintenance候选。这不是完整payload写入验证，详见[有限维护](BOUNDED-MAINTENANCE.md)。
+
 维护补丁 0062 修正 `abupdate_binary_command` 在 `payload_properties.txt` 提取失败时返回 `false`（数值 0，即 `INSTALL_SUCCESS`）的错误。调用者之前可能因此使用空参数启动子进程。现在返回 `INSTALL_CORRUPT`，失败不发布残留命令；`Run_Update_Binary` 也在 fork 前拒绝成功码配空命令的生成器结果。
 
 更新器使用 ZIP 文件与条目的原始偏移直接读取 payload，不做 ZIP 解压。因此命令准备必须确认 `payload.bin` 为 stored、长度非零、压缩长度等于原长度，且偏移/长度在包范围内。新增这些检查，偏移以明确的 64 位格式输出。properties 为空或含 NUL 时拒绝，避免 argv 截断 headers；正常 deflated properties 仍可解压并接受。不替代 update_engine 对 payload 格式、hash、签名、manifest 或设备更新策略的验证。

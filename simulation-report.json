@@ -1,8 +1,8 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-ab-command.img",
-  "image_sha256": "704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-bounded-maintenance.img",
+  "image_sha256": "218c5edd28c4e458464fc035a73b68808b016598c51e50877b2c0a1b055da3c3",
   "image_status": "Clean-built offline candidate: A/B command preparation rejects property extraction errors and invalid raw ZIP payload entries before fork; inherits XRING O1 and partition action fixes. Actual OTA/update_engine unverified.",
   "checks": [
     {
@@ -2730,6 +2730,105 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Real tools start/thread/refresh/status/ack -> original adapter -> actual LVGL.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
+    },
+    {
+      "name": "temperature-camera",
+      "evidence": "logs/temperature-camera.json",
+      "evidence_sha256": "769d8a8f32b3110d2b7deeef8d6d93df1f282c683c26a54143e8879cf16b8aa5",
+      "count": 11,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Actual status provider/controller and LVGL temperature layout; settings/time fixtures, no sensor/DRM."
+    },
+    {
+      "name": "temperature-camera-before",
+      "evidence": "logs/temperature-camera-before.json",
+      "evidence_sha256": "9d9d7054bce26cb2b8d0d2211b4b070c07580816031a62482f909efd47ac4abe",
+      "count": 11,
+      "grade": "S2",
+      "result": "expected_failures",
+      "scope": "Actual status provider/controller and LVGL temperature layout; settings/time fixtures, no sensor/DRM."
+    },
+    {
+      "name": "resize-capacity",
+      "evidence": "logs/resize-capacity.json",
+      "evidence_sha256": "e55df617a01bc9ef5642d64600dd9bcaf1462bc6d2a19248bd71726fa3265ed8",
+      "count": 16,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Original ext Resize command bounds; repair/device/command/size are explicit doubles.\n\nNo tool or block device is accessed. Rejects signed-minimum negation, negative\nreservation underflow, sub-KiB results and positive sizes beyond the device.\n"
+    },
+    {
+      "name": "resize-capacity-before",
+      "evidence": "logs/resize-capacity-before.json",
+      "evidence_sha256": "fca293d78a51cb6a62e6b63f46a0cc6500c6753525621a9b6c59699b6a27708e",
+      "count": 16,
+      "grade": "S2",
+      "result": "expected_failures",
+      "scope": "Original ext Resize command bounds; repair/device/command/size are explicit doubles.\n\nNo tool or block device is accessed. Rejects signed-minimum negation, negative\nreservation underflow, sub-KiB results and positive sizes beyond the device.\n"
+    },
+    {
+      "name": "sideload-rejection",
+      "evidence": "logs/sideload-rejection.json",
+      "evidence_sha256": "71373f78ad01da5532c1c11b40390673f813e54b975cbd62d2f5f186411bf208",
+      "count": 7,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Original sideload ApplyUpdatePayload rejection/loop boundary with explicit service doubles.\n\nRuns original header parsing and error publication. Boot control, hardware,\nattempter scheduling and message loop are doubles; no actual OTA writes occur.\n"
+    },
+    {
+      "name": "sideload-rejection-before",
+      "evidence": "logs/sideload-rejection-before.json",
+      "evidence_sha256": "6344a86ff79486efe32ed49165e68faeeb07e7c089db4370435d15767ad37d61",
+      "count": 7,
+      "grade": "S2",
+      "result": "expected_failures",
+      "scope": "Original sideload ApplyUpdatePayload rejection/loop boundary with explicit service doubles.\n\nRuns original header parsing and error publication. Boot control, hardware,\nattempter scheduling and message loop are doubles; no actual OTA writes occur.\n"
+    },
+    {
+      "name": "refresh-page-lifecycle",
+      "evidence": "logs/refresh-page-lifecycle.json",
+      "evidence_sha256": "1f578700a0b89919f8a6dd5a79710e874ee7c8df39d8d6d53ef212a44c24588d",
+      "count": 3,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Original worker/progress adapter, LVGL page_host/scaffold/PUSH/POP/router/actions and bounded re-entry. Route composition, fonts, tick, scan, operation presentation and flush are explicit host fixtures; not full gui2_loop or Android/DRM."
+    },
+    {
+      "name": "bounded-status-readings",
+      "evidence": "logs/bounded-status-readings.json",
+      "evidence_sha256": "61ce5cdc0be700c847e9363b1fa4dde33f505cb00707fe655885df02e6a5efa9",
+      "count": 28,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Execute production battery, temperature, clock policy and status parsing.\n\nSysfs is redirected to disposable files. Wall/monotonic clocks and DataManager\nare substitutes. No real clock is readjusted, no Health HAL or hardware is used."
+    },
+    {
+      "name": "bounded-repair-status",
+      "evidence": "logs/bounded-repair-status.json",
+      "evidence_sha256": "94a9f8a50d59a5fcb04f1060fb380866b7a5d13bfb3cd3aa1ff72e7c877a5d71",
+      "count": 0,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Execute real Repair with private command/mount doubles and real shell exits.\n\nFilesystem/partition access is substituted. The generated repair command is\nrecorded, never executed; private shell exit/signals supply POSIX wait status.\nSeparate filesystem_tools_image_test executes the actual ARM64 repair tool.\n"
+    },
+    {
+      "name": "bounded-init",
+      "evidence": "logs/bounded-init.json",
+      "evidence_sha256": "9ddcfa70628f48df7950d5980272c41a765e9837307cb598e630eb4c25be9414",
+      "count": 5,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Production host_init_verifier syntax plus static activation/lost-service trigger assertions; not a running Android init."
+    },
+    {
+      "name": "bounded-profile-runtime",
+      "evidence": "logs/bounded-profile-runtime.json",
+      "evidence_sha256": "50e560f868d332351683603cf0c561780b74d3e6e345144136c4488299bce16c",
+      "count": 9,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
     }
   ],
   "source_review_followups": [
@@ -3234,7 +3333,9 @@
     "image_route_current": "logs/zip-queue-image-regression.json",
     "arm64_fixture": "logs/zip-install-arm64.json",
     "native_current_regression": "logs/zip-arm64-host-regression.json",
-    "ab_command": "logs/ab-command-chain.json"
+    "ab_command": "logs/ab-command-chain.json",
+    "sideload_rejection_patch": "dtsrc/O1_asic_dual/patches/0064-sideload-synchronous-rejection.patch",
+    "sideload_rejection": "logs/sideload-rejection.json"
   },
   "os4_haptics_user_confirmation": {
     "date": "2026-11-12",
@@ -3317,6 +3418,29 @@
     "production_fix": false,
     "conclusion": "User logs show refresh successfully ended; non-atomic main-thread sample passes XRING DRM commit, not proof of sustained hang.",
     "worker_evidence": "logs/refresh-worker-chain.json",
-    "worker_scope": "Original worker state publication and LVGL adapter pass with scan/presentation doubles; full GUI tick and DRM unverified. No production fix."
+    "worker_scope": "Original worker state publication and LVGL adapter pass with scan/presentation doubles; full GUI tick and DRM unverified. No production fix.",
+    "lifecycle_evidence": "logs/refresh-page-lifecycle.json",
+    "lifecycle_scope": "Actual host LVGL page host/router/PUSH/POP/actions plus worker; route/tick/scan/display fixtures. No defect reproduced; physical presentation unresolved."
+  },
+  "finite_maintenance": {
+    "date": "2026-11-13",
+    "selected_groups": [
+      6,
+      7,
+      8,
+      10,
+      11,
+      12
+    ],
+    "document": "docs/BOUNDED-MAINTENANCE.md",
+    "status": "delivered-offline-with-explicit-limits",
+    "patches": [
+      "0063-status-temperature-resize-bounds.patch",
+      "0064-sideload-synchronous-rejection.patch"
+    ],
+    "full_group_acceptance": false,
+    "other_groups": "Outside current maintenance batch; historical outstanding items retained.",
+    "refresh_incident_fixed": false,
+    "audit": "logs/bounded-maintenance-delivery.json"
   }
 }

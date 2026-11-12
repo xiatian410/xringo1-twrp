@@ -1,5 +1,7 @@
 # Xiaomi 15S Pro / dijun — unified recovery adaptation
 
+2026-11-13 当前候选：`recovery-dijun-unified-bounded-maintenance.img`，SHA256 `218c5edd28c4e458464fc035a73b68808b016598c51e50877b2c0a1b055da3c3`。修正温度中央摄像头遮挡、ext扩容尺寸边界及A/B更新器同步拒绝收尾；有限页面生命周期检查未复现刷新现场故障。775来源、清理构建、六profile封装、5份init与9组/102阶段激活回放通过。范围与剩余项见[本批维护](docs/BOUNDED-MAINTENANCE.md)。编译文件不上传GitHub。
+
 当前新增 [A/B 命令失败与 payload ZIP 存储检查](docs/AB-COMMAND-VALIDATION.md)，尚未完成真实 OTA 安装验收。
 
 当前候选加载页显示 `XRING O1`，并修正刷入目标缺失与高级清除/分区工具 NV 暴露，见 [分区操作说明](docs/PARTITION-ACTIONS.md)。源码公开同步；镜像与编译文件不上传。

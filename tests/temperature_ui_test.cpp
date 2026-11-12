@@ -37,6 +37,14 @@ static void check_bounds(const gui2_shell::status_bar_view& v,int width,int heig
   lv_area_t a;lv_obj_get_coords(o,&a);
   if(!(a.x1>=0&&a.x2<width&&a.y1>=0&&a.y2<height)) fprintf(stderr,"bounds %d %d %d %d width%d obj%p time%p rec%p temp%p\n",a.x1,a.y1,a.x2,a.y2,width,(void*)o,(void*)v.time_label,(void*)v.recording_indicator,(void*)v.temperature_label);
   assert(a.x1>=0&&a.x2<width&&a.y1>=0&&a.y2<height);
+  if(o==v.temperature_label) {
+   // Even with no battery/Wi-Fi, temperature must stay beside the clock,
+   // outside the central camera area instead of drifting into the centre.
+   assert(a.x2 < width/2-gui2_core::ui_px(12));
+   const auto* before=visible(v.recording_indicator)?v.recording_indicator:v.time_label;
+   lv_area_t previous;lv_obj_get_coords(before,&previous);
+   assert(a.x1==previous.x2+1+gui2_core::ui_px(12));
+  }
   for(auto b:boxes)assert(a.x2<b.x1||b.x2<a.x1||a.y2<b.y1||b.y2<a.y1);
   boxes.push_back(a);
  }

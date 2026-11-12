@@ -246,6 +246,10 @@
         {
           "file": "0062-ab-payload-command-validation.patch",
           "sha256": "f65aefcdaea5803835e5b6e48ecd76763701b51835460f88d90bc7cdba25359f"
+        },
+        {
+          "file": "0063-status-temperature-resize-bounds.patch",
+          "sha256": "0726aeb3aae3fe3130eeadd1b50060b9bad564409c7f7437a583efdaf9344ebd"
         }
       ],
       "result_files": {
@@ -253,7 +257,7 @@
         "etc/init/keystore2.rc": "aa28727dfc718c059b926215f1fcfa9917132265dc01fbd329dcb928a783768e",
         "gui2/app/screen_actions.cpp": "188556ece804fedc23d4d9c2214418de89f49caa4560405dc41e9bcfd5577da1",
         "gui2/gui2_input.cpp": "3504c83906edf8192d0ff717d35a6f6c38770282cba8fd56ec24ebcd55dbe625",
-        "partition.cpp": "eb2e69b75b82518e15f20777402f9e87a46ba3ecbaae8ed9f955f64610f1eae3",
+        "partition.cpp": "68bf999f9759eaaecfe79560cdfeba7a7107294683b8b615dd0396b668f1af32",
         "twrpminui/force_feedback.cpp": "f7bdb5f50e5ef9d0ecd2ab161fa8f6143292c1207f064147a2db94b080d86f41",
         "twrpminui/graphics_drm.cpp": "61611757cc147b2f925ed52c6f73334acd7ae11d7fa3954d720cbeb8d47d0447",
         "mtp/MtpFfsHandle.cpp": "65f9c45e4cc3ac14dcf8c03aa96c94c59983a10d80bf29b38d2d1e3f15836fe3",
@@ -323,7 +327,7 @@
         "gui2/backend/webm_vp8.cpp": "a8bea7cda9396ad6dba52147bbe7ea7ad06cb85805ac7cc61b055a0abafe3130",
         "gui2/components/check_row.cpp": "aa33470ec91d1924cb858c99b576206930ec5a3347ab4315d096e766824cce31",
         "gui2/backend/status_backend.h": "8779adc4834c2cd8e5a9a370a25a847c2e70abf4c15bc60af2030d6082deda38",
-        "gui2/shell/status_bar.cpp": "c2d49cd959df3d5315fad89bc9683a2ad9a18fe5e4357158ecb1337bab691d85",
+        "gui2/shell/status_bar.cpp": "e5a4d820dedfa9ea7523827a60dd532bbc2dec2d7268d515b7384b95a4002047",
         "gui2/shell/status_bar.h": "1ecb3d3ca1fa3cda0e1cc5de75908eac7e87f47722a5a5427b30a7f83edee883",
         "gui2/backend/settings_store.h": "6886473f7a177484c35120aa252176a926e33681e3ce85366b3f47f9616cd59f",
         "gui2/backend/twrp_settings_store.h": "9f6e2fdc19dbd6e68fa2215fd2dc949408eea14c0f51e9df31d3b2f136558600",
@@ -375,6 +379,18 @@
         "FsCrypt.cpp": "1110e021bb37cb5e16c33528a26f7f6b239fdbce045e36aa863ffe9ca169ea81",
         "Decrypt.cpp": "a38e2440f2a033435c822c44e35a9be1ef8d5ad11f8b16ba4e32ff8077047dc6",
         "Android.bp": "bb073d5ee838770abbf2f6a4af96012b5580d77bfc552c4d7995ef935725bcb2"
+      }
+    },
+    "system/update_engine": {
+      "commit": "a4c7444f722bada4e3880a5e38b42b9aa4ee37a4",
+      "patches": [
+        {
+          "file": "0064-sideload-synchronous-rejection.patch",
+          "sha256": "fb82439d1587e1156d2b6162c1e1fc5638d9bdca5dcd9ac0969e1897a06b28f3"
+        }
+      ],
+      "result_files": {
+        "aosp/sideload_main.cc": "5a6621e7c30f02c6335d2b12de982d957ada5ad170d8b23719a9c18b08f0cfc0"
       }
     }
   }

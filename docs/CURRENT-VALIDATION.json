@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-ab-command.img",
-  "image_sha256": "704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb",
-  "production_sources": 772,
+  "image_name": "recovery-dijun-unified-bounded-maintenance.img",
+  "image_sha256": "218c5edd28c4e458464fc035a73b68808b016598c51e50877b2c0a1b055da3c3",
+  "production_sources": 775,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "User confirms invocation is normal.",
   "checks": [
@@ -405,7 +405,73 @@
       "failures": 0,
       "local_report_sha256": "6b18141e5427e92ec07f40a5131b3c274bdf0a0392fece0e393323d113024ea7",
       "scope": "Real tools start/thread/refresh/status/ack -> original adapter -> actual LVGL.\n\nUpdateSystemDetails is a condition-variable scan boundary, operation presentation\nand DataManager are explicit doubles; unrelated vtable/jobs assert if reached.\nNo Android worker runtime, actual directory scan, GUI tick routing or DRM output.\n"
+    },
+    {
+      "name": "temperature-camera",
+      "status": "PASS",
+      "cases": 11,
+      "failures": 0,
+      "local_report_sha256": "769d8a8f32b3110d2b7deeef8d6d93df1f282c683c26a54143e8879cf16b8aa5",
+      "scope": "Actual status provider/controller and LVGL temperature layout; settings/time fixtures, no sensor/DRM."
+    },
+    {
+      "name": "resize-capacity",
+      "status": "PASS",
+      "cases": 16,
+      "failures": 0,
+      "local_report_sha256": "e55df617a01bc9ef5642d64600dd9bcaf1462bc6d2a19248bd71726fa3265ed8",
+      "scope": "Original ext Resize command bounds; repair/device/command/size are explicit doubles.\n\nNo tool or block device is accessed. Rejects signed-minimum negation, negative\nreservation underflow, sub-KiB results and positive sizes beyond the device.\n"
+    },
+    {
+      "name": "sideload-rejection",
+      "status": "PASS",
+      "cases": 7,
+      "failures": 0,
+      "local_report_sha256": "71373f78ad01da5532c1c11b40390673f813e54b975cbd62d2f5f186411bf208",
+      "scope": "Original sideload ApplyUpdatePayload rejection/loop boundary with explicit service doubles.\n\nRuns original header parsing and error publication. Boot control, hardware,\nattempter scheduling and message loop are doubles; no actual OTA writes occur.\n"
+    },
+    {
+      "name": "refresh-page-lifecycle",
+      "status": "PASS",
+      "cases": 3,
+      "failures": 0,
+      "local_report_sha256": "1f578700a0b89919f8a6dd5a79710e874ee7c8df39d8d6d53ef212a44c24588d",
+      "scope": "Original worker/progress adapter, LVGL page_host/scaffold/PUSH/POP/router/actions and bounded re-entry. Route composition, fonts, tick, scan, operation presentation and flush are explicit host fixtures; not full gui2_loop or Android/DRM."
+    },
+    {
+      "name": "bounded-status-readings",
+      "status": "PASS",
+      "cases": 28,
+      "failures": 0,
+      "local_report_sha256": "61ce5cdc0be700c847e9363b1fa4dde33f505cb00707fe655885df02e6a5efa9",
+      "scope": "Execute production battery, temperature, clock policy and status parsing.\n\nSysfs is redirected to disposable files. Wall/monotonic clocks and DataManager\nare substitutes. No real clock is readjusted, no Health HAL or hardware is used."
+    },
+    {
+      "name": "bounded-init",
+      "status": "PASS",
+      "cases": 5,
+      "failures": 0,
+      "local_report_sha256": "9ddcfa70628f48df7950d5980272c41a765e9837307cb598e630eb4c25be9414",
+      "scope": "Production host_init_verifier syntax plus static activation/lost-service trigger assertions; not a running Android init."
+    },
+    {
+      "name": "bounded-profile-runtime",
+      "status": "PASS",
+      "cases": 9,
+      "phase_calls": 102,
+      "failures": 0,
+      "local_report_sha256": "50e560f868d332351683603cf0c561780b74d3e6e345144136c4488299bce16c",
+      "scope": "Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation."
     }
   ],
-  "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim."
+  "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
+  "current_batch_groups": [
+    6,
+    7,
+    8,
+    10,
+    11,
+    12
+  ],
+  "current_batch_document": "BOUNDED-MAINTENANCE.md"
 }

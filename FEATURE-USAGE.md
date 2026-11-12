@@ -1,5 +1,7 @@
 # 功能入口与当前使用边界
 
+2026-11-13 当前候选：`recovery-dijun-unified-bounded-maintenance.img`，SHA256 `218c5edd28c4e458464fc035a73b68808b016598c51e50877b2c0a1b055da3c3`。修正温度中央摄像头遮挡、ext扩容尺寸边界及A/B更新器同步拒绝收尾；有限页面生命周期检查未复现刷新现场故障。775来源、清理构建、六profile封装、5份init与9组/102阶段激活回放通过。范围与剩余项见[本批维护](docs/BOUNDED-MAINTENANCE.md)。编译文件不上传GitHub。
+
 2026-11-13 分区界面功能修正：补齐确认刷入页五个 raw 目标，0060 将 NV 限制覆盖高级清除、修复、调整大小、更改文件系统及镜像刷入；混合清除列表执行前整体检查。此前仅限制挂载的覆盖不足已纠正。策略26/旧版同组19失败、实际 LVGL25、镜像写入链40、ARM64修复链7及挂载26通过；installclean 后30并发构建 partition-actions 候选，SHA256 f9a11c04da1669ef601ca52ee6c38a99f32011aedcab06a5005af4f74f386db6，769来源/六profile。详见 docs/PARTITION-ACTIONS.md；无实机操作，不冒称整体功能验收，完整12组保留。源码配置/测试/文档同步GitHub，编译文件不上传。
 
 本地最新候选`recovery-dijun-unified-mtp-directory.img`：电脑通过MTP上传目录时应用有效修改时间，目录在SendObjectInfo完成；元数据失败报告错误且保留目录以供重试。后续上传子文件会自然改变父目录日期，不保证整棵树最终日期还原。范围见[目录上传](docs/MTP-DIRECTORY-METADATA.md)。以下旧候选为历史记录。

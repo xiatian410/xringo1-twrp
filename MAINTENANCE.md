@@ -1,5 +1,7 @@
 # dijun 维护与离线验证
 
+2026-11-13 当前有限维护范围按用户指定收敛为6/7/8/10/11/12组，并补查刷新页生命周期、修复中央摄像头遮挡温度。0063将温度移至时间后/左半区并修正ext扩容尺寸下溢/溢出；0064修正A/B更新器同步拒绝时空Error与进入无完成回调循环。温度11、扩容16、OTA拒绝7定向通过，旧版分别10/7/4失败；页面PUSH/POP/动作/删除/8次重入通过，但刷新现场未定位，不宣称修复。RTC56/视频故障6与时间轴3组来源未变复用，当前状态28与Repair146断言通过。installclean后make -j$(nproc)30并发构建bounded-maintenance候选，SHA256 218c5edd28c4e458464fc035a73b68808b016598c51e50877b2c0a1b055da3c3，775来源。见docs/BOUNDED-MAINTENANCE.md；原12组未闭环记录保留，其余组不在本轮扩展，OS4震动正常。
+
 2026-11-13 刷新现场接续检查：原 tools 后台线程 start/run/status/acknowledge 与原进度映射、实际 LVGL 组件接续通过，覆盖运行后完成、页面建立前完成及任务复用。目录扫描、操作提示和显示输出为显式替身，不代表现场 GUI tick/DRM 已正常。未复现生产缺陷，没有刷新修复补丁或新镜像；调查继续需要当前画面与页面/提交证据，见 docs/REFRESH-STUCK-INVESTIGATION.md。已有镜像及未变化证据复用，完整12组仍进行中。
 
 2026-11-13 A/B命令修正：0062 将payload_properties提取失败从成功码改为INSTALL_CORRUPT，拒绝空/NUL headers、压缩/空/越界payload，fork前防御空执行命令。真实ZIP/原命令与pipe/fork/wait接续21项通过，旧版同组8失败，普通ZIP36项回归通过。无害主机程序替代更新器，不执行真实OTA。installclean后30并发构建ab-command候选，SHA256 704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb，六profile封装通过；继承XRING O1及NV限制。见docs/AB-COMMAND-VALIDATION.md，完整12组保持进行中，源码文档同步GitHub、编译文件不上传。

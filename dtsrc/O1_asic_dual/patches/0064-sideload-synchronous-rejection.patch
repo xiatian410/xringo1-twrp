@@ -1,0 +1,19 @@
+--- a/aosp/sideload_main.cc
++++ b/aosp/sideload_main.cc
+@@ -161,9 +161,15 @@
+                                           nullptr);
+   update_attempter.Init();
+ 
++  Error error{};
+   if (!update_attempter.ApplyPayload(
+-          payload, payload_offset, payload_size, headers, nullptr)) {
++          payload, payload_offset, payload_size, headers, &error)) {
+     LOG(ERROR) << "Error attempting the ApplyPayload.";
++    // A synchronous rejection schedules no completion callback to break the
++    // loop. Return its error instead of waiting forever (or dereferencing a
++    // null Error in header validation).
++    return error.error_code == ErrorCode::kSuccess ? ErrorCode::kError
++                                                  : error.error_code;
+   }
+ 
+   loop.Run();
