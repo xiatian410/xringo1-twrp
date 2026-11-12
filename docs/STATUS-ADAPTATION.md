@@ -1,68 +1,51 @@
-# 电量、温度与时钟读取
+# 电量、温度与时钟
 
-2026-11-13 摄像头避让：0063将温度紧跟时间/录屏标记并限制在左半区，不再居中。11场景位置/恢复/主题检查通过，见[有限维护](BOUNDED-MAINTENANCE.md)。
+当前状态栏显示时间、电量、充电状态和有效温度。温度由补丁 0063 放在时间 / 录屏标记之后，并限定于左半区，避开中央摄像头；窄屏空间不足时隐藏温度。当前候选与来源见 [交付报告](../simulation-report.md)，不以本页历史候选作为当前版本。
 
-温度GUI交付更新：维护补丁0037通过现有status backend/controller接入tw_cpu_temp，合法整数-273..1000°C独立于电量解析；缺失/非法/禁用时隐藏，后续读数恢复。状态栏按实际文本重新布局，窄屏优先时间/录屏/电量，空间不足隐藏温度；装饰不可点击。11组真实LVGL/provider/controller检查通过，含14种解析值、定时刷新、0/负温、晚到/禁用恢复、电量隐藏、Wi-Fi/录屏、四宽度与明暗主题；28项状态回归通过。已检查1440宽实际渲染图，host字体/settings/tick仍为夹具，未证明Android显示或物理温度。installclean后make -j$(nproc)30并发构建[新候选](../imgs/built/recovery-dijun-unified-temperature-ui.img)，SHA256 `f2dea7dbf8ad58a9363f0906effa9ade627e7903bc45ee71e1b1fc1159994d84`，723来源及封装/新二进制核对通过。震动未改且仍未解决，设置现场采集未到，完整12组保持进行中。
+## 电量与充电
+
+设备树启用 `TW_USE_LEGACY_BATTERY_SERVICES`，`TW_CUSTOM_BATTERY_PATH` 指向原厂 `/sys/class/power_supply/battery`。状态栏直接读取 `capacity` 和 `status`，不使用 OTA 电量接口“缺失时假定 100%”的回退；OTA 电量门槛未因此改变。
+
+- `ReadLegacyBattery()` 完整解析整数，只接受 0–100，缺失、空值、垃圾后缀、溢出和越界返回 -1。每次重新读取，节点恢复后可重试。
+- 仅完整的 `Charging` 表示充电。`Full`、`Unknown` 和读取失败均不显示正在充电，不能据此判断充电器是否物理连接。
+- GUI backend 接受完整的 `<0..100>%`、`<0..100>%+` 及旧格式的单个尾随空格。0% 正常显示，非法 / 缺失读数隐藏；`tw_no_battery_percent` 可关闭显示。
+
+## 温度来源与显示
+
+原厂六份 DT 的 `cpu-crg` 引用启用的 `tsensor@EB008000` 通道 0；控制器有 22 个物理传感器，整树有 38 个 thermal 区域。通道 0 不等于 Linux `thermal_zone0` 编号。
+
+补丁 0036 配置 `ro.twrp.cpu_temp_type=cpu-crg`，按完整 type 匹配重新枚举 `thermal_zone` 加数字的目录，不依赖固定编号。缺失、重复匹配或非法读数返回无效，支持晚注册、重新编号及故障后恢复。`TW_NO_CPU_TEMP` 优先，未配置 type 时保留原路径行为。
+
+thermal 的 `temp` 使用有符号毫摄氏度：42000 → 42、-5000 → -5、500 → 0。拒绝部分解析、溢出及 -273150..1000000 范围外输入；此范围只是输入保护。显式非 thermal 路径保留单位兼容分支。
+
+成功和失败均缓存五秒，使用单调时钟及互斥锁；墙上时间回拨不会冻结刷新，失败清除有效状态。补丁 0037 接入 GUI backend / controller，合法读数显示，缺失、非法或禁用时隐藏，后续有效值恢复。文字宽度变化会重新布局，装饰不可点击。0063 进一步维护摄像头避让，见 [布局与边界修正](BOUNDED-MAINTENANCE.md)。
+
+## 时钟与时区
+
+dijun 未启用 `QCOM_RTC_FIX`；`FixupTimeOnBoot()` 不读取 Qualcomm ATS，也不调用 `settimeofday`。界面使用继承的系统时钟及持久化时区。北京 / 香港默认 `CST-8`（UTC+8），自选时区和 DST 保留，见 [设置与时区](SETTINGS-ADAPTATION.md)。
+
+历史设备记录曾显示 `hctosys=1`，不证明所有版本冷启动正常。没有猜测 RTC 偏移、加入 NTP 或漂移补偿。原厂回调范围见 [RTC 驱动说明](RTC-DRIVER-EMULATION.md)。
+
+## 定向验证
+
+| 入口 | 已有范围 | 限制 |
+| --- | --- | --- |
+| `tests/status_readings_test.py` | 28 组，含解析、时区、时钟失败 / 恢复及并发缓存 | 生产函数与 backend；sysfs、时钟、属性边界为替身 |
+| `tests/thermal_identity_test.py` | 12 项；旧代码 9 项失败 | 实际文件枚举，未运行内核 thermal core |
+| 温度 GUI 检查 | 11 组，含缺值恢复、主题与宽度 | LVGL 执行；字体、读数、flush 为夹具 |
+| `scripts/audit_thermal_topology.py` | 六份原厂 DT 合并及驱动注册静态证据 | 不执行 probe 或寄存器访问 |
+
+原始报告保存在本地 `logs/`，公开摘要见 [CURRENT-VALIDATION.json](CURRENT-VALIDATION.json)。相关来源、输入和范围未变时复用结果，不为刷新日期重跑。实际传感器精度、Android 注册、Health Binder、RTC 冷启动失败与漂移仍未验证。
+
+## 时间读取失败
 
 
-本项使用生产读取函数、状态栏 backend 和一次性文件进行主机测试。没有调用手机、Health HAL 或真实 RTC，也没有调整主机时间。
+2026-11-12。`DataManager::GetMagicValue("tw_time")`此前没有检查`time()`或`localtime_r()`结果，使用未初始化的tm继续格式化。失败时可能生成无效显示；旧实现也没有清除调用者传入的旧字符串。
 
-## 固件与实现
+维护补丁[0031-clock-read-failure.patch](../dtsrc/O1_asic_dual/patches/0031-clock-read-failure.patch)先清空输出、零初始化tm，`time()`返回-1或`localtime_r()`返回空时返回-1。有效时间继续沿用当前时区和12/24小时制。GUI设置适配器在读取失败时使用空字符串fallback；不引入RTC偏移、NTP或时钟写入。DataManager通用GetValue在magic失败后仍允许既有值查找，当前生产默认没有普通`tw_time`键；本检查不承诺外部另行写入同名键时仍强制隐藏。
 
-[五份原厂声明记录](../logs/status-firmware-nodes.json)显示，各样本的 `vendor/etc/init/init.target.rc` 都等待 `/sys/class/power_supply/battery`。维护树明确启用
-`TW_USE_LEGACY_BATTERY_SERVICES` 并将 `TW_CUSTOM_BATTERY_PATH` 指向这一原厂节点。
-状态栏直接读取 `capacity`、`status`；不再经过为 OTA 安装设计的 `GetBatteryInfo()` 的“缺失时假定 100%”分支。
-OTA 安装接口本身没有修改，不将本项结果扩大到其电量门槛或 Health 服务调用。
+[状态读取测试](../tests/status_readings_test.py)编译真实GetMagicValue、当前非QCOM的FixupTimeOnBoot和状态backend，时钟/sysfs/设置边界为替身，不调整主机时钟。新增读取失败、转换失败、失败后恢复、前后跳变四项，合计28组通过。[旧实现](../logs/clock-failure-status-before.json)3组失败；[新结果](../logs/clock-failure-status-regression.json)。转换失败替身返回空并填入定义明确的无效日期值，以确定性捕获旧实现忽略失败，不依赖未初始化内存偶然表现。
 
-`ReadLegacyBattery()` 用不抛异常的完整整数解析代替 `stoi`。有效容量为 0–100；缺失、空文件、垃圾后缀、
-多个数值、溢出或越界返回 -1。每次重新读取节点，晚出现或暂时消失的节点不会留下假读数。
-只有完整的 `Charging` 状态表示正在充电；`Full`、`Unknown` 和读取失败不被当作正在充电。
-未知状态与不充电在当前布尔接口中仍相同，不能据此判断充电器是否物理连接。
+边界：本次没有模拟内核hctosys、真实RTC读取失败/漂移、启动时钟继承或电池断电；这些仍未知。既有UTC+8、DST和时区持久化检查独立保留。dijun未启用QCOM_RTC_FIX，FixupTimeOnBoot不读取ATS或调用settimeofday；坏硬件时钟不能由本显示修正校准。
 
-GUI2 状态 backend 只接受完整的 `<0..100>%`、`<0..100>%+` 和旧格式的单个尾随空格。
-实际 0% 保持可见；非法或缺失读数隐藏电量区，不能显示为 0% 或 100%。`tw_no_battery_percent` 仍可隐藏此区域。
-
-`tw_cpu_temp` 对 `/sys/class/thermal/` 的 `temp` 使用有符号毫摄氏度：42000→42、-5000→-5、500→0。
-拒绝部分解析、溢出及超出 -273150..1000000 毫摄氏度的数值；这个范围是输入合理性保护，不是 CPU 运行温度承诺。
-读取成功与失败都使用单调时钟的五秒缓存，互斥锁保护并发刷新。刷新失败清除有效状态，不把旧值或垃圾输入当成 0°C。
-显式配置的非 thermal 路径保留原来的单位兼容分支；本设备不走该分支。
-
-**当前 GUI2 状态栏显示时间、电量和充电图标，没有 CPU 温度控件。** 温度修复只覆盖已有 DataManager 数据接口，
-并不等于新增了温度显示入口。真实 thermal_zone0 的测量精度和传感器身份仍需硬件证据；树中原有 cpu-crg 注释没有升级成实测结论。
-
-## 时钟策略
-
-2026-11-12补充[时间失败显示修正](CLOCK-FAILURE-ADAPTATION.md)：真实时间格式化函数检查time/localtime_r失败，清空输出；读取失败/转换失败/恢复/前后跳变四组纳入状态测试，当前共28组通过，旧代码新增场景中3组失败。此证据是显示层错误处理，不是RTC硬件故障、hctosys或漂移模拟。
-
-dijun 没有启用 `QCOM_RTC_FIX`。生产 `FixupTimeOnBoot()` 在这一构建下不读取 Qualcomm ATS，也不调用 settimeofday。
-界面从继承的系统时钟读取当前时间，再用已经持久化的时区设置显示。北京/香港默认使用 CST-8（UTC+8）。
-既有实机记录曾显示 RTC `hctosys=1`；这只是历史记录，不能证明所有样本的冷启动时钟。
-
-模拟覆盖 UTC+8 的午夜/正午、12/24 小时格式，以及墙上时钟回拨不冻结温度缓存。
-没有用猜测偏移修复 RTC，也没有实现 NTP、漂移补偿或坏 RTC 读数校准。内核 hctosys、RTC 冷启动读错和漂移仍未模拟。
-
-## 回归与使用范围
-
-`python3 tests/status_readings_test.py` 执行 24 组测试，见[结果](../logs/status-readings.json)。
-最初 23 组测试对修改前代码有 [13 组失败](../logs/status-readings-before.json)，包括异常终止、错误单位、缺值和解析问题。
-追加的 16 线程并发用例在加锁前[失败](../logs/status-readings-before-cache-lock.json)，加锁后通过。
-测试编译实际读取函数与整个 `status_backend.cpp`；仅替换 sysfs 文件路径、属性存储和时钟边界，启用 UBSan。
-
-电量和充电状态直接在状态栏查看；读取失败时区域隐藏，等待后续有效读数。时间与时区仍从“设置 → 时间与时区”调整。
-温度暂没有图形入口，不能把数据接口通过写成界面功能已完成。
-
-交付镜像与五版本启动检查见[总报告](../simulation-report.md)。传感器硬件、充电器事件、Health Binder 行为和 RTC 校准保持未验证。
-
-CPU温度身份核实：新增[六版本原厂DT/驱动注册证据](../logs/thermal-topology.json)。匹配base+overlay5合并后，cpu-crg均引用已启用的tsensor@EB008000通道0，同控制器22个物理传感器、整树38个thermal区域。原始模块通过devm_thermal_of_zone_register注册；通道0不等于Linux thermal_zone0编号，当前固定路径仍未获运行时身份验证。GUI2没有温度字段，后续应按type=cpu-crg匹配并补显示、缺值/晚注册/编号变化检查。此为静态证据，无生产修改/重编译；震动与完整12组目标继续未完成。
-
-运行 `python3 scripts/audit_thermal_topology.py` 重建libfdt并合并六个原始overlay，`python3 scripts/verify_thermal_topology.py`核对报告来源与引用。先前“cpu-crg仅有注释”的证据已被原厂DT确认替代，但测量精度和sysfs编号仍未知。OS2/OS3没有OS4的xr_get_thermal_zone_by_id符号，脚本记录实际存在的函数，不能以缺少额外helper解释为温度驱动不兼容。只反汇编注册/读取函数，不执行probe、热管理、寄存器或GUI。
-
-最新交付更新：`recovery-dijun-unified-thermal-identity.img`，SHA256 `338a4bf6c4e4563a30e6d26eecfbf6ac0793d5158974753a107eb38674f455db`。0036修正CPU温度固定thermal_zone0的身份假设：dijun设置ro.twrp.cpu_temp_type=cpu-crg，每5秒刷新按type精确匹配；缺失/重复/非法值返回无效，晚注册保持可重试。12项实际文件枚举/真实方法检查通过，旧实现同组9场景失败；28项状态/21项保存回归通过。installclean后30并发构建、719来源及封装/新二进制核对通过。同镜像profile回归另记。GUI尚无温度控件，震动未改/仍未解决，完整12组保持进行中。
-
-复现 `python3 tests/thermal_identity_test.py`；旧版用 `--source logs/thermal-identity-before/data.cpp --report logs/thermal-identity-before.json`。覆盖编号重排、晚注册、错误type、重复type恢复、节点重新编号、垃圾/溢出/越界温度、缺值恢复、负温/不足一度、非zone名称、目录缺失恢复、显式关闭与无属性时旧路径。type按完整字符串匹配，普通文件名限定thermal_zone加数字，重复匹配拒绝选取。每次刷新重新枚举，5秒内仍复用上次有效/无效状态；未执行真实sysfs、内核thermal core或GUI。初始化只在配置type时允许晚注册，TW_NO_CPU_TEMP仍优先。
-
-当前[交付审计](../logs/thermal-identity-delivery.json)绑定当前镜像，旧镜像段落为历史证据。读取功能推进不等于显示入口完成；下一步需GUI状态栏/页面布局与失败隐藏的真实LVGL检查，真实温度准确性继续U。
-
-thermal-identity构建后收尾：同镜像9组/102阶段profile回放通过，719来源保持一致；当前交付审计见 `logs/thermal-identity-delivery.json`。GUI和FF库与otg-selection一致，温度界面/物理震动/完整目标仍未完成。
-
-temperature-ui构建后收尾：同镜像9组/102阶段profile回放通过；723来源/维护补丁76+1+3文件重建一致、0待更新。当前交付审计 `logs/temperature-ui-delivery.json`；硬件温度/震动及设置现场仍未完成，完整12组保持进行中。
+该修正由补丁 0031 维护。历史交付与输入摘要保留在 `simulation-report.json`，当前交付以总报告为准。

@@ -26,4 +26,4 @@
 python3 scripts/sync_github.py --push --message "Describe the actual change"
 ```
 
-导出只包含已审核文本，推送后核对远端提交。镜像、编译文件、原厂资源、私钥和原始设备日志不公开。详见 [发布说明](docs/GITHUB-PUBLICATION.md)。
+导出只包含已审核文本，推送后核对远端提交。镜像、编译文件、原厂资源、私钥和原始设备日志不公开。详见 [发布说明](MAINTENANCE.md#github-同步)。

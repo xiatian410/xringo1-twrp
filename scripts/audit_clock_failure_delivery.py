@@ -64,7 +64,7 @@ def main():
         assert hashlib.sha256(entries[name]).hexdigest() == digest, name
     docs = ['ADAPTATION-GOALS.md', 'simulation-report.json', 'simulation-report.md',
             'compatibility-matrix.md', 'FEATURE-USAGE.md', 'MAINTENANCE.md',
-            'docs/CLOCK-FAILURE-ADAPTATION.md', 'docs/STATUS-ADAPTATION.md',
+            'docs/STATUS-ADAPTATION.md',
             'docs/FILESYSTEM-TOOLS-EXECUTION.md']
     report = dict(status='PASS', scope=__doc__, image_sha256=expected, sources=712,
                   state_cases=28, settings_cases=21, filesystem_cases=17,

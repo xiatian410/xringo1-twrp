@@ -64,7 +64,7 @@ def main():
   checks=[c for c in index['additional_checks'] if c.get('evidence')==path]
   assert checks and all(c['evidence_sha256']==sha(ROOT/path) for c in checks)
  docs=['ADAPTATION-GOALS.md','MAINTENANCE.md','README.md','FEATURE-USAGE.md','simulation-report.json',
-       'simulation-report.md','docs/MOUNT-LIST-EXPLANATION.md','docs/GITHUB-PUBLICATION.md']
+       'simulation-report.md','docs/MOUNT-LIST-EXPLANATION.md']
  output=dict(status='PASS',scope=__doc__,image=str(image),image_sha256=digest,production_sources=751,
   policy_cases=26,old_failures=17,lvgl_list_cases=6,list_fixture_image_sha256=prior['image_sha256'],
   profile_groups=9,module_groups=4,evidence={p:sha(ROOT/p) for p in evidence},

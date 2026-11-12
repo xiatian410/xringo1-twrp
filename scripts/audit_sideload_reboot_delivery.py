@@ -78,7 +78,7 @@ def main():
     documents = ['ADAPTATION-GOALS.md', 'MAINTENANCE.md', 'FEATURE-USAGE.md',
                  'simulation-report.json', 'simulation-report.md', 'README.md',
                  'docs/SIDELOAD-LIFECYCLE.md', 'docs/CURRENT-VALIDATION.json',
-                 'AGENTS.md', 'docs/GITHUB-PUBLICATION.md']
+                 'AGENTS.md']
     result = dict(status='PASS', scope=__doc__, image=str(image), image_sha256=digest,
                   production_sources=764, reboot_cases=19, old_failed_cases=15,
                   lifecycle_cases=33, package_cases=27,

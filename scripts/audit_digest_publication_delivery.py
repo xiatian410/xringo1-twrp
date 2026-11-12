@@ -100,7 +100,7 @@ def main():
                   documents={n: sha(ROOT / n) for n in ['ADAPTATION-GOALS.md', 'MAINTENANCE.md',
                              'simulation-report.md', 'simulation-report.json', 'docs/DIGEST-PUBLICATION.md',
                              'docs/BACKUP-SESSION-ADAPTATION.md', 'FEATURE-USAGE.md',
-                             'docs/HAPTICS-ADAPTATION.md', 'docs/DELIVERY-EVIDENCE-STATUS.md']},
+                             'docs/HAPTICS-ADAPTATION.md']},
                   audit_script_sha256=sha(Path(__file__)))
     (ROOT / 'logs/digest-atomic-delivery.json').write_text(json.dumps(result, indent=2) + '\n')
     print('PASS: digest54/old44 failures, restore54/backup55, current-image profile9/102/modules4/24/policy12+53/init5,736 production sources; physical faults unresolved')

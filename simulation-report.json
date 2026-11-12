@@ -3364,7 +3364,7 @@
     "sideload_rejection_patch": "dtsrc/O1_asic_dual/patches/0064-sideload-synchronous-rejection.patch",
     "sideload_rejection": "logs/sideload-rejection.json",
     "cow_format_execution": {
-      "document": "docs/OTA-COW-ROUNDTRIP.md",
+      "document": "docs/OTA-OPERATION-COW.md",
       "report": "logs/ota-cow-roundtrip.json",
       "report_sha256": "040d1f0d46c124160786dc421c4e86f622710b1be72a8ff85732d535dc4be52e",
       "status": "PASS",
@@ -3439,7 +3439,7 @@
     "repository": "https://github.com/xiatian410/xringo1-twrp",
     "policy": "User-authorized public source publication and synchronization after each coherent future change batch; no compiled artifacts/blobs/private keys/raw logs.",
     "workflow": "scripts/sync_github.py --push",
-    "documentation": "docs/GITHUB-PUBLICATION.md"
+    "documentation": "MAINTENANCE.md"
   },
   "sideload_lifecycle": {
     "patch": "0056-sideload-child-lifecycle.patch",

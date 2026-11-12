@@ -14,8 +14,13 @@ ENTRY_POINTS = (
     'MAINTENANCE.md', 'FEATURE-USAGE.md', 'compatibility-matrix.md',
     'simulation-report.md', 'FIRMWARE-MAP.md', 'docs/README.md', 'docs/WORK-QUEUE.md',
     'dtsrc/O1_asic_dual/README.md',
+    'docs/STATUS-ADAPTATION.md', 'docs/SETTINGS-ADAPTATION.md',
+    'docs/FILESYSTEM-TOOLS-EXECUTION.md', 'docs/INSTALL-CHAIN-VALIDATION.md',
+    'docs/OTA-OPERATION-COW.md',
 )
 
+
+TECHNICAL_REPORTS = frozenset(ENTRY_POINTS[-5:])
 
 def main():
     links = 0
@@ -36,6 +41,10 @@ def main():
             assert not url.path.startswith('/'), f'{name}: local absolute link {target}'
             resolved = (path.parent / unquote(url.path)).resolve()
             assert resolved.is_relative_to(ROOT.resolve()), f'{name}: link escapes repository'
+            # Historical technical evidence is kept private, as documented.
+            relative = resolved.relative_to(ROOT.resolve())
+            if name in TECHNICAL_REPORTS and relative.parts[0] in {'logs', 'imgs', 'backups', 'firmware'}:
+                continue
             assert resolved.exists(), f'{name}: missing link {target}'
             links += 1
     readme = (ROOT / 'README.md').read_text()

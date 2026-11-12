@@ -6,11 +6,9 @@
 
 ## 安装、分区与存储
 
-- [OTA 快照 COW 格式的 ARM64 往返验证](OTA-COW-ROUNDTRIP.md)
-- [payload 操作执行器到 COW 的 ARM64 接续](OTA-OPERATION-COW.md)
+- [OTA payload、VABC / COW 与最终校验](OTA-OPERATION-COW.md)
 - [A/B OTA 命令准备与失败收尾](AB-COMMAND-VALIDATION.md)
-- [镜像路由与 ZIP 安装链离线验收](INSTALL-CHAIN-VALIDATION.md)
-- [ZIP 安装链中的真实 ARM64 测试 updater](ZIP-ARM64-EXECUTION.md)
+- [镜像路由、ZIP 队列与 ARM64 updater](INSTALL-CHAIN-VALIDATION.md)
 - [ADB sideload 子进程与取消生命周期](SIDELOAD-LIFECYCLE.md)
 - [分区界面修正：镜像目标与 NV 操作](PARTITION-ACTIONS.md)
 - [嵌套分区操作路径修正](PARTITION-OPERATION-PATHS.md)
@@ -18,8 +16,7 @@
 - [system/vendor 挂载模式事务](MOUNT-MODE-ADAPTATION.md)
 - [存储选择的失败处理](STORAGE-SELECTION-ADAPTATION.md)
 - [Sparse 镜像刷写的容量与完成检查](SPARSE-IMAGE-FLASH.md)
-- [当前镜像文件系统工具实际执行](FILESYSTEM-TOOLS-EXECUTION.md)
-- [ext文件系统修复结果处理](FSCK-RESULT-ADAPTATION.md)
+- [文件系统工具执行与修复结果](FILESYSTEM-TOOLS-EXECUTION.md)
 
 ## 启动、固件与安全服务
 
@@ -60,11 +57,9 @@
 
 ## 界面、设置与状态
 
-- [设置保存与时区离线验证](SETTINGS-ADAPTATION.md)
-- [电量、温度与时钟读取](STATUS-ADAPTATION.md)
-- [时间读取失败与界面显示](CLOCK-FAILURE-ADAPTATION.md)
+- [设置保存、点击与时区失败回退](SETTINGS-ADAPTATION.md)
+- [电量、温度与时钟读取及失败处理](STATUS-ADAPTATION.md)
 - [原厂 RTC 回调离线验证](RTC-DRIVER-EMULATION.md)
-- [时区保存失败回退](TIMEZONE-SAVE-ADAPTATION.md)
 - [GUI2 反馈次数与取消操作的离线验证](UI-FEEDBACK-ADAPTATION.md)
 - [操作完成反馈的离线验证](OPERATION-FEEDBACK-ADAPTATION.md)
 - [录屏帧与时间轴离线验证](VIDEO-FRAMES-VALIDATION.md)
@@ -74,8 +69,7 @@
 
 - [工作队列](WORK-QUEUE.md)
 - [第6、7、8、10、11、12组有限维护](BOUNDED-MAINTENANCE.md)
-- [MTP Reset检查点的交付与证据状态（历史）](DELIVERY-EVIDENCE-STATUS.md)
-- [公开仓库维护约定](GITHUB-PUBLICATION.md)
+- [公开仓库维护约定](../MAINTENANCE.md#github-同步)
 
 ## 已解决项的历史参考
 

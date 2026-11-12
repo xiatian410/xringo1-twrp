@@ -46,7 +46,7 @@ def main():
  assert index['status']=='in_progress' and len(index['not_yet_completed'])==12
  names+=[n,'logs/timezone-retry-before.json','logs/verify-timezone-retry.log','logs/timezone-final-source-recheck.log']
  result=dict(status='PASS',scope=__doc__,image_sha256=digest,source_files=731,timezone_cases=17,old_callback_failures=11,joined_settings=22,row=20,route=24,language_theme=9,owner=16,status_cases=28,temperature_ui=11,runtime_groups=9,runtime_calls=102,
- evidence={n:sha(ROOT/n) for n in names},documents={n:sha(ROOT/n) for n in ['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.md','simulation-report.json','docs/TIMEZONE-SAVE-ADAPTATION.md','docs/SETTINGS-ADAPTATION.md']},audit_script_sha256=sha(Path(__file__)))
+ evidence={n:sha(ROOT/n) for n in names},documents={n:sha(ROOT/n) for n in ['ADAPTATION-GOALS.md','MAINTENANCE.md','simulation-report.md','simulation-report.json','docs/SETTINGS-ADAPTATION.md']},audit_script_sha256=sha(Path(__file__)))
  (ROOT/'logs/timezone-retry-delivery.json').write_text(json.dumps(result,indent=2)+'\n')
  print('PASS: timezone17/old11 fail; joined22,row20,route24,language9,owner16,status28,temp11;731 sources;profile9/102. Device and motor unresolved.')
 if __name__=='__main__':main()

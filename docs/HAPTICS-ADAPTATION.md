@@ -24,7 +24,7 @@
 | 原厂驱动、DSP 固件与地址解析 | [驱动模拟](HAPTICS-DRIVER-EMULATION.md) · [固件解析](HAPTICS-FIRMWARE-EMULATION.md) |
 | 注册、效果与后台生命周期 | [生命周期](HAPTICS-LIFECYCLE-EMULATION.md) · [播放 worker](HAPTICS-PLAYBACK-EMULATION.md) |
 | GUI 请求、后台执行与能力查询 | [后台 owner](HAPTICS-WORKER-ADAPTATION.md) · [FF 查询中断](HAPTICS-PROBE-ADAPTATION.md) |
-| 参数和诊断 | [请求追踪](HAPTICS-REQUEST-TRACE.md) · [状态采集](HAPTICS-STATE-COLLECTION.md) · [工具源码](../tools/haptics-diagnostic/README.md) |
+| 参数和诊断 | [请求追踪](HAPTICS-REQUEST-TRACE.md) · [状态采集](HAPTICS-STATE-COLLECTION.md) · [工具源码](../tools/haptics-diagnostic) |
 | PCM 初始化与播放接续 | [初始化](HAPTICS-PCM-INITIALIZATION.md) · [PCM / FF](HAPTICS-PCM-FF-STATE.md) · [ASP / FF](HAPTICS-ASP-FF-STATE.md) |
 | 原厂服务与音频对端 | [线程与 XML](HAPTICS-SERVICE-THREAD-XML.md) · [socket 对端](HAPTICS-AUDIO-SOCKET-PEER.md) |
 

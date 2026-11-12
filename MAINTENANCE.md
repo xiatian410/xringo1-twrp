@@ -42,6 +42,8 @@
 
 ## GitHub 同步
 
+公开仓库为 [xiatian410/xringo1-twrp](https://github.com/xiatian410/xringo1-twrp)，公开镜像目录为 `/root/AAA/xringo1-twrp-public`。用户已授权维护批次同步，无需逐次申请。更新只从完整工作区单向导出，不用公开 checkout 反向覆盖私有资源。
+
 每个连贯修改批次完成后：
 
 ```bash
@@ -50,7 +52,9 @@ python3 scripts/sync_github.py --push --message "说明实际修改"
 
 导出脚本校验公开文件清单、补丁摘要、语法及文档入口，然后提交、推送，并确认远端 `main` 等于本地提交。仅在核对成功后报告已同步。
 
-公开的是维护源码、配置、补丁、测试和文档；不上传镜像、编译文件、原厂 blob、完整 OTA、私钥或原始设备日志。公开 checkout 不能反向覆盖完整工作区。详细约定见 [GitHub 发布说明](docs/GITHUB-PUBLICATION.md)。
+公开的是维护源码、配置、补丁、测试和文档；不上传镜像、编译文件、原厂 blob、完整 OTA、私钥或原始设备日志。公开 checkout 不能反向覆盖完整工作区。
+
+`SOURCE-MANIFEST.json` 记录公开文件摘要及 Git 权限（0644 / 0755）；`PRIVATE-ASSETS.json` 只记录未公开构建资源元数据，不包含私钥指纹。历史 `logs/`、`imgs/` 链接属于本地证据，不代表公开可下载文件。不创建二进制 Release，也不启用未经审核的后台自动上传。
 
 ## 文档维护
 
