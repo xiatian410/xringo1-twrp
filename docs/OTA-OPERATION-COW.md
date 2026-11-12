@@ -189,3 +189,19 @@ python3 tests/ota_cow_roundtrip.py
 本组明确跳过实际 postinstall 脚本，安装计划 `download_url` 为空；不能据此宣称原厂 postinstall 分区挂载或脚本执行已通过。FinishUpdate 与 SetActiveBootSlot 是观察调用顺序并注入失败的边界，FakeHardware 的相关回调仅在内存中执行，不修改槽位、metadata、vbmeta 或其他真实设备。原校验器、postinstall action、ActionProcessor 均来自实际 ARM64 构建代码；生产 archive 按测试时摘要绑定，不能升级为旧镜像清单的历史绑定。
 
 当前候选仍为 snapshot-map，779 份生产来源及镜像字节不变。此证据缩小的是“校验结果如何到达安装结束及切槽接口”的缺口；实际 SnapshotManager、Boot Control HAL、完整下载器 / GUI、真实 OTA 输入、postinstall 脚本和快照合并仍未完成，不追加等价的正常路径测试来代替这些边界。
+
+## OS4 原厂操作数据执行
+
+`python3 tests/ota_operation_cow.py --stock` 使用两份 OS4 的**真实操作 protobuf、原始编码数据和目标 extents**，执行原 ARM64 InstallOperationExecutor → SnapshotExtentWriter → COW，再通过原 CowReader 解压读回。每份选择 REPLACE / REPLACE_BZ / REPLACE_XZ 各一个，共六项通过；不是重新运行合成压缩输入。
+
+| 操作 | 分区与序号（从 0 开始） | 两份输入大小 | 输出大小 |
+| --- | --- | --- | --- |
+| REPLACE | mi_ext / 1 | 各 2,097,152 B | 各 2,097,152 B |
+| REPLACE_BZ | odm / 7 | 921,694 / 922,091 B | 各 2,097,152 B |
+| REPLACE_XZ | mi_product / 0 | 各 3,452 B | 各 348,160 B |
+
+旧 OS4 从本地原始 ZIP 读取；正式版仅使用既有 range cache，不重新下载。编码输入的 SHA-256 必须匹配原 manifest 的 operation hash；每个完整分区文件先核对大小与 SHA-256，再按原 extents 切出独立期望值。ARM64 读回逐字节相同，主机另记录摘要，非零目标块位置及无重复 / 遗漏块均断言。未操作真实分区或 vbmeta；仅在私有 chroot 读写普通文件。
+
+最初 BZ 选择了 48 字节的近全零编码块，后改为 odm 的约 900 KiB 实际压缩块，避免仅证明极简单内容。六项报告为 `logs/ota-stock-operation-cow.json`；旧选择的结果保留本地。共用测试入口修改后，原八项回归单独保存为 `logs/ota-operation-cow-after-stock-extension.json`，原始报告未覆盖。可用 `--report` 指定独立输出。
+
+六份 manifest 的操作清点均只有 REPLACE / BZ / XZ；两份 OS4 的 system 另声明可选 `system/bin/otapreopt_script`。这一静态观察不代替实际 postinstall 挂载或执行验收。此组六项只覆盖两份 OS4 的所选操作，**未将原厂完整 manifest 和全部数据交给 DeltaPerformer**，也未执行 SnapshotManager、postinstall、切槽或合并；此前完整接续仍使用合成 payload。没有发现本段需要改生产代码的问题，snapshot-map 镜像与 779 来源保持不变。

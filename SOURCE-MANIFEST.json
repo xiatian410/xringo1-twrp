@@ -72,7 +72,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "3e209844cba801b0c068c175dac400f641618236ba81a050356c8d1cd98b45df",
+    "sha256": "6a704f4b6e7aeca12036b6fc43b8ab16b715a60232cdf4683429e543531fa7ce",
     "mode": "0o644"
   },
   "docs/DIGEST-PUBLICATION.md": {
@@ -216,7 +216,7 @@
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
-    "sha256": "a37b6b0b89052495ac9c1fe9a35c5119f98b4057ace0dc2655311faa8997153b",
+    "sha256": "97809196a13416475586745c1848120f71515378861a95018960b649400bc9e5",
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
@@ -296,7 +296,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "4a2faba7d02a51b6a3e005d9ce8fe41c1d6bc6d92c0c368b89666ff8012aa3fe",
+    "sha256": "b50ce8ce04a52d2a8f9e97c80cbd39247f819620d80e6716ec84adb71b419a42",
     "mode": "0o644"
   },
   "docs/crypto-compatibility.json": {
@@ -1576,11 +1576,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "3c8d0bbbb19eb13d275a270b0a0f3291f770b930e8bab702ca835b294941b8a6",
+    "sha256": "515c3741753c8b1a8e833d4608185573608d44a9722b6e42ecfbd7070aa11e45",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "550fd335e72e2847a2b50b421e47fd39f0ec61cc5937812252993bb821304f48",
+    "sha256": "b6a158aff48fe5f7198134adeae9b7494beefa645a8a266bf85d299246f0266b",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2068,11 +2068,11 @@
     "mode": "0o644"
   },
   "tests/ota_operation_cow.cpp": {
-    "sha256": "fcc6d247ceeca946df6d2675f0e14e227ee16f35ddd6c3ee49367fdce41d4fb9",
+    "sha256": "8b27458cee53825c5a3189f59053b24e3036077c5b58b250f1e7b80fdb171a4d",
     "mode": "0o644"
   },
   "tests/ota_operation_cow.py": {
-    "sha256": "d55536f8b078889681e86f18d30093df12dbd621ce9eb2c13eccf9e728d45592",
+    "sha256": "81d040e70c46b28cbbcb8887618215e144b4f297359a646a84bc723609f654c8",
     "mode": "0o644"
   },
   "tests/ota_payload_stream.cpp": {

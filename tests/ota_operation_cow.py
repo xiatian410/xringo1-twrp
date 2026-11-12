@@ -6,6 +6,7 @@ hash/signature validation, VABC Init/SnapshotManager, devices, merge or full OTA
 Delivered linker/shared libraries are image-bound; archives are test-time bound,
 not historically bound by the older image provenance manifest.
 """
+import argparse
 import hashlib
 import bz2
 import lzma
@@ -23,7 +24,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 ANDROID = ROOT.parent / 'twrp'
 sys.path.insert(0, str(ROOT / 'scripts'))
-from acquire_firmware import fields
+from acquire_firmware import fields, parse_manifest, sha256_file
 from firmware_facts import boot_parts, ramdisk_entries
 
 
@@ -38,7 +39,77 @@ def build(command):
         result.check_returncode()
 
 
+def run_stock(jail, isolate):
+    cases = []
+    for sample in ['os4-current', 'os4-stable']:
+        folder = ROOT/'firmware/samples'/sample
+        inventory = json.loads((folder/'inventory.json').read_text())
+        manifest_bytes = (folder/'payload-manifest.pb').read_bytes()
+        assert hashlib.sha256(manifest_bytes).hexdigest() == inventory['manifest_sha256']
+        assert inventory['payload_metadata_hash_verified']
+        parsed = parse_manifest(manifest_bytes)
+        partition_protos = {dict(fields(v))[1].decode(): v for n, v in fields(manifest_bytes) if n == 13}
+        # Pick one real operation of each type, all within already verified local
+        # partition images, never any vbmeta partition or device.
+        selection = [(0, 'mi_ext', 1),
+                     (1, 'odm', 7),
+                     (8, 'mi_product', 0)]
+        for kind, partition, number in selection:
+            part = parsed['partitions'][partition]
+            op = part['operations'][number]
+            assert op[1] == kind and op.get(3, 0) <= 8 * 1024 * 1024
+            operation_proto = [v for n, v in fields(partition_protos[partition]) if n == 8][number]
+            start = inventory['payload_data_zip_offset'] + op[2]
+            length = op[3]
+            if sample == 'os4-current':
+                with Path(inventory['source']).open('rb') as source:
+                    source.seek(start); data = source.read(length)
+                input_source = 'local original ZIP'
+            else:
+                data = bytearray()
+                position = start
+                while position < start + length:
+                    chunk_start = position // (8 * 1024 * 1024) * (8 * 1024 * 1024)
+                    cache = folder/'range-cache'/str(chunk_start)
+                    with cache.open('rb') as source:
+                        source.seek(position - chunk_start)
+                        segment = source.read(min(start + length - position, chunk_start + 8 * 1024 * 1024 - position))
+                    assert segment
+                    data.extend(segment); position += len(segment)
+                data = bytes(data); input_source = 'existing pinned range cache'
+            assert len(data) == length and hashlib.sha256(data).digest() == op[8]
+            image = folder/(partition+'.img')
+            assert image.stat().st_size == part['size'] and sha256_file(image) == part['sha256']
+            expected = bytearray()
+            with image.open('rb') as source:
+                for block, count in op['extents']:
+                    source.seek(block * 4096); segment = source.read(count * 4096)
+                    assert len(segment) == count * 4096; expected.extend(segment)
+            (jail/'work/operation.pb').write_bytes(operation_proto)
+            (jail/'work/input.bin').write_bytes(data)
+            (jail/'work/expected.bin').write_bytes(expected)
+            for stale in ['test.cow', 'readback.bin']:
+                (jail/'work'/stale).unlink(missing_ok=True)
+            result = subprocess.run(['/qemu', '-L', '/android', '-E', 'LD_LIBRARY_PATH=/android/system/lib64',
+                '/android/system/bin/linker64', '/test', 'stock'], preexec_fn=isolate,
+                capture_output=True, text=True, timeout=25)
+            assert result.returncode == 0 and 'PASS stock' in result.stdout, (sample, kind, result.stdout, result.stderr[-3000:])
+            actual = (jail/'work/readback.bin').read_bytes()
+            assert actual == expected
+            cases.append(dict(name=f'{sample}-{partition}-{number}', sample=sample, partition=partition,
+                operation_number=number, operation_type=kind, extents=op['extents'], input_source=input_source,
+                manifest_sha256=inventory['manifest_sha256'], partition_sha256=part['sha256'],
+                input_sha256=hashlib.sha256(data).hexdigest(), operation_proto_sha256=hashlib.sha256(operation_proto).hexdigest(),
+                readback_sha256=hashlib.sha256(actual).hexdigest(), expected_sha256=hashlib.sha256(expected).hexdigest(),
+                input_size=length, output_size=len(expected), status='PASS', stdout=result.stdout, stderr=result.stderr))
+    return cases
+
+
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--report', type=Path, help='Report path; preserves historical reports when the shared harness changes')
+    parser.add_argument('--stock', action='store_true', help='Execute exact cached OS4 operations with independent partition slice comparison')
+    args = parser.parse_args()
     index = json.loads((ROOT/'simulation-report.json').read_text())
     image = Path(index['image'])
     assert sha(image) == index['image_sha256']
@@ -157,6 +228,9 @@ def main():
             ('short-raw', 0, expected[:4096], 'short-raw'),
             ('oversize-raw', 0, expected + bytes(4096), 'oversize-raw'),
         ]
+        if args.stock:
+            cases = run_stock(jail, isolate)
+            scenarios = []
         for name, kind, data, mode in scenarios:
             (jail/'work/input.bin').write_bytes(data)
             cmd = ['/qemu', '-L', '/android', '-E', 'LD_LIBRARY_PATH=/android/system/lib64',
@@ -173,7 +247,7 @@ def main():
                               input_sha256=hashlib.sha256(data).hexdigest(),
                               expected_sha256=hashlib.sha256(expected).hexdigest(),
                               readback_sha256=hashlib.sha256(actual).hexdigest()))
-        report = dict(status='PASS', scope=__doc__, image=str(image), image_sha256=sha(image),
+        report = dict(status='PASS', scope=__doc__ if not args.stock else "Exact OS4 stock operation protobuf/data/extents through real ARM64 executor -> COW -> readback. Expected slices from independently hash-verified extracted partitions. No full payload, SnapshotManager, boot control or physical devices.", image=str(image), image_sha256=sha(image),
                       fixture_elf_machine=183, cow_archive=str(ANDROID/cow), cow_archive_sha256=sha(ANDROID/cow),
                       sources=sources, dependencies=dependencies, image_entries=entries,
                       qemu_sha256=sha(qemu), stock=stock, cases=cases,
@@ -189,8 +263,8 @@ def main():
                 consumer/'filesystem_verifier_action.cc']},
             'scope': 'Source review only: DeltaPerformer buffers declared input and invokes final partition writer completion; target hash mismatch is rejected by FilesystemVerifierAction. These upper layers were not executed by this suite.',
         }
-        (ROOT/'logs/ota-operation-cow.json').write_text(json.dumps(report, indent=2)+'\n')
-        print('PASS: eight ARM64 executor/snapshot/COW scenarios; short input true distinguished from complete output')
+        (args.report or ROOT/('logs/ota-stock-operation-cow.json' if args.stock else 'logs/ota-operation-cow.json')).write_text(json.dumps(report, indent=2)+'\n')
+        print('PASS:', len(cases), 'stock operations' if args.stock else 'synthetic cases', 'through ARM64 executor/COW/readback')
 
 
 if __name__ == '__main__':

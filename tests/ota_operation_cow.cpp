@@ -24,7 +24,66 @@ static std::vector<char> load(const char* path) {
     return {std::istreambuf_iterator<char>(stream), {}};
 }
 
+// Execute exact serialized stock operations and destination extents. Expected
+// bytes are independently sliced from the hash-verified extracted partition.
+static int stock_operation() {
+    auto protobuf = load("/work/operation.pb");
+    InstallOperation operation;
+    assert(operation.ParseFromArray(protobuf.data(), protobuf.size()));
+    auto input = load("/work/input.bin");
+    auto expected = load("/work/expected.bin");
+    assert(input.size() == operation.data_length());
+    uint64_t max_blocks = 0, output_size = 0;
+    for (const auto& e : operation.dst_extents()) {
+        assert(e.num_blocks() && e.start_block() + e.num_blocks() >= e.start_block());
+        max_blocks = std::max(max_blocks, e.start_block() + e.num_blocks());
+        output_size += e.num_blocks() * 4096;
+    }
+    assert(output_size == expected.size() && output_size <= 8 * 1024 * 1024);
+    CowOptions options;
+    options.compression = "lz4"; options.compression_factor = 65536;
+    options.op_count_max = max_blocks + 128; options.max_blocks = max_blocks;
+    options.scratch_space = false; options.num_compress_threads = 1;
+    auto writer = CreateCowWriter(3, options,
+        unique_fd(open("/work/test.cow", O_CREAT | O_TRUNC | O_RDWR | O_CLOEXEC, 0600)));
+    assert(writer);
+    InstallOperationExecutor executor(4096);
+    assert(executor.ExecuteReplaceOperation(operation,
+        std::make_unique<SnapshotExtentWriter>(writer.get()), input.data()));
+    assert(writer->Finalize()); writer.reset();
+    CowReader reader;
+    assert(reader.Parse(unique_fd(open("/work/test.cow", O_RDONLY | O_CLOEXEC))));
+    std::vector<char> actual(expected.size(), '\0');
+    std::set<uint64_t> blocks;
+    for (auto it = reader.GetOpIter(); !it->AtEnd(); it->Next()) {
+        const auto* op = it->Get();
+        assert(op->type() == kCowReplaceOp);
+        size_t size = size_t(4096) << op->compression_bits();
+        size_t offset = 0; bool found = false;
+        for (const auto& e : operation.dst_extents()) {
+            if (op->new_block >= e.start_block() &&
+                op->new_block + size / 4096 <= e.start_block() + e.num_blocks()) {
+                offset += (op->new_block - e.start_block()) * 4096;
+                found = true; break;
+            }
+            offset += e.num_blocks() * 4096;
+        }
+        assert(found && offset + size <= actual.size());
+        assert(reader.ReadData(op, actual.data() + offset, size) == ssize_t(size));
+        for (size_t b = 0; b < size / 4096; ++b) assert(blocks.insert(op->new_block + b).second);
+    }
+    assert(actual == expected && blocks.size() * 4096 == expected.size());
+    unique_fd output(open("/work/readback.bin", O_CREAT | O_TRUNC | O_WRONLY, 0600));
+    assert(write(output, actual.data(), actual.size()) == ssize_t(actual.size()));
+    printf("PASS stock type=%d input=%zu output=%zu blocks=%zu\n",
+        int(operation.type()), input.size(), actual.size(), blocks.size());
+    return 0;
+}
+
 int main(int argc, char** argv) {
+    if (argc == 2 && std::string(argv[1]) == "stock") {
+        xz_crc32_init(); return stock_operation();
+    }
     assert(argc == 5);
     xz_crc32_init();
     const auto type = static_cast<InstallOperation::Type>(std::stoul(argv[1]));

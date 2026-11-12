@@ -540,6 +540,24 @@
       "local_report_sha256": "3e5a4f6f33a55752a39444bc97348914569c27e2911f926b5b72d86b8ab28802",
       "scope": "Original stream mode regression after shared harness change; separate unchanged historical report retained.",
       "full_payload_install": false
+    },
+    {
+      "name": "ota-stock-operation-cow",
+      "status": "PASS",
+      "cases": 6,
+      "local_report_sha256": "b5d8295a27649889c1e60df15ebb1781149b3f8efff4448704b9938405fe6faa",
+      "scope": "Exact OS4 stock operation protobuf/data/extents through real ARM64 executor -> COW -> readback. Expected slices from independently hash-verified extracted partitions. No full payload, SnapshotManager, boot control or physical devices.",
+      "full_ota_install": false,
+      "production_change": false
+    },
+    {
+      "name": "ota-operation-cow-after-stock-extension",
+      "status": "PASS",
+      "cases": 8,
+      "local_report_sha256": "bc037e2f667884f8816ef14630ac377cf21b4dcff62eac90c41f9004359bf1a6",
+      "scope": "Run real ARM64 operation executor -> snapshot extent writer -> COW -> decompression.\n\nSynthetic payload operation data, real current build archives; no DeltaPerformer\nhash/signature validation, VABC Init/SnapshotManager, devices, merge or full OTA.\nDelivered linker/shared libraries are image-bound; archives are test-time bound,\nnot historically bound by the older image provenance manifest.\n",
+      "full_ota_install": false,
+      "production_change": false
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",

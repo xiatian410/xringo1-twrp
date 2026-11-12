@@ -2883,6 +2883,24 @@
       "grade": "S2",
       "result": "pass",
       "scope": "Original thirteen payload scenarios after the shared fixture/driver extension; no postinstall in this mode."
+    },
+    {
+      "name": "ARM64-stock-operation-COW",
+      "evidence": "logs/ota-stock-operation-cow.json",
+      "evidence_sha256": "b5d8295a27649889c1e60df15ebb1781149b3f8efff4448704b9938405fe6faa",
+      "count": 6,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Exact OS4 stock operation protobuf/data/extents through real ARM64 executor -> COW -> readback. Expected slices from independently hash-verified extracted partitions. No full payload, SnapshotManager, boot control or physical devices."
+    },
+    {
+      "name": "ARM64-operation-COW-stock-extension-regression",
+      "evidence": "logs/ota-operation-cow-after-stock-extension.json",
+      "evidence_sha256": "bc037e2f667884f8816ef14630ac377cf21b4dcff62eac90c41f9004359bf1a6",
+      "count": 8,
+      "grade": "S2",
+      "result": "pass",
+      "scope": "Run real ARM64 operation executor -> snapshot extent writer -> COW -> decompression.\n\nSynthetic payload operation data, real current build archives; no DeltaPerformer\nhash/signature validation, VABC Init/SnapshotManager, devices, merge or full OTA.\nDelivered linker/shared libraries are image-bound; archives are test-time bound,\nnot historically bound by the older image provenance manifest.\n"
     }
   ],
   "source_review_followups": [
@@ -3478,6 +3496,26 @@
       "boot_control": "Explicit observing fake; finishes before slot, no slot after failed verifier/finish, error5 on finish/slot failure,52 when no-switch.",
       "production_change": false,
       "stream_regression": "logs/ota-payload-finalization-stream-regression.json"
+    },
+    "stock_operation_execution": {
+      "document": "docs/OTA-OPERATION-COW.md",
+      "report": "logs/ota-stock-operation-cow.json",
+      "report_sha256": "b5d8295a27649889c1e60df15ebb1781149b3f8efff4448704b9938405fe6faa",
+      "samples": [
+        "os4-current",
+        "os4-stable"
+      ],
+      "operation_types": [
+        "REPLACE",
+        "REPLACE_BZ",
+        "REPLACE_XZ"
+      ],
+      "cases": 6,
+      "input": "Exact operation protobuf and encoded bytes from existing original ZIP / range cache; encoded hash verified against manifest. Expected destination slices from full SHA-verified partition images.",
+      "full_ota_install": false,
+      "snapshot_manager_executed": false,
+      "production_change": false,
+      "shared_harness_regression": "logs/ota-operation-cow-after-stock-extension.json"
     }
   },
   "os4_haptics_user_confirmation": {
