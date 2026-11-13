@@ -4,18 +4,24 @@
 
 ## 当前候选
 
-最新定向证据：MTP 子文件上传后，显式重发目录信息可恢复目录时间；根下 / 嵌套 / 故障重试 / 会话关闭 / 只读属性五项通过。生产代码与镜像未变，不新增自动日期重放；真实客户端是否发送收尾请求未验证。见[目录收尾范围](docs/MTP-ATOMIC-UPLOAD.md#directory-finalization)。
+此前目录时间五项证据沿用其运行时来源；本批没有重做目录时间设计。当前对象回归也覆盖该路径，真实客户端是否发送收尾请求仍未验证，见[目录收尾范围](docs/MTP-ATOMIC-UPLOAD.md#directory-finalization)。
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-special-file-errors.img` |
-| SHA-256 | `feef6a20449a10f9ca40c2bd530a79797cbf3542f301a543655c5e5bf492c4df` |
-| 生产来源绑定 | 822 份 |
+| 文件 | `recovery-dijun-unified-mtp-session-boundary.img` |
+| SHA-256 | `4a149ab8cfdef7ad3c9380a73dfa24b168f9bc71b0333cd57411340880b62c09` |
+| 生产来源绑定 | 823 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：特殊文件创建失败传播
+## 本批生产修正：MTP 会话与编辑状态
+
+0098 在统一请求入口补齐会话检查：未打开或已关闭会话时拒绝文件操作；GetDeviceInfo / OpenSession 保留。关闭会话或操作码 ResetDevice 释放编辑fd与状态，class Reset / 断开共用释放helper。数据库handle与已写内容保留，不提供回滚。对象149项、转移48项通过，同夹具旧实现22/23失败。清理构建后823来源 / 六profile核对，封装仅MTP库、构建属性及摘要变化，详见[会话边界](docs/MTP-CONTROL-ADAPTATION.md#session-file-boundary)。
+
+测试执行主机生产server/database/storage及普通文件，USB/属性/日志为替身；不代表ARM64 MTP、Windows或完整真实端点验收。本批未重跑整包OTA与已解决功能。
+
+## 沿用的特殊文件创建失败传播
 
 0097 修正字符/块节点创建失败后仍返回成功的问题。原实现会继续向已有普通文件应用归档权限和时间；现在保留创建错误并停止，错误传到codec/fork恢复父进程。libtar89项及codec124项通过；旧实现新增场景分别8/10与8/8失败，FIFO成功/失败控制正常。已清理构建并核对六profile及来源，范围见[特殊文件错误](docs/BACKUP-DATA-PATHS.md#special-file-errors)。
 

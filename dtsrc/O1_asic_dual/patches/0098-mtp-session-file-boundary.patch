@@ -1,0 +1,59 @@
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -314,7 +314,13 @@
+     mRequest.reset();
+     mData.reset();
+     mResponse.reset();
+-    // commit any open edits
++    endEdits();
++
++}
++
++// Called with mMutex held. Edits belong to the session, while the database
++// handles and registered storages survive closing it.
++void MtpServer::endEdits() {
+     int count = mObjectEditList.size();
+     for (int i = 0; i < count; i++) {
+         ObjectEdit* edit = mObjectEditList[i];
+@@ -428,6 +434,18 @@
+     }
+ 
+     ALOGV("got command %s (%x)", MtpDebug::getOperationCodeName(operation), operation);
++
++    // Apply the session boundary to every supported command, including file
++    // mutation and Android direct-I/O extensions whose handlers lack a guard.
++    // Unknown operations still receive OperationNotSupported below. The data
++    // phase, if any, has already been consumed by run().
++    if (!mSessionOpen && operation != MTP_OPERATION_GET_DEVICE_INFO &&
++        operation != MTP_OPERATION_OPEN_SESSION &&
++        std::find(std::begin(kSupportedOperationCodes), std::end(kSupportedOperationCodes),
++                  operation) != std::end(kSupportedOperationCodes)) {
++        mResponse.setResponseCode(MTP_RESPONSE_SESSION_NOT_OPEN);
++        return true;
++    }
+ 
+     switch (operation) {
+         case MTP_OPERATION_GET_DEVICE_INFO:
+@@ -604,7 +622,11 @@
+     if (!mSessionOpen)
+         return MTP_RESPONSE_SESSION_NOT_OPEN;
+     mSessionID = 0;
+-    mSessionOpen = false;
++    {
++        std::lock_guard<std::mutex> event_guard(mEventMutex);
++        mSessionOpen = false;
++    }
++    endEdits();
+     return MTP_RESPONSE_OK;
+ }
+ 
+--- a/mtp/MtpServer.h
++++ b/mtp/MtpServer.h
+@@ -132,6 +132,7 @@
+     ObjectEdit*         getEditObject(MtpObjectHandle handle);
+     void                removeEditObject(MtpObjectHandle handle);
+     void                commitEdit(ObjectEdit* edit);
++    void                endEdits();
+ 
+     bool                handleRequest();
+     void                resetSession();

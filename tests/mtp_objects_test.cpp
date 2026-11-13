@@ -25,11 +25,14 @@ atomic_bool timestamp_fault=false;
 atomic_bool directory_timestamp_fault=false,directory_close_fault=false;
 atomic_int directory_timestamp_calls=0;
 atomic_bool directory_open_fault=false;
+atomic_int edit_opens=0,edit_closes=0,edit_fd=-1;
 extern "C" int __real_open(const char*,int,...);
 extern "C" int __wrap_open(const char*p,int flags,...){
  if(directory_open_fault&&string(p)=="/one/new-dir"&&(flags&O_DIRECTORY)){errno=EACCES;return -1;}
  if(flags&O_CREAT){va_list args;va_start(args,flags);auto mode=va_arg(args,int);va_end(args);return __real_open(p,flags,mode);}
- return __real_open(p,flags);
+ int fd=__real_open(p,flags);
+ if(string(p)=="/one/a.txt"&&(flags&O_ACCMODE)==O_RDWR&&fd>=0){edit_fd=fd;++edit_opens;}
+ return fd;
 }
 bool upload_directory(int fd){struct stat a{},b{};return fstat(fd,&a)==0&&S_ISDIR(a.st_mode)&&stat("/one/new-dir",&b)==0&&a.st_dev==b.st_dev&&a.st_ino==b.st_ino;}
 extern "C" int __real_futimens(int,const struct timespec[2]);
@@ -44,7 +47,7 @@ extern "C" int __wrap_rename(const char*a,const char*b){if(publish_fault==1&&str
 extern "C" int __real_mkstemp(char*);
 extern "C" int __wrap_mkstemp(char*p){if(publish_fault==2){errno=ENOSPC;return -1;}return __real_mkstemp(p);}
 extern "C" int __real_close(int);
-extern "C" int __wrap_close(int fd){bool bad=(publish_fault==3&&upload_fd(fd))||(directory_close_fault&&upload_directory(fd));int r=__real_close(fd);if(bad){errno=EIO;return -1;}return r;}
+extern "C" int __wrap_close(int fd){if(fd==edit_fd){edit_fd=-1;++edit_closes;}bool bad=(publish_fault==3&&upload_fd(fd))||(directory_close_fault&&upload_directory(fd));int r=__real_close(fd);if(bad){errno=EIO;return -1;}return r;}
 extern "C" int __real_unlinkat(int,const char*,int);
 extern "C" int __wrap_unlinkat(int fd,const char* p,int flags){if(fail_unlink){errno=EACCES;return -1;}return __real_unlinkat(fd,p,flags);}
 
@@ -103,9 +106,57 @@ int main(int argc,char** argv){
  if(test=="symlink-initial"){fs::create_symlink("/two/z.txt","/one/link");REQUIRE(mkfifo("/one/fifo",0600)==0);}
  // Delete server after the database: observer events hold its non-owning pointer.
  auto session=make_unique<Session>();auto& s=*session;
- auto* one=s.add(0x10001,"/one");s.add(0x20001,"/two");s.start();s.open();
+ auto* one=s.add(0x10001,"/one");s.add(0x20001,"/two");s.start();
+ if(!test.starts_with("session-unopened-"))s.open();
  auto a=find(s.db,0x10001,"a.txt"),dir=find(s.db,0x10001,"dir");REQUIRE(a&&dir);
- if(test.starts_with("directory-final-")){
+ if(test.starts_with("session-unopened-")||test.starts_with("session-closed-")){
+  const auto kind=test.substr(test.starts_with("session-unopened-")?17:15);
+  if(test.starts_with("session-closed-"))REQUIRE(s.call(MTP_OPERATION_CLOSE_SESSION).code==MTP_RESPONSE_OK);
+  Reply r;
+  if(kind=="info")r=s.call(MTP_OPERATION_GET_OBJECT_INFO,{a});
+  else if(kind=="download")r=s.call(MTP_OPERATION_GET_OBJECT,{a});
+  else if(kind=="rename"){Bytes b;str(b,"renamed.txt");r=s.call(MTP_OPERATION_SET_OBJECT_PROP_VALUE,{a,MTP_PROPERTY_OBJECT_FILE_NAME},&b);}
+  else if(kind=="delete")r=s.call(MTP_OPERATION_DELETE_OBJECT,{a,0});
+  else if(kind=="upload"){auto b=info("new-dir",0,MTP_FORMAT_ASSOCIATION);r=s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&b);}
+  else if(kind=="copy")r=s.call(MTP_OPERATION_COPY_OBJECT,{a,0x20001,0xffffffff});
+  else if(kind=="move")r=s.call(MTP_OPERATION_MOVE_OBJECT,{a,0x20001,0xffffffff});
+  else if(kind=="edit")r=s.call(MTP_OPERATION_BEGIN_EDIT_OBJECT,{a});
+  else if(kind=="truncate")r=s.call(MTP_OPERATION_TRUNCATE_OBJECT,{a,0,0});
+  else if(kind=="end-edit")r=s.call(MTP_OPERATION_END_EDIT_OBJECT,{a});
+  else REQUIRE(false);
+  REQUIRE(r.code==MTP_RESPONSE_SESSION_NOT_OPEN&&r.data.empty());
+  REQUIRE(readfile("/one/a.txt")=="alpha"&&!fs::exists("/one/renamed.txt")&&!fs::exists("/one/new-dir")&&!fs::exists("/two/a.txt"));
+  REQUIRE(edit_opens==0);
+  // Session-independent discovery still works; the rejected data phase must
+  // not desynchronize the next command or prevent opening a real session.
+  REQUIRE(s.call(MTP_OPERATION_GET_DEVICE_INFO).code==MTP_RESPONSE_OK);
+  s.open();REQUIRE(s.call(MTP_OPERATION_GET_OBJECT_INFO,{a}).code==MTP_RESPONSE_OK);
+  cout<<"session_required=1 no_data_or_mutation=1 discovery_and_reopen=1"<<endl;
+ }else if(test=="session-close-edit"||test=="session-reset-edit"){
+  REQUIRE(s.call(MTP_OPERATION_BEGIN_EDIT_OBJECT,{a}).code==MTP_RESPONSE_OK&&edit_opens==1);
+  REQUIRE(s.call(MTP_OPERATION_TRUNCATE_OBJECT,{a,3,0}).code==MTP_RESPONSE_OK&&readfile("/one/a.txt")=="alp");
+  const auto op=test=="session-reset-edit"?MTP_OPERATION_RESET_DEVICE:MTP_OPERATION_CLOSE_SESSION;
+  REQUIRE(s.call(op).code==MTP_RESPONSE_OK);
+  REQUIRE(edit_closes==1&&edit_fd==-1);
+  REQUIRE(s.call(MTP_OPERATION_TRUNCATE_OBJECT,{a,0,0}).code==MTP_RESPONSE_SESSION_NOT_OPEN);
+  REQUIRE(readfile("/one/a.txt")=="alp");
+  s.open();REQUIRE(s.call(MTP_OPERATION_END_EDIT_OBJECT,{a}).code==MTP_RESPONSE_GENERAL_ERROR);
+  REQUIRE(s.call(MTP_OPERATION_BEGIN_EDIT_OBJECT,{a}).code==MTP_RESPONSE_OK&&edit_opens==2);
+  REQUIRE(s.call(MTP_OPERATION_END_EDIT_OBJECT,{a}).code==MTP_RESPONSE_OK&&edit_closes==2);
+  REQUIRE(find(s.db,0x10001,"a.txt")==a);
+  cout<<"session_edit_closed=1 prior_writes_preserved=1 reopen_fresh_edit=1"<<endl;
+ }else if(test=="session-close-pending"){
+  auto data=info("new.txt",3);auto r=s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data);
+  REQUIRE(r.code==MTP_RESPONSE_OK);auto h=word(r.response,20);
+  REQUIRE(s.call(MTP_OPERATION_CLOSE_SESSION).code==MTP_RESPONSE_OK);
+  MtpObjectInfo actual(h);REQUIRE(s.db.getObjectInfo(h,actual)!=MTP_RESPONSE_OK&&!fs::exists("/one/new.txt"));
+  s.open();Bytes empty;
+  REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&empty).code==MTP_RESPONSE_NO_VALID_OBJECT_INFO);
+  data=info("new.txt",3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  Bytes content{'o','k','!'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&content).code==MTP_RESPONSE_OK);
+  REQUIRE(readfile("/one/new.txt")=="ok!");
+  cout<<"pending_released=1 reopen_upload=1"<<endl;
+ }else if(test.starts_with("directory-final-")){
   // There is no protocol notification for a completed directory tree. Exercise
   // the existing explicit SendObjectInfo retry after a real child upload, and
   // ensure CloseSession does not silently restore an earlier directory date.

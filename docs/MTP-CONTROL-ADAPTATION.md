@@ -4,7 +4,26 @@
 
 本文按控制报文、活动事务匹配和 Reset 会话释放收录实现记录。各阶段的未覆盖项只代表当时边界；后续补充见对应小节，完整 USB 集成状态以工作队列为准。
 
-导航：[控制报文](#修复内容) · [活动事务取消](#transaction-cancel) · [Reset 会话释放](#reset-session) · [事件生命周期](#event-lifecycle) · [bulk 完成队列错误](#bulk-completion-error)。
+导航：[会话文件操作边界](#session-file-boundary) · [控制报文](#修复内容) · [活动事务取消](#transaction-cancel) · [Reset 会话释放](#reset-session) · [事件生命周期](#event-lifecycle) · [bulk 完成队列错误](#bulk-completion-error)。
+
+<a id="session-file-boundary"></a>
+
+## 会话文件操作与编辑状态释放（0098）
+
+原请求分派只在部分 handler 内检查会话。尚未 `OpenSession` 或已经 `CloseSession` 后，文件信息、下载、重命名、删除、上传目录、复制、移动及 Android 编辑命令仍可进入实际文件操作；`CloseSession` / 操作码 `ResetDevice` 也只修改会话标志，没有关闭编辑 fd。重新打开会话后，旧编辑状态仍存在。这是协议生命周期缺陷；会话检查不是设备访问认证。
+
+0098 在统一请求入口要求所有已公布的操作具有打开的会话，保留会话前 `GetDeviceInfo` 与 `OpenSession`；未知操作继续返回不支持。此处处理的是 `run()` 已读完数据阶段的命令，不改端点排空 / 取消机制。`CloseSession` 和当前共用该分支的 `ResetDevice` 在关闭通知后，刷新并释放所有编辑对象和 fd；class Reset / 断开沿用同一个编辑释放 helper。存储注册与数据库 handle 保留，已经写入或截断的内容不回滚。
+
+扩展现有对象链路测试，新增 23 项：会话未开 / 已关各十种命令，关闭 / 重置编辑，以及待上传对象关闭后重新上传。使用真实生产 server / packet / database / storage、私有普通文件、inotify、线程及 ASan / UBSan。检查拒绝响应、无数据返回、内容和路径未变、发现及重新打开会话可用；编辑测试实际先截断，再验证 close 精确释放 fd、内容保留、新会话必须重新开始编辑。旧实现 22/23 不满足预期；待上传清理对照通过。修正后对象149项、复制 / 移动48项通过。
+
+本地报告为 `logs/mtp-session-objects.json`、`logs/mtp-session-negative.json` 和 `logs/mtp-session-transfers.json`。USB transport、属性与日志为替身，未证明实际 FunctionFS / Windows / ARM64 MTP、物理设备 reset 或完整 USB 会话。每个响应的事务结束检查保留。`ResetDevice` 仍仅执行现有关闭会话语义，不宣称恢复所有设备属性或重启硬件。
+
+```bash
+# 已执行，输入与实现不变时复用结果。
+python3 tests/mtp_objects_test.py --report logs/mtp-session-objects.json
+python3 tests/mtp_transfers_test.py --report logs/mtp-session-transfers.json
+python3 scripts/audit_mtp_session_delivery.py
+```
 
 <a id="bulk-completion-error"></a>
 

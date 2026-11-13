@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-special-file-errors.img",
-  "image_sha256": "feef6a20449a10f9ca40c2bd530a79797cbf3542f301a543655c5e5bf492c4df",
-  "production_sources": 822,
+  "image_name": "recovery-dijun-unified-mtp-session-boundary.img",
+  "image_sha256": "4a149ab8cfdef7ad3c9380a73dfa24b168f9bc71b0333cd57411340880b62c09",
+  "production_sources": 823,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -12,6 +12,30 @@
     "scope": "After Synaptics is live and Xiaomi input is registered, wait 2 seconds, request ordinary touch reports, and check the software cache. This does not prove controller acknowledgement or event delivery. Prior manual raw0 user capture observed 215 Linux input events; this automatic-startup candidate has no corresponding hardware observation."
   },
   "checks": [
+    {
+      "name": "mtp-session-objects",
+      "status": "PASS",
+      "cases": 149,
+      "failures": 0,
+      "local_report_sha256": "705b06a3f8a3d546901711ec766768fc035950366723f1e8b136914e1a84961d",
+      "scope": "Host production MTP server/packet/database/storage: session-required file commands, CloseSession/ResetDevice edit fd release, pending upload cleanup/reopen. Ordinary files/inotify/threads with ASan/UBSan; USB/properties/logging fixtures. No ARM64 MTP/Windows/actual USB reset/full endpoints or rollback; session gating is not authentication."
+    },
+    {
+      "name": "mtp-session-negative",
+      "status": "FAIL",
+      "cases": 23,
+      "failures": 22,
+      "local_report_sha256": "875ce03ef2a19d056f13735f6adcdff1c1f8ed74ae7de8d1e5b1d3fcfe68d72f",
+      "scope": "Host production MTP server/packet/database/storage: session-required file commands, CloseSession/ResetDevice edit fd release, pending upload cleanup/reopen. Ordinary files/inotify/threads with ASan/UBSan; USB/properties/logging fixtures. No ARM64 MTP/Windows/actual USB reset/full endpoints or rollback; session gating is not authentication."
+    },
+    {
+      "name": "mtp-session-transfers",
+      "status": "PASS",
+      "cases": 48,
+      "failures": 0,
+      "local_report_sha256": "3719fd5e0b9b59a5f6fe67a555aff57e0b754ad278e0ebb81615107d5fd947dc",
+      "scope": "Host production MTP server/packet/database/storage: session-required file commands, CloseSession/ResetDevice edit fd release, pending upload cleanup/reopen. Ordinary files/inotify/threads with ASan/UBSan; USB/properties/logging fixtures. No ARM64 MTP/Windows/actual USB reset/full endpoints or rollback; session gating is not authentication."
+    },
     {
       "name": "mtp-directory-finalization",
       "status": "PASS",

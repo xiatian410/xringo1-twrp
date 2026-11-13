@@ -354,6 +354,10 @@
         {
           "file": "0097-restore-special-file-errors.patch",
           "sha256": "50dd0af27f6c6f8582d6e9eaee2cd7f7b01d96aa58345c9caa3a352e6f9ae3a4"
+        },
+        {
+          "file": "0098-mtp-session-file-boundary.patch",
+          "sha256": "d6a15d455244decab9ab3a06e405fbedf6adc32a44f677006b7536aba4a43081"
         }
       ],
       "result_files": {
@@ -410,8 +414,8 @@
         "oaes/oaes.cpp": "306acbfddd40512ba8c0ad0b7ad8afc86533425625e6a875f95d0a3ae4e1e356",
         "oaes/oaes.hpp": "256c988afbd924a12db4bdaa4c9c35475dda92b53676cf7693f64e36de0ed3c4",
         "mtp/IMtpDatabase.h": "bbe651b95e206c307ba4b9e9d6c57225697dcc6667bf508bf8d5ac3c59548086",
-        "mtp/MtpServer.cpp": "22677e3ec74c94a732cdcf674393b93384a232fe1db56154d55c8fc00be87ad7",
-        "mtp/MtpServer.h": "b68e12ce781037259cec58ff2c838e780173f8d78d396fcffec2f3b8fc43a13b",
+        "mtp/MtpServer.cpp": "26bc4ecbb67bff74668dcd680e1a5bed311fd2bb28750694b40dc588599baa8a",
+        "mtp/MtpServer.h": "7b99b314181d4e9ab125d274b71011777867bc6fc30fe43b66478c9bbb3bcaf5",
         "mtp/twrp/TwrpMtpDatabase.cpp": "9abf68632a54fc69580c4bbd7a45d620e0a237c84ba3304f754af16d56d05739",
         "mtp/twrp/TwrpMtpDatabase.hpp": "0ffaf9304ae67e9dd3b755593b9ea15b2ff5d2e16b05508401b38882c7735a2b",
         "mtp/twrp/TwrpMtpStorage.cpp": "06f33ac6966815427f673e37bf01c511a1117058a201b1f97ac384acd8beedae",
