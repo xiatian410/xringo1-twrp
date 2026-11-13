@@ -6,16 +6,22 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-ordinary-reports.img` |
-| SHA-256 | `aee7856e90ba4f5861bdc918d4da0b585b7de4fd337a64138204c9f526d3b300` |
-| 生产来源绑定 | 809 份 |
+| 文件 | `recovery-dijun-unified-mtp-staging-identity.img` |
+| SHA-256 | `a2e08d4e3409c61d75890e38a41229e482e03aed945436455b7fe5db3528cb2e` |
+| 生产来源绑定 | 810 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 当前候选：OS4 普通触摸报告启动策略
+## 本批生产修正：MTP 遗留路径隐藏新文件
 
-当前候选在 Synaptics 模块进入 live、Xiaomi input 注册后等待2秒，再请求 `enable_touch_raw=0` 并核对软件缓存读回。9项私有文件策略用例和镜像打包审计通过；候选绑定809项生产来源与六个 profile。等待2秒是有限启动策略，不代表目标设备时序已测量，也不代表控制器确认切换。
+0091 在临时文件创建时记录设备号 / inode，结束时记录 ctime；遗留路径消失、被替换或 ctime 变化后撤销旧隐藏登记，修改 / 关闭事件可发布原先未登记的新对象。不会按前缀清理或删除用户文件。对象121项、移动复制48项通过；同一夹具对旧实现的5项检查复现3项隐藏错误。最终清理构建、810来源与六profile核对通过，打包变化仅 MTP 库、构建属性和 ramdisk 摘要。详见[MTP上传](docs/MTP-ATOMIC-UPLOAD.md#staging-identity)。
+
+跨重启归属 / 回收仍未完成，ctime也不能辨别所有同时间戳并发修改；没有真实USB或Windows验收。本批未重跑整包OTA、触摸或其他未变功能。
+
+## 沿用的 OS4 普通触摸报告启动策略
+
+当前候选在 Synaptics 模块进入 live、Xiaomi input 注册后等待2秒，再请求 `enable_touch_raw=0` 并核对软件缓存读回。9项私有文件策略用例和镜像打包审计通过；该策略当时绑定809项生产来源与六个 profile；本批沿用其未变字节。等待2秒是有限启动策略，不代表目标设备时序已测量，也不代表控制器确认切换。
 
 用户此前手动写 raw0 后观察到215条 Linux input 事件。当前自动启动候选没有新的硬件运行证据，不能据缓存读回或策略测试宣称触摸已修复。OS4震动由用户确认正常，退出例行检查；设置在 backup-manifest 基线正常，也不重复诊断。
 

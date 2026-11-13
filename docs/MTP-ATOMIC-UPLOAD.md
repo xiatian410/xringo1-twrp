@@ -62,7 +62,7 @@ python3 scripts/audit_mtp_directory_delivery.py
 
 旧实现将临时路径按对象 handle 登记。上传失败且 `unlink` 失败时，为避免 observer 暴露临时文件，会保留这条登记。但 `CreateSendObjectFile` 拒绝已有登记的 handle，因此再次覆盖同一已有对象永远无法创建新的临时文件，直到 storage 重建。新建文件失败后节点消失、再次上传取得新 handle，故同样的故障不一定触发此问题。
 
-0081 将结束传输的精确路径移入独立集合，释放 handle 的当前传输登记。ReadDir、inotify 和 reconciliation 同时排除当前临时路径及该集合中的精确路径。重试使用新的唯一临时文件；失败期间已有完整目标不变。**本修正不删除遗留文件、不持久化其归属，不按 `.mtp-upload-*` 前缀隐藏或清除用户文件。** 外部替换同一已登记路径及跨重启识别仍未解决。
+0081 将结束传输的精确路径移入独立集合，释放 handle 的当前传输登记。ReadDir、inotify 和 reconciliation 同时排除当前临时路径及该集合中的精确路径。重试使用新的唯一临时文件；失败期间已有完整目标不变。**本修正不删除遗留文件、不持久化其归属，不按 `.mtp-upload-*` 前缀隐藏或清除用户文件。** 该阶段尚未处理外部替换同一路径；后续 0091 补齐下述身份检查，跨重启识别仍未完成。
 
 `tests/mtp_objects_test.py` 新增两个场景：覆盖与新建均连续注入两次文件同步失败及 unlink 失败，再成功上传。检查失败目标保持、两份遗留内容不变且隐藏、最终内容、已有 handle 保持，以及用户自建同前缀文件可见且不变。旧实现覆盖场景在第二次失败时无法创建新的临时文件而失败，新建对照通过；修正后两项通过。对象链路共 116 项、移动 / 复制 48 项通过，使用实际 server/database/storage、普通文件、inotify、线程与 ASan/UBSan；USB transport 和属性为替身。
 
@@ -73,6 +73,27 @@ python3 scripts/audit_mtp_staging_retry.py
 ```
 
 旧实现对照保存在本地 `logs/mtp-staging-retry-negative.json`，没有改写历史报告。最终镜像先 `installclean`，再 `make -j$(nproc)`，799 份来源、六份 profile。相对 0080 仅 MTP 库、构建属性和 ramdisk 摘要变化；未变的选择与模块证据按原范围复用，不重新运行震动或其他无关套件。当前镜像和 SHA-256 见[交付报告](../simulation-report.md)。未执行 ARM64 MTP、真实 USB / Windows 或设备重启清理。
+
+<a id="staging-identity"></a>
+
+## 遗留路径被用户替换后的可见性（0091）
+
+上传失败且临时文件删除失败后，旧实现只按路径隐藏遗留文件。用户随后删除并重建同名普通文件或目录，或者原 inode 内容发生变化，observer 仍一直忽略该路径，新对象无法出现在 MTP 列表。
+
+0091 在 `mkstemp` 后用 `fstat` 记录设备号和 inode；传输结束时，对仍匹配的普通文件记录 ctime。ReadDir、inotify 和 reconciliation 共用身份核对：路径消失、类型变化、inode 替换或 ctime 变化时撤销旧隐藏登记。未知对象收到修改 / 关闭 / 属性事件时重新检查类型，普通文件和目录可加入数据库；符号链接仍排除。无法确定的 lookup 错误继续保留隐藏，避免仅凭查询失败认定用户已替换。
+
+这只是可见性记账，不删除文件，不按 `.mtp-upload-*` 前缀认定归属。当前传输中的路径仍受原有保护；跨重启归属与回收未实现。ctime 不是内容摘要或可靠所有权凭据：相同 / 粗粒度时间戳下的修改仍可能无法识别，外部并发修改活跃传输的竞争也不在本批验收范围。
+
+五个新增差分场景覆盖替换为文件、目录、符号链接、删除及原 inode 修改。实际使用私有普通文件、inotify、生产 server / database / storage 和 ASan / UBSan；USB 与属性为替身。原 inode 修改场景显式断言 inode 不变、ctime 变化；短暂等待为夹具提供可分辨的时间戳，不代表所有文件系统精度。修正后对象链路 121 项与移动 / 复制 48 项通过；相同测试对旧实现复现文件、目录、原 inode 修改三项不可见，符号链接 / 删除对照通过。每项还检查用户内容保留及后续正常上传。
+
+```bash
+# 本批已完成。相关来源、输入与范围不变时复用结果。
+python3 tests/mtp_objects_test.py --report logs/mtp-staging-identity-objects-delivery.json
+python3 tests/mtp_transfers_test.py --report logs/mtp-staging-identity-transfers-delivery.json
+python3 scripts/audit_mtp_staging_identity.py
+```
+
+最终先 `installclean` 再 `make -j$(nproc)`；810 份生产来源及六份 profile 绑定。相对 ordinary-reports 候选，ramdisk 仅 MTP 库、构建属性与摘要变化。旧实现副本与报告留本地，公开仓库只保存源码、补丁和结果摘要。没有 ARM64 MTP、真实 USB / Windows 或断电验收；未变的 OTA、触摸等功能复用各自证据。
 
 ## 验证边界与未完成项
 

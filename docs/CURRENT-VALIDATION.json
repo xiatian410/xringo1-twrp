@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-ordinary-reports.img",
-  "image_sha256": "aee7856e90ba4f5861bdc918d4da0b585b7de4fd337a64138204c9f526d3b300",
-  "production_sources": 809,
+  "image_name": "recovery-dijun-unified-mtp-staging-identity.img",
+  "image_sha256": "a2e08d4e3409c61d75890e38a41229e482e03aed945436455b7fe5db3528cb2e",
+  "production_sources": 810,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -12,6 +12,30 @@
     "scope": "After Synaptics is live and Xiaomi input is registered, wait 2 seconds, request ordinary touch reports, and check the software cache. This does not prove controller acknowledgement or event delivery. Prior manual raw0 user capture observed 215 Linux input events; this automatic-startup candidate has no corresponding hardware observation."
   },
   "checks": [
+    {
+      "name": "mtp-staging-identity-transfers",
+      "status": "PASS",
+      "cases": 48,
+      "failures": 0,
+      "local_report_sha256": "eafebba0d590ee6a4f8b477bac6c23c550fe2b95aa75999138a01a66e2b543e0",
+      "scope": "Patch0091 abandoned staging visibility identity; host production MTP and real private files/inotify with ASan/UBSan, USB/properties fixtures. Old differential expected3/5 visibility failures. No restart recovery or physical USB proof."
+    },
+    {
+      "name": "mtp-staging-identity-old",
+      "status": "FAIL",
+      "cases": 5,
+      "failures": 3,
+      "local_report_sha256": "dd2bb861eff3efb80e5d7fe2528b257a1e0c01f2ffebc087215cad6fa0b80085",
+      "scope": "Patch0091 abandoned staging visibility identity; host production MTP and real private files/inotify with ASan/UBSan, USB/properties fixtures. Old differential expected3/5 visibility failures. No restart recovery or physical USB proof."
+    },
+    {
+      "name": "mtp-staging-identity-objects",
+      "status": "PASS",
+      "cases": 121,
+      "failures": 0,
+      "local_report_sha256": "4bde1b07658c30fc17eccb26f97721466c2e37d0f0ce8e9fa57572248a97b79a",
+      "scope": "Patch0091 abandoned staging visibility identity; host production MTP and real private files/inotify with ASan/UBSan, USB/properties fixtures. Old differential expected3/5 visibility failures. No restart recovery or physical USB proof."
+    },
     {
       "name": "os4-touch-ordinary-report-startup-policy",
       "status": "PASS",

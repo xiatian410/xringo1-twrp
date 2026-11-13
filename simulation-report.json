@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-ordinary-reports.img",
-  "image_sha256": "aee7856e90ba4f5861bdc918d4da0b585b7de4fd337a64138204c9f526d3b300",
-  "image_status": "Clean installclean + make -j$(nproc); bounded startup request for ordinary touch reports after module/input readiness. 809 sources/six profiles; request/cache readback do not prove controller acknowledgement or event delivery.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-staging-identity.img",
+  "image_sha256": "a2e08d4e3409c61d75890e38a41229e482e03aed945436455b7fe5db3528cb2e",
+  "image_status": "Clean installclean + make -j$(nproc); patch0091 releases stale abandoned-staging visibility by dev/inode/ctime. 810 sources and six profiles; objects121/transfers48 pass; old differential3/5 failures. Hardware unverified; unchanged ordinary-report startup policy retained.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -3770,6 +3770,33 @@
       "evidence": "logs/partition-tool-pages.json",
       "evidence_sha256": "11e4b500c7667ab23e03c1a047ab89ade351cf1f34b9dd032cc86a1647b452e9",
       "scope": "Original partition option/confirmation/change-filesystem/progress pages and callbacks, LVGL pointer/swipe input, selected router/back branches, page_host ownership and actual asynchronous tools worker. PartitionManager operations/details, settings/fonts/console/display are explicit fixtures; no mkfs/fsck, full GUI loop, mount or fscrypt. Ten cases; no production change/build."
+    },
+    {
+      "name": "mtp-staging-identity-objects",
+      "result": "pass",
+      "count": 121,
+      "failed": 0,
+      "evidence": "logs/mtp-staging-identity-objects-delivery.json",
+      "evidence_sha256": "4bde1b07658c30fc17eccb26f97721466c2e37d0f0ce8e9fa57572248a97b79a",
+      "scope": "Production host MTP server/database/storage; private ordinary files/inotify/threads and ASan/UBSan. USB/properties fixtures. Old-source differential retains three expected visibility failures; no physical USB or restart cleanup."
+    },
+    {
+      "name": "mtp-staging-identity-old",
+      "result": "fail",
+      "count": 5,
+      "failed": 3,
+      "evidence": "logs/mtp-staging-identity-old-delivery.json",
+      "evidence_sha256": "dd2bb861eff3efb80e5d7fe2528b257a1e0c01f2ffebc087215cad6fa0b80085",
+      "scope": "Production host MTP server/database/storage; private ordinary files/inotify/threads and ASan/UBSan. USB/properties fixtures. Old-source differential retains three expected visibility failures; no physical USB or restart cleanup."
+    },
+    {
+      "name": "mtp-staging-identity-transfers",
+      "result": "pass",
+      "count": 48,
+      "failed": 0,
+      "evidence": "logs/mtp-staging-identity-transfers-delivery.json",
+      "evidence_sha256": "eafebba0d590ee6a4f8b477bac6c23c550fe2b95aa75999138a01a66e2b543e0",
+      "scope": "Production host MTP server/database/storage; private ordinary files/inotify/threads and ASan/UBSan. USB/properties fixtures. Old-source differential retains three expected visibility failures; no physical USB or restart cleanup."
     }
   ],
   "source_review_followups": [
@@ -4108,8 +4135,9 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/snapshot-cow-init-delivery.json",
-    "scope": "Patch0090 handles CreateCowWriter initialization failure before Finalize; original old implementation crashes on null after injected header fsync EIO. Actual ARM64 SnapshotManager with unchanged OS4.0.4 manifest initializes and CowReader parses10 empty COWs, publishes target LP, recreates manager and finishes to Unverified2/HAL1. Normal/path error/header-sync error3 pass; same harness and image libraries with old snapshot TU reproduces exactly1 null crash. Explicit synthetic32GiB source LP and separate sparse file DM views, HAL/kernel/ImageManager boundaries; IsTestDevice disables scratch and daemon. No payload replay, real mapping/mount/slot/boot/merge or full OTA. Production patch and clean build809; six profiles unchanged.",
+    "evidence": "logs/mtp-staging-identity-delivery-audit.json",
+    "evidence_sha256": "dc7f6d78d6625b053a8cee71e178105f7011093aea4864236636f05ab5c3abaf",
+    "scope": "Patch0091 corrects user replacement/changed-file visibility after failed staging cleanup. Clean build and packaged MTP library verified; only MTP library/build property/ramdisk digest differ from ordinary-reports. Host MTP server/database/inotify ASan/UBSan objects121 and transfers48; old same harness3/5 failures. No cross-restart recovery, actual USB/Windows or ARM64 MTP validation.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -5098,7 +5126,7 @@
     "negative_cases": 2,
     "transfers": 48,
     "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles.",
-    "limits": "Orphans remain hidden by exact path for storage lifetime; no deletion or ownership persistence across restart."
+    "limits": "Historical0081 exact-path behavior superseded by0091 identity/ctime check for abandoned staging visibility. Cross-restart ownership/deletion remains unfinished."
   },
   "mtp_aio_completion_error": {
     "patch": "0082-mtp-aio-completion-error.patch",
@@ -5140,5 +5168,15 @@
     "scope": "Patch0089 startup RecreateMediaFolder stops on directory query/creation failure, rejects non-directory/symlink, repairs missing user path even if media root exists, restores only missing bind without toggling parent mount. FBE skips remain.13 private-chroot cases pass, old10 fail;16 manager wipe regressions pass. Real directory operations/uid65534 permission failures; mounts/bind, metadata cache and presentation explicit fixtures. No full init/GUI/fscrypt/hardware proof.",
     "evidence": "logs/media-recreate-delivery.json",
     "evidence_sha256": "bde360627688542d108b25d51c67c0eb73524b4a49c90fba5fa82c9ffcc912c5"
+  },
+  "mtp_staging_identity": {
+    "patch": "0091-mtp-staging-file-identity.patch",
+    "objects": 121,
+    "negative_cases": 5,
+    "old_failures": 3,
+    "transfers": 48,
+    "production_sources": 810,
+    "semantics": "Capture dev/inode at staging creation and ctime at transfer completion. Release abandoned path hiding when absent, replaced, nonregular or ctime changed. Observer admits previously hidden regular files/directories on modify/close/attrib. No prefix deletion.",
+    "limits": "Storage lifetime only. No persistent ownership/restart cleanup, actual USB/Windows/ARM64 MTP or power-loss proof. ctime not cryptographic; identical/coarse timestamps and external concurrent active-transfer changes remain limits."
   }
 }

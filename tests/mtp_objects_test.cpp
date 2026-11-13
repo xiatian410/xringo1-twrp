@@ -105,7 +105,46 @@ int main(int argc,char** argv){
  auto session=make_unique<Session>();auto& s=*session;
  auto* one=s.add(0x10001,"/one");s.add(0x20001,"/two");s.start();s.open();
  auto a=find(s.db,0x10001,"a.txt"),dir=find(s.db,0x10001,"dir");REQUIRE(a&&dir);
- if(test=="staging-cleanup-retry"||test=="staging-cleanup-new"){
+ if(test.starts_with("staging-replaced-")){
+  auto data=info("a.txt",3);
+  REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  write_fault=3;fail_unlink=true;Bytes partial{'b','a','d'};
+  REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&partial).code!=MTP_RESPONSE_OK);
+  fail_unlink=false;write_fault=0;
+  string leftover;
+  for(const auto& e:fs::directory_iterator("/one"))
+   if(e.path().filename().string().starts_with(".mtp-upload-"))leftover=e.path();
+  REQUIRE(!leftover.empty()&&readfile(leftover)=="bad"&&readfile("/one/a.txt")=="alpha");
+  REQUIRE(find(s.db,0x10001,fs::path(leftover).filename())==0);
+  // Keep the old inode allocated so replacement cannot accidentally reuse it.
+  const int old=open(leftover.c_str(),O_RDONLY|O_CLOEXEC);REQUIRE(old>=0);
+  struct stat before{},after{};REQUIRE(fstat(old,&before)==0);
+  if(test.ends_with("modified"))this_thread::sleep_for(20ms);
+  if(!test.ends_with("modified"))REQUIRE(unlink(leftover.c_str())==0);
+  if(test.ends_with("directory"))fs::create_directory(leftover);
+  else if(test.ends_with("symlink"))fs::create_symlink("/two/z.txt",leftover);
+  else if(!test.ends_with("removed"))writefile(leftover,"user replacement");
+  if(test.ends_with("modified")){
+   REQUIRE(lstat(leftover.c_str(),&after)==0&&before.st_ino==after.st_ino);
+   REQUIRE(before.st_ctim.tv_sec!=after.st_ctim.tv_sec||before.st_ctim.tv_nsec!=after.st_ctim.tv_nsec);
+   cout<<"same_inode_ctime_changed=1 before="<<before.st_ctim.tv_sec<<":"<<before.st_ctim.tv_nsec
+       <<" after="<<after.st_ctim.tv_sec<<":"<<after.st_ctim.tv_nsec<<endl;
+  }
+  if(test.ends_with("file")||test.ends_with("directory")||test.ends_with("modified")){
+   REQUIRE(until([&]{return find(s.db,0x10001,fs::path(leftover).filename())!=0;}));
+   REQUIRE(test.ends_with("directory")?fs::is_directory(leftover):readfile(leftover)=="user replacement");
+  }else{
+   REQUIRE(find(s.db,0x10001,fs::path(leftover).filename())==0);
+   REQUIRE(test.ends_with("removed")?!fs::exists(leftover):fs::is_symlink(leftover));
+   REQUIRE(readfile("/two/z.txt")=="zulu");
+  }
+  REQUIRE(close(old)==0);
+  data=info("a.txt",3);
+  REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  Bytes retry{'n','e','w'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&retry).code==MTP_RESPONSE_OK);
+  REQUIRE(readfile("/one/a.txt")=="new");
+  cout<<"replaced_staging_identity_released=1 user_replacement_preserved=1 retry=1"<<endl;
+ }else if(test=="staging-cleanup-retry"||test=="staging-cleanup-new"){
   const bool replacing=test=="staging-cleanup-retry";
   const string name=replacing?"a.txt":"new.txt",path="/one/"+name;
   const string user=".mtp-upload-user-owned";

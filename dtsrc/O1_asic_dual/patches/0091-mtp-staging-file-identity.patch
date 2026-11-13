@@ -1,0 +1,160 @@
+diff --git a/mtp/twrp/TwrpMtpStorage.cpp b/mtp/twrp/TwrpMtpStorage.cpp
+--- a/mtp/twrp/TwrpMtpStorage.cpp
++++ b/mtp/twrp/TwrpMtpStorage.cpp
+@@ -325,9 +325,7 @@
+             const auto child_status = iterator->symlink_status(ec);
+             if (ec) break;
+             const auto child_path = iterator->path().string();
+-            const bool staging = abandoned_sending_files_.contains(child_path) ||
+-                std::any_of(sending_files_.begin(), sending_files_.end(),
+-                [&](const auto& item) { return item.second == child_path; });
++            const bool staging = IsSendObjectFile(child_path);
+             if (!staging && (fs::is_directory(child_status) || fs::is_regular_file(child_status)))
+                 observed.emplace(iterator->path().filename().string(), fs::is_directory(child_status));
+             iterator.increment(ec);
+@@ -473,6 +471,29 @@
+     return entry->handle;
+ }
+ 
++bool TwrpMtpStorage::IsSendObjectFile(const std::string& path) {
++    // Called under tree_mutex_ by all three observer/enumeration paths.
++    for (const auto& [handle, file] : sending_files_) {
++        if (file.path == path) return true;
++    }
++    auto it = abandoned_sending_files_.find(path);
++    if (it == abandoned_sending_files_.end()) return false;
++    struct stat st{};
++    if (lstat(path.c_str(), &st) != 0) {
++        if (errno != ENOENT && errno != ENOTDIR) return true;
++    } else if (S_ISREG(st.st_mode) && st.st_dev == it->second.device &&
++               st.st_ino == it->second.inode &&
++               (!it->second.changed_known ||
++                (st.st_ctim.tv_sec == it->second.changed.tv_sec &&
++                 st.st_ctim.tv_nsec == it->second.changed.tv_nsec))) {
++        return true;
++    }
++    // Removed, replaced or externally modified: release the stale record.
++    // This is visibility bookkeeping only, never permission to delete a path.
++    abandoned_sending_files_.erase(it);
++    return false;
++}
++
+ int TwrpMtpStorage::CreateSendObjectFile(MtpObjectHandle handle, std::string& path) {
+     const std::lock_guard guard(tree_mutex_);
+     auto* entry = FindNode(handle);
+@@ -484,8 +505,16 @@
+     // enumeration can expose the partial object between these operations.
+     const int fd = mkstemp(temporary.data());
+     if (fd < 0) return -1;
++    struct stat st{};
++    if (fstat(fd, &st) != 0) {
++        const int error = errno;
++        close(fd);
++        unlink(temporary.c_str());
++        errno = error;
++        return -1;
++    }
+     fcntl(fd, F_SETFD, FD_CLOEXEC);
+-    sending_files_[handle] = temporary;
++    sending_files_[handle] = {temporary, st.st_dev, st.st_ino};
+     path = temporary;
+     return fd;
+ }
+@@ -655,9 +684,7 @@
+             continue;
+         }
+         const fs::path& item = de.path();
+-        if (abandoned_sending_files_.contains(item.string()) ||
+-            std::any_of(sending_files_.begin(), sending_files_.end(),
+-                       [&](const auto& entry) { return entry.second == item.string(); })) {
++        if (IsSendObjectFile(item.string())) {
+             it.increment(ec);
+             if (ec) return -1;
+             continue;
+@@ -783,9 +810,7 @@
+     const std::string event_name = fs::path(event->name).filename().string();
+     const auto mask = event->mask;
+     const auto event_path = (fs::path(GetNodePath(dir)) / event_name).string();
+-    if (abandoned_sending_files_.contains(event_path) ||
+-        std::any_of(sending_files_.begin(), sending_files_.end(),
+-                   [&](const auto& item) { return item.second == event_path; })) return;
++    if (IsSendObjectFile(event_path)) return;
+     MtpEntry* entry = FindEntryByName(dir, event_name);
+ 
+     // The send guard exists only to hide the file the host is uploading right
+@@ -807,7 +832,10 @@
+     // handleAddedObject() (new id, OBJECT_ADDED) for MOVED_TO.  Reusing the old
+     // handle instead would leave every host that only re-reads an object when
+     // its handle changes showing the old name.
+-    if (mask & (IN_CREATE | IN_MOVED_TO)) {
++    // A previously hidden file can become visible on modification. A query
++    // may already have retired its staging record before this event arrives.
++    if ((mask & (IN_CREATE | IN_MOVED_TO)) ||
++        (!entry && (mask & (IN_MODIFY | IN_CLOSE_WRITE | IN_ATTRIB)))) {
+         const auto item_path = fs::path(GetNodePath(dir)) / event_name;
+         std::error_code ec;
+         const auto status = fs::symlink_status(item_path, ec);
+@@ -884,11 +912,19 @@
+         // swallowing every later inotify event for that node.
+         if (handle_currently_sending_ == handle) handle_currently_sending_ = 0;
+         if (auto it = sending_files_.find(handle); it != sending_files_.end()) {
+-            std::error_code ec;
+             // Preserve failed cleanup visibility protection independently of
+             // the finished handle, which may immediately be uploaded again.
+-            if (fs::exists(it->second, ec) || ec)
+-                abandoned_sending_files_.insert(it->second);
++            struct stat st{};
++            const int result = lstat(it->second.path.c_str(), &st);
++            if (result == 0 && S_ISREG(st.st_mode) &&
++                st.st_dev == it->second.device && st.st_ino == it->second.inode) {
++                it->second.changed = st.st_ctim;
++                it->second.changed_known = true;
++                abandoned_sending_files_[it->second.path] = it->second;
++            } else if (result != 0 && errno != ENOENT && errno != ENOTDIR) {
++                // Indeterminate lookup is not evidence of a user replacement.
++                abandoned_sending_files_[it->second.path] = it->second;
++            }
+             sending_files_.erase(it);
+         }
+ 
+diff --git a/mtp/twrp/TwrpMtpStorage.hpp b/mtp/twrp/TwrpMtpStorage.hpp
+--- a/mtp/twrp/TwrpMtpStorage.hpp
++++ b/mtp/twrp/TwrpMtpStorage.hpp
+@@ -24,6 +24,7 @@
+ #include "../MtpTypes.h"
+ 
+ #include <sys/inotify.h>
++#include <sys/stat.h>
+ 
+ #include <atomic>
+ #include <map>
+@@ -87,10 +88,18 @@
+     std::unordered_map<MtpObjectHandle, MtpEntry*> node_index_;   // every handle -> MtpEntry* (O(1) lookup)
+     std::string mtp_storage_parent_;
+     MtpObjectHandle handle_currently_sending_ = 0;
+-    std::map<MtpObjectHandle, std::string> sending_files_;
++    struct SendingFile {
++        std::string path;
++        dev_t device;
++        ino_t inode;
++        timespec changed{};
++        bool changed_known = false;
++    };
++    std::map<MtpObjectHandle, SendingFile> sending_files_;
+     // Failed unlink must not reserve an object handle against later uploads.
+-    // Retain exact paths only; never infer ownership from a filename prefix.
+-    std::set<std::string> abandoned_sending_files_;
++    // Retain identity as well as path; a later user replacement is not ours.
++    // Never infer ownership from a filename prefix.
++    std::map<std::string, SendingFile> abandoned_sending_files_;
+     int inotify_fd_ = -1;
+     std::map<int, MtpObjectHandle> inotify_map_;                   // inotify wd -> directory handle
+     bool send_events_ = false;
+@@ -115,6 +124,7 @@
+     int ReconcileDirectory(MtpEntry* dir, std::vector<PendingEvent>& events);
+     void IndexMovedTree(MtpEntry* entry);
+     void ForgetSubtreeIndex(const MtpEntry* entry);
++    bool IsSendObjectFile(const std::string& path);
+ 
+ 
+ public:
