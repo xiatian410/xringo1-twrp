@@ -13,7 +13,11 @@
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本次定向验证
+## 后续执行证据
+
+实际 client Connect/query、server、SnapshotHandlerManager、ReadWorker 与 replace/zero MergeWorker 已接续八场景。真实COW压缩数据/零块读取、64 KiB合并内容与未改尾部逐字节核对，写入/同步故障均保持失败；容量查询和dm-user端点为明确替身。没有发现新增生产缺陷，不重编0080镜像。COPY/XOR/RA、持久续合并、内核映射和完整OTA仍待完成，见[范围](docs/OTA-OPERATION-COW.md#snapuserd-handler)。
+
+## 0080交付时的定向验证
 
 实际 ARM64 snapuserd 服务端通过公开 Start / Run 与私有 Unix socket 执行八项检查。旧源码在三种客户端半关闭情形下 SIGSEGV，0080修正后八项通过；第二客户端仍可查询并停止服务。替换的只有 daemon main，没有 snapshot handlers、内核映射或完整 OTA。见[故障与范围](docs/OTA-OPERATION-COW.md#snapuserd-eof)。
 

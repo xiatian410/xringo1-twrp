@@ -440,3 +440,24 @@ python3 scripts/audit_snapuserd_eof_delivery.py
 最终候选 `recovery-dijun-unified-snapuserd-eof.img`，SHA-256 `9d71ecc3bddda541b652e98d9dfd8220647d0aa94c32488ae09040085d19a210`。按要求先 installclean、再 `make -j$(nproc)` 30并发构建，798份来源和六profile封装通过。相比0079只有 `system/bin/snapuserd` 二进制、构建属性与ramdisk文件摘要变化；更新器及其他二进制字节不变，复用其相关既有结果，不重复完整 payload 或震动检查。
 
 **剩余边界**：真正的 handler 删除会通知 I/O 线程并 join，所需时间不能由这个无 handler 测试确定；本批不添加任意超时。原 stream 协议两端仍按单次收包处理，合法分片、完整 client/server 删除、真实 init/属性启动、内核 mapper、image 管理及合并尚未接续。未运行原始 daemon main、手机或物理块设备。整体目标继续进行中。
+
+<a id="snapuserd-handler"></a>
+
+## 实际 client/server、handler 读取与 replace/zero 合并
+
+继0080的服务端 EOF 修正，本节接通原始 `SnapuserdClient::Connect` 的 Unix socket 连接与 query 握手、功能/模式查询、init/start/delete/stop，以及真实服务端 `Initialize(false) → Start → Run → SnapshotHandlerManager`。复用上一节 runner 的可选 `--handler` 模式，不再为协议回执新增替身服务。没有新增生产修正，继续使用0080镜像及798份生产来源，不重编。
+
+测试以实际 ARM64 COW writer 生成 v3/LZ4 replace+zero 数据。真实 CowReader、handler 初始化和 ReadWorker 经原始 `DmUserBlockServer` 读取两个块，逐字节核对压缩内容和零块。唯一的设备边界是：指定普通文件的容量查询返回其大小，指定 `/dev/dm-user/offline` 的 open 改为私有 socketpair 的重复描述符。它不是 kernel mapper，也不创建物理块设备；两个端点均为真实 socket，内核请求头和回复按原始 dm-user 格式传输。
+
+合并场景执行原始 InitiateMerge、monitor eventfd、MergeWorker、pwrite/fsync、状态查询、线程退出和 handler 删除。目标预填0x5a，独立读取整个64 KiB文件：首块应为原始数据、第二块为零，剩余字节保持0x5a。写入错误必须保留旧内容并发布 merge-failed；同步错误即使已写数据可读，也必须发布失败而非完成。没有修改错误出口，也没有把文件可见性当作掉电持久性。
+
+八项通过：初始化后删除、启动/读内容/删除、损坏COW拒绝、控制端点缺失拒绝、删除后同名重新初始化、成功合并读回、目标写入EIO、目标fsync EIO。删除后查询返回原协议 `snapshot-merge-failed`，重复删除成功；首轮夹具误期望空串，已修正夹具并保留本地失败报告，没有归为生产缺陷。控制端点shutdown模拟设备被删除，使真实读取线程退出，随后原始删除路径等待/回收线程。没有设置短产品超时。
+
+```bash
+python3 tests/ota_snapuserd_server.py --handler
+python3 scripts/audit_snapuserd_handler.py
+```
+
+报告 `logs/ota-snapuserd-handler.json` 绑定实际源码、archive、编译器与固定QEMU；审计为 `logs/snapuserd-handler-audit.json`，公开摘要见 `CURRENT-VALIDATION.json`。修改共享测试入口使0080旧报告的 runner 哈希成为历史值，保留其原始报告，不改写旧摘要，也不因为无关可选模式增加而重复EOF套件。
+
+范围：仅dm-user模式、小型合成COW和普通目标文件，scratch_space=false；未覆盖COPY/XOR/read-ahead、有序合并、io_uring、持久化重启续合并、真正内核节点、属性/init/SELinux启动、SnapshotManager到本套服务端及完整OTA。私有chroot缺proc与task profile的警告保留，不能宣称Android线程策略已验证。至此不再重复replace/zero读取/合并夹具；后续应聚焦原厂操作需要的有序COPY/XOR/RA或持久状态接续。

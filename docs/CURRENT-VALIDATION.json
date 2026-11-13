@@ -934,12 +934,20 @@
       "failures": 0,
       "local_report_sha256": "807106c788602ebc2147528f9596d91bf57a124a87cfc0fce7673341e2961b0a",
       "scope": "Execute original ARM64 snapuserd Start/Run over private AF_UNIX sockets.\n\nOnly daemon main is replaced. No Initialize, block factory, snapshot handlers,\nmapper, mount, device nodes, property service or phone. Static production server\nand its libraries execute under pinned QEMU in a private chroot.\n"
+    },
+    {
+      "name": "actual-snapuserd-handler-merge",
+      "status": "PASS",
+      "cases": 8,
+      "failures": 0,
+      "local_report_sha256": "ed013c0fbbe31c6f15d7bde435940c0d9293c85aa54a4a0953e42a59b65c62f5",
+      "scope": "Actual ARM64 SnapuserdClient Connect/query/init/start/delete and original server/handler/COW/ReadWorker. Base size and dm-user open are explicit ordinary-file/socket doubles. Real AF_UNIX, COW writer/reader, decompression, worker exit/delete/reinitialize, replace/zero merge and whole-base readback; injected base pwrite/fsync errors. No kernel mapping, physical device, init properties, COPY/XOR/RA or persistent merge resume."
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
   "current_batch_groups": [
     12
   ],
-  "current_batch_document": "docs/OTA-OPERATION-COW.md#snapuserd-eof",
-  "current_batch_groups_scope": "Production patch0080 prevents server SIGSEGV on peer half-close. Actual ARM64 Start/Run, private AF_UNIX8; old3 SIGSEGV. Clean build798 sources/six profiles, only snapuserd binary changed. No snapshot handlers/kernel mapping/full OTA."
+  "current_batch_document": "docs/OTA-OPERATION-COW.md#snapuserd-handler",
+  "current_batch_groups_scope": "New execution evidence only: actual client Connect/query/server/handler and real ReadWorker/replace-zero MergeWorker; whole-base readback, write/fsync failure states. Capacity/dm-user endpoint are explicit doubles. No production change/rebuild, COPY/XOR/RA, persistent resume, kernel mapping or full OTA."
 }

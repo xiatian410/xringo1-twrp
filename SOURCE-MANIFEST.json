@@ -60,7 +60,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "1eac0a4dc54ebdc10bc894cb5bea9adc776e1fae2ae2fc00e23d6d79c2ba8a97",
+    "sha256": "65627588ec67e7e0ed90d215de2a519510ca5a69760eca76a6d6e966f36236b2",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -112,7 +112,7 @@
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
-    "sha256": "d471b093a2b12b1ada0d1f97f1e927d0e0b0af208868480f759a8657c1bd5fd9",
+    "sha256": "4aa49efffc72bc24a26fadc70c7c0aee57839ddcc1af999f47937b83fd267e3b",
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
@@ -156,7 +156,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "47aadfa75b2ef03f2d0aa691292a5628be5da1ef2232256dd0e86ae75529baac",
+    "sha256": "55cbc60426da24080c9bc57c0793766b132c0ed84fc514e4b54209b1dcaa08c9",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1271,6 +1271,10 @@
     "sha256": "18fd816309894e67c24bc902abfcab0f3c9c1b9188a18cb5d83ecb8674954ffc",
     "mode": "0o644"
   },
+  "scripts/audit_snapuserd_handler.py": {
+    "sha256": "1e897f66caa7bf9dd2a33f48d8200a92c3746e1d321168aaedb62bb008888d7f",
+    "mode": "0o644"
+  },
   "scripts/audit_snapuserd_socket.py": {
     "sha256": "59ea4f5a735dc18cf84756c9eb037152eca69a50abe33097bdb215603b0aa152",
     "mode": "0o644"
@@ -1640,11 +1644,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "053f6b8fe4803e72934f222e0fb4f745b487fe4cf327e59ac8061f8f5a70d36e",
+    "sha256": "05ed3237c723d45d1b1e6983ce36440d374da3da50a0d2ad90852604b16c2af5",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "49a1899e9870ea0b7c4f00f7fc7d94f86b95502516027cc9660172b3bf02f1b3",
+    "sha256": "02217fbb4b3492ad631e679083c73ee9e752dde0c1b25d13d1ba2aff6f60a830",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2255,12 +2259,16 @@
     "sha256": "2bd090664a0e649c403dcfc235f6c4f8b94e7988a310b9b4f794e8e0d41701c7",
     "mode": "0o644"
   },
+  "tests/ota_snapuserd_handler.cpp": {
+    "sha256": "3d23490a8d2600423c0c861fa49c09d1c796d9da2d82ec83a9ede3b102b608cc",
+    "mode": "0o644"
+  },
   "tests/ota_snapuserd_server.cpp": {
     "sha256": "ca311f87deda0f1515be843d866aa0ac40d4fb6b4fc631b0d4d7d2fe48271fe7",
     "mode": "0o644"
   },
   "tests/ota_snapuserd_server.py": {
-    "sha256": "6678b2c6d612b523530c935d5b4c47dae73d5235c3ebc85614575a2495662e39",
+    "sha256": "81d672b0f9cb331166448bc65e76755d0a9d665d5854af172e1a203606699d85",
     "mode": "0o644"
   },
   "tests/ota_snapuserd_socket.cpp": {
