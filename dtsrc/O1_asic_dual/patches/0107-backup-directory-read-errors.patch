@@ -1,0 +1,179 @@
+--- a/twrpTar.cpp
++++ b/twrpTar.cpp
+@@ -68,6 +68,21 @@
+ using namespace std;
+ 
+ namespace {
++// readdir returns null for both EOF and failure. Clear errno for every call:
++// operations on previous entries may have left an unrelated error behind.
++struct dirent* readDirectory(DIR* directory, int* error) {
++	errno = 0;
++	struct dirent* entry = readdir(directory);
++	if (!entry) *error = errno;
++	return entry;
++}
++
++int closeDirectory(DIR* directory, int error) {
++	if (closedir(directory) != 0 && error == 0) error = errno;
++	if (error != 0) { errno = error; return -1; }
++	return 0;
++}
++
+ // A codec pipe may return less than one tar block without reaching EOF.
+ // libtar requires a complete requested block, or a genuine EOF/error.
+ ssize_t readArchive(int fd, void* buffer, size_t size) {
+@@ -201,7 +216,7 @@
+ 			struct dirent* de;
+ 			unsigned long long regular_size = 0, encrypt_size = 0, target_size = 0, total_size;
+ 			unsigned enc_thread_id = 1, regular_thread_id = 0, i, start_thread_id = 1, core_count = 1;
+-			int item_len, ret, thread_error = 0;
++			int item_len, ret, thread_error = 0, read_error = 0;
+ 			std::vector<TarListStruct> RegularList;
+ 			std::vector<TarListStruct> EncryptList;
+ 			string FileName;
+@@ -224,7 +239,7 @@
+ 				exit_child(-1);
+ 			}
+ 			// Figure out the size of all data to be encrypted and create a list of unencrypted files
+-			while ((de = readdir(d)) != nullptr) {
++			while ((de = readDirectory(d, &read_error)) != nullptr) {
+ 				FileName = tardir + "/" + de->d_name;
+ 
+ 				if (de->d_type == DT_BLK || de->d_type == DT_CHR || backup_exclusions->check_skip_dirs(FileName))
+@@ -252,7 +267,10 @@
+ 					encrypt_size += (unsigned long long)(st.st_size);
+ 				}
+ 			}
+-			closedir(d);
++			if (closeDirectory(d, read_error) != 0) {
++				gui2_console::log_error("error_opening_strerr", tardir, strerror(errno));
++				exit_child(-1);
++			}
+ 
+ 			target_size = encrypt_size / core_count;
+ 			target_size++;
+@@ -272,7 +290,7 @@
+ 				exit_child(-1);
+ 			}
+ 			// Divide up the encrypted file list for threading
+-			while ((de = readdir(d)) != nullptr) {
++			while ((de = readDirectory(d, &read_error)) != nullptr) {
+ 				FileName = tardir + "/" + de->d_name;
+ 
+ 				if (de->d_type == DT_BLK || de->d_type == DT_CHR || backup_exclusions->check_skip_dirs(FileName))
+@@ -307,7 +325,10 @@
+ 					file_count++;
+ 				}
+ 			}
+-			closedir(d);
++			if (closeDirectory(d, read_error) != 0) {
++				gui2_console::log_error("error_opening_strerr", tardir, strerror(errno));
++				exit_child(-1);
++			}
+ 			if (enc_thread_id != core_count) {
+ 				LOGINFO("Error dividing up threads for encryption, %u threads for %u cores!\n", enc_thread_id, core_count);
+ 				if (enc_thread_id > core_count) {
+@@ -748,7 +769,7 @@
+ 	struct stat st;
+ 	string FileName;
+ 	struct TarListStruct TarItem;
+-	int ret, file_count;
++	int ret, file_count, read_error = 0;
+ 	file_count = 0;
+ 
+ 	d = opendir(Path.c_str());
+@@ -756,7 +777,7 @@
+ 		gui2_console::log_error("error_opening_strerr", Path, strerror(errno));
+ 		return -1;
+ 	}
+-	while ((de = readdir(d)) != NULL) {
++	while ((de = readDirectory(d, &read_error)) != NULL) {
+ 		FileName = Path + "/" + de->d_name;
+ 
+ 		if (de->d_type == DT_BLK || de->d_type == DT_CHR || backup_exclusions->check_skip_dirs(FileName))
+@@ -766,8 +787,10 @@
+ 		if (de->d_type == DT_DIR) {
+ 			TarList->push_back(TarItem);
+ 			ret = Generate_TarList(FileName, TarList, Target_Size, thread_id);
+-			if (ret < 0)
++			if (ret < 0) {
++				closeDirectory(d, errno);
+ 				return -1;
++			}
+ 			file_count += ret;
+ 		} else if (de->d_type == DT_REG || de->d_type == DT_LNK) {
+ 			stat(FileName.c_str(), &st);
+@@ -782,7 +805,10 @@
+ 			}
+ 		}
+ 	}
+-	closedir(d);
++	if (closeDirectory(d, read_error) != 0) {
++		gui2_console::log_error("error_opening_strerr", Path, strerror(errno));
++		return -1;
++	}
+ 	return file_count;
+ }
+ 
+--- a/libtar/wrapper.c
++++ b/libtar/wrapper.c
+@@ -181,6 +181,7 @@
+ 	struct dirent *dent;
+ 	DIR *dp;
+ 	struct stat s;
++	int error = 0;
+ 
+ #ifdef DEBUG
+ 	LOG("==> tar_append_tree(0x%lx, \"%s\", \"%s\")\n",
+@@ -201,8 +202,11 @@
+ 			return 0;
+ 		return -1;
+ 	}
+-	while ((dent = readdir(dp)) != NULL)
++	for (;;)
+ 	{
++		errno = 0;
++		dent = readdir(dp);
++		if (dent == NULL) { error = errno; break; }
+ 		if (strcmp(dent->d_name, ".") == 0 ||
+ 		    strcmp(dent->d_name, "..") == 0)
+ 			continue;
+@@ -213,24 +217,30 @@
+ 			snprintf(savepath, MAXPATHLEN, "%s/%s", savedir,
+ 				 dent->d_name);
+ 
+-		if (lstat(realpath, &s) != 0)
+-			return -1;
++		if (lstat(realpath, &s) != 0) {
++			error = errno;
++			break;
++		}
+ 
+ 		if (S_ISDIR(s.st_mode))
+ 		{
+ 			if (tar_append_tree(t, realpath,
+-					    (savedir ? savepath : NULL)) != 0)
+-				return -1;
++					    (savedir ? savepath : NULL)) != 0) {
++				error = errno ? errno : EIO;
++				break;
++			}
+ 			continue;
+ 		}
+ 
+ 		if (tar_append_file(t, realpath,
+-				    (savedir ? savepath : NULL)) != 0)
+-			return -1;
++				    (savedir ? savepath : NULL)) != 0) {
++			error = errno ? errno : EIO;
++			break;
++		}
+ 	}
+ 
+-	closedir(dp);
+-
++	if (closedir(dp) != 0 && error == 0) error = errno;
++	if (error != 0) { errno = error; return -1; }
+ 	return 0;
+ }
+ 

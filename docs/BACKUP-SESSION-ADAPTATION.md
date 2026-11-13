@@ -1,5 +1,22 @@
 # 备份会话、目录管理与摘要发布
 
+<a id="directory-enumeration-errors"></a>
+
+## 目录读取失败必须终止备份（0107）
+
+此前readdir返回空时未区分EOF与错误，可能只收集部分文件却发布成功备份。0107在每次读取前清除errno，正常结束后检查读取及closedir结果；普通递归列表、加密路径的两次顶层扫描和libtar递归树入口均传播错误。递归子目录失败时关闭上层目录，libtar保留首个错误的errno。父进程收到失败，不发布data.info；已有部分输出不代表完整归档。
+
+在现有套件内扩展故障场景，未新增等价测试框架。libtar111项、tar/pigz/OAES/fork链184项通过。旧源码同夹具3/4及21/32失败：读取/关闭错误可误报成功，普通递归打开失败漏关上层目录。旧加密顶层第一次读取失败有时本就因后续线程规划失败，保留为控制，不称为新修复。正常EOF夹具在每个成功读取后留下EIO，仍必须完成内容/权限/链接往返；故障夹具核对所有已打开目录均关闭、父失败且无data.info。
+
+本地报告`logs/archive-walk-restore.json`、`logs/archive-walk-negative.json`、`logs/archive-walk-pipeline.json`、`logs/archive-walk-pipeline-negative-final.json`及`logs/archive-walk-delivery-audit.json`。原生产代码在主机ASan/UBSan运行，目录open/read/close错误由私有夹具边界注入，LSan仍关闭。未验证真实损坏文件系统、fscrypt、ARM64 codec、完整manager/GUI或断电；容量估计API、DT_UNKNOWN条目与并发源一致性没有在此修正。
+
+```bash
+# 已执行；相关来源和输入不变时复用。
+python3 tests/archive_restore_test.py --report logs/archive-walk-restore.json
+python3 tests/archive_pipeline_test.py --report logs/archive-walk-pipeline.json
+python3 scripts/audit_archive_walk_delivery.py
+```
+
 <a id="source-key-failure"></a>
 
 ## 源文件缺密钥时不得跳过成功（0106）

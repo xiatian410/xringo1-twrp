@@ -16,6 +16,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <dirent.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
@@ -37,6 +38,54 @@
 using namespace std;
 namespace fs=std::filesystem;
 #define CHECK(x) do{if(!(x)){fprintf(stderr,"FAIL %d: %s errno=%d\n",__LINE__,#x,errno);exit(1);}}while(0)
+// Faults are armed after the initial size estimate. Track directory identity,
+// not descriptor numbers, and keep real open/read/close operations otherwise.
+static string walk_fault;
+static bool walk_encrypted=false,walk_mixed=false,walk_injected=false;
+struct WalkDirectory { string path; unsigned scan; unsigned entries=0; };
+static map<DIR*,WalkDirectory> walk_dirs;
+static map<string,unsigned> walk_scans;
+extern "C" DIR* __real_opendir(const char*);
+extern "C" struct dirent* __real_readdir(DIR*);
+extern "C" int __real_closedir(DIR*);
+static void walk_mark(const char* kind){
+ int fd=open((string("/backup/walk-")+kind).c_str(),O_CREAT|O_APPEND|O_WRONLY,0600);CHECK(fd>=0);
+ CHECK(write(fd,"x",1)==1);CHECK(close(fd)==0);
+}
+static bool walk_selected(const WalkDirectory& item){
+ if(walk_fault.starts_with("top-first"))return item.path=="/src"&&item.scan==1;
+ if(walk_fault.starts_with("top-second"))return item.path=="/src"&&item.scan==2;
+ if(item.path!=(walk_mixed?"/src/app":"/src/dir"))return false;
+ return item.scan==(walk_encrypted&&!walk_mixed?2U:1U);
+}
+extern "C" DIR* __wrap_opendir(const char* path){
+ if(walk_fault.empty())return __real_opendir(path);
+ string name=fs::path(path).lexically_normal();
+ WalkDirectory item{name,++walk_scans[name]};
+ if(walk_selected(item)&&walk_fault=="nested-open"){
+  CHECK(!walk_injected);walk_injected=true;walk_mark("injected");errno=EACCES;return nullptr;
+ }
+ DIR* d=__real_opendir(path);
+ if(d){walk_dirs[d]=item;walk_mark("open");}return d;
+}
+extern "C" struct dirent* __wrap_readdir(DIR* d){
+ auto it=walk_dirs.find(d);
+ if(it!=walk_dirs.end()&&walk_selected(it->second)&&walk_fault.ends_with("read")&&it->second.entries>=1&&!walk_injected){
+  walk_injected=true;walk_mark("injected");errno=EIO;return nullptr;
+ }
+ auto* entry=__real_readdir(d);
+ if(it!=walk_dirs.end()&&entry&&strcmp(entry->d_name,".")&&strcmp(entry->d_name,".."))++it->second.entries;
+ // POSIX leaves errno unchanged on normal EOF. Force a stale errno on each
+ // successful read: callers must clear it for the next read, not just once.
+ if(it!=walk_dirs.end()&&entry&&walk_fault=="stale-errno"){walk_injected=true;walk_mark("injected");errno=EIO;}
+ return entry;
+}
+extern "C" int __wrap_closedir(DIR* d){
+ auto it=walk_dirs.find(d);bool fail=it!=walk_dirs.end()&&walk_selected(it->second)&&walk_fault.ends_with("close")&&!walk_injected;
+ if(it!=walk_dirs.end()){walk_dirs.erase(it);walk_mark("close");}
+ int result=__real_closedir(d);
+ if(fail){CHECK(result==0);walk_injected=true;walk_mark("injected");errno=EIO;return -1;}return result;
+}
 static bool security_fixture=false;
 static string security_fault;
 static bool special_fixture=false;
@@ -346,7 +395,18 @@ int main(int argc,char** argv){
  if(application_xattrs&&scenario.ends_with("-read-error"))application_xattr_fault="read-error";
  if(auto at=scenario.find("-source-read-");at!=string::npos)source_read_fault=scenario.substr(at+13);
  if(auto at=scenario.find("-source-key-");at!=string::npos)source_key_fault=scenario.substr(at+12);
+ if(auto at=scenario.find("-walk-");at!=string::npos){walk_fault=scenario.substr(at+6);walk_encrypted=encrypted;walk_mixed=mixed;}
  BackupProcess process;int result=tar.createTarFork(&process);
+ if(!walk_fault.empty()){
+  CHECK(fs::exists("/backup/walk-injected"));
+  CHECK(fs::exists("/backup/walk-close")&&fs::file_size("/backup/walk-open")==fs::file_size("/backup/walk-close"));
+  if(walk_fault!="stale-errno"){
+   CHECK(result!=0);CHECK(!fs::exists("/backup/data.info"));
+   puts("PASS directory traversal failure reaches backup parent; all directories closed; no info publication");return 0;
+  }
+  walk_fault.clear();
+ }
+
  if(!source_key_fault.empty()) {
   CHECK(fs::exists("/backup/source-key-injected"));CHECK(result!=0);CHECK(!fs::exists("/backup/data.info"));
   puts("PASS inaccessible source failure reaches backup parent; no info publication");return 0;

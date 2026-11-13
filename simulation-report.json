@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-backup-missing-key.img",
-  "image_sha256": "5d9c07a65c4a643e59f799d5ca478d9959bef2e944f26b513c85c28c262d3ecd",
-  "image_status": "Clean installclean + make -j$(nproc); patch0106 stops silent ENOKEY backup omission; regular source open failure propagates, link metadata needs no target open.833 sources/six profiles; libtar107/codec152 pass. Hardware unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-backup-directory-errors.img",
+  "image_sha256": "5e50303cb26915912c082ee852cb1e6ba0f01baa0823fa763ef8b225526fc301",
+  "image_status": "Clean installclean + make -j$(nproc); patch0107 propagates directory enumeration/close failures without publishing incomplete backup success.834 sources/six profiles; libtar111/codec184 pass. Hardware unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1935,7 +1935,7 @@
     "Security services: original six-profile ARM64 relocation18, missing-library6 and undefined-symbol6 covered; actual default namespace fields and config removal/marker12 controls now covered in private chroot (42-case suite). Real init/mount namespace/APEX/property/proc runtime, service initialization/Binder/TEE/key operations and synthetic crypto volumes remain open.",
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U. Patch0100 now rejects reboot/slot entry while storage busy and retains pending sideload action until idle; synchronous provider cancellation and a reservation through final reboot remain unimplemented.",
     "MTP patch0099 partial edit packet validation/write retries/response count covered (objects160; old10/11 failures); edits remain in-place, no rollback or complete error-stream drain. MTP patch0098 session gate/close edit cleanup covered (objects149/transfers48; old22/23 failures); remaining media metadata and real client directory-finalization behavior (five post-child explicit SendObjectInfo retry/close/readonly cases covered; no automatic tree completion replay; prior file/date/completion evidence retained), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
-    "0106 source ENOKEY must fail backup rather than skip success; link metadata not opened (libtar107/codec152, old4/6 and4/12 failures). 0105 source short/EINTR retry and premature EOF rejection covered (libtar101/codec140, previous5/12 and12/16 failures); full concurrent source consistency remains unverified. Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix. Patch0095 now preserves application user.* binary/empty xattrs with bounded multiblock PAX and errors; existing Android references excluded. libtar64/GNU readback and codec104 pass, old10/14 and20/20fail. Arbitrary privileged namespaces/ACL, live concurrent consistency and complete manager/GUI/powerloss remain outside scope. Patch0096 now bounds ordinary/split extraction to selected root and rejects observed traversal/symlink/shared-inode hazards; libtar79/codec116 pass, old11/15 and12/12 fail. Concurrent ancestor replacement and bind-mount isolation remain open; not complete archive sandboxing. Patch0097 propagates char/block mknod failures before applying metadata to existing files: libtar89/codec124 pass, old8/10 and8/8 fail. mknod is intercepted; no actual device node creation or target kernel success verified.",
+    "0107 closes the directory-enumeration failure gap (libtar111/codec184 pass, old3/4 and21/32 fail); size estimation/DT_UNKNOWN handling, real source consistency, security namespaces/ACL, full manager/GUI and power-loss remain open. 0106 source ENOKEY must fail backup rather than skip success; link metadata not opened (libtar107/codec152, old4/6 and4/12 failures). 0105 source short/EINTR retry and premature EOF rejection covered (libtar101/codec140, previous5/12 and12/16 failures); full concurrent source consistency remains unverified. Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix. Patch0095 now preserves application user.* binary/empty xattrs with bounded multiblock PAX and errors; existing Android references excluded. libtar64/GNU readback and codec104 pass, old10/14 and20/20fail. Arbitrary privileged namespaces/ACL, live concurrent consistency and complete manager/GUI/powerloss remain outside scope. Patch0096 now bounds ordinary/split extraction to selected root and rejects observed traversal/symlink/shared-inode hazards; libtar79/codec116 pass, old11/15 and12/12 fail. Concurrent ancestor replacement and bind-mount isolation remain open; not complete archive sandboxing. Patch0097 propagates char/block mknod failures before applying metadata to existing files: libtar89/codec124 pass, old8/10 and8/8 fail. mknod is intercepted; no actual device node creation or target kernel success verified.",
     "Full filesystem GUI/manager/tool format/write/repair lifecycle, real mounts/fscrypt, concurrent changes and I/O/power-loss cleanup remain pending. Ten original partition-tool page/worker/return-detail cases now cover that handoff with an explicit manager fixture; they do not join the independent ARM64 tool runs into one full lifecycle. Existing deletion/media/conversion/mount/persist/Android Secure/startup media fixes and ext4 labeling evidence are reused. FormatData/WipeEncryption/metadata partition routing/backend run14 cases now cover terminal errors/order with explicit formatter/mount/mapper/merge/hook fixtures. No full GUI/start/thread, mkfs or crypto lifecycle; no production change/build, do not repeat unchanged.",
     "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
     "video target ARM64 codec/display-shadow sampling integration, real storage/codec fault behavior, hour-scale stability and seek/index performance (bounded12.5s multi-cluster/keyframe correctness covered), GUI player rendering and full-resolution performance; host frames/queue/failure recovery plus independent FFmpeg native decode and72 short input seeks covered",
@@ -4204,6 +4204,38 @@
       "evidence": "logs/archive-key-pipeline-negative.json",
       "evidence_sha256": "83ce803a8df462a8bab56c9d8dd6fc4acba86b5bf44b201db1c2da7919d466ef",
       "scope": "Host original libtar/tar/pigz/OAES/fork with ASan/UBSan, private files and injected ENOKEY/EKEYREVOKED/EACCES at selected source open only. Regular sources including empty files must fail with original errno; unavailable link target does not suppress symlink/hardlink metadata.107 libtar/152 codec cases; old4/6 and4/12 failures. No real fscrypt/TEE/ARM64 codec/full manager/GUI/power-loss or concurrent source consistency proof."
+    },
+    {
+      "name": "archive-walk-restore",
+      "status": "PASS",
+      "count": 111,
+      "evidence": "logs/archive-walk-restore.json",
+      "evidence_sha256": "be2aa143a081ab4728a892c554b49138ea8b81070742967486839bb40b792f08",
+      "scope": "Host original libtar/tar/pigz/OAES/fork with ASan/UBSan, private files and injected directory open/read/close errors. Per-read errno reset distinguishes EOF; recursive directories close on failure; parent rejects partial backups without info publication.111 libtar/184 codec pass; old3/4 and21/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/source consistency/power-loss proof; size estimation and DT_UNKNOWN unchanged."
+    },
+    {
+      "name": "archive-walk-negative",
+      "status": "FAIL",
+      "count": 4,
+      "evidence": "logs/archive-walk-negative.json",
+      "evidence_sha256": "1fb1cd4272f11f75bd65b76a4fc8c105538482b1a796b939296b7482a91647ff",
+      "scope": "Host original libtar/tar/pigz/OAES/fork with ASan/UBSan, private files and injected directory open/read/close errors. Per-read errno reset distinguishes EOF; recursive directories close on failure; parent rejects partial backups without info publication.111 libtar/184 codec pass; old3/4 and21/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/source consistency/power-loss proof; size estimation and DT_UNKNOWN unchanged."
+    },
+    {
+      "name": "archive-walk-pipeline",
+      "status": "PASS",
+      "count": 184,
+      "evidence": "logs/archive-walk-pipeline.json",
+      "evidence_sha256": "e294b37935996b09ed9559933dabb5e73b6ab8ff905397946598557d2c913f0e",
+      "scope": "Host original libtar/tar/pigz/OAES/fork with ASan/UBSan, private files and injected directory open/read/close errors. Per-read errno reset distinguishes EOF; recursive directories close on failure; parent rejects partial backups without info publication.111 libtar/184 codec pass; old3/4 and21/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/source consistency/power-loss proof; size estimation and DT_UNKNOWN unchanged."
+    },
+    {
+      "name": "archive-walk-pipeline-negative-final",
+      "status": "FAIL",
+      "count": 32,
+      "evidence": "logs/archive-walk-pipeline-negative-final.json",
+      "evidence_sha256": "385a3f3452da24cf7af1ca75c30b0067123e3105addf1c5383a029629ec28d72",
+      "scope": "Host original libtar/tar/pigz/OAES/fork with ASan/UBSan, private files and injected directory open/read/close errors. Per-read errno reset distinguishes EOF; recursive directories close on failure; parent rejects partial backups without info publication.111 libtar/184 codec pass; old3/4 and21/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/source consistency/power-loss proof; size estimation and DT_UNKNOWN unchanged."
     }
   ],
   "source_review_followups": [
@@ -4542,8 +4574,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/archive-key-delivery-audit.json",
-    "scope": "Host original libtar/tar/pigz/OAES/fork with ASan/UBSan, private files and injected ENOKEY/EKEYREVOKED/EACCES at selected source open only. Regular sources including empty files must fail with original errno; unavailable link target does not suppress symlink/hardlink metadata.107 libtar/152 codec cases; old4/6 and4/12 failures. No real fscrypt/TEE/ARM64 codec/full manager/GUI/power-loss or concurrent source consistency proof.",
+    "evidence": "logs/archive-walk-delivery-audit.json",
+    "scope": "Host original libtar/tar/pigz/OAES/fork with ASan/UBSan, private files and injected directory open/read/close errors. Per-read errno reset distinguishes EOF; recursive directories close on failure; parent rejects partial backups without info publication.111 libtar/184 codec pass; old3/4 and21/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/source consistency/power-loss proof; size estimation and DT_UNKNOWN unchanged.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -5650,6 +5682,13 @@
     "patch": "0106",
     "scope": "Host original libtar/tar/pigz/OAES/fork with ASan/UBSan, private files and injected ENOKEY/EKEYREVOKED/EACCES at selected source open only. Regular sources including empty files must fail with original errno; unavailable link target does not suppress symlink/hardlink metadata.107 libtar/152 codec cases; old4/6 and4/12 failures. No real fscrypt/TEE/ARM64 codec/full manager/GUI/power-loss or concurrent source consistency proof.",
     "document": "docs/BACKUP-SESSION-ADAPTATION.md#source-key-failure",
+    "production_changes": true,
+    "new_build": true
+  },
+  "archive_directory_walk": {
+    "patch": "0107",
+    "scope": "Host original libtar/tar/pigz/OAES/fork with ASan/UBSan, private files and injected directory open/read/close errors. Per-read errno reset distinguishes EOF; recursive directories close on failure; parent rejects partial backups without info publication.111 libtar/184 codec pass; old3/4 and21/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/source consistency/power-loss proof; size estimation and DT_UNKNOWN unchanged.",
+    "document": "docs/BACKUP-SESSION-ADAPTATION.md#directory-enumeration-errors",
     "production_changes": true,
     "new_build": true
   }

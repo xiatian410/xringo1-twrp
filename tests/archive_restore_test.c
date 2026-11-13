@@ -54,6 +54,33 @@ int __wrap_open64(const char *path,int flags,...) {
     return __real_open64(path,flags,mode);
 }
 
+static DIR* walk_dirs[64];
+static unsigned walk_opened,walk_closed,walk_entries;
+DIR* __real_opendir(const char*);
+struct dirent64* __real_readdir64(DIR*);
+int __real_closedir(DIR*);
+static int walk_target(DIR* d){struct stat a,b;return fstat(dirfd(d),&a)==0&&stat("input/sub",&b)==0&&a.st_ino==b.st_ino&&a.st_dev==b.st_dev;}
+DIR* __wrap_opendir(const char* path){
+ if(fault&&!strcmp(fault,"walk-open")&&!strcmp(path,"input/sub")){++fault_calls;errno=EACCES;return NULL;}
+ DIR* d=__real_opendir(path);
+ if(d&&fault&&!strncmp(fault,"walk-",5)){CHECK(walk_opened<64);walk_dirs[walk_opened++]=d;}return d;
+}
+struct dirent64* __wrap_readdir64(DIR* d){
+ if(fault&&!strcmp(fault,"walk-read")&&walk_target(d)&&walk_entries>=1){++fault_calls;errno=EIO;return NULL;}
+ struct dirent64* e=__real_readdir64(d);
+ if(e&&fault&&!strncmp(fault,"walk-",5)){
+  if(walk_target(d)&&strcmp(e->d_name,".")&&strcmp(e->d_name,".."))++walk_entries;
+  if(!strcmp(fault,"walk-stale")){++fault_calls;errno=EIO;}
+ }return e;
+}
+int __wrap_closedir(DIR* d){
+ int fail=fault&&!strcmp(fault,"walk-close")&&walk_target(d);
+ if(fault&&!strncmp(fault,"walk-",5)){
+  unsigned i;for(i=0;i<walk_opened;++i)if(walk_dirs[i]==d){walk_dirs[i]=NULL;++walk_closed;break;}CHECK(i<walk_opened);
+ }
+ int result=__real_closedir(d);if(fail){CHECK(result==0);++fault_calls;errno=EIO;return -1;}return result;
+}
+
 ssize_t __real_read(int,void*,size_t);
 static int append_source_fd(int fd) {
     struct stat a,b;
@@ -331,6 +358,15 @@ int main(int argc,char **argv) {
     CHECK(access(".fixture",F_OK)==0);
     CHECK(mkdir("input",0700)==0); CHECK(mkdir("restore",0700)==0);
     const char *c=argv[1];
+    if(!strncmp(c,"walk-",5)){
+        CHECK(mkdir("input/sub",0700)==0);putfile("input/sub/a",513);putfile("input/sub/b",2000);
+        TAR* t=writer();fault=c;
+        int result=tar_append_tree(t,"input","tree"),saved=errno;fault=NULL;
+        CHECK(fault_calls>0);CHECK(walk_opened==walk_closed);
+        if(strcmp(c,"walk-stale")){CHECK(result==-1&&saved==(!strcmp(c,"walk-open")?EACCES:EIO));CHECK(tar_close(t)==0);puts("PASS traversal error preserves errno and closes every directory");return 0;}
+        CHECK(result==0);finish(t);CHECK(restore("restore")==0);compare("input/sub/a","restore/tree/sub/a");compare("input/sub/b","restore/tree/sub/b");
+        puts("PASS stale errno does not reject complete tree traversal");return 0;
+    }
     if(!strncmp(c,"append-key-",11)) {
         putfile("input/payload",strstr(c,"empty")?0:513);
         TAR *t=writer();

@@ -8,14 +8,21 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-backup-missing-key.img` |
-| SHA-256 | `5d9c07a65c4a643e59f799d5ca478d9959bef2e944f26b513c85c28c262d3ecd` |
-| 生产来源绑定 | 833 份 |
+| 文件 | `recovery-dijun-unified-backup-directory-errors.img` |
+| SHA-256 | `5e50303cb26915912c082ee852cb1e6ba0f01baa0823fa763ef8b225526fc301` |
+| 生产来源绑定 | 834 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：缺密钥文件不得静默漏备份
+## 本批生产修正：目录读取失败不得发布成功备份
+
+0107区分目录读取结束与错误，每次读取前清除errno；普通递归、加密两次顶层扫描和libtar递归均传播读取/关闭失败，递归失败关闭上层目录。父进程拒绝部分结果且不发布data.info，正常EOF不受前一操作残留errno影响。
+
+现有ASan/UBSan套件libtar111、完整tar/pigz/OAES/fork链184项通过；同夹具旧实现分别3/4、21/32项失败。清理构建后834生产来源与六profile核对通过。系统调用故障限私有目录夹具，非真实文件系统损坏或ARM64 codec验证；容量估计、DT_UNKNOWN、完整源一致性/manager/GUI与断电仍有边界。详见[目录遍历错误](docs/BACKUP-SESSION-ADAPTATION.md#directory-enumeration-errors)。本批不重跑OTA、触摸或震动检查。
+
+## 沿用的缺密钥漏备份修正
+
 
 0106移除libtar的多余打开探测：此前遇到ENOKEY会直接跳过条目并返回成功，可能发布缺文件的备份。现在普通文件（含空文件）由实际内容读取函数打开，缺密钥/密钥撤销/权限错误传回父进程且不发布.info；符号链接与硬链接只归档元数据，不再因目标打开失败而漏掉。
 
