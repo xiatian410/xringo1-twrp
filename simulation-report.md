@@ -6,14 +6,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-directory-times.img` |
-| SHA-256 | `98cddd6b3f3fe132161131f79fa1fa885669316924ab4873628bc2e78b345276` |
-| 生产来源绑定 | 814 份 |
+| 文件 | `recovery-dijun-unified-user-xattrs.img` |
+| SHA-256 | `83f6e881f7844c14364692d683b72262a102d90fcc99d6bc46816c1ad29c9227` |
+| 生产来源绑定 | 819 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：分卷和并行恢复的目录时间收尾
+## 本批生产修正：应用 user 扩展属性往返
+
+0095 补齐应用 `user.*` 属性的采集、二进制 PAX 保存、读取与恢复。原实现只维护专用安全属性与三种 Android 标记，其他应用属性丢失。属性列表 / 值读取失败阻止备份成功发布，写入失败传到恢复父进程；空值和多块值保留，不把 Android inode 引用按旧数值复制。归档64项（含 GNU tar 独立读回）和完整codec104项通过；旧实现分别10/14及20/20失败。最终清理构建、819来源与六profile封装核对通过，详见[应用属性](docs/BACKUP-DATA-PATHS.md#application-xattrs)。
+
+大属性使用多块PAX头，旧Recovery可能拒绝新备份；专有Android引用仍由原逻辑重建。此项不覆盖trusted/ACL等命名空间、并发源快照一致性或完整GUI/manager/断电验收。失败保留部分恢复内容。本批未重跑OTA、触摸、震动或MTP。
+
+## 沿用的分卷和并行恢复的目录时间收尾
 
 0094 记录已归档目录的时间与设备号 / inode，在全部分卷、工作线程及解码验证成功后统一恢复时间。原先目录头先设置时间，后续创建子文件将其覆盖。最终写入失败、目录被符号链接或其他 inode 替换时返回恢复失败。编解码84项和 libtar50项通过；同一新增夹具旧实现22项中20项失败，另两项确认损坏解码流不进入最终收尾。清理构建、814来源 / 六profile封装核对通过。详见[目录时间](docs/BACKUP-DATA-PATHS.md#directory-times)。
 

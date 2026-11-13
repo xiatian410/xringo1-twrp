@@ -13,7 +13,10 @@
 #include <unistd.h>
 
 #define CHECK(x) do { if (!(x)) { fprintf(stderr, "FAIL line %d: %s (errno=%d)\n", __LINE__, #x, errno); exit(1); } } while (0)
-#define FLAGS (TAR_GNU | TAR_STORE_SELINUX | TAR_STORE_POSIX_CAP | TAR_STORE_ANDROID_USER_XATTR | TAR_STORE_FSCRYPT_POL)
+#ifndef TAR_STORE_USER_XATTR
+#define TAR_STORE_USER_XATTR 4096
+#endif
+#define FLAGS (TAR_STORE_USER_XATTR | TAR_GNU | TAR_STORE_SELINUX | TAR_STORE_POSIX_CAP | TAR_STORE_ANDROID_USER_XATTR | TAR_STORE_FSCRYPT_POL)
 
 /* Host volumes are not encrypted. Only this kernel/vold boundary is replaced;
  * policy serialization code is compiled, but real fscrypt is not validated. */
@@ -76,6 +79,30 @@ int __wrap_setxattr(const char *path, const char *name, const void *value, size_
         ++fault_calls; errno=EIO; return -1;
     }
     return __real_setxattr(path,name,value,size,flags);
+}
+ssize_t __real_llistxattr(const char*,char*,size_t);
+ssize_t __real_lgetxattr(const char*,const char*,void*,size_t);
+int __real_lsetxattr(const char*,const char*,const void*,size_t,int);
+ssize_t __wrap_llistxattr(const char* path,char* names,size_t size){
+ if(fault&&!strncmp(path,"input/",6)){
+  if(!strcmp(fault,"xattr-list-error")){++fault_calls;errno=EACCES;return -1;}
+  if(!strcmp(fault,"xattr-no-support")){++fault_calls;errno=ENOTSUP;return -1;}
+  if(!strcmp(fault,"xattr-list-race")&&names&&fault_calls++==0){errno=ERANGE;return -1;}
+ }
+ return __real_llistxattr(path,names,size);
+}
+ssize_t __wrap_lgetxattr(const char* path,const char* name,void* value,size_t size){
+ if(fault&&!strncmp(path,"input/",6)&&!strcmp(name,"user.note")){
+  if(!strcmp(fault,"xattr-read-error")){++fault_calls;errno=EIO;return -1;}
+  if(!strcmp(fault,"xattr-read-race")&&value){++fault_calls;errno=ERANGE;return -1;}
+ }
+ return __real_lgetxattr(path,name,value,size);
+}
+int __wrap_lsetxattr(const char* path,const char* name,const void* value,size_t size,int flags){
+ if(fault&&!strncmp(path,"restore/",8)&&!strcmp(name,"user.note")&&!strcmp(fault,"xattr-write-error")){
+  ++fault_calls;errno=ENOSPC;return -1;
+ }
+ return __real_lsetxattr(path,name,value,size,flags);
 }
 static int restore_fd(int fd) {
     char name[64], path[4096];
@@ -210,7 +237,58 @@ int main(int argc,char **argv) {
     CHECK(access(".fixture",F_OK)==0);
     CHECK(mkdir("input",0700)==0); CHECK(mkdir("restore",0700)==0);
     const char *c=argv[1];
-    if(!strncmp(c,"security-",9)) {
+    if(!strncmp(c,"xattr-pax-",10)) {
+        char payload[5000]={0},record[5100]={0};size_t length=0;
+        if(!strcmp(c,"xattr-pax-duplicate")){
+            length=pax_record(record,"SCHILY.xattr.user.note=first",28);
+            length+=pax_record(record+length,"SCHILY.xattr.user.note=last",27);
+        }else if(!strcmp(c,"xattr-pax-null-key")){
+            memcpy(payload,"SCHILY.xattr.user.n",18);payload[18]=0;memcpy(payload+19,"=value",6);
+            length=pax_record(record,payload,25);
+        }else if(!strcmp(c,"xattr-pax-missing-equal"))length=pax_record(record,"SCHILY.xattr.user.note",22);
+        else {
+            memcpy(payload,"SCHILY.xattr.user.note=",23);memset(payload+23,'X',3000);
+            length=pax_record(record,payload,3023);
+        }
+        TAR*t=writer();th_set_path(t,"payload");t->th_buf.typeflag=TH_EXT_TYPE;
+        th_set_size(t,!strcmp(c,"xattr-pax-oversize")?1024*1024+1:length);CHECK(th_write(t)==0);
+        size_t padded=(length+511)/512*512;char *blocks=calloc(1,padded);CHECK(blocks);memcpy(blocks,record,length);
+        CHECK(write(t->fd,blocks,padded)==padded);free(blocks);
+        t->th_buf.typeflag=REGTYPE;th_set_size(t,0);CHECK(th_write(t)==0);finish(t);
+        if(!strcmp(c,"xattr-pax-truncated"))CHECK(truncate("backup.tar",512+600)==0);
+        CHECK(tar_open(&t,"backup.tar",NULL,O_RDONLY,0,FLAGS)==0);
+        int progress=0,result=tar_extract_all(t,"restore",&progress);CHECK(tar_close(t)==0);
+        if(!strcmp(c,"xattr-pax-duplicate")){
+            char got[16];CHECK(result==0);CHECK(lgetxattr("restore/payload","user.note",got,sizeof got)==4&&!memcmp(got,"last",4));
+        }else CHECK(result==-1);
+        puts("PASS bounded binary PAX validation");
+    } else if(!strncmp(c,"xattr-",6)) {
+        int directory=!strcmp(c,"xattr-directory");
+        if(directory)CHECK(mkdir("input/item",0750)==0);else putfile("input/item",513);
+        unsigned char value[3000];for(size_t i=0;i<sizeof value;++i)value[i]=i%251;
+        value[1]=0;value[2]='\n';value[3]='=';
+        CHECK(setxattr("input/item","user.note",value,sizeof value,0)==0);
+        CHECK(setxattr("input/item","user.empty","",0,0)==0);
+        CHECK(setxattr("input/item","user.inode_future","123",3,0)==0);
+        TAR *t=writer();
+        if(!strcmp(c,"xattr-disabled"))t->options&=~TAR_STORE_USER_XATTR;
+        fault=c;int append=tar_append_file(t,"input/item","item"),saved=errno;fault=NULL;
+        int failed_read=!strcmp(c,"xattr-list-error")||!strcmp(c,"xattr-read-error")||!strcmp(c,"xattr-read-race");
+        if(failed_read){CHECK(append==-1&&fault_calls>0);CHECK(saved==(!strcmp(c,"xattr-list-error")?EACCES:(!strcmp(c,"xattr-read-error")?EIO:ERANGE)));CHECK(tar_close(t)==0);puts("PASS xattr collection failure");return 0;}
+        CHECK(append==0);
+        putfile("input/plain",1);CHECK(tar_append_file(t,"input/plain","plain")==0);finish(t);
+        fault=c;int result=restore("restore");saved=errno;fault=NULL;
+        if(!strcmp(c,"xattr-write-error")){CHECK(result==-1&&saved==ENOSPC&&fault_calls>0);puts("PASS xattr write failure");return 0;}
+        CHECK(result==0);
+        int omitted=!strcmp(c,"xattr-disabled")||!strcmp(c,"xattr-no-support");
+        unsigned char got[3000];ssize_t size=lgetxattr("restore/item","user.note",got,sizeof got);
+        if(omitted)CHECK(size==-1&&errno==ENODATA);
+        else {CHECK(size==sizeof value&&!memcmp(value,got,sizeof value));CHECK(lgetxattr("restore/item","user.empty",NULL,0)==0);}
+        CHECK(lgetxattr("restore/item","user.inode_future",NULL,0)==-1&&errno==ENODATA);
+        CHECK(lgetxattr("restore/plain","user.note",NULL,0)==-1&&errno==ENODATA);
+        if(!directory)compare("input/item","restore/item");
+        puts("PASS application xattr binary/empty/isolation roundtrip");
+    } else if(!strncmp(c,"security-",9)) {
         security_fixture=strcmp(c,"security-metadata-absent")!=0;
         const int directory=strstr(c,"directory")!=NULL, symlink=strstr(c,"symlink")!=NULL;
         if(directory) CHECK(mkdir("input/secure",0750)==0);

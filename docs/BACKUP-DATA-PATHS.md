@@ -52,7 +52,7 @@ tar 写出结束后会检查 close、编码器退出和输出文件 fsync；失�
 | 加密 | OAES/BoringSSL 在主机真实执行；不涉及 ARM64、MiTEE、FBE、RPMB 或 UFS wrapped-key |
 | fscrypt | provider 返回无策略，不证明合成加密卷或实际 fscrypt 映射 |
 | 随机源 | 夹具文件装入主机随机字节；缺失和短输入专门注入，不是手机熵源验证 |
-| 文件属性 | 此阶段检查内容、mode、链接及 Android 目录标记；后续 0092 补齐零区恢复、0093 补齐 SELinux/capability 失败返回。0094 已补齐实际恢复入口的最终目录时间（见下文）；任意应用 xattr 及真实安全策略仍待补 |
+| 文件属性 | 此阶段检查内容、mode、链接及 Android 目录标记；后续 0092 补齐零区恢复、0093 补齐 SELinux/capability 失败返回。0094 已补齐实际恢复入口的最终目录时间（见下文）；0095已补齐应用user属性，见下文；特权命名空间/ACL及真实安全策略仍待补 |
 
 旧 OAES CBC 格式没有认证标签。本次错误检测不等于能检测所有密文篡改，也不能证明最后一个完整分卷及其 sidecar 一同消失时仍可发现；需要另外的可信完整清单/校验设计。不能把“错误密码用例被拒绝”说成格式已经获得完整认证。
 
@@ -228,3 +228,19 @@ python3 tests/raw_image_test.py --source backups/raw-image-pre-fix/partition.cpp
 本地证据：`logs/archive-directory-pipeline-verified.json`、`logs/archive-directory-negative-verified.json`、`logs/archive-directory-restore.json`；交付核对 `scripts/audit_archive_directory_delivery.py`。镜像与哈希见交付报告。普通文件、实际主机codec/fork/thread和ASan/UBSan；UI、挂载及fscrypt是替身。没有运行ARM64恢复或完整manager/GUI，不证明断电持久性。
 
 时间仍为tar秒级，沿用atime=mtime。仅处理归档目录头，未归档挂载根的原时间无法重建。回调未安装的直接libtar wrapper调用维持旧行为；完整归档路径约束仍独立未完成。途中失败会保留已写文件与早期元数据，不提供回滚。
+
+<a id="application-xattrs"></a>
+
+## 应用 user 扩展属性
+
+0095 在实际备份入口启用应用 `user.*` 属性保存。使用不跟随符号链接的 list/get/set 系统调用，保留空值、二进制NUL/换行/等号，以及大于512字节的值。全部应用属性合并为同一个标准 `SCHILY.xattr.user.*` PAX扩展头；长度按字节计算，多块读写。每值最多65536字节、名称最多255字节，头与累计采集大小上限1MiB，条目有上限；格式错误、越界与截断拒绝。相同PAX键最后记录生效。属性名含换行/等号不能无损表示时备份明确失败，不静默丢弃。
+
+`user.default` 和全部 `user.inode_*` 排除通用复制。现有Android专用标记继续按原逻辑恢复，已支持的cache/code_cache引用由新inode重建；未知inode引用不复用旧数值。安全SELinux/capability也保持专用路径，不把此项扩展到trusted、ACL等命名空间。只添加归档中存在的应用属性，不清理目标的额外属性。
+
+属性列表ERANGE最多重试三次，文件系统明确ENOTSUP可无属性继续；其他读取错误以及值在两次读取间变化均停止备份，不能发布成功`.info`。恢复lsetxattr失败沿libtar/codec/fork返回。header之间和close释放新增属性内存，避免串到下一文件。
+
+有限检查：原 `archive_restore_test.py` 扩展到64项，实际主机文件属性往返、空/大/二进制、无属性文件隔离、专用引用排除、禁用/不支持、列表竞争/读取/写入错误、重复PAX键与恶意格式；GNU tar独立提取新归档并核对3000字节二进制值与空值。原 `archive_pipeline_test.py` 扩展到104项，普通/gzip/AES/组合/混合及分卷真实往返、目录与文件属性、采集/恢复失败到父进程和成功元数据发布门控。旧实现同夹具分别10/14和20/20失败。ASan/UBSan启用，既有无关扩展元数据泄漏不由此宣称全部消除。
+
+首次独立GNU读回失败记录在 `logs/archive-xattr-restore.log`：每属性独立扩展头被GNU读取时覆盖；合并头后通过。早期PAX构造测试长度常量错误也在确认运行前修正。最终报告 `logs/archive-xattr-restore-delivery.json`、`logs/archive-xattr-negative.json`、`logs/archive-xattr-pipeline-delivery.json`、`logs/archive-xattr-pipeline-negative.json`；交付核对 `scripts/audit_archive_xattr_delivery.py`。
+
+**兼容与限制：**新备份含较大应用属性时，使用多块PAX头，旧Recovery可能明确拒绝；恢复这类备份应使用本次或确认支持该格式的版本。此次沿用旧备份读取语义，没有对旧包增加属性要求。主机用户属性和codec真实运行，挂载/UI/fscrypt/安全provider为替身。没有ARM64恢复、完整manager/GUI、实时应用并发快照、断电或特权xattr验证。失败不回滚已经写入的内容。

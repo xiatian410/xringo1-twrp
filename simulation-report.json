@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-directory-times.img",
-  "image_sha256": "98cddd6b3f3fe132161131f79fa1fa885669316924ab4873628bc2e78b345276",
-  "image_status": "Clean installclean + make -j$(nproc); patch0094 finalizes archived directory times only after all volumes/workers/codecs succeed.814 sources/six profiles; pipeline84/libtar50pass, old20/22fail. Host files only, hardware unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-user-xattrs.img",
+  "image_sha256": "83f6e881f7844c14364692d683b72262a102d90fcc99d6bc46816c1ad29c9227",
+  "image_status": "Clean installclean + make -j$(nproc); patch0095 application user xattrs. 819 sources/six profiles; libtar64/GNU readback, codec104pass; old10/14 and20/20fail. Host files only; hardware unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1935,7 +1935,7 @@
     "Security services: original six-profile ARM64 relocation18, missing-library6 and undefined-symbol6 covered; actual default namespace fields and config removal/marker12 controls now covered in private chroot (42-case suite). Real init/mount namespace/APEX/property/proc runtime, service initialization/Binder/TEE/key operations and synthetic crypto volumes remain open.",
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
     "MTP remaining media metadata and final post-child directory date semantics (file epoch0/timestamp-error publication and directory SendObjectInfo time/completion16 cases covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
-    "Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix.",
+    "Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix. Patch0095 now preserves application user.* binary/empty xattrs with bounded multiblock PAX and errors; existing Android references excluded. libtar64/GNU readback and codec104 pass, old10/14 and20/20fail. Arbitrary privileged namespaces/ACL, live concurrent consistency and complete manager/GUI/powerloss remain outside scope.",
     "Full filesystem GUI/manager/tool format/write/repair lifecycle, real mounts/fscrypt, concurrent changes and I/O/power-loss cleanup remain pending. Ten original partition-tool page/worker/return-detail cases now cover that handoff with an explicit manager fixture; they do not join the independent ARM64 tool runs into one full lifecycle. Existing deletion/media/conversion/mount/persist/Android Secure/startup media fixes and ext4 labeling evidence are reused.",
     "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
     "video target ARM64 codec/display-shadow sampling integration, real storage/codec fault behavior, hour-scale stability and seek/index performance (bounded12.5s multi-cluster/keyframe correctness covered), GUI player rendering and full-resolution performance; host frames/queue/failure recovery plus independent FFmpeg native decode and72 short input seeks covered",
@@ -3884,6 +3884,38 @@
       "evidence": "logs/archive-directory-negative-verified.json",
       "evidence_sha256": "02bae14409809504113a35771967ede5ee2f431e93f87e8bd399540af8a12d91",
       "scope": "Actual host libtar + whole tar/pigz/OAES/BoringSSL/fork/threads; archived nested directory mtimes restored after every worker and codec succeeds; final timestamp errors and replaced-directory identities fail parent. Mount/UI/fscrypt fixtures; tar seconds precision, no unarchived root timestamp, ARM64 restore/full GUI/manager/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-xattr-restore",
+      "status": "PASS",
+      "count": 64,
+      "evidence": "logs/archive-xattr-restore-delivery.json",
+      "evidence_sha256": "f23d5d716a3f6b6642eb73f8fb2f4c71305df43b7d8b33b554cca22f0e23c696",
+      "scope": "Actual host user xattrs, binary/empty3000-byte PAX/GNU tar readback, original codecs/fork/workers. Android user.default and all user.inode_* references excluded from generic copy; dedicated existing restore retained. Read/list/write errors propagate. UI/mount/fscrypt/security providers are fixtures; no trusted/ACL namespace, ARM64/full GUI/manager/power-loss or rollback proof. Old readers may reject large new PAX headers."
+    },
+    {
+      "name": "archive-xattr-negative",
+      "status": "FAIL",
+      "count": 14,
+      "evidence": "logs/archive-xattr-negative.json",
+      "evidence_sha256": "5abd9ce86fd16322a6acde5e271a33d3e99c2a62dd8c1d2a89a6f636dbe93510",
+      "scope": "Actual host user xattrs, binary/empty3000-byte PAX/GNU tar readback, original codecs/fork/workers. Android user.default and all user.inode_* references excluded from generic copy; dedicated existing restore retained. Read/list/write errors propagate. UI/mount/fscrypt/security providers are fixtures; no trusted/ACL namespace, ARM64/full GUI/manager/power-loss or rollback proof. Old readers may reject large new PAX headers."
+    },
+    {
+      "name": "archive-xattr-pipeline",
+      "status": "PASS",
+      "count": 104,
+      "evidence": "logs/archive-xattr-pipeline-delivery.json",
+      "evidence_sha256": "86ac146cbdfe2c020b144e832b6fac52996f246720eccffd7cf19b9bb3a1793d",
+      "scope": "Actual host user xattrs, binary/empty3000-byte PAX/GNU tar readback, original codecs/fork/workers. Android user.default and all user.inode_* references excluded from generic copy; dedicated existing restore retained. Read/list/write errors propagate. UI/mount/fscrypt/security providers are fixtures; no trusted/ACL namespace, ARM64/full GUI/manager/power-loss or rollback proof. Old readers may reject large new PAX headers."
+    },
+    {
+      "name": "archive-xattr-pipeline-negative",
+      "status": "FAIL",
+      "count": 20,
+      "evidence": "logs/archive-xattr-pipeline-negative.json",
+      "evidence_sha256": "23a3013b5bed8b6d1020522b84b5b90f495af5ce2d94de02de9da2d388302429",
+      "scope": "Actual host user xattrs, binary/empty3000-byte PAX/GNU tar readback, original codecs/fork/workers. Android user.default and all user.inode_* references excluded from generic copy; dedicated existing restore retained. Read/list/write errors propagate. UI/mount/fscrypt/security providers are fixtures; no trusted/ACL namespace, ARM64/full GUI/manager/power-loss or rollback proof. Old readers may reject large new PAX headers."
     }
   ],
   "source_review_followups": [
@@ -4222,10 +4254,10 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/archive-directory-delivery-audit.json",
-    "scope": "Actual host libtar + whole tar/pigz/OAES/BoringSSL/fork/threads; archived nested directory mtimes restored after every worker and codec succeeds; final timestamp errors and replaced-directory identities fail parent. Mount/UI/fscrypt fixtures; tar seconds precision, no unarchived root timestamp, ARM64 restore/full GUI/manager/power-loss or rollback proof.",
+    "evidence": "logs/archive-xattr-delivery-audit.json",
+    "scope": "Actual host user xattrs, binary/empty3000-byte PAX/GNU tar readback, original codecs/fork/workers. Android user.default and all user.inode_* references excluded from generic copy; dedicated existing restore retained. Read/list/write errors propagate. UI/mount/fscrypt/security providers are fixtures; no trusted/ACL namespace, ARM64/full GUI/manager/power-loss or rollback proof. Old readers may reject large new PAX headers.",
     "hardware": "unverified",
-    "evidence_sha256": "51c7007bba4343b6e5f1071369af4c2f0e44989be3c60ccfeb882f3ec375f4a9"
+    "evidence_sha256": "54e8536ac35cf2255413269c029ead72d9a08db10e8991c368fd2875674e1e95"
   },
   "delivery_evidence_refresh": {
     "date": "2026-11-12",

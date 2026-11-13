@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-directory-times.img",
-  "image_sha256": "98cddd6b3f3fe132161131f79fa1fa885669316924ab4873628bc2e78b345276",
-  "production_sources": 814,
+  "image_name": "recovery-dijun-unified-user-xattrs.img",
+  "image_sha256": "83f6e881f7844c14364692d683b72262a102d90fcc99d6bc46816c1ad29c9227",
+  "production_sources": 819,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -12,6 +12,38 @@
     "scope": "After Synaptics is live and Xiaomi input is registered, wait 2 seconds, request ordinary touch reports, and check the software cache. This does not prove controller acknowledgement or event delivery. Prior manual raw0 user capture observed 215 Linux input events; this automatic-startup candidate has no corresponding hardware observation."
   },
   "checks": [
+    {
+      "name": "archive-xattr-restore",
+      "status": "PASS",
+      "cases": 64,
+      "failures": 0,
+      "local_report_sha256": "f23d5d716a3f6b6642eb73f8fb2f4c71305df43b7d8b33b554cca22f0e23c696",
+      "scope": "Actual host user xattrs, binary/empty3000-byte PAX/GNU tar readback, original codecs/fork/workers. Android user.default and all user.inode_* references excluded from generic copy; dedicated existing restore retained. Read/list/write errors propagate. UI/mount/fscrypt/security providers are fixtures; no trusted/ACL namespace, ARM64/full GUI/manager/power-loss or rollback proof. Old readers may reject large new PAX headers."
+    },
+    {
+      "name": "archive-xattr-negative",
+      "status": "FAIL",
+      "cases": 14,
+      "failures": 10,
+      "local_report_sha256": "5abd9ce86fd16322a6acde5e271a33d3e99c2a62dd8c1d2a89a6f636dbe93510",
+      "scope": "Actual host user xattrs, binary/empty3000-byte PAX/GNU tar readback, original codecs/fork/workers. Android user.default and all user.inode_* references excluded from generic copy; dedicated existing restore retained. Read/list/write errors propagate. UI/mount/fscrypt/security providers are fixtures; no trusted/ACL namespace, ARM64/full GUI/manager/power-loss or rollback proof. Old readers may reject large new PAX headers."
+    },
+    {
+      "name": "archive-xattr-pipeline",
+      "status": "PASS",
+      "cases": 104,
+      "failures": 0,
+      "local_report_sha256": "86ac146cbdfe2c020b144e832b6fac52996f246720eccffd7cf19b9bb3a1793d",
+      "scope": "Actual host user xattrs, binary/empty3000-byte PAX/GNU tar readback, original codecs/fork/workers. Android user.default and all user.inode_* references excluded from generic copy; dedicated existing restore retained. Read/list/write errors propagate. UI/mount/fscrypt/security providers are fixtures; no trusted/ACL namespace, ARM64/full GUI/manager/power-loss or rollback proof. Old readers may reject large new PAX headers."
+    },
+    {
+      "name": "archive-xattr-pipeline-negative",
+      "status": "FAIL",
+      "cases": 20,
+      "failures": 20,
+      "local_report_sha256": "23a3013b5bed8b6d1020522b84b5b90f495af5ce2d94de02de9da2d388302429",
+      "scope": "Actual host user xattrs, binary/empty3000-byte PAX/GNU tar readback, original codecs/fork/workers. Android user.default and all user.inode_* references excluded from generic copy; dedicated existing restore retained. Read/list/write errors propagate. UI/mount/fscrypt/security providers are fixtures; no trusted/ACL namespace, ARM64/full GUI/manager/power-loss or rollback proof. Old readers may reject large new PAX headers."
+    },
     {
       "name": "archive-directory-restore",
       "status": "PASS",

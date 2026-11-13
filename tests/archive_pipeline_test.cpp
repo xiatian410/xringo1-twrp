@@ -99,6 +99,22 @@ extern "C" int __wrap_futimens(int fd,const struct timespec times[2]){
  if(directory_fault=="error"){errno=EIO;return -1;}
  return __real_futimens(fd,times);
 }
+static bool application_xattrs=false;
+static string application_xattr_fault;
+extern "C" ssize_t __real_llistxattr(const char*,char*,size_t);
+extern "C" ssize_t __wrap_llistxattr(const char* path,char* names,size_t size){
+ if(application_xattrs&&application_xattr_fault=="read-error"&&string(path)=="/src/dir/file0"){
+  metadata_call("application-xattr-read-error\n");errno=EACCES;return -1;
+ }
+ return __real_llistxattr(path,names,size);
+}
+extern "C" int __real_lsetxattr(const char*,const char*,const void*,size_t,int);
+extern "C" int __wrap_lsetxattr(const char* path,const char* name,const void* data,size_t size,int flags){
+ if(application_xattrs&&string(name)=="user.fixture_blob"&&application_xattr_fault=="write-error"){
+  metadata_call("application-xattr-error\n");errno=ENOSPC;return -1;
+ }
+ return __real_lsetxattr(path,name,data,size,flags);
+}
 bool datamedia=false;
 extern "C" {
 bool fscrypt_set_mode(){return true;}
@@ -185,6 +201,7 @@ int main(int argc,char** argv){
   int result=TWFunc::WaitForChild(child,&status,"fixture wait");
   CHECK((result==0)==(scenario=="wait-eintr"));puts("PASS child wait status");return 0;
  }
+ application_xattrs=scenario.find("-xattr")!=string::npos;
  directory_fixture=scenario.find("-dirtime")!=string::npos;
  bool compressed=scenario.find("gzip")!=string::npos||scenario.starts_with("both");
  bool encrypted=scenario.starts_with("aes")||scenario.starts_with("both")||scenario.starts_with("mixed");
@@ -230,6 +247,13 @@ int main(int argc,char** argv){
   CHECK(utimensat(AT_FDCWD,"/src/dir/nested",child,0)==0);
   if(mixed)CHECK(utimensat(AT_FDCWD,"/src/app",child,0)==0);
  }
+ if(application_xattrs){
+  string blob(3000,'\0');for(size_t i=0;i<blob.size();++i)blob[i]=i%251;
+  blob[1]=0;blob[2]='\n';blob[3]='=';
+  CHECK(lsetxattr("/src/dir/file0","user.fixture_blob",blob.data(),blob.size(),0)==0);
+  CHECK(lsetxattr("/src/dir/file0","user.fixture_empty","",0,0)==0);
+  CHECK(lsetxattr("/src/dir","user.fixture_blob",blob.data(),blob.size(),0)==0);
+ }
  if(no_codec)fs::remove("/bin/pigz");
  if(scenario=="aes-random-missing")fs::remove("/dev/urandom");
  if(scenario=="both-random-short")fs::resize_file("/dev/urandom",7);
@@ -238,7 +262,9 @@ int main(int argc,char** argv){
  twrpTar tar;tar.setdir("/src");tar.setfn(archive);tar.setpassword("fixture-password");tar.setsize(size);
  tar.backup_folder="/backup";tar.partition_name="data";tar.part_settings=&settings;tar.backup_exclusions=&exclude;
  tar.use_compression=compressed;tar.use_encryption=encrypted;tar.userdata_encryption=mixed;
+ if(application_xattrs&&scenario.ends_with("-read-error"))application_xattr_fault="read-error";
  BackupProcess process;int result=tar.createTarFork(&process);
+ if(application_xattr_fault=="read-error"){CHECK(result!=0);CHECK(!fs::exists("/backup/data.info"));CHECK(read_file("/backup/security-calls").find("application-xattr-read-error")!=string::npos);puts("PASS application xattr read failure rejects backup publication");return 0;}
  if(missing||no_codec||entropy_fail||volume_limit){CHECK(result!=0);CHECK(!fs::exists("/backup/data.info"));puts("PASS expected backup failure");return 0;}
  CHECK(result==0);CHECK(fs::exists("/backup/data.info"));
  vector<fs::path> archives;for(auto& e:fs::directory_iterator("/backup"))if(e.path().filename().string().starts_with(fs::path(archive).filename().string()))archives.push_back(e.path());
@@ -266,7 +292,24 @@ int main(int argc,char** argv){
   if(scenario.ends_with("-replace"))directory_fault="replace";
  }
  if(security_fixture)security_fault=scenario.substr(scenario.find("-security-")+10);
+ if(application_xattrs&&scenario.ends_with("-write-error"))application_xattr_fault="write-error";
  result=restore.extractTarFork();
+ if(application_xattrs){
+  if(!application_xattr_fault.empty()){
+   CHECK(result!=0);CHECK(read_file("/backup/security-calls").find("application-xattr-error")!=string::npos);
+   puts("PASS application xattr failure reaches restore parent");return 0;
+  }
+  CHECK(result==0);
+  string blob(3000,'\0');for(size_t i=0;i<blob.size();++i)blob[i]=i%251;
+  blob[1]=0;blob[2]='\n';blob[3]='=';
+  string got(3000,'\0');
+  for(const char* path:{"/src/dir/file0","/src/dir"}){
+   CHECK(lgetxattr(path,"user.fixture_blob",got.data(),got.size())==3000&&got==blob);
+  }
+  CHECK(lgetxattr("/src/dir/file0","user.fixture_empty",nullptr,0)==0);
+  CHECK(lgetxattr("/src/dir/file1","user.fixture_blob",nullptr,0)==-1&&errno==ENODATA);
+  puts("PASS application xattr binary/empty/directory/isolation through codec/workers");
+ }
  if(directory_fixture){
   if(corrupt||wrong){CHECK(result!=0);CHECK(!fs::exists("/backup/security-calls"));puts("PASS invalid codec never finalizes directory times");return 0;}
   const auto calls=read_file("/backup/security-calls");

@@ -342,6 +342,10 @@
         {
           "file": "0094-restore-final-directory-times.patch",
           "sha256": "31d18a289af4b2d5ef7565b28452892facd9d499c61462aaee783e04073e154d"
+        },
+        {
+          "file": "0095-archive-application-user-xattrs.patch",
+          "sha256": "151f7e84f1a79f04661fe2f33276bf08ebd5d39ca49f5e7a2afa2e07ffac73bf"
         }
       ],
       "result_files": {
@@ -381,13 +385,13 @@
         "gui2/core/ui_event_guard.h": "c8d413ddae3cc2c7f1ed0a9691b0282d8ed5a90f9b9881459ea73b14fa6597f0",
         "gui2/components/keyboard.cpp": "8ce7f769be4a4c7d528e7b209d233d7915f26840bca51effbccefe7dc97fe550",
         "gui2/components/swipe_slider.cpp": "c4d7eee908432f4aba1a9ae52abfb0db0d8c5b187f82c3de8f130cf226e5eb94",
-        "libtar/block.c": "73f7891968ed29ea41d8831009ce2e0331e088635cf99e5f2243d48982472f4a",
-        "libtar/extract.c": "9d4c0fff2d301756d4a9090f8190221eb26721c033244e9591b972ce82b84c09",
+        "libtar/block.c": "40c1de9429c6d5e605c2bfce588cf7f77c60d3ad4e25949082df812823718ad9",
+        "libtar/extract.c": "f420708d549d4738c729d1c7e87a8e6d59cddb79f48e48449509d629583316a4",
         "gui2/backend/twrp_operation.cpp": "a2aaa78468023cd7a2024334ef995838702a5b6904686ec0665c12f142cd1ace",
         "partitions.hpp": "5970edacc232ae54da157f39310dddd47929ffad7bb2fbe8620fe6108f8da7aa",
         "digest/twrp_digest_driver.cpp": "6e2e62e3fdf570be857ac5b62c6befcd8474633f736dcca5a8f2a2ad5ec55ab5",
         "digest/twrp_digest_driver.hpp": "266f16b28f4d3ace274a5ea42253ee993fd6790ce323a8e5b79e885f2e9a6fa4",
-        "twrpTar.cpp": "60e9ccdfc636ca8054500d4c599a5105bfd3b087c46c23a840a5a41cc92b4a0d",
+        "twrpTar.cpp": "39f166adc1ee076d6e9f6f62a10e60473d0578b7aaae21d6bec8d47b88102b4a",
         "twrpTar.hpp": "e1fea280d67b97ce5921b07c9e06a266cb22bd027f9c80875ad98a4eb8f500b9",
         "gui2/backend/twrp_backup_backend.cpp": "925155463e34f59103a0b94473363638cb47afb35f80ea782da065eb2e2c985e",
         "backup_process.hpp": "5d4a5d4973bba52d7a796dee1ed5e3d8258cebfb438dad33cfbcbb964b1ee225",
@@ -442,7 +446,11 @@
         "gui2/backend/twrp_tools_backend.cpp": "52dfe873375bf6fb9726337872b9b6b629fd6b81193638b26d683f79401ad3a8",
         "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a",
         "gui2/backend/twrp_background_backend.cpp": "2459e31f131aef5cfd9fe977b55b5611744809ab6e8d954496f1c8872a900bb5",
-        "libtar/libtar.h": "4e5dd49adeb53d61f6cadfa1fa638e9cc62ba9571a0094f6eeed1b283805a7a2"
+        "libtar/libtar.h": "9b0967cd5e6a2abcededd5135b7c0d141d1cf47c7093a253aafc0e72229d64af",
+        "libtar/internal.h": "f4778c2fb27cd376eb29083156c6e36818b98d4f5a256c80daec803c9f0a566b",
+        "libtar/android_utils.c": "dfa8967e239e97c27c4d4db2e3951de316ab3f9307eb0add7446919c613c5c65",
+        "libtar/append.c": "9d63e1112bd8509f81bd0e4cb5d652b00df8f3fb97945bd7212b2b477d806bb2",
+        "libtar/handle.c": "62092e82814b3a610cdb2412f12413257b9f4254a476896cb62562afaafb9e3c"
       }
     },
     "system/sepolicy": {

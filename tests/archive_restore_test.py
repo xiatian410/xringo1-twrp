@@ -40,6 +40,8 @@ cases += ['sparse-'+name for name in ['leading', 'trailing', 'all-zero', 'partia
 cases += ['security-'+name for name in ['selinux-file', 'selinux-directory', 'selinux-symlink',
           'capability-file', 'options-disabled', 'metadata-absent', 'selinux-denied',
           'selinux-unsupported', 'capability-denied', 'capability-io']]
+cases += ['xattr-'+name for name in ['file','directory','disabled','no-support','list-error','list-race','read-error','read-race','write-error']]
+cases += ['xattr-pax-'+name for name in ['duplicate','null-key','missing-equal','oversize','truncated']]
 cases = args.cases or cases
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 with tempfile.TemporaryDirectory(prefix='dijun-archive-', dir='/tmp') as tmp:
@@ -56,7 +58,7 @@ with tempfile.TemporaryDirectory(prefix='dijun-archive-', dir='/tmp') as tmp:
            *[str(args.source/n) for n in names], str(args.source/'strlcpy.c'),
            str(ROOT/'tests/archive_restore_test.c'),
            '-Wl,--wrap=write', '-Wl,--wrap=close', '-Wl,--wrap=setxattr',
-           '-Wl,--wrap=lseek64', '-Wl,--wrap=ftruncate64', '-Wl,--wrap=lgetfilecon',
+           '-Wl,--wrap=llistxattr', '-Wl,--wrap=lgetxattr', '-Wl,--wrap=lsetxattr', '-Wl,--wrap=lseek64', '-Wl,--wrap=ftruncate64', '-Wl,--wrap=lgetfilecon',
            '-Wl,--wrap=lsetfilecon', '-Wl,--wrap=getxattr', '-l:libselinux.so.1', '-o', str(tmp/'test')]
     subprocess.run(cmd,check=True)
     results=[]
@@ -67,6 +69,16 @@ with tempfile.TemporaryDirectory(prefix='dijun-archive-', dir='/tmp') as tmp:
         env=dict(os.environ,ASAN_OPTIONS='detect_leaks=0:halt_on_error=1')
         run=subprocess.run([str(tmp/'test'),case],cwd=directory,env=env,capture_output=True,text=True,timeout=10)
         results.append(dict(case=case,status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,output=run.stdout+run.stderr))
+        if case=='xattr-file' and run.returncode==0:
+            dest=directory/'gnu';dest.mkdir()
+            independent=subprocess.run(['tar','--xattrs','--xattrs-include=user.*','-xf','backup.tar','-C','gnu'],cwd=directory,capture_output=True,text=True)
+            assert independent.returncode==0, independent.stderr
+            expected=bytes([i%251 for i in range(3000)])
+            expected=expected[:1]+b'\0\n='+expected[4:]
+            assert os.getxattr(dest/'item','user.note')==expected
+            assert os.getxattr(dest/'item','user.empty')==b''
+            assert 'user.note' not in os.listxattr(dest/'plain')
+            results[-1]['gnu_tar_readback']='PASS binary3000/empty/no leakage'
         print(results[-1]['status'],case,flush=True)
     sources={str(p):sha(p) for p in sorted(args.source.iterdir()) if p.suffix in ('.c','.h','.go','.bp')}
     for p in [ANDROID/'system/vold/fscrypt_policy.h',ANDROID/'system/core/libcutils/include/cutils/multiuser.h',ANDROID/'external/libcap/libcap/include/sys/capability.h',ANDROID/'external/selinux/libselinux/include/selinux/selinux.h']:
