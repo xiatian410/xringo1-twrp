@@ -28,6 +28,8 @@ MTP 单批发送的负磁盘读取与尾批 USB 错误误报成功已由 0083 �
 
 0084 修正兼容多批发送的后续磁盘错误覆盖先前 USB 错误；指定第二次读取重叠调度和两种模式多批内容往返六项通过，旧双故障一项失败，单批八项回归通过。已清理构建并收尾，不重复相同调度；真实 FunctionFS outstanding 取消与完整 server / Reset 仍未完成。见[多批发送](MTP-ADAPTATION.md#pipeline-first-error)。
 
+0085 阻止保留 System 挂载设置使离线 Repair / Resize 在仍挂载时误执行。原 Unmount 分支与修复 / manager / backend 九场景通过，旧两项失败；146 返回码断言、ARM64 修复七项及格式化修复六项回归通过，已清理构建收尾。不重复保留挂载夹具；其他入口及完整真实挂载 / GUI / fscrypt 生命周期仍未完成。见[挂载前置检查](FILESYSTEM-TOOLS-EXECUTION.md#repair-mounted-guard)。
+
 ## 已维护事项的入口
 
 这些事项不重新立项。生产修正、各阶段证据和剩余限制在所属主题维护；当前镜像以[交付报告](../simulation-report.md)为准。

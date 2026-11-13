@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-pipeline.img",
-  "image_sha256": "abb4c6542e064495d0afc84ebb159391c18cb14f49b2a49e93ca7215b7898b2f",
-  "image_status": "Clean installclean + make -j$(nproc); patch0084 preserves first compat pipeline error.802 source bindings/six unchanged profiles; full goal in progress.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-repair-unmounted.img",
+  "image_sha256": "a219fe1f2b933db720ee1598d566f448ca5919ab76e4a98433e053a01c359be9",
+  "image_status": "Clean installclean + make -j$(nproc); patch0085 rejects offline repair/resize if Unmount retains mounted System.803 production sources/six unchanged profiles; goal in progress.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -3395,6 +3395,46 @@
       "evidence": "logs/mtp-pipeline-send-regression.json",
       "evidence_sha256": "1c0ec8f8a433a62a1c4937f915f87f97e8b82bb58f7b80ec4d119e631489d03a",
       "scope": "Patch0084 retains first compat USB EPIPE after draining the already queued disk read, including a later ENOSPC. Six native/compat multi-chunk scenarios pass; old compat dual fault fails. 7MiB+37 real file transfers and host reader thread, condition-variable gate at second pread64; native completion errors injected after real AIO completes. Eight single-chunk error regressions pass. No physical FunctionFS, endpoint cancellation, full server/Reset or Windows validation."
+    },
+    {
+      "name": "repair-mounted-negative",
+      "result": "expected-failure",
+      "count": 9,
+      "evidence": "logs/repair-mounted-negative.json",
+      "evidence_sha256": "856f152b0c764839c245865052b5c6872114f2ee3110501143ab0578738bf52e",
+      "scope": "Patch0085 verifies IsMounted after Unmount before offline Repair; retained System mount fails before fsck and Resize prerequisite. Original Unmount/Repair/Resize->manager->backend; nine mount scenarios pass, old repair/resize retained-System fail. Mount state/syscalls/device/commands are explicit fixtures.146 exit assertions, seven real ARM64 repair and six format+repair file regressions pass. No real mount/GUI/fscrypt/hardware proof. Clean803/six unchanged profiles."
+    },
+    {
+      "name": "repair-mounted-current",
+      "result": "pass",
+      "count": 9,
+      "evidence": "logs/repair-mounted-current.json",
+      "evidence_sha256": "cb4fc2eb2168d5edead9b0deebbb48d2305c126eda100e56ce148c95293a2009",
+      "scope": "Patch0085 verifies IsMounted after Unmount before offline Repair; retained System mount fails before fsck and Resize prerequisite. Original Unmount/Repair/Resize->manager->backend; nine mount scenarios pass, old repair/resize retained-System fail. Mount state/syscalls/device/commands are explicit fixtures.146 exit assertions, seven real ARM64 repair and six format+repair file regressions pass. No real mount/GUI/fscrypt/hardware proof. Clean803/six unchanged profiles."
+    },
+    {
+      "name": "repair-mounted-exit-regression",
+      "result": "pass",
+      "count": 146,
+      "evidence": "logs/repair-mounted-exit-regression.json",
+      "evidence_sha256": "4038628694a44945a7e5409928c3c990138e943b5e3f7d6f79af04e6e0f05336",
+      "scope": "Patch0085 verifies IsMounted after Unmount before offline Repair; retained System mount fails before fsck and Resize prerequisite. Original Unmount/Repair/Resize->manager->backend; nine mount scenarios pass, old repair/resize retained-System fail. Mount state/syscalls/device/commands are explicit fixtures.146 exit assertions, seven real ARM64 repair and six format+repair file regressions pass. No real mount/GUI/fscrypt/hardware proof. Clean803/six unchanged profiles."
+    },
+    {
+      "name": "repair-mounted-tool-regression",
+      "result": "pass",
+      "count": 7,
+      "evidence": "logs/repair-mounted-tool-regression.json",
+      "evidence_sha256": "582474e0c0afce0d38568944181b3182ecbc464904e1a082a551c6808f4ae988",
+      "scope": "Patch0085 verifies IsMounted after Unmount before offline Repair; retained System mount fails before fsck and Resize prerequisite. Original Unmount/Repair/Resize->manager->backend; nine mount scenarios pass, old repair/resize retained-System fail. Mount state/syscalls/device/commands are explicit fixtures.146 exit assertions, seven real ARM64 repair and six format+repair file regressions pass. No real mount/GUI/fscrypt/hardware proof. Clean803/six unchanged profiles."
+    },
+    {
+      "name": "repair-mounted-format-regression",
+      "result": "pass",
+      "count": 6,
+      "evidence": "logs/repair-mounted-format-regression.json",
+      "evidence_sha256": "6f31f00a2dd6e038486912e0f92b5c8d404f91c3fce632577c7b93063c686f75",
+      "scope": "Patch0085 verifies IsMounted after Unmount before offline Repair; retained System mount fails before fsck and Resize prerequisite. Original Unmount/Repair/Resize->manager->backend; nine mount scenarios pass, old repair/resize retained-System fail. Mount state/syscalls/device/commands are explicit fixtures.146 exit assertions, seven real ARM64 repair and six format+repair file regressions pass. No real mount/GUI/fscrypt/hardware proof. Clean803/six unchanged profiles."
     }
   ],
   "source_review_followups": [
@@ -3710,8 +3750,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/mtp-pipeline-delivery.json",
-    "scope": "Patch0084 retains first compat USB EPIPE after draining the already queued disk read, including a later ENOSPC. Six native/compat multi-chunk scenarios pass; old compat dual fault fails. 7MiB+37 real file transfers and host reader thread, condition-variable gate at second pread64; native completion errors injected after real AIO completes. Eight single-chunk error regressions pass. No physical FunctionFS, endpoint cancellation, full server/Reset or Windows validation.",
+    "evidence": "logs/repair-mounted-delivery.json",
+    "scope": "Patch0085 verifies IsMounted after Unmount before offline Repair; retained System mount fails before fsck and Resize prerequisite. Original Unmount/Repair/Resize->manager->backend; nine mount scenarios pass, old repair/resize retained-System fail. Mount state/syscalls/device/commands are explicit fixtures.146 exit assertions, seven real ARM64 repair and six format+repair file regressions pass. No real mount/GUI/fscrypt/hardware proof. Clean803/six unchanged profiles.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -4463,5 +4503,9 @@
   "mtp_pipeline": {
     "patch": "0084-mtp-pipeline-first-error.patch",
     "scope": "Patch0084 retains first compat USB EPIPE after draining the already queued disk read, including a later ENOSPC. Six native/compat multi-chunk scenarios pass; old compat dual fault fails. 7MiB+37 real file transfers and host reader thread, condition-variable gate at second pread64; native completion errors injected after real AIO completes. Eight single-chunk error regressions pass. No physical FunctionFS, endpoint cancellation, full server/Reset or Windows validation."
+  },
+  "repair_mounted_guard": {
+    "patch": "0085-offline-repair-mount-guard.patch",
+    "scope": "Patch0085 verifies IsMounted after Unmount before offline Repair; retained System mount fails before fsck and Resize prerequisite. Original Unmount/Repair/Resize->manager->backend; nine mount scenarios pass, old repair/resize retained-System fail. Mount state/syscalls/device/commands are explicit fixtures.146 exit assertions, seven real ARM64 repair and six format+repair file regressions pass. No real mount/GUI/fscrypt/hardware proof. Clean803/six unchanged profiles."
   }
 }

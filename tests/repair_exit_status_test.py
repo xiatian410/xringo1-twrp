@@ -40,9 +40,10 @@ int ExecCmd(const std::string& cmd,bool=true){return status(cmd)==0?0:-1;}
 int ExecCmd(const std::string& cmd,std::string& out,bool){out="fixture checker output\n";return status(cmd);}
 }
 struct TWPartition{
- std::string current_file_system_="ext4",display_name_="private",actual_block_device_="/fixture/never-open";
+ std::string current_file_system_="ext4",display_name_="private",actual_block_device_="/fixture/never-open",mount_point_="/fixture";
  bool unmount_ok=true;
  bool Unmount(bool){return unmount_ok;}
+ bool IsMounted()const{return false;}
  void FindActualBlockDevice(){}
  bool Repair();
 };

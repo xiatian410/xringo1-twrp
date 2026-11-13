@@ -1,0 +1,16 @@
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -1761,6 +1761,13 @@
+       return false;
+     }
+     if (!Unmount(true)) return false;
++    // Unmount may deliberately retain System when configured to do so.
++    // Offline repair (and Resize's prerequisite repair) must not run on
++    // a filesystem that is still mounted, even after a successful request.
++    if (IsMounted()) {
++      gui2_console::log_error("fail_unmount", mount_point_, strerror(EBUSY));
++      return false;
++    }
+     gui2_console::info("repairing_using", display_name_, binary);
+     FindActualBlockDevice();
+     std::string command = full;

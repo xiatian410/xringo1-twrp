@@ -38,6 +38,7 @@ struct TWPartition {
   bool is_sub_partition_=false,unmount_ok=true;
   std::string current_file_system_="ext4",display_name_="private image",actual_block_device_;
   bool Unmount(bool) { ++unmounts; return unmount_ok; }
+  bool IsMounted() const { return false; } // Explicit unmounted fixture after successful Unmount.
   void FindActualBlockDevice() {} // Explicit device-resolution boundary: only a private regular file.
   bool Repair();
 };

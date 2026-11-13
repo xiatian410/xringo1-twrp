@@ -7,6 +7,7 @@ libraries and ARM64 tools. Device resolution/unmount/block-size ioctl (stat),
 properties, empty /proc/mounts and metadata/presentation are explicit fixtures; no physical mount,
 full ARM Recovery, GUI, fscrypt, SELinux labeling or power-loss proof.
 """
+import argparse
 import hashlib
 import json
 import os
@@ -26,6 +27,9 @@ def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--report',type=Path,default=ROOT/'logs/format-tool-chain.json')
+    args=parser.parse_args()
     index=json.loads((ROOT/'simulation-report.json').read_text());image=Path(index['image'])
     assert sha(image)==index['image_sha256']
     qemu=ROOT/'tools/qemu-user/qemu-aarch64';qsource=qemu.parent/'source.json'
@@ -118,7 +122,7 @@ LD_LIBRARY_PATH=/android/system/lib64 MKE2FS_CONFIG=/android/system/etc/mke2fs.c
             print(name,cases[-1]['status'],checks,flush=True)
     paths=[*selected,Path(__file__),ROOT/'tests/format_tool_chain_test.cpp',ROOT/'tests/nested_partition_path_test.py',ROOT/'scripts/firmware_facts.py',ROOT/'scripts/acquire_firmware.py',SRC/'partitions.hpp',image,qemu,qsource,clang,debugfs,*deps]
     report=dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL',scope=__doc__,image_sha256=index['image_sha256'],cases=cases,tool_transcripts=transcripts,launchers=launchers,ramdisk_files=extracted,sources={str(p):sha(p) for p in paths})
-    (ROOT/'logs/format-tool-chain.json').write_text(json.dumps(report,indent=2)+'\n')
+    args.report.write_text(json.dumps(report,indent=2)+'\n')
     return report['status']!='PASS'
 
 if __name__=='__main__':raise SystemExit(main())

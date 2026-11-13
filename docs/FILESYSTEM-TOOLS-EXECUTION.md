@@ -1,5 +1,30 @@
 # 当前镜像文件系统工具实际执行
 
+<a id="repair-mounted-guard"></a>
+## 离线修复的挂载前置检查（0085）
+
+`Unmount()` 在 `tw_dont_unmount_system` 设置开启、目标仍是已挂载 Android root 时，可以保持挂载并返回 true。旧 `Repair()` 仅检查返回值，随后运行离线 fsck；`Resize()` 通过前置 Repair 也会进入该路径。固定补丁 `patches/0085-offline-repair-mount-guard.patch` 在卸载请求之后再次查询 `IsMounted()`，仍挂载则输出现有 fail_unmount / EBUSY 消息并失败，不启动 fsck 或 resize2fs，也不强制覆盖用户的保留挂载设置。
+
+```bash
+python3 tests/repair_mounted_test.py
+python3 tests/repair_exit_status_test.py --report logs/repair-mounted-exit-regression.json
+python3 tests/repair_tool_chain_test.py --report logs/repair-mounted-tool-regression.json
+python3 tests/format_tool_chain_test.py --report logs/repair-mounted-format-regression.json
+python3 scripts/audit_repair_mounted_delivery.py
+```
+
+九个场景执行原 Unmount / CanRepair / Repair / Resize、manager 路由和 backend 包装：修复 / 扩容的保留挂载、正常卸载、已卸载和卸载失败，以及 F2FS 修复。旧代码两个保留挂载场景误执行工具；修正后全部通过，保留挂载和卸载失败均不执行命令，backend 发布失败。场景中的 mount 状态、umount 系统调用、设备路径、容量和命令执行是明确替身，原 Unmount 的保留 System 分支实际执行；没有进行真实挂载或磁盘操作。
+
+受影响修复返回码回归 146 个断言通过；同镜像 ARM64 e2fsck 七个实际调用场景以及格式化 / Repair 六个接续场景通过，后两者只操作 QEMU 私有普通文件，卸载仍是替身。成功修复、修正错误码 1、无效文件、缺工具、卸载拒绝和子目标失败等按原范围核对，保留原报告不覆盖。新增 `--report` 只用于保留这次格式化回归报告。
+
+以 installclean 和 `make -j$(nproc)` 清理构建，803 来源绑定、六份 profile 字节不变；相对 0084 仅 Recovery 主程序、构建属性和 ramdisk 摘要变化，`logs/repair-mounted-delivery.json` 审计通过。候选及哈希以[交付报告](../simulation-report.md)为准。
+
+本修正覆盖 Repair 入口及 Resize 前置 Repair，不声称所有格式化 / 恢复入口的挂载生命周期已检查。`IsMounted()` 仍使用既有挂载点 / stat 观测，没有增加按设备扫描所有别名挂载或真实内核验证。不得将本组替身结果解释为完整 GUI / fscrypt / 实机验收；本项完成后不重复同类保留挂载夹具。
+
+## 早期工具执行记录
+
+以下保留早期候选与工具输入，当前镜像与状态以上方交付链接为准。
+
 2026-11-12。当前绑定`recovery-dijun-unified-clock-failure.img`（SHA256 `1c0813cf324d76be52e588e4dd3358c1c104946841e393aef84df2d951437adc`）。从镜像提取ARM64工具、linker和共享库，在QEMU用户态执行；不使用主机mkfs替代目标格式化工具。所有目标都是程序新建、结束即删除的私有普通文件，没有挂载、loop或真实块设备。此前fac3c815镜像的15项是历史检查点。
 
 [程序](../tests/filesystem_tools_image_test.py)、[机器报告](../logs/filesystem-tools-image-test.json)、[完整输出](../logs/filesystem-tools-image-test.log)。运行：
