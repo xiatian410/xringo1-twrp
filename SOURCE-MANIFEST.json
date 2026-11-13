@@ -28,11 +28,11 @@
     "mode": "0o644"
   },
   "FEATURE-USAGE.md": {
-    "sha256": "2cca2714b063d5d0abfa3ecfcface6be6b1b3d3c2440fe3be6f3e0a5369acb27",
+    "sha256": "50dd25186fdba00ac312bc8a0f753434ee1c32ba1fe7162a3a12db2366fb6b77",
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "4030351af24457f84e2b92977d12e088ea25e25e98b42681fc8a8caeb6ff89c9",
+    "sha256": "67f097f290784c3ce02904d64f6505193a7960fff4cf37df098c469b7d3dbf44",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -48,7 +48,7 @@
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
-    "sha256": "e2f96d08aa6ee52ef7fadeffca16b8a060b38f57177ba351b78c498cfced040e",
+    "sha256": "d5f60919399c00e2ab1fba55fc5ba8cba1da1057f1574fb342d5a12c4689e173",
     "mode": "0o644"
   },
   "docs/BACKUP-DATA-PATHS.md": {
@@ -80,7 +80,7 @@
     "mode": "0o644"
   },
   "docs/INSTALL-CHAIN-VALIDATION.md": {
-    "sha256": "8b2848c3f8e1171cd2526fe11e44e09dbfe9caff4beb0453e2d28666a86364e8",
+    "sha256": "313834a006e8eb7ac75504e0e6ab4b2946ab605309da12f5091188d6ba1a9a5c",
     "mode": "0o644"
   },
   "docs/MODULE-STATE-ADAPTATION.md": {
@@ -1456,7 +1456,7 @@
     "mode": "0o644"
   },
   "scripts/audit_zip_engine_join.py": {
-    "sha256": "1dd2c7ba2e7983a5ca221bf02190dd0dd58656c8e4f2e6a15bb8d86c8a3a617b",
+    "sha256": "a960e92b147dfeec3c7c93b3901762ff6cf9e4b65ac090a2d555e8cb714437cc",
     "mode": "0o644"
   },
   "scripts/audit_zip_queue_delivery.py": {
@@ -2244,7 +2244,7 @@
     "mode": "0o644"
   },
   "tests/ota_allocated_exit_probe.py": {
-    "sha256": "d54e99e5d2f70adc45a0ed6efdd571890bb9ba36eaf133d3c8127cbb727b1be9",
+    "sha256": "4b7f4c8436775753347a31aa3dd1ff1949dc9bd2df0d179522881308db8ce6fd",
     "mode": "0o644"
   },
   "tests/ota_cow_roundtrip.cpp": {
@@ -2268,7 +2268,7 @@
     "mode": "0o644"
   },
   "tests/ota_engine_entry.py": {
-    "sha256": "26b950af17116df7b4633b5a17ee756a996c4e62026242c631b38bef11a9f484",
+    "sha256": "68bb740073038042f52124725fb905aaf4b936501f0542a308447870857949ce",
     "mode": "0o644"
   },
   "tests/ota_engine_finish_model.py": {
@@ -2309,6 +2309,14 @@
   },
   "tests/ota_recovery_fallback.py": {
     "sha256": "7868c042c9fe0a11c8c531ff1ef719f1e975e419b925c116f208039388643e16",
+    "mode": "0o644"
+  },
+  "tests/ota_run_outputs.py": {
+    "sha256": "eec70c56dfc37648ca5310ae228ba81404eabf0793bb1acb4c5328f21c815241",
+    "mode": "0o644"
+  },
+  "tests/ota_run_outputs_test.py": {
+    "sha256": "8b7433a41401142cce736443ea52c066e569880be251819f2421a7fcaa65cf89",
     "mode": "0o644"
   },
   "tests/ota_snapshot_allocate.cpp": {
@@ -2820,7 +2828,7 @@
     "mode": "0o644"
   },
   "tests/zip_engine_join.py": {
-    "sha256": "7b3dd497f4bfc0ff65b1b7b249820530b905d47cde06ffa895bcb0f57fbb5131",
+    "sha256": "7c819689fd3a948f516fe421ff4e1dda43ef2711c952f28b55e5e571e570af64",
     "mode": "0o644"
   },
   "tests/zip_install_chain_test.cpp": {

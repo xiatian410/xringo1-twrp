@@ -57,11 +57,20 @@ python3 scripts/audit_snapshot_payload_handoff.py
 
 当前本地报告为`logs/zip-engine-allocated-finish.json/.stdout/.stderr`，适配器精确副本为`logs/zip-engine-allocated-adapter-current.cpp`，audit确认同镜像/原库/来源和清理顺序。源LP仍为合成32GiB，base/COW视图是独立普通文件；readonly、挂载、HAL、槽位、proc、旧更新清理、GUI有明确替身，测试模式关闭scratch/daemon。没有kernel DM、真实源布局、物理槽位、启动/合并或完整ARM64 Recovery/USB验收。模型成功不等于完整设备OTA验收。
 
-**记录保存限制：**此次runner使用固定输出名，覆盖了上一轮失败报告和stdout/stderr；旧报告摘要、原失败适配器与文字结果仍保留，旧原始报告字节已不可用。索引明确记录旧digest及替换关系，不能再声称旧失败原始报告完整留存。后续失败/成功复跑必须使用独立输出名。
+**记录保存限制：**此次 runner 使用固定输出名，覆盖了上一轮失败报告和 stdout/stderr；旧报告摘要、原失败适配器与文字结果仍保留，旧原始报告字节已不可用。索引明确记录旧 digest 及替换关系，不能再声称旧失败原始报告完整留存。
+
+后续 runner 与退出探针在读取镜像 / 原包、编译或执行前，拒绝已存在的输出（包括悬空符号链接），并独占预约运行名；失败或中断后也不自动复用。必要复跑使用新的 `--run-name`，报告、stdout/stderr、生成适配器和分配支持 include 使用同一前缀。审计接受相同运行名。输出保护的有限检查覆盖既有文件保留、并发预约、命名校验与实际 CLI 提前拒绝；没有重新执行 payload。
+
+当前成功报告和审计保留原字节及运行时来源哈希。此后 runner 输出管理已改变，旧报告不再满足“所有测试脚本与当前字节一致”的审计要求；这不表示 payload 出现新故障，也不为刷新脚本哈希重跑整包。此批只有测试工具及文档维护，没有生产修改或新镜像。
 
 ```bash
-# 已完成。输入与相关实现不变时复用，禁止例行重跑整包。
-python3 scripts/audit_zip_engine_join.py --model-finish --allocate-snapshots
+# 输出保护检查；只校验拒绝覆盖，不执行引擎。
+python3 tests/ota_run_outputs_test.py
+
+# 仅有相关实现变化或命名覆盖缺口需要复跑时使用新的名字。
+# 以下为示例，不在日常检查或本批执行：
+# python3 tests/ota_engine_entry.py --join-zip --model-finish --allocate-snapshots --run-name reason-001
+# python3 scripts/audit_zip_engine_join.py --model-finish --allocate-snapshots --run-name reason-001
 ```
 
 <a id="stock-zip-allocated-failure"></a>

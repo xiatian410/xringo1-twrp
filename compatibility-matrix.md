@@ -31,7 +31,7 @@
 | OTG | 修正内部 UFS 误枚举，列表 / 选择离线覆盖 | manager / USB、写入中移除 |
 | MTP | 时间、原子上传、目录与会话 / 取消 / 重置修正 | 临时文件崩溃归属、完整端点 / Windows 集成 |
 | ZIP / sideload | 原始安装链、真实 ARM64 无害 updater、协议与收尾 | 完整 ARM64 Recovery / USB / FUSE |
-| OTA / A/B | 原始 OS4.0.4 整包在明确模型中接通 ZIP / 真实 ARM64 引擎 / postinstall / 完成状态；另有真实 LP / COW 初始化与错误清理，0090 修复空指针崩溃 | 真实源布局、内核映射、完整分配到 payload 接续、挂载 / 槽位 / 重启合并尚未贯通；见[整包模型](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-model-finish)与[初始化范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization) |
+| OTA / A/B | 原始 OS4.0.4 整包在同次明确模型运行中接通 ZIP 验签 / 十份 COW 初始化 / 真实 ARM64 引擎全部 payload 操作与最终哈希 / postinstall / 完成状态 / 父安装成功；0090 修复初始化失败空指针崩溃 | 源 LP 为合成输入，内核映射 / 挂载 / HAL / 槽位有替身，真实启动与重启合并未验收；见[整包模型](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success)与[初始化范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization) |
 | 备份 / 恢复 | 编解码、摘要发布、完成清单、失败恢复路径 | GUI 全流程、稀疏空洞、断电与内容真实性 |
 | 文件系统工具 | 普通文件上的 ARM64 工具及修复返回值；扩容尺寸修正 | 完整格式化 / 写入 / 修复接续 |
 | 截图 / 录屏 | 像素、队列、VP8 / WebM 时间轴与故障检查 | 目标 ARM64 codec / 显示接续、全分辨率长期性能 |

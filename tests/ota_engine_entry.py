@@ -24,6 +24,7 @@ from ota_vabc_session import ROOT, ANDROID, build
 sys.path.insert(0, str(ROOT/'scripts'))
 from firmware_facts import boot_parts, ramdisk_entries
 from acquire_firmware import payload_position
+from ota_run_outputs import output_prefix, reserve_outputs
 
 
 def sha(path):
@@ -39,9 +40,16 @@ def main():
     parser.add_argument('--join-zip',action='store_true',help='Run host original ZIP parent, with its actual argv/pipe passed to this ARM64 engine')
     parser.add_argument('--model-finish',action='store_true',help='Explicit mount/readonly/slot model, original stock script and actual SnapshotManager completion; requires --join-zip')
     parser.add_argument('--allocate-snapshots',action='store_true',help='Replace seeded allocation/COW creation with actual controller/SnapshotManager; requires --model-finish')
+    parser.add_argument('--run-name',help='Unique suffix for a new run; existing evidence is never overwritten')
     args=parser.parse_args()
     if args.allocate_snapshots and not args.model_finish:parser.error('--allocate-snapshots requires --model-finish')
     if args.model_finish and not args.join_zip:parser.error('--model-finish requires --join-zip')
+    base='zip-engine-allocated-finish' if args.allocate_snapshots else 'zip-engine-model-finish' if args.model_finish else 'zip-engine-joined' if args.join_zip else 'ota-engine-entry'
+    try:
+        prefix=output_prefix(base,args.run_name)
+        reserve_outputs(ROOT/'logs',prefix,['.json','.stdout','.stderr','.adapter.cpp','.support.inc'])
+    except (ValueError,FileExistsError) as error:
+        parser.error(str(error))
     index = json.loads((ROOT/'simulation-report.json').read_text())
     image = Path(index['image'])
     assert sha(image) == index['image_sha256']
@@ -55,7 +63,7 @@ def main():
     qemu = ROOT/'tools/qemu-user/qemu-aarch64'
     assert sha(qemu) == json.loads(qemu.with_name('source.json').read_text())['binary_sha256']
     sources = {str(p): sha(p) for p in [Path(__file__), ROOT/'tests/ota_stock_payload.cpp',
-        ROOT/'tests/ota_vabc_session.py', ROOT/'scripts/firmware_facts.py', ROOT/'scripts/acquire_firmware.py']}
+        ROOT/'tests/ota_vabc_session.py', ROOT/'tests/ota_run_outputs.py', ROOT/'scripts/firmware_facts.py', ROOT/'scripts/acquire_firmware.py']}
     # Reuse only explicit ordinary-file model; no original engine methods changed.
     adapter = (ROOT/'tests/ota_stock_payload.cpp').read_text().split('int main(')[0]
     adapter = adapter.replace('void Cleanup() override { assert(false); }',
@@ -115,6 +123,8 @@ extern "C" int __wrap_umount(const char*) { assert(false);return -1; }
         if args.allocate_snapshots:
             from ota_engine_allocated_model import prepare
             prepare(work,sources)
+            shutil.copyfile(work/'snapshot_init_support.inc',ROOT/'logs'/(prefix+'.support.inc'))
+        (ROOT/'logs'/(prefix+'.adapter.cpp')).write_text(adapter)
         fixture = work/'adapter.cpp'
         fixture.write_text(adapter)
         compile_cmd = reference['compile_command'].copy()
@@ -189,13 +199,13 @@ extern "C" int __wrap_umount(const char*) { assert(false);return -1; }
             return run_joined(jail, dict(sources=sources,dependencies=deps,
                 image_sha256=sha(image),image_entries=entries,adapter_sha256=hashlib.sha256(adapter.encode()).hexdigest(),
                 fixture_elf_machine=183,fixture_sha256=sha(work/'engine'),
-                compile_command=compile_cmd,link_command=link_cmd,finish_model=model))
+                compile_command=compile_cmd,link_command=link_cmd,finish_model=model,output_prefix=prefix))
         def isolate():
             os.chroot(jail);os.chdir('/')
         command=['/qemu','-L','/android','-E','LD_LIBRARY_PATH=/android/system/lib64',
             '/android/system/bin/linker64','/engine','--payload=file:///work/source.zip',
             '--offset='+str(offset),'--headers='+properties,'--status_fd=1']
-        stdout=ROOT/'logs/ota-engine-entry.stdout';stderr=ROOT/'logs/ota-engine-entry.stderr'
+        stdout=ROOT/'logs'/(prefix+'.stdout');stderr=ROOT/'logs'/(prefix+'.stderr')
         with stdout.open('w') as out,stderr.open('w') as err:
             run=subprocess.run(command,preexec_fn=isolate,stdout=out,stderr=err,timeout=1800)
         output=stdout.read_text();errors=stderr.read_text()
@@ -218,7 +228,7 @@ extern "C" int __wrap_umount(const char*) { assert(false);return -1; }
             actual_download_action=True,snapshot_manager_executed=False,postinstall_mount_reached=False,
             postinstall_block_readonly_rejected=True,partition_hashes=hashes,
             inventory_sha256=sha(inventory_path),stdout_sha256=sha(stdout))
-        (ROOT/'logs/ota-engine-entry.json').write_text(json.dumps(report,indent=2)+'\n')
+        (ROOT/'logs'/(prefix+'.json')).write_text(json.dumps(report,indent=2)+'\n')
         print(report['status'],'intact engine entry; return',run.returncode,flush=True)
         return 0 if expected else 1
 

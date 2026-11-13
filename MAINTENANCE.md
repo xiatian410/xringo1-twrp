@@ -32,7 +32,7 @@
 
 ## 验证与交付
 
-当前 stock-ota-trust 交付在设备树中补齐固定原厂 OTA 公钥，原始 OS4.0.4 整包签名验证通过；完整 OTA 尚未贯通。证书来源、负向检查和接续边界见[原始包入口](docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip)，候选哈希只在交付报告维护。此前 0089 媒体目录修正保持不变。
+固定原厂 OTA 公钥及负向验签范围见[原始包入口](docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip)。原始 OS4.0.4 整包已在明确模型中完成分配、payload 与父安装成功的单次接续；真实源布局 / 内核映射 / 挂载 / 槽位 / 启动合并仍未验收，见[整包模型范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success)。候选哈希只在交付报告维护。
 
 1. 明确本批缺陷、改变的生产行为和必要检查范围。
 2. 优先使用真实生产方法；替代设备、HAL、属性、挂载等边界必须写明。能复用的结果不为刷新日期重跑。
@@ -41,6 +41,8 @@
 5. 更新 [验证报告](simulation-report.md)、机器索引 `simulation-report.json` 和相关主题文档。不要把历史结果自动标为当前来源一致。
 
 新增证据、生产修复和文档整理分别说明；测试数量、构建成功及 CI 通过不等于设备功能已修复。
+
+OTA 整包 runner 与退出探针拒绝覆盖既有输出；确有必要重新执行时使用独立 `--run-name`。成功、失败与中断运行均保留输出及预约目录，不自动删除重用。报告绑定运行当时的源码；仅输出管理变更不重跑整包刷新旧哈希。具体命令见[整包模型范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success)。
 
 ## GitHub 同步
 

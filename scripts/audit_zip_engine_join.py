@@ -9,9 +9,12 @@ import argparse
 import json
 from pathlib import Path
 import re
+import sys
 from collections import Counter
 
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/'tests'))
+from ota_run_outputs import output_prefix
 
 
 def sha(path):
@@ -31,10 +34,15 @@ def main():
     parser.add_argument('--model-finish',action='store_true',help='Audit modeled postinstall/mount/HAL/slot scope; not physical installation')
     parser.add_argument('--allocate-snapshots',action='store_true',help='Require actual controller preparation, COW initialization and writer handoff in the same run')
     parser.add_argument('--review-exit-failure',action='store_true',help='Review preserved allocated run with model lifetime crash; requires allocated mode, never marks installation successful')
+    parser.add_argument('--run-name',help='Audit the independently named run, without changing its evidence')
     args=parser.parse_args()
     if args.allocate_snapshots and not args.model_finish:parser.error('--allocate-snapshots requires --model-finish')
     if args.review_exit_failure and not args.allocate_snapshots:parser.error('--review-exit-failure requires --allocate-snapshots')
-    prefix='zip-engine-allocated-finish' if args.allocate_snapshots else 'zip-engine-model-finish' if args.model_finish else 'zip-engine-joined'
+    base='zip-engine-allocated-finish' if args.allocate_snapshots else 'zip-engine-model-finish' if args.model_finish else 'zip-engine-joined'
+    try:
+        prefix=output_prefix(base,args.run_name)
+    except ValueError as error:
+        parser.error(str(error))
     path=ROOT/'logs'/(prefix+'.json')
     r=read(path)
     if args.review_exit_failure:
@@ -93,7 +101,7 @@ def main():
             mapped=Counter(re.findall(r'Mapped COW device for (\w+_b) at /work/cows/\w+_b-cow',err))
             expected_dynamic={n+'_b' for group in inventory['groups'] for n in group['partitions']}
             assert mapped==Counter({n:2 for n in expected_dynamic}),mapped
-            adapter_path=ROOT/'logs'/('zip-engine-allocated-adapter.cpp' if args.review_exit_failure else 'zip-engine-allocated-adapter-current.cpp')
+            adapter_path=ROOT/'logs'/(prefix+'.adapter.cpp') if args.run_name else ROOT/'logs'/('zip-engine-allocated-adapter.cpp' if args.review_exit_failure else 'zip-engine-allocated-adapter-current.cpp')
             assert sha(adapter_path)==engine['adapter_sha256']
             adapter=adapter_path.read_text()
             assert adapter.count('model_prepare_allocated(manifest);')==1
@@ -106,7 +114,7 @@ def main():
                 assert out.count('MODEL released controller during Cleanup')==1
                 assert out.index('MODEL actual FinishedSnapshotWrites') < out.index('MODEL released controller during Cleanup') < out.index('engine_wait_status=0')
                 assert 'Fatal signal' not in err
-            support=ROOT/'logs/zip-engine-allocated-support.inc'
+            support=ROOT/'logs'/(prefix+'.support.inc') if args.run_name else ROOT/'logs/zip-engine-allocated-support.inc'
             assert support.read_text()==(ROOT/'tests/ota_snapshot_initialize.cpp').read_text().split('int main(int argc,char**argv){',1)[0]
         else:
             assert 'MODEL allocation metadata seeded snapshots=10' in out

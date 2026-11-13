@@ -21,7 +21,7 @@ def run_joined(jail, engine):
     import zip_install_chain_test
     model=engine.get('finish_model')
     allocated=bool(model and model.get('actual_allocation'))
-    prefix='zip-engine-allocated-finish' if allocated else 'zip-engine-model-finish' if model else 'zip-engine-joined'
+    prefix=engine['output_prefix']  # Reserved by ota_engine_entry before compilation.
 
     class Joined(Stock):
         def fixture(self, text):

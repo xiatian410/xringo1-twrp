@@ -6,7 +6,7 @@
 
 | 入口 | 使用方式与前提 | 当前限制 |
 | --- | --- | --- |
-| 安装 → ZIP | 选择包并确认；按通用 updater 或公布的 ABI 选择更新器 | 原始 OS4.0.4 整包已在模型内走通验签 / 真实引擎 / 脚本 / 快照完成状态；真实挂载 / 分配 / 槽位 / 启动合并未验收，见[安装范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-model-finish) |
+| 安装 → ZIP | 选择包并确认；按通用 updater 或公布的 ABI 选择更新器 | 原始 OS4.0.4 整包在同次模型运行中通过验签、十份 COW 初始化、全部 payload 操作 / 哈希、脚本与完成状态；真实源布局 / 内核映射 / 挂载 / 槽位 / 启动合并未验收，见[安装范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success) |
 | 安装 → 镜像 | 选择镜像、目标分区与可用槽位后确认 | 已修正目标列表；只显示策略允许的目标，失败可能已产生部分写入 |
 | 清除 → 高级清除 | 逐项选择可用分区并确认 | NV 维护分区不能作为普通 GUI 清除 / 工具目标；解密失败不自动格式化 |
 | 备份 | 选择内容、目标存储与选项；刷新容量用于重新统计 | 新备份有完成标记 / 文件清单；真实断电和内容真实性不由此保证；刷新画面问题未定位 |
@@ -23,9 +23,9 @@
 
 原厂 A/B 完整包在 Recovery 中可能因快照分配失败而转入直接更新。该路径会复用源分区空间，不能把 A/B 标识理解为安装中断后旧系统必然可启动。原控制器在取消旧快照失败时会停止，离线接续结果与限制见[取消与回退](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-preparation)。
 
-原厂 `OS4.0.4.0.XODCNXM` 原始完整包已在明确模型中接通完整签名验证、真实 ARM64 引擎 4933 操作 / 42 分区哈希、原厂 Recovery postinstall 保护分支与真实快照完成状态发布；引擎及父安装器返回成功。真实映射、挂载、槽位与重启合并仍未验收，不能据此保证实机卡刷成功，见[整包模型范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-model-finish)。
+原厂 `OS4.0.4.0.XODCNXM` 原始完整包已在同次明确模型运行中接通完整签名验证、原控制器 / SnapshotManager 分配与初始化十份 COW、真实 ARM64 引擎 4933 操作 / 42 分区哈希、原厂 Recovery postinstall 保护分支与真实快照完成状态发布；引擎及父安装器返回成功。源布局是合成输入，内核映射、挂载、HAL 和槽位有明确替身，重启合并未执行，不能据此保证实机卡刷成功，见[整包模型范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success)。
 
-0090 修复快照创建阶段 COW 初始化失败引发的空指针崩溃，改为报告失败并清理。独立 ARM64 普通文件测试覆盖十份空 COW 初始化及两种失败；不能把这些阶段与此前整包运行拼成一次设备安装验收，见[初始化范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization)。
+0090 修复快照创建阶段 COW 初始化失败引发的空指针崩溃，改为报告失败并清理。独立 ARM64 普通文件测试覆盖十份空 COW 初始化及两种失败，见[初始化范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization)；后续整包模型已接通初始化与 payload，但仍不构成设备安装验收。
 
 ## 状态栏与屏幕
 
