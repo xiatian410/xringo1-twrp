@@ -62,3 +62,24 @@ python3 tests/tool_console_test.py --before
 报告为本地 `logs/tool-console.json` 与 `logs/tool-console-before.json`。目录扫描、console 生产端、字体、flush 和测试调度是显式替身；没有执行完整 GUI 主循环、Android 或 XRING DRM。原生命周期结果保留为历史，不重写其来源。
 
 当前候选为 `recovery-dijun-unified-tool-console.img`，SHA-256 `93a36568316d6b0acba348d63c524db8b424953acfbfae9154d09d9b89d79b90`。清理构建后有 785 项生产来源绑定、六份 profile；与 snapshot-sync 候选相比仅 `libgui2.so`、构建属性与 ramdisk 摘要变化。原容量计算与工具 worker 未改。本轮修复日志渲染工作量，现场问题仍记为未闭环，不宣称实机修复。
+
+<a id="cli-fifo"></a>
+
+## 主循环 CLI 输出握手阻塞（0077）
+
+继续检查真实 `gui2_loop_tick` 时发现独立缺陷：工具终态轮询之前调用 `background->poll()`，后者在读到 CLI 请求后用 `fopen(orsout, "w")` 打开输出 FIFO。请求方未打开读取端或中途退出时，主线程会阻塞在 open，之后不再到达工具状态更新。已有现场材料未证明当时存在 CLI 请求，**不认定它就是刷新现场根因**，也不改变容量计算或 DRM。
+
+0077 使用非阻塞、CLOEXEC 的 FIFO writer。读取端尚未连接时保存单个请求，后续 tick 重试；五秒后丢弃，不执行命令并重建监听。读取端连接后保持非阻塞写入，避免客户端不读导致共享 console 锁或 GUI 卡住。输出满时 stdio 可报 EAGAIN，CLI 镜像日志不保证完整；Recovery 自身日志仍保留。已开始的命令不会因读端消失而强制取消。忙状态和不支持的旧 GUI 命令仍返回原错误。
+
+读取缓冲按实际 read 长度终止，不再读取未初始化字节或强制改写末尾两个字符。固定1024字节客户端保留兼容；一次短写按一次请求处理，本项不实现多客户端或跨read拼包协议。监听重新启动清除未派发请求，不让上次请求在新生命周期执行。
+
+`tests/cli_fifo_test.py/.cpp` 执行原 background backend 完整 listener、poll、实际线程及完成回调，使用私有目录真实 FIFO/open/read/stdio/select，启用ASan/UBSan；DataManager、分区、console镜像接口和命令内容执行为显式替身。12场景涵盖无读端、延迟连接、普通/忙/不支持/短/最大长度命令、读端消失、超时恢复、连续请求、输出满与监听重启。全部通过；旧源码同组七项失败，其中五项为八秒进程期限触发，其余是最大命令被改写及输出未收尾。失败数量不是七个独立缺陷。
+
+```bash
+python3 tests/cli_fifo_test.py
+# 依赖本地旧源码，预期失败：
+python3 tests/cli_fifo_test.py --source logs/cli-fifo-before/twrp_background_backend.cpp --report logs/cli-fifo-before.json
+python3 scripts/audit_cli_fifo_delivery.py
+```
+
+清理构建后候选为 `recovery-dijun-unified-cli-fifo.img`，793生产来源、六profile。相对0076只改变Recovery主程序、构建属性和ramdisk摘要，GUI库、工具worker及容量扫描字节未改，复用相关未变证据。没有执行手机、真实CLI命令、完整GUI/Android主循环或XRING显示；现场页面停留仍未闭环。当前产物哈希见[交付报告](../simulation-report.md)，原历史报告不改写。

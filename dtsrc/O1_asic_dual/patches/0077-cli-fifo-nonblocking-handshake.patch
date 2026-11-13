@@ -1,0 +1,153 @@
+--- a/gui2/backend/twrp_background_backend.cpp
++++ b/gui2/backend/twrp_background_backend.cpp
+@@ -15,6 +15,7 @@
+ #include <mutex>
+ #include <string>
+ #include <thread>
++#include <utility>
+ 
+ #include "data.hpp"
+ #include "openrecoveryscript.hpp"
+@@ -33,6 +34,10 @@
+ FILE* orsout = NULL;
+ std::atomic<bool> command_active{ false };
+ std::thread command_thread;
++std::string pending_command;
++std::chrono::steady_clock::time_point pending_deadline;
++
++void reset_ors_listener();
+ 
+ void setup_ors_command() {
+   ors_read_fd = -1;
+@@ -81,50 +86,69 @@
+   command_active.store(false);
+ }
+ 
++// Opening a FIFO writer without a reader must never stop the GUI thread.
++// Keep one request pending until its reader arrives, then abandon it after a
++// finite handshake window. Do not execute a command whose client disappeared.
++void reset_ors_listener() {
++  pending_command.clear();
++  if (ors_read_fd >= 0) close(ors_read_fd);
++  setup_ors_command();
++}
++
++void dispatch_pending_command() {
++  if (pending_command.empty()) return;
++  if (std::chrono::steady_clock::now() >= pending_deadline) {
++    LOGINFO("CLI output reader did not connect; abandoning request\n");
++    reset_ors_listener();
++    return;
++  }
++  const int output_fd = open(ORS_OUTPUT_FILE, O_WRONLY | O_NONBLOCK | O_CLOEXEC);
++  if (output_fd < 0) {
++    if (errno == ENXIO || errno == EINTR || errno == EAGAIN) return;
++    LOGINFO("Unable to open CLI output: %s\n", strerror(errno));
++    reset_ors_listener();
++    return;
++  }
++  orsout = fdopen(output_fd, "w");
++  if (orsout == nullptr) {
++    close(output_fd);
++    reset_ors_listener();
++    return;
++  }
++  // Preserve nonblocking writes too: a connected client can stop reading.
++  std::string command = std::move(pending_command);
++  pending_command.clear();
++  if (DataManager::GetIntValue("tw_busy") != 0) {
++    fputs("Failed, operation in progress\n", orsout);
++    fclose(orsout);
++    orsout = nullptr;
++    reset_ors_listener();
++  } else if (command == "dumpstrings" || command == "reloadtheme" ||
++             command.starts_with("changepage=")) {
++    fputs("Failed, not supported\n", orsout);
++    fclose(orsout);
++    orsout = nullptr;
++    reset_ors_listener();
++  } else {
++    gui_set_FILE(orsout);
++    OpenRecoveryScript::Call_After_CLI_Command(ors_command_done);
++    if (command_thread.joinable()) command_thread.join();
++    command_active.store(true);
++    command_thread = std::thread(twcmd, std::move(command));
++  }
++}
++
+ void ors_command_read() {
+-  char command[1024];
+-  int read_ret = read(ors_read_fd, &command, sizeof(command));
+-
+-  if (read_ret > 0) {
+-    command[1022] = '\n';
+-    command[1023] = '\0';
+-    LOGINFO("Command '%s' received\n", command);
+-    orsout = fopen(ORS_OUTPUT_FILE, "w");
+-    if (!orsout) {
+-      close(ors_read_fd);
+-      ors_read_fd = -1;
+-      LOGINFO("Unable to fopen %s\n", ORS_OUTPUT_FILE);
+-      unlink(ORS_INPUT_FILE);
+-      unlink(ORS_OUTPUT_FILE);
+-      return;
+-    }
+-    if (DataManager::GetIntValue("tw_busy") != 0) {
+-      fputs("Failed, operation in progress\n", orsout);
+-      LOGINFO("Command cannot be performed, operation in progress.\n");
+-      fclose(orsout);
+-      // Legacy leaves orsout dangling here, which stops the listener for good.
+-      orsout = NULL;
+-      close(ors_read_fd);
+-      setup_ors_command();
+-    } else if ((strlen(command) == 11 && strncmp(command, "dumpstrings", 11) == 0) ||
+-               (strlen(command) == 11 && strncmp(command, "reloadtheme", 11) == 0) ||
+-               (strlen(command) > 11 && strncmp(command, "changepage=", 11) == 0)) {
+-      // These drive the legacy theme, which gui2 does not load.
+-      fputs("Failed, not supported\n", orsout);
+-      fclose(orsout);
+-      orsout = NULL;
+-      close(ors_read_fd);
+-      setup_ors_command();
+-    } else {
+-      // mirror output messages
+-      gui_set_FILE(orsout);
+-      // close orsout and restart listener after command is done
+-      OpenRecoveryScript::Call_After_CLI_Command(ors_command_done);
+-      if (command_thread.joinable()) command_thread.join();
+-      command_active.store(true);
+-      command_thread = std::thread(twcmd, std::string(command));
+-    }
+-  }
++  // The client writes a fixed 1024-byte record. Short writes are also bounded
++  // by the actual read length; never inspect uninitialized stack bytes.
++  char command[1025];
++  const ssize_t count = read(ors_read_fd, command, sizeof(command) - 1);
++  if (count <= 0) return;
++  command[count] = '\0';
++  pending_command.assign(command, strnlen(command, static_cast<size_t>(count)));
++  if (pending_command.empty()) return;
++  pending_deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
++  dispatch_pending_command();
+ }
+ 
+ }  // namespace
+@@ -142,6 +166,7 @@
+     std::lock_guard<std::mutex> lock(ors_mutex);
+     DataManager::SetValue("tw_page_done", 0);
+     if (orsout == nullptr) {
++      pending_command.clear();
+       if (ors_read_fd >= 0) close(ors_read_fd);
+       setup_ors_command();
+     }
+@@ -210,6 +235,10 @@
+   // orsout is non-NULL while a command is still running; a negative fd means the
+   // listener never came up.
+   if (ors_read_fd < 0 || orsout) return;
++  if (!pending_command.empty()) {
++    dispatch_pending_command();
++    return;
++  }
+ 
+   fd_set fdset;
+   FD_ZERO(&fdset);

@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-format-transition.img",
-  "image_sha256": "f0a1ff30d0735eafdc6cc1822351a8cd34d01745b51c767b33fbf808ad1b0ba7",
-  "production_sources": 791,
+  "image_name": "recovery-dijun-unified-cli-fifo.img",
+  "image_sha256": "dcfa299609bd178ac048e8bcc968fb4c4ee17225e8720804e87d7ee7403c4c48",
+  "production_sources": 793,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -805,6 +805,22 @@
       "failures": 0,
       "local_report_sha256": "188b21299b725db17d85b4b897335c4e4f09523da88737b917007ef9615f0300",
       "scope": "Original format/repair call chain executes current-image ARM64 tools on files.\n\nHost C++ Wipe/helpers/manager/changefilesystem/Repair/ExecCmd/WaitForChild run in\nprivate chroot. Exact tool argv pass through QEMU launchers to delivered linker,\nlibraries and ARM64 tools. Device resolution/unmount/block-size ioctl (stat),\nproperties, empty /proc/mounts and metadata/presentation are explicit fixtures; no physical mount,\nfull ARM Recovery, GUI, fscrypt, SELinux labeling or power-loss proof.\n"
+    },
+    {
+      "name": "cli-fifo",
+      "status": "PASS",
+      "cases": 12,
+      "failures": 0,
+      "local_report_sha256": "107cdc72f186faa6e31e1e41b27c2ac230e0aa6448d060197ab3c1681cd6804e",
+      "scope": "Run original background poll/CLI listener against private real FIFOs.\n\nDataManager, partition work, console mirror and CLI execution are explicit\nfixtures. Original listener/thread/callback uses host read/open/stdio/select;\nno Android GUI, device, real CLI command, mounts or physical block access.\n"
+    },
+    {
+      "name": "cli-fifo-before",
+      "status": "FAIL",
+      "cases": 12,
+      "failures": 7,
+      "local_report_sha256": "6616477dfc06c10ebdebdd635589bd1f83db8ca5c4f61fb12ad31aa47abb50e9",
+      "scope": "Run original background poll/CLI listener against private real FIFOs.\n\nDataManager, partition work, console mirror and CLI execution are explicit\nfixtures. Original listener/thread/callback uses host read/open/stdio/select;\nno Android GUI, device, real CLI command, mounts or physical block access.\n"
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",

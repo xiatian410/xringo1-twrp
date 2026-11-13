@@ -6,14 +6,16 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-format-transition.img` |
-| SHA-256 | `f0a1ff30d0735eafdc6cc1822351a8cd34d01745b51c767b33fbf808ad1b0ba7` |
-| 生产来源绑定 | 791 份 |
+| 文件 | `recovery-dijun-unified-cli-fifo.img` |
+| SHA-256 | `dcfa299609bd178ac048e8bcc968fb4c4ee17225e8720804e87d7ee7403c4c48` |
+| 生产来源绑定 | 793 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
 ## 本次候选包含的修正
+
+- **0077**：CLI 输出 FIFO 握手与写入不再阻塞 GUI；读取端缺失时保留请求最多五秒，超时不执行并重建监听；按实际输入长度终止命令，重启监听清除旧请求。12 场景通过、旧七场景失败，清理构建 793 来源 / 六 profile。只有 Recovery 主程序、构建属性与 ramdisk 摘要相对0076改变；GUI库、工具worker、容量计算及profile字节不变。现场刷新根因未证明，见[边界](docs/REFRESH-STUCK-INVESTIGATION.md#cli-fifo)。
 
 - **0076**：格式转换不受 rm-rf 设置覆盖；缺工具拒绝转换而非删除旧文件假成功；按请求别名分派，格式化成功及时更新类型。25 场景通过、旧 10 失败；命令/设备是替身，真实转换接续仍待覆盖。见[范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#文件系统转换分派与状态0076)。
 
@@ -43,7 +45,7 @@
 - **0064**：A/B 更新器使用有效 Error 对象；同步拒绝立即返回错误，不进入无完成回调的循环。
 - 继承此前 XRING O1 加载页、刷入目标、NV 普通界面限制、OTG 发现及安装 / MTP 收尾等修正。
 
-完整范围见 [有限维护交付记录](docs/archive/BOUNDED-MAINTENANCE.md)。本批重新编译 Recovery 主程序；相对 manager-wipe 候选只改变主程序、构建属性与 ramdisk 摘要，GUI / MTP / 更新器 / profile 字节不变。
+完整范围见 [有限维护交付记录](docs/archive/BOUNDED-MAINTENANCE.md)。0077 重新编译 Recovery 主程序；相对 format-transition 候选只改变主程序、构建属性与 ramdisk 摘要，GUI / MTP / 更新器 / profile 字节不变。
 
 ## 本批与继承证据
 

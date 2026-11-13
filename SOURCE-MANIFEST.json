@@ -24,7 +24,7 @@
     "mode": "0o644"
   },
   "FEATURE-USAGE.md": {
-    "sha256": "e714e9686952c553bd7877f30284ef9fe6ef9120e1d8d0eee13d98107d497d75",
+    "sha256": "9499b7151c7713a4444ddd3caf7b35e2280fa1f13a57657533785c0bed82d595",
     "mode": "0o644"
   },
   "FIRMWARE-MAP.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "099a70b51e72c0a46a587c4f21aa840295444122a779d1c47a7239ec7775716d",
+    "sha256": "f11864e2e64f6d118ae1cc05d1f2407ff07df71da61d94c299669bfdafbea169",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -148,7 +148,7 @@
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
-    "sha256": "a7fa163588b21a9f4542142f59ac855aaddfd8b4325c5f220a988a739861581a",
+    "sha256": "040e5296b213a163c2234e6b21532692d9426a8ac9a56ea7f937116ef36fb111",
     "mode": "0o644"
   },
   "docs/RESTORE-SESSION-ADAPTATION.md": {
@@ -176,7 +176,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "9fe7d620ee02ef0923bde8eb16d2d26640da7297666ee7aca5c2539c84a9d55b",
+    "sha256": "6858e546f884cd0ae205ffc6d9d52e24e3430da23bb637113d177354294f1580",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -595,8 +595,12 @@
     "sha256": "da7bb48099287941ebb5b93c61cd088f137a74150fb25a697c0ddc015218c4c5",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0077-cli-fifo-nonblocking-handshake.patch": {
+    "sha256": "ddade63ce1137ac946af73ffc2af952a265f89055b4a62673c42587d19380ef5",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "ad0bf726f0b04e8846d2a52e9e65b0e898f565d8c78c234220d06caa0a6f1111",
+    "sha256": "f8ae9a86214144d23c57a194c992c5829140000bfcc517e58d34fb486d7bd745",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -973,6 +977,10 @@
   },
   "scripts/audit_ce_lifecycle_delivery.py": {
     "sha256": "ccd1415de3972e7a1a6c444ba09da02f9062c40225d429eac960f8b2e3a2849e",
+    "mode": "0o644"
+  },
+  "scripts/audit_cli_fifo_delivery.py": {
+    "sha256": "805cfff5e46097ce549866ff3e431f9a7a6b565712382be71a6a26f08ac5728e",
     "mode": "0o644"
   },
   "scripts/audit_clock_failure_delivery.py": {
@@ -1616,11 +1624,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "40b7aa9d526fffcb45847dea0849d73d58383e80052e3a7a599040b2f67e913c",
+    "sha256": "4354c525a5b907a8a25ba2a966417464ffe3645806ba921ab1c5532135345453",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "7e8ab5f4b44ab8df81c2bb14c65552b7f86fe3e0e69d41db74ed05a010103f78",
+    "sha256": "79aed0d3aab8c9584ad1c4c6e3f7755954cdaa79f04b756ce5bc3cd79a1c21fa",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -1681,6 +1689,14 @@
   },
   "tests/ce_lifecycle_test.py": {
     "sha256": "17528ac453ccc7862313d97cdde5328cda8e1eaaaf104e1f657acf30fb413780",
+    "mode": "0o644"
+  },
+  "tests/cli_fifo_test.cpp": {
+    "sha256": "ce432fdf1de11d90ae3998cd8bae911ebd329c9eb0b145740b17aff6019d83fd",
+    "mode": "0o644"
+  },
+  "tests/cli_fifo_test.py": {
+    "sha256": "96616e30245289a671d4fb825a702c3faafc71abcecb188fba2deb71f5ea062a",
     "mode": "0o644"
   },
   "tests/copylog_test.cpp": {

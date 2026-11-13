@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-format-transition.img",
-  "image_sha256": "f0a1ff30d0735eafdc6cc1822351a8cd34d01745b51c767b33fbf808ad1b0ba7",
-  "image_status": "Clean-built patch0076: requested-filesystem conversion bypasses rm-rf override; missing-tool conversion rejects fallback; dispatch uses requested aliases; successful f2fs/exfat/ntfs updates state.791 sources/six profiles; full adaptation remains open.",
+  "image": "imgs/built/recovery-dijun-unified-cli-fifo.img",
+  "image_sha256": "dcfa299609bd178ac048e8bcc968fb4c4ee17225e8720804e87d7ee7403c4c48",
+  "image_status": "Clean-built patch0077: CLI output FIFO handshake/writes nonblocking, pending request expires after5s and resets on restart; length-bounded command input.793 sources/six profiles; field refresh root cause and full adaptation remain open.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -3131,6 +3131,22 @@
       "evidence": "logs/format-tool-chain.json",
       "evidence_sha256": "188b21299b725db17d85b4b897335c4e4f09523da88737b917007ef9615f0300",
       "scope": "Original format/repair call chain executes current-image ARM64 tools on files.\n\nHost C++ Wipe/helpers/manager/changefilesystem/Repair/ExecCmd/WaitForChild run in\nprivate chroot. Exact tool argv pass through QEMU launchers to delivered linker,\nlibraries and ARM64 tools. Device resolution/unmount/block-size ioctl (stat),\nproperties, empty /proc/mounts and metadata/presentation are explicit fixtures; no physical mount,\nfull ARM Recovery, GUI, fscrypt, SELinux labeling or power-loss proof.\n"
+    },
+    {
+      "name": "cli-fifo-0077",
+      "result": "pass",
+      "count": 12,
+      "evidence": "logs/cli-fifo.json",
+      "evidence_sha256": "107cdc72f186faa6e31e1e41b27c2ac230e0aa6448d060197ab3c1681cd6804e",
+      "scope": "Run original background poll/CLI listener against private real FIFOs.\n\nDataManager, partition work, console mirror and CLI execution are explicit\nfixtures. Original listener/thread/callback uses host read/open/stdio/select;\nno Android GUI, device, real CLI command, mounts or physical block access.\n"
+    },
+    {
+      "name": "cli-fifo-before-0077",
+      "result": "expected-failure",
+      "count": 12,
+      "evidence": "logs/cli-fifo-before.json",
+      "evidence_sha256": "6616477dfc06c10ebdebdd635589bd1f83db8ca5c4f61fb12ad31aa47abb50e9",
+      "scope": "Run original background poll/CLI listener against private real FIFOs.\n\nDataManager, partition work, console mirror and CLI execution are explicit\nfixtures. Original listener/thread/callback uses host read/open/stdio/select;\nno Android GUI, device, real CLI command, mounts or physical block access.\n"
     }
   ],
   "source_review_followups": [
@@ -3446,8 +3462,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/format-transition-delivery.json",
-    "scope": "Patch0076; clean build;791 sources;six profiles;original Wipe/format helpers/manager/backend25 cases, old10 failures. Commands/capacity/unmount/devices/properties/metadata fixtures; not actual mkfs. Reuse unchanged executed methods in media13/manager16.",
+    "evidence": "logs/cli-fifo-delivery.json",
+    "scope": "Patch0077; CLI FIFO handshake/read/output nonblocking; pending timeout5s/restart; twelve original listener cases, old seven failures. Clean build793 sources/six profiles. No complete CLI/GUI or field-refresh root cause proof.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {

@@ -286,6 +286,10 @@
         {
           "file": "0076-filesystem-conversion-dispatch.patch",
           "sha256": "da7bb48099287941ebb5b93c61cd088f137a74150fb25a697c0ddc015218c4c5"
+        },
+        {
+          "file": "0077-cli-fifo-nonblocking-handshake.patch",
+          "sha256": "ddade63ce1137ac946af73ffc2af952a265f89055b4a62673c42587d19380ef5"
         }
       ],
       "result_files": {
@@ -384,7 +388,8 @@
         "gui2/backend/twrp_reboot_backend.cpp": "60d2739b437fce369daca252c4eb7e12c5dae1a3198e2eee127b52ef548431d8",
         "gui2/backend/twrp_wipe_backend.cpp": "0cfc499ccf3e0296bbdc028eedb8e43c5f1b722edbd43a380a1106311c6c0e73",
         "gui2/backend/twrp_tools_backend.cpp": "52dfe873375bf6fb9726337872b9b6b629fd6b81193638b26d683f79401ad3a8",
-        "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a"
+        "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a",
+        "gui2/backend/twrp_background_backend.cpp": "2459e31f131aef5cfd9fe977b55b5611744809ab6e8d954496f1c8872a900bb5"
       }
     },
     "system/sepolicy": {
