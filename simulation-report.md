@@ -15,7 +15,9 @@
 
 ## 后续证据补充
 
-当前镜像未变。原始 ARM64 SnapshotManager 设备解除顺序、部分状态与重试已接续15场景，含原控制器到实际 manager 两场景；mapper / image 状态仍为有状态替身，活跃 snapuserd、内核映射与 FIEMAP / Binder 尚未执行。本批未发现新增生产缺陷、不重编，见[清理接续范围](docs/OTA-OPERATION-COW.md#snapshot-device-cleanup)。
+当前镜像未变。实际 manager → SnapuserdClient 的 socket 接续五项已执行，成功 / 失败 / EOF / 对端关闭 / 截短回执均符合预期；对端仍是协议线程替身，未覆盖实际 daemon、启动握手、无回复期限或合法分片。未发现可据此修正的生产缺陷，不重编，见[通信边界](docs/OTA-OPERATION-COW.md#snapuserd-socket)。
+
+原始 ARM64 SnapshotManager 设备解除顺序、部分状态与重试已接续15场景，含原控制器到实际 manager 两场景；mapper / image 状态仍为有状态替身，活跃 snapuserd、内核映射与 FIEMAP / Binder 尚未执行。本批未发现新增生产缺陷、不重编，见[清理接续范围](docs/OTA-OPERATION-COW.md#snapshot-device-cleanup)。
 
 ## 本次候选包含的修正
 

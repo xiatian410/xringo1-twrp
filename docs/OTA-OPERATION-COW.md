@@ -392,3 +392,28 @@ python3 scripts/audit_snapshot_devices.py
 ```
 
 来源、archive、QEMU、夹具编译参数及当前镜像 linker / 共享库绑定在本地 `logs/ota-snapshot-devices.json`；公开摘要见 `CURRENT-VALIDATION.json`。这里新增的是执行证据，不是功能修复；相关生产输入未变，不重编镜像，不重复完整 payload 或0079控制器等价场景。下一边界是活跃 snapuserd / 内核 mapper / 实际 image 管理与完整安装接续。
+
+<a id="snapuserd-socket"></a>
+
+## SnapshotManager 到实际 snapuserd client 的 socket 接续
+
+前节 userspace 分支未进入 daemon 通知。本节通过上游已有 `SnapshotTest` friend 注入真实 `SnapuserdClient`，提供真实 `socketpair(AF_UNIX, SOCK_STREAM)`，执行原始 `SnapshotManager → UnmapUserspaceSnapshotDevice → WaitForDeviceDelete → Sendmsg / Receivemsg`。对端线程核对精确 `delete,system_b` 字节，再提供成功、明确失败、EOF、关闭对端或截短回复；不是实际 snapuserd 服务进程。
+
+mapper 返回一个明确的 `user` target，删除结果与 image 状态仍是有状态替身。真实 manager 读取 protobuf、查询 target、先删除用户设备，再等待 client 回执。五项均按预期返回：成功后清理 COW / image / base / source；其余四项返回 false，保留三个下层设备与 image。对端关闭使用真实 socket 的失败与 `MSG_NOSIGNAL`，没有替换 Sendmsg / Receivemsg。
+
+失败之后的同 manager 重试也被核对：用户设备在第一次通知前已经删除，因此原始代码会在发现它不存在后跳过 daemon 通知，继续 COW 清理。这是当前行为证据，不保证 daemon 线程已退出；尚未取得实际 daemon 资源泄漏证据，不据此盲目修改重试策略。
+
+### 范围与下一决定
+
+- client 通过已有 test friend 注入；没有执行 Connect / TryConnect、query 握手、属性启动、真实 init namespace 或 daemon 生命周期。
+- 对端线程是真实 socket peer，仍是协议替身。没有真实 kernel mapper、dm-user 节点、snapuserd handlers、FIEMAP / Binder、合并或完整 OTA。
+- `short-response` 发送 `succ` 后关闭，证明截短回复被拒绝；不覆盖合法 `success` 在 SOCK_STREAM 中分段到达。原 client 仅调用一次 recv，后续需结合服务端报文约定决定是否修改，不能把本项升级为任意分片支持。
+- 未发送回复的无限等待没有在本组制造或修复；原 recv 是阻塞调用，Connect 的 timeout 不自动覆盖已连接后的接收。下一步需明确服务端删除等待和调用方期限要求后决定，避免任意设置超时或把外部测试进程期限当作产品期限。
+- 本次没有生产修改、固定补丁或镜像重编。当前候选继续为0079 snapshot-unmap，相关生产来源与镜像哈希未变。共享测试驱动只是新增可选模式，既有模式执行体和生产输入未变，不重跑旧检查。
+
+```bash
+python3 tests/ota_snapshot_finish.py --daemon
+python3 scripts/audit_snapuserd_socket.py
+```
+
+本地报告 `logs/ota-snapuserd-socket.json` 绑定原始 client 源码、头文件、实际执行 archive、QEMU、当前镜像 linker / 共享库及夹具；不是完整 ARM64 Recovery 或实际设备运行证明。公开摘要和队列记录此边界，不把通过数量算成功能完成度。

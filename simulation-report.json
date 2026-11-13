@@ -3243,6 +3243,14 @@
       "evidence": "logs/ota-snapshot-devices.json",
       "evidence_sha256": "0d4628620c01f5cf23ea0b5c8d40f456e3273ea10ad922831215123bf5df6d6e",
       "scope": "Actual ARM64 SnapshotManager UnmapUpdateSnapshot/UnmapAllSnapshots and original controller call. Real locks/state/protobuf/UnmapImageIfExists; device mapper deletes and image mapping state are modeled, other hardware operations denied. Tests cleanup order and retry, NOT real kernel mapping, live snapuserd, FIEMAP/Binder or OTA/merge."
+    },
+    {
+      "name": "actual-SnapshotManager-snapuserd-client-socket",
+      "result": "pass",
+      "count": 5,
+      "evidence": "logs/ota-snapuserd-socket.json",
+      "evidence_sha256": "1d7c70beb39cb18909e008e11402c866ccd9a0c30a140d43c8dce6d43c7ce25d",
+      "scope": "Actual ARM64 SnapshotManager -> SnapuserdClient WaitForDeviceDelete over real socketpair. Peer replies success/fail/EOF/short or is closed. Mapper and image state modeled; client injected via existing test friend, no Connect/property startup/real daemon/kernel mapping. Records partial cleanup and retry after notification failure. Not full OTA."
     }
   ],
   "source_review_followups": [
@@ -4048,6 +4056,22 @@
       "actual_kernel_mapping": false,
       "actual_snapuserd": false,
       "actual_image_manager": false,
+      "full_ota_install": false
+    },
+    "snapuserd_client_socket": {
+      "report": "logs/ota-snapuserd-socket.json",
+      "report_sha256": "1d7c70beb39cb18909e008e11402c866ccd9a0c30a140d43c8dce6d43c7ce25d",
+      "audit": "logs/snapuserd-socket-audit.json",
+      "document": "docs/OTA-OPERATION-COW.md#snapuserd-socket",
+      "cases": 5,
+      "production_change": false,
+      "actual_client": true,
+      "real_socketpair": true,
+      "actual_daemon": false,
+      "actual_kernel_mapping": false,
+      "connect_startup_tested": false,
+      "no_reply_deadline_tested": false,
+      "fragmented_success_tested": false,
       "full_ota_install": false
     }
   },

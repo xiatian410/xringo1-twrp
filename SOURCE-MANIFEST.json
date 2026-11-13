@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "504ee24dcacf17a0c76a3bf1c92718a831e13e28718524a094d8ab2e1af88f99",
+    "sha256": "47dec11adeef1bdf6d90db0c661d85cbf49641855a48dc2bba43320af5fdd0c9",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -116,7 +116,7 @@
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
-    "sha256": "b6d24f489c0224a4bd4a09c475c373fd781e036e008658d4b4572aec94698cc4",
+    "sha256": "7adf84bac988b2c3c406b0633b645c78bbab6329ec07bb1d98648a63238c4218",
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
@@ -168,7 +168,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "dcefc30fafe974fda66079133d9b07dfcaedefa3e0264b509cadab31c46ee37f",
+    "sha256": "2a92f53ac0fc69094de924c8aa2f4c6e82e03fca6596c1419563abd5be3d9762",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1275,6 +1275,10 @@
     "sha256": "e20da905224963ed2ef4fd7f97b1003fe3a9e1f3d229316a8b6248d4dd882503",
     "mode": "0o644"
   },
+  "scripts/audit_snapuserd_socket.py": {
+    "sha256": "59ea4f5a735dc18cf84756c9eb037152eca69a50abe33097bdb215603b0aa152",
+    "mode": "0o644"
+  },
   "scripts/audit_sparse_flash_delivery.py": {
     "sha256": "83338054a3ea20b590a2c7f21b996ffe205f70205ba8ec142663675fcc112990",
     "mode": "0o644"
@@ -1652,11 +1656,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "28032192c9e6683f5591c8cf3192a8f0255447327984b77a1c251b33942b114b",
+    "sha256": "07ec8d0a8157b6646c46b215dd88afce07c2a21787aa3dfb660522fc64be38ad",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "012d671e7d25cba37f96387b949307f62f6b1af563282031ddb98ed540eeb340",
+    "sha256": "75d45fee0b3a035999cc936f658c63a9baf08de2e57cf52db1151c40efcd8440",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2252,7 +2256,7 @@
     "mode": "0o644"
   },
   "tests/ota_snapshot_finish.py": {
-    "sha256": "d578b41e7130a5d2850aa0ea3a3ff69ce3bd41932cba7b71b0be2dcec8e63027",
+    "sha256": "c45d3c39366a464418ce848b2114abaa5024730471c19f0a1ca36d9e92b5f502",
     "mode": "0o644"
   },
   "tests/ota_snapshot_map.cpp": {
@@ -2265,6 +2269,10 @@
   },
   "tests/ota_snapshot_postinstall.cpp": {
     "sha256": "2bd090664a0e649c403dcfc235f6c4f8b94e7988a310b9b4f794e8e0d41701c7",
+    "mode": "0o644"
+  },
+  "tests/ota_snapuserd_socket.cpp": {
+    "sha256": "8a2182f630c45779695f94fb786fa6893a42575a3020b48da96a772958a9cc5d",
     "mode": "0o644"
   },
   "tests/ota_stock_payload.cpp": {
