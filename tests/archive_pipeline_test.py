@@ -37,6 +37,10 @@ CASES += WALK_CASES
 TYPE_CASES = [kind+'-types-'+fault for kind in ['plain','gzip','aes','both','mixed'] for fault in ['nested-unknown','top-unknown','nested-stat-io','nested-stat-missing']]
 TYPE_CASES += [kind+'-types-'+phase+'-stat-'+error for kind in ['aes','both','mixed'] for phase in ['top-first','top-second'] for error in ['io','missing']]
 CASES += TYPE_CASES
+ROOT_CASES = [kind+'-root'+suffix for kind in ['plain','gzip','aes','both','mixed','mixed-gzip'] for suffix in ['', '-split']]
+ROOT_CASES += [kind+'-root-empty' for kind in ['plain','gzip','aes','both']]
+ROOT_CASES += [kind+'-root-'+fault for kind in ['plain','gzip','aes','both'] for fault in ['read-error','write-error']]
+CASES += ROOT_CASES
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source',type=Path,default=SRC)

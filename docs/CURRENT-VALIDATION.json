@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-size-scan-errors.img",
-  "image_sha256": "1f12a87d2aea0aabd6c8341d51ca6c63c81470c2526bd2b9706a31c14449d33e",
-  "production_sources": 846,
+  "image_name": "recovery-dijun-unified-backup-root.img",
+  "image_sha256": "0bf6a9349d7b632d3bdd83d62ae5d56c16f2e10ffd25f86ab2b596c8488a6157",
+  "production_sources": 847,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2189,6 +2189,22 @@
       "failures": 0,
       "local_report_sha256": "065427d233a7690d331d24e97a01cb591f7bdf6da1593771eabbaecb2e3d5e72",
       "scope": "Patch0117 reports complete status for exclusion/size walks, rejects partial results on open/lstat/readdir/closedir/cancellation/overflow, treats missing optional exclusion roots as zero, and clears errno per readdir. Async data scan retains provisional estimate on failure; synchronous data/secure size fails; encrypted planning and final backup summary propagate failure. Host ASan/UBSan walks16/regression19, consumers14, session5, codec18, OTG15 pass. Same-source negative controls: old walks12/16 and consumers11/14 fail; old codec1/4 fails (other read/mixed errors already rejected downstream). Mount/statfs/commands/GUI/crypto providers are fixtures; no real DRM/fscrypt/device, allocated-block estimate, full source consistency or powerloss proof."
+    },
+    {
+      "name": "archive-root-current",
+      "status": "PASS",
+      "cases": 39,
+      "failures": 0,
+      "local_report_sha256": "425e8166916b3765ca9d6eb776e88c443c3df5a77c84edd9edb633be73b37ddc",
+      "scope": "Patch0118 archives the selected mount root once, including empty trees; single-volume root uses dot, split/encrypted roots retain original absolute path convention. Mixed regular stream owns root before encrypted workers. Existing libtar metadata/error handling and post-worker directory-time finalization preserve mode/uid/gid/mtime/user xattrs. Host whole tar/libtar/pigz/OAES ASan/UBSan39 pass (root24 + controls15), same-harness old10/10 fail. UI/progress/fscrypt/security providers are fixtures; no real mounts/root fscrypt policy installation/ACL/privileged namespaces/full manager/GUI/source concurrency/powerloss proof. Historical full OTA evidence reused, no rerun."
+    },
+    {
+      "name": "archive-root-negative-final",
+      "status": "FAIL",
+      "cases": 10,
+      "failures": 10,
+      "local_report_sha256": "151e472df5c086b2d09628141106ca5fded1e2fa6e8f746b6ba3a26acaa69a94",
+      "scope": "Patch0118 archives the selected mount root once, including empty trees; single-volume root uses dot, split/encrypted roots retain original absolute path convention. Mixed regular stream owns root before encrypted workers. Existing libtar metadata/error handling and post-worker directory-time finalization preserve mode/uid/gid/mtime/user xattrs. Host whole tar/libtar/pigz/OAES ASan/UBSan39 pass (root24 + controls15), same-harness old10/10 fail. UI/progress/fscrypt/security providers are fixtures; no real mounts/root fscrypt policy installation/ACL/privileged namespaces/full manager/GUI/source concurrency/powerloss proof. Historical full OTA evidence reused, no rerun."
     }
   ],
   "refresh_stuck_investigation": {

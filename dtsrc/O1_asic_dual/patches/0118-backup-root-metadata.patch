@@ -1,0 +1,53 @@
+--- a/twrpTar.cpp
++++ b/twrpTar.cpp
+@@ -233,6 +233,15 @@
+ 			LOGINFO("   Core Count      : %u\n", core_count);
+ 			Archive_Current_Size = 0;
+ 
++			// Archive the mount root once, including empty backups. Mixed
++			// backups restore the regular stream before encrypted workers.
++			TarItem.fn = tardir;
++			TarItem.thread_id = 0;
++			if (userdata_encryption)
++				RegularList.insert(RegularList.begin(), TarItem);
++			else
++				EncryptList.push_back(TarItem);
++
+ 			d = opendir(tardir.c_str());
+ 			if (d == nullptr) {
+ 				gui2_console::log_error("error_opening_strerr", tardir, strerror(errno));
+@@ -367,6 +376,7 @@
+ 
+ 			if (userdata_encryption) {
+ 				// Create a backup of unencrypted data
++				reg.setdir(tardir);
+ 				reg.setfn(tarfn);
+ 				reg.ItemList = &RegularList;
+ 				reg.thread_id = 0;
+@@ -469,6 +479,7 @@
+ 			int ret;
+ 
+ 			// Generate list of files to back up
++			FileList.push_back({tardir, 0});
+ 			ret = Generate_TarList(tardir, &FileList, &target_size, &thread_id);
+ 			if (ret < 0) {
+ 				LOGINFO("Error in Generate_TarList!\n");
+@@ -477,6 +488,7 @@
+ 			}
+ 			file_count = (unsigned long long)(ret);
+ 			// Create a backup
++			reg.setdir(tardir);
+ 			reg.setfn(tarfn);
+ 			reg.ItemList = &FileList;
+ 			reg.thread_id = 0;
+@@ -1407,7 +1419,9 @@
+ 		if (tar_append_file(t, charTarFile, NULL) == -1)
+ 			return -1;
+ 	} else {
+-		string temp = Strip_Root_Dir(fn);
++		// A single-volume archive is relative to the selected restore root.
++		// Stripping /data itself would produce "data", a child directory.
++		string temp = fn == tardir ? "." : Strip_Root_Dir(fn);
+ 		char* charTarPath = (char*) temp.c_str();
+ 		if (tar_append_file(t, charTarFile, charTarPath) == -1)
+ 			return -1;

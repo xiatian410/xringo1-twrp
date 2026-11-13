@@ -56,7 +56,7 @@
     "mode": "0o644"
   },
   "docs/BACKUP-SESSION-ADAPTATION.md": {
-    "sha256": "9cdff7d4a6148f30e6350640fa34724d79872e34dbe76a8023acd8c97464d44e",
+    "sha256": "112501b55682f7f0e387e1987afd130f0776440c9c41dbab49137c8d91c27163",
     "mode": "0o644"
   },
   "docs/BUILDING.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "72c5babdaf5d28fe8e75dc95c749c2f2dd1be01c950ae406f6188fb9761b439e",
+    "sha256": "9c9046694591822e82f4333374665ac0bae19805ed3286b454a631cdc22e3b77",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "fe9ad525eff898341e434ce3bf9287ae189cd3638562a50f474d886ce1544f41",
+    "sha256": "62eeb53ef85ce95f135d5b4bb95765b14670300db8a8a8c2eadbb6a10b8bbed7",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -743,8 +743,12 @@
     "sha256": "87c47fe2ebb7b735decb7d57f868304118bedfba79908a46bcca0b004d0d7ece",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0118-backup-root-metadata.patch": {
+    "sha256": "bf02d9de32dd3a30d295b15256788e03f6e18562bc37406ac310587085b4cca1",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "49cd0a2206af27ea756a332398d3779720301679fb8707f0a0eef101f0a85a18",
+    "sha256": "04eecdd1047e7c36c5ffbd0b00984e014e53556c615335825a1550582e43e916",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -1149,6 +1153,10 @@
   },
   "scripts/audit_backup_manage_delivery.py": {
     "sha256": "158a06cfb2b1dbd85e6a28198341f82fc27113c0d8f2dc0e43cbcef2a5bc0e4b",
+    "mode": "0o644"
+  },
+  "scripts/audit_backup_root.py": {
+    "sha256": "38f52940aa77d52dbc18f39957a1a2ca398e36138266b26b1ec5c5a3c335cb2e",
     "mode": "0o644"
   },
   "scripts/audit_backup_user_policy.py": {
@@ -1924,11 +1932,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "ae49d59e5e2fc7662a14e96e0f4105e7e692066b6c4488dab555aa9c44ee4a75",
+    "sha256": "005dedc3496f49b5351d9a47fe37d54657e63ba4feee18694e71708fb58e0850",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "a1cc8c71884235863380fa3f98583aa078222c6ff0fe7abee615746443f5ef0b",
+    "sha256": "4f440fb60f21cd17fd107ac34630ac95b5de82bee9d52cf4eee8d39faca0fb7f",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -1944,11 +1952,11 @@
     "mode": "0o644"
   },
   "tests/archive_pipeline_test.cpp": {
-    "sha256": "b021c37ae383da5cb4fcd2fb9fe6554e2778ad22e869a5c176821bd334c7bbf4",
+    "sha256": "a00393132325e353c8f4e85d6e3e16c621dc044ce14d1b4290d4fe4413b7951e",
     "mode": "0o644"
   },
   "tests/archive_pipeline_test.py": {
-    "sha256": "40c8b65723c9f8bbb90257505765cb97105686af6f34ae1df3b70cff4db5c376",
+    "sha256": "20dc1ee1974dd774eef4acf64da93b957c0899b4fd986ae43373738e39354af8",
     "mode": "0o644"
   },
   "tests/archive_restore_test.c": {

@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-size-scan-errors.img` |
-| SHA-256 | `1f12a87d2aea0aabd6c8341d51ca6c63c81470c2526bd2b9706a31c14449d33e` |
-| 生产来源绑定 | 846 份 |
+| 文件 | `recovery-dijun-unified-backup-root.img` |
+| SHA-256 | `0bf6a9349d7b632d3bdd83d62ae5d56c16f2e10ffd25f86ab2b596c8488a6157` |
+| 生产来源绑定 | 847 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：容量扫描错误不再发布为完整结果
+## 本批生产修正：备份根目录元数据
+
+0118补齐此前未归档的挂载根，空目录亦保留权限、属主、时间与user扩展属性。根条目只进入一个流；跨分卷和加密线程完成后沿用目录时间收尾，读取/写入属性失败传回父进程。根元数据24项及相关控制15项通过，同夹具旧10/10失败。清理构建绑定847来源及六profile，交付核对见`python3 scripts/audit_backup_root.py`。
+
+原始tar/libtar/pigz/OAES及私有普通文件在ASan/UBSan下执行；UI/进度/fscrypt/安全提供者为替身。真实根fscrypt策略、特权属性/ACL、完整manager/GUI及断电未验证。详见[根元数据](docs/BACKUP-SESSION-ADAPTATION.md#root-metadata)。历史完整OTA结果复用，没有重跑整包。
+
+## 沿用的容量扫描错误传播
 
 0117为递归容量扫描增加完成状态，拒绝目录打开/读取/关闭、属性查询和取消后的部分结果；不存在的可选排除根仍正常计零。后台失败保留临时估算值；同步Data/secure扫描返回失败，加密线程规划与最终备份容量统计也传播失败，不发布完成摘要。
 

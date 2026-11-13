@@ -25,6 +25,7 @@
 #include <linux/xattr.h>
 #include <linux/capability.h>
 #include <unistd.h>
+#include <utime.h>
 #include <zlib.h>
 #include <android-base/file.h>
 #include <android-base/unique_fd.h>
@@ -187,10 +188,15 @@ extern "C" int __wrap_futimens(int fd,const struct timespec times[2]){
  if(directory_fault=="error"){errno=EIO;return -1;}
  return __real_futimens(fd,times);
 }
+static bool root_metadata=false;
+static string root_fault;
 static bool application_xattrs=false;
 static string application_xattr_fault;
 extern "C" ssize_t __real_llistxattr(const char*,char*,size_t);
 extern "C" ssize_t __wrap_llistxattr(const char* path,char* names,size_t size){
+ if(root_metadata&&root_fault=="read-error"&&fs::path(path).lexically_normal()=="/src"){
+  metadata_call("root-read-error\n");errno=EIO;return -1;
+ }
  if(application_xattrs&&application_xattr_fault=="read-error"&&string(path)=="/src/dir/file0"){
   metadata_call("application-xattr-read-error\n");errno=EACCES;return -1;
  }
@@ -198,6 +204,11 @@ extern "C" ssize_t __wrap_llistxattr(const char* path,char* names,size_t size){
 }
 extern "C" int __real_lsetxattr(const char*,const char*,const void*,size_t,int);
 extern "C" int __wrap_lsetxattr(const char* path,const char* name,const void* data,size_t size,int flags){
+ if(root_metadata&&!strcmp(name,"user.root_fixture")){
+  CHECK(fs::path(path).lexically_normal()=="/src/" || fs::path(path).lexically_normal()=="/src");
+  metadata_call("root-write\n");
+  if(root_fault=="write-error"){errno=ENOSPC;return -1;}
+ }
  if(application_xattrs&&string(name)=="user.fixture_blob"&&application_xattr_fault=="write-error"){
   metadata_call("application-xattr-error\n");errno=ENOSPC;return -1;
  }
@@ -354,6 +365,7 @@ int main(int argc,char** argv){
   CHECK(restore.extractTarFork()!=0);CHECK(read_file("/outside/keep")=="DO NOT MODIFY");
   puts("PASS codec/volume selected-root rejection reaches parent; outside sentinel unchanged");return 0;
  }
+ root_metadata=scenario.find("-root")!=string::npos;
  application_xattrs=scenario.find("-xattr")!=string::npos;
  directory_fixture=scenario.find("-dirtime")!=string::npos;
  bool compressed=scenario.find("gzip")!=string::npos||scenario.starts_with("both");
@@ -415,6 +427,12 @@ int main(int argc,char** argv){
  if(no_codec)fs::remove("/bin/pigz");
  if(scenario=="aes-random-missing")fs::remove("/dev/urandom");
  if(scenario=="both-random-short")fs::resize_file("/dev/urandom",7);
+ if(root_metadata){
+  CHECK(chmod("/src",0710)==0&&chown("/src",1234,2345)==0);
+  CHECK(__real_lsetxattr("/src","user.root_fixture","root-metadata",13,0)==0);
+  struct utimbuf times{root_time,root_time};CHECK(utime("/src",&times)==0);
+  if(scenario.ends_with("-read-error"))root_fault="read-error";
+ }
  TWExclude exclude;uint64_t size=missing?12:exclude.Get_Folder_Size("/src");
  ProgressTracking progress(size);PartitionSettings settings;settings.progress=&progress;
  twrpTar tar;tar.setdir("/src");tar.setfn(archive);tar.setpassword("fixture-password");tar.setsize(size);
@@ -426,6 +444,11 @@ int main(int argc,char** argv){
  if(auto at=scenario.find("-walk-");at!=string::npos){walk_fault=scenario.substr(at+6);walk_encrypted=encrypted;walk_mixed=mixed;}
  if(auto at=scenario.find("-types-");at!=string::npos){type_fault=scenario.substr(at+7);walk_encrypted=encrypted;walk_mixed=mixed;exclude.add_absolute_dir("/src/excluded");}
  BackupProcess process;int result=tar.createTarFork(&process);
+ if(root_metadata&&root_fault=="read-error"){
+  CHECK(result!=0&&!fs::exists("/backup/data.info"));
+  CHECK(read_file("/backup/security-calls").find("root-read-error")!=string::npos);
+  puts("PASS root metadata read error reaches backup parent");return 0;
+ }
  if(!type_fault.empty()){
   CHECK(fs::exists("/backup/walk-close")&&fs::file_size("/backup/walk-open")==fs::file_size("/backup/walk-close"));
   if(type_fault.find("stat-")!=string::npos){
@@ -488,7 +511,19 @@ int main(int argc,char** argv){
  }
  if(security_fixture)security_fault=scenario.substr(scenario.find("-security-")+10);
  if(application_xattrs&&scenario.ends_with("-write-error"))application_xattr_fault="write-error";
+ if(root_metadata&&scenario.ends_with("-write-error"))root_fault="write-error";
  result=restore.extractTarFork();
+ if(root_metadata){
+  if(root_fault=="write-error"){
+   CHECK(result!=0&&read_file("/backup/security-calls").find("root-write")!=string::npos);
+   puts("PASS root metadata write error reaches restore parent");return 0;
+  }
+  CHECK(result==0);struct stat st{};CHECK(stat("/src",&st)==0);
+  CHECK((st.st_mode&07777)==0710&&st.st_uid==1234&&st.st_gid==2345&&st.st_mtime==root_time);
+  char value[32]{};CHECK(lgetxattr("/src","user.root_fixture",value,sizeof value)==13&&!memcmp(value,"root-metadata",13));
+  CHECK(read_file("/backup/security-calls")=="root-write\n");
+  puts("PASS root mode owner time xattr restored once after all volumes/workers");
+ }
  if(application_xattrs){
   if(!application_xattr_fault.empty()){
    CHECK(result!=0);CHECK(read_file("/backup/security-calls").find("application-xattr-error")!=string::npos);
@@ -523,7 +558,8 @@ int main(int argc,char** argv){
   CHECK(stat("/src/dir/nested",&nested)==0&&nested.st_mtime==child_time);
   CHECK(dir.st_mtime==child_time);
   if(mixed){struct stat app{};CHECK(stat("/src/app",&app)==0&&app.st_mtime==child_time);}
-  printf("PASS archived directory times after all workers/codecs volumes=%zu root_unarchived=%ld child=%ld\n",archives.size(),root.st_mtime,dir.st_mtime);
+  CHECK(root.st_mtime==root_time);
+  printf("PASS archived directory times after all workers/codecs volumes=%zu root=%ld child=%ld\n",archives.size(),root.st_mtime,dir.st_mtime);
  }
  if(security_fixture){
   const string calls=read_file("/backup/security-calls");
