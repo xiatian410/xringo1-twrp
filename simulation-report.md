@@ -6,9 +6,9 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-snapuserd-eof.img` |
-| SHA-256 | `9d71ecc3bddda541b652e98d9dfd8220647d0aa94c32488ae09040085d19a210` |
-| 生产来源绑定 | 798 份 |
+| 文件 | `recovery-dijun-unified-mtp-staging-retry.img` |
+| SHA-256 | `7924a46062a8f6d806cdb28ad62baccb376dcdf298c818601bca51784e2c2d29` |
+| 生产来源绑定 | 799 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
@@ -23,7 +23,11 @@ scratch保存后，在目标写入前/一块后/ordered块全写后及header提�
 
 实际 client Connect/query、server、SnapshotHandlerManager、ReadWorker 与 replace/zero MergeWorker 已接续八场景。真实COW压缩数据/零块读取、64 KiB合并内容与未改尾部逐字节核对，写入/同步故障均保持失败；容量查询和dm-user端点为明确替身。没有发现新增生产缺陷，不重编0080镜像。该检查点未包含COPY/XOR/RA；后续有序合并见上文，进程退出后的局部续合并见上文，硬件断电、内核映射和完整OTA仍待完成，见[范围](docs/OTA-OPERATION-COW.md#snapuserd-handler)。
 
-## 0080交付时的定向验证
+## 0081 交付时的定向验证
+
+上传失败且临时文件无法删除时，当前 handle 不再被遗留路径占用。覆盖 / 新建各连续两次失败后可成功上传，旧目标保持、两份遗留内容及用户同前缀文件均核对；116 项对象与 48 项移动 / 复制通过，旧覆盖对照失败、新建对照通过。清理构建相对 0080 仅改变 `libtwrpmtp-ffs.so`、构建属性和 ramdisk 摘要，六份 profile 保留；未变结果按原范围复用。交付审计 `logs/mtp-staging-retry-delivery.json` 通过。不是跨重启清理或 USB / Windows 验收，详见[范围](docs/MTP-ATOMIC-UPLOAD.md#staging-retry)。
+
+## 0080 交付时的定向验证（历史）
 
 实际 ARM64 snapuserd 服务端通过公开 Start / Run 与私有 Unix socket 执行八项检查。旧源码在三种客户端半关闭情形下 SIGSEGV，0080修正后八项通过；第二客户端仍可查询并停止服务。替换的只有 daemon main，没有 snapshot handlers、内核映射或完整 OTA。见[故障与范围](docs/OTA-OPERATION-COW.md#snapuserd-eof)。
 
@@ -31,6 +35,7 @@ scratch保存后，在目标写入前/一块后/ordered块全写后及header提�
 
 ## 本次候选包含的修正
 
+- **0081**：分离当前传输 handle 与遗留临时路径，修正删除失败后无法再次覆盖同对象；保留精确路径隐藏，不按前缀删除文件。
 - **0080**：recv EOF 不再依赖 POLLHUP，解析器拒绝空命令，避免半关闭连接使服务端访问空 vector 崩溃。实际 ARM64 server八项 / 旧三项 SIGSEGV；清理构建798来源 / 六profile，交付核对通过。
 
 - **0079**：解除映射结果汇总到控制器与校验器，失败阻止重映射及成功上报；空集合成功，metadata 不可用不调用 snapshot，原哈希错误保留。校验器9 / 控制器8通过，旧2 / 6失败；取消10 / postinstall6必要回归通过。清理构建796来源 / 六profile；仅更新器二进制变化，实际映射及完整安装仍未覆盖。见[范围](docs/OTA-OPERATION-COW.md#snapshot-unmap)。

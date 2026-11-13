@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <set>
+#include <map>
 #include <thread>
 #include <atomic>
 #include <fcntl.h>
@@ -104,7 +105,43 @@ int main(int argc,char** argv){
  auto session=make_unique<Session>();auto& s=*session;
  auto* one=s.add(0x10001,"/one");s.add(0x20001,"/two");s.start();s.open();
  auto a=find(s.db,0x10001,"a.txt"),dir=find(s.db,0x10001,"dir");REQUIRE(a&&dir);
- if(test.starts_with("media-format-")){
+ if(test=="staging-cleanup-retry"||test=="staging-cleanup-new"){
+  const bool replacing=test=="staging-cleanup-retry";
+  const string name=replacing?"a.txt":"new.txt",path="/one/"+name;
+  const string user=".mtp-upload-user-owned";
+  writefile("/one/"+user,"user data");
+  REQUIRE(until([&]{return find(s.db,0x10001,user)!=0;}));
+  map<string,string> leftovers;
+  for(int round=0;round<2;++round){
+   auto data=info(name,3);
+   REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+   write_fault=3;fail_unlink=true;
+   Bytes content(3,'N'+round);
+   REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&content).code!=MTP_RESPONSE_OK);
+   fail_unlink=false;write_fault=0;
+   REQUIRE(replacing?readfile(path)=="alpha":!fs::exists(path));
+   for(const auto& e:fs::directory_iterator("/one"))
+    if(e.path().filename().string().starts_with(".mtp-upload-")&&e.path().filename()!=user)
+     leftovers.try_emplace(e.path(),readfile(e.path()));
+   REQUIRE(leftovers.size()==static_cast<size_t>(round+1));
+   for(const auto&[p,bytes]:leftovers){
+    REQUIRE(bytes.size()==3&&readfile(p)==bytes);
+    REQUIRE(find(s.db,0x10001,fs::path(p).filename())==0);
+   }
+  }
+  auto data=info(name,3);
+  REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  Bytes retry{'n','e','w'};
+  REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&retry).code==MTP_RESPONSE_OK);
+  REQUIRE(readfile(path)=="new");
+  REQUIRE(replacing?find(s.db,0x10001,name)==a:find(s.db,0x10001,name)!=0);
+  for(const auto&[p,bytes]:leftovers){
+   REQUIRE(readfile(p)==bytes);
+   REQUIRE(find(s.db,0x10001,fs::path(p).filename())==0);
+  }
+  REQUIRE(readfile("/one/"+user)=="user data"&&find(s.db,0x10001,user)!=0);
+  cout<<"retry_after_two_cleanup_failures=1 hidden_orphans=2 user_prefix_visible=1"<<endl;
+ }else if(test.starts_with("media-format-")){
   const vector<pair<string,uint16_t>> samples={
    {"note.txt",MTP_FORMAT_TEXT},{"index.HTML",MTP_FORMAT_HTML},{"index.htm",MTP_FORMAT_HTML},
    {"sound.WAV",MTP_FORMAT_WAV},{"song.mp3",MTP_FORMAT_MP3},{"movie.mpeg",MTP_FORMAT_MPEG},{"clip.mpg",MTP_FORMAT_MPEG},

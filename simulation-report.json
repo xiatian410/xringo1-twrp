@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-snapuserd-eof.img",
-  "image_sha256": "9d71ecc3bddda541b652e98d9dfd8220647d0aa94c32488ae09040085d19a210",
-  "image_status": "Clean installclean + make -j$(nproc) build; patch0080 prevents snapuserd EOF/half-close parser crash.798 production sources/six profiles; full goal in progress.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-staging-retry.img",
+  "image_sha256": "7924a46062a8f6d806cdb28ad62baccb376dcdf298c818601bca51784e2c2d29",
+  "image_status": "Clean installclean + make -j$(nproc) build; patch0081 permits upload retry after failed staging unlink.799 production sources/six profiles; full goal in progress.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -3291,6 +3291,30 @@
       "evidence": "logs/refresh-loop.json",
       "evidence_sha256": "94ea67b0e79ed69d052ebcddda511734b969e53b5adb572b52d5cad9de3fbe9c",
       "scope": "Original gui2_loop_tick and app/gui2_loop.cpp, tools worker/status adapter, LVGL progress and page host. Normal completion, precompleted worker and controlled 220ms submit wait; wait halts GUI ticks despite worker DONE, release updates next tick. Scan, device services, input/perf, console/background polling, route composition and display submission are explicit fixtures. Not real DRM, full Android or field root-cause proof; no production fix."
+    },
+    {
+      "name": "MTP-staging-retry-objects",
+      "result": "pass",
+      "count": 116,
+      "evidence": "logs/mtp-staging-retry-objects.json",
+      "evidence_sha256": "54e542137661d88b4811eff27609c5519a94347d1c931480f6dba901217c0531",
+      "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles."
+    },
+    {
+      "name": "MTP-staging-retry-negative",
+      "result": "expected-failure",
+      "count": 2,
+      "evidence": "logs/mtp-staging-retry-negative.json",
+      "evidence_sha256": "b0975d0859f83f7151caa4878ccfd5205c78b36d63dc5444b51b88a6d826d55a",
+      "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles."
+    },
+    {
+      "name": "MTP-staging-retry-transfers",
+      "result": "pass",
+      "count": 48,
+      "evidence": "logs/mtp-staging-retry-transfers.json",
+      "evidence_sha256": "18dcc1e8ab5f365d2194c5a3604bd67d8585592a80705f66f1220f8c6e6cda99",
+      "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles."
     }
   ],
   "source_review_followups": [
@@ -3606,8 +3630,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/snapuserd-eof-delivery.json",
-    "scope": "Patch0080: real ARM64 server Start/Run over private Unix sockets. Half-close recv EOF closes client regardless of POLLHUP; empty parser guarded. Eight pass; old three SIGSEGV. Clean build798 sources/six profiles, only snapuserd binary changed. No handlers/kernel mapper/full OTA.",
+    "evidence": "logs/mtp-staging-retry-delivery.json",
+    "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -4335,5 +4359,14 @@
     "evidence": "logs/progress-console.json",
     "scope": "Original pollers/shared window and present/reset paths with host LVGL; no full business backend/page routing/DRM.",
     "hardware_testing": false
+  },
+  "mtp_staging_retry": {
+    "patch": "0081-mtp-staging-retry.patch",
+    "objects": 116,
+    "old_failures": 1,
+    "negative_cases": 2,
+    "transfers": 48,
+    "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles.",
+    "limits": "Orphans remain hidden by exact path for storage lifetime; no deletion or ownership persistence across restart."
   }
 }

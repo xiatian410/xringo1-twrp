@@ -56,6 +56,24 @@ python3 tests/mtp_transfers_test.py --report logs/mtp-directory-transfers.json
 python3 scripts/audit_mtp_directory_delivery.py
 ```
 
+<a id="staging-retry"></a>
+
+## 临时文件删除失败后的重试（0081）
+
+旧实现将临时路径按对象 handle 登记。上传失败且 `unlink` 失败时，为避免 observer 暴露临时文件，会保留这条登记。但 `CreateSendObjectFile` 拒绝已有登记的 handle，因此再次覆盖同一已有对象永远无法创建新的临时文件，直到 storage 重建。新建文件失败后节点消失、再次上传取得新 handle，故同样的故障不一定触发此问题。
+
+0081 将结束传输的精确路径移入独立集合，释放 handle 的当前传输登记。ReadDir、inotify 和 reconciliation 同时排除当前临时路径及该集合中的精确路径。重试使用新的唯一临时文件；失败期间已有完整目标不变。**本修正不删除遗留文件、不持久化其归属，不按 `.mtp-upload-*` 前缀隐藏或清除用户文件。** 外部替换同一已登记路径及跨重启识别仍未解决。
+
+`tests/mtp_objects_test.py` 新增两个场景：覆盖与新建均连续注入两次文件同步失败及 unlink 失败，再成功上传。检查失败目标保持、两份遗留内容不变且隐藏、最终内容、已有 handle 保持，以及用户自建同前缀文件可见且不变。旧实现覆盖场景在第二次失败时无法创建新的临时文件而失败，新建对照通过；修正后两项通过。对象链路共 116 项、移动 / 复制 48 项通过，使用实际 server/database/storage、普通文件、inotify、线程与 ASan/UBSan；USB transport 和属性为替身。
+
+```bash
+python3 tests/mtp_objects_test.py --report logs/mtp-staging-retry-objects.json
+python3 tests/mtp_transfers_test.py --report logs/mtp-staging-retry-transfers.json
+python3 scripts/audit_mtp_staging_retry.py
+```
+
+旧实现对照保存在本地 `logs/mtp-staging-retry-negative.json`，没有改写历史报告。最终镜像先 `installclean`，再 `make -j$(nproc)`，799 份来源、六份 profile。相对 0080 仅 MTP 库、构建属性和 ramdisk 摘要变化；未变的选择与模块证据按原范围复用，不重新运行震动或其他无关套件。当前镜像和 SHA-256 见[交付报告](../simulation-report.md)。未执行 ARM64 MTP、真实 USB / Windows 或设备重启清理。
+
 ## 验证边界与未完成项
 
 上述数量对应各次补丁的输入与源码，不表示重跑后仍应得到同一数量。旧实现对照及定向交付审计还依赖本地备份、镜像和历史报告；公开 checkout 不具备全部依赖。

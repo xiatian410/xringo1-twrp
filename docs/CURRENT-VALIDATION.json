@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-snapuserd-eof.img",
-  "image_sha256": "9d71ecc3bddda541b652e98d9dfd8220647d0aa94c32488ae09040085d19a210",
-  "production_sources": 798,
+  "image_name": "recovery-dijun-unified-mtp-staging-retry.img",
+  "image_sha256": "7924a46062a8f6d806cdb28ad62baccb376dcdf298c818601bca51784e2c2d29",
+  "production_sources": 799,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -982,12 +982,36 @@
       "failures": 0,
       "local_report_sha256": "94ea67b0e79ed69d052ebcddda511734b969e53b5adb572b52d5cad9de3fbe9c",
       "scope": "Original gui2_loop_tick and app/gui2_loop.cpp, tools worker/status adapter, LVGL progress and page host. Normal completion, precompleted worker and controlled 220ms submit wait; wait halts GUI ticks despite worker DONE, release updates next tick. Scan, device services, input/perf, console/background polling, route composition and display submission are explicit fixtures. Not real DRM, full Android or field root-cause proof; no production fix."
+    },
+    {
+      "name": "MTP-staging-retry-objects",
+      "status": "PASS",
+      "cases": 116,
+      "failures": 0,
+      "local_report_sha256": "54e542137661d88b4811eff27609c5519a94347d1c931480f6dba901217c0531",
+      "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles."
+    },
+    {
+      "name": "MTP-staging-retry-negative",
+      "status": "EXPECTED_FAILURE",
+      "cases": 2,
+      "failures": 1,
+      "local_report_sha256": "b0975d0859f83f7151caa4878ccfd5205c78b36d63dc5444b51b88a6d826d55a",
+      "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles."
+    },
+    {
+      "name": "MTP-staging-retry-transfers",
+      "status": "PASS",
+      "cases": 48,
+      "failures": 0,
+      "local_report_sha256": "18dcc1e8ab5f365d2194c5a3604bd67d8585592a80705f66f1220f8c6e6cda99",
+      "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
   "current_batch_groups": [
-    12
+    4
   ],
-  "current_batch_document": "docs/REFRESH-STUCK-INVESTIGATION.md#gui-loop",
-  "current_batch_groups_scope": "Original gui2_loop_tick and app/gui2_loop.cpp, tools worker/status adapter, LVGL progress and page host. Normal completion, precompleted worker and controlled 220ms submit wait; wait halts GUI ticks despite worker DONE, release updates next tick. Scan, device services, input/perf, console/background polling, route composition and display submission are explicit fixtures. Not real DRM, full Android or field root-cause proof; no production fix."
+  "current_batch_document": "docs/MTP-ATOMIC-UPLOAD.md#staging-retry",
+  "current_batch_groups_scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles."
 }

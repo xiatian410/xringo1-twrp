@@ -290,6 +290,10 @@
         {
           "file": "0077-cli-fifo-nonblocking-handshake.patch",
           "sha256": "ddade63ce1137ac946af73ffc2af952a265f89055b4a62673c42587d19380ef5"
+        },
+        {
+          "file": "0081-mtp-staging-retry.patch",
+          "sha256": "9729ac8247c4b861e68a2275e3681c1f9b9252242832ad52d1c34276a302decc"
         }
       ],
       "result_files": {
@@ -350,8 +354,8 @@
         "mtp/MtpServer.h": "b68e12ce781037259cec58ff2c838e780173f8d78d396fcffec2f3b8fc43a13b",
         "mtp/twrp/TwrpMtpDatabase.cpp": "9abf68632a54fc69580c4bbd7a45d620e0a237c84ba3304f754af16d56d05739",
         "mtp/twrp/TwrpMtpDatabase.hpp": "0ffaf9304ae67e9dd3b755593b9ea15b2ff5d2e16b05508401b38882c7735a2b",
-        "mtp/twrp/TwrpMtpStorage.cpp": "d16f8659707db601c9af3ecfd20083341f17fdf1f8bbe9eb2fbce11e529608cf",
-        "mtp/twrp/TwrpMtpStorage.hpp": "423d6d6b6f6b4007c251a37c3c16ce7df1ffbae1b41abf1810713b703b367a1c",
+        "mtp/twrp/TwrpMtpStorage.cpp": "523dff0fe1a3ab00d14b5a35afc10c49894354f9472e367881389aca0ca1e589",
+        "mtp/twrp/TwrpMtpStorage.hpp": "6ecf9cebd3b457014f051a7a87aae54f1f52d81f96a5a4b5946fbec05b8ca602",
         "mtp/MtpUtils.cpp": "dfa7b9844c350ee5468805a8bde4babc0638a67dbf590a30cc075f8ba11c9a0e",
         "mtp/MtpUtils.h": "23f233d41237c5fae6452e19414cb849f972055ea6071be2682f934405a755b8",
         "etc/init.rc": "98d2f6766432b57480e5a794c98efb5d277a8913f594173196de7bb82b3fedfc",

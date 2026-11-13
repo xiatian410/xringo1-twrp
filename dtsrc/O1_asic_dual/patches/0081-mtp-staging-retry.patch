@@ -1,0 +1,66 @@
+--- a/mtp/twrp/TwrpMtpStorage.cpp
++++ b/mtp/twrp/TwrpMtpStorage.cpp
+@@ -325,7 +325,8 @@
+             const auto child_status = iterator->symlink_status(ec);
+             if (ec) break;
+             const auto child_path = iterator->path().string();
+-            const bool staging = std::any_of(sending_files_.begin(), sending_files_.end(),
++            const bool staging = abandoned_sending_files_.contains(child_path) ||
++                std::any_of(sending_files_.begin(), sending_files_.end(),
+                 [&](const auto& item) { return item.second == child_path; });
+             if (!staging && (fs::is_directory(child_status) || fs::is_regular_file(child_status)))
+                 observed.emplace(iterator->path().filename().string(), fs::is_directory(child_status));
+@@ -654,7 +655,8 @@
+             continue;
+         }
+         const fs::path& item = de.path();
+-        if (std::any_of(sending_files_.begin(), sending_files_.end(),
++        if (abandoned_sending_files_.contains(item.string()) ||
++            std::any_of(sending_files_.begin(), sending_files_.end(),
+                        [&](const auto& entry) { return entry.second == item.string(); })) {
+             it.increment(ec);
+             if (ec) return -1;
+@@ -781,7 +783,8 @@
+     const std::string event_name = fs::path(event->name).filename().string();
+     const auto mask = event->mask;
+     const auto event_path = (fs::path(GetNodePath(dir)) / event_name).string();
+-    if (std::any_of(sending_files_.begin(), sending_files_.end(),
++    if (abandoned_sending_files_.contains(event_path) ||
++        std::any_of(sending_files_.begin(), sending_files_.end(),
+                    [&](const auto& item) { return item.second == event_path; })) return;
+     MtpEntry* entry = FindEntryByName(dir, event_name);
+ 
+@@ -882,8 +885,11 @@
+         if (handle_currently_sending_ == handle) handle_currently_sending_ = 0;
+         if (auto it = sending_files_.find(handle); it != sending_files_.end()) {
+             std::error_code ec;
+-            // Keep a failed cleanup hidden for this storage's lifetime.
+-            if (!fs::exists(it->second, ec) && !ec) sending_files_.erase(it);
++            // Preserve failed cleanup visibility protection independently of
++            // the finished handle, which may immediately be uploaded again.
++            if (fs::exists(it->second, ec) || ec)
++                abandoned_sending_files_.insert(it->second);
++            sending_files_.erase(it);
+         }
+ 
+         if (MtpEntry* entry = FindNode(handle)) {
+--- a/mtp/twrp/TwrpMtpStorage.hpp
++++ b/mtp/twrp/TwrpMtpStorage.hpp
+@@ -29,6 +29,7 @@
+ #include <map>
+ #include <memory>
+ #include <mutex>
++#include <set>
+ #include <string>
+ #include <thread>
+ #include <unordered_map>
+@@ -87,6 +88,9 @@
+     std::string mtp_storage_parent_;
+     MtpObjectHandle handle_currently_sending_ = 0;
+     std::map<MtpObjectHandle, std::string> sending_files_;
++    // Failed unlink must not reserve an object handle against later uploads.
++    // Retain exact paths only; never infer ownership from a filename prefix.
++    std::set<std::string> abandoned_sending_files_;
+     int inotify_fd_ = -1;
+     std::map<int, MtpObjectHandle> inotify_map_;                   // inotify wd -> directory handle
+     bool send_events_ = false;
