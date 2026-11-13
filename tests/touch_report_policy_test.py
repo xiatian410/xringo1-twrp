@@ -17,7 +17,8 @@ SCRIPT = ROOT/'dtsrc/O1_asic_dual/profiles/runtime/dijun-touch-reports.sh'
 def main():
     cases = []
     for label in ['raw-one', 'cached-zero-still-requested', 'late-panel',
-                  'missing-input', 'module-coming', 'write-fails', 'readback-mismatch']:
+                  'missing-input', 'module-coming', 'write-fails', 'readback-mismatch',
+                  'driver-delayed-raw-switch', 'input-disappears-during-settle']:
         with tempfile.TemporaryDirectory(prefix='dijun-touch-policy-') as temp:
             root = Path(temp)
             node = root/'sys/class/touch/touch_dev/enable_touch_raw'
@@ -38,6 +39,10 @@ r=Path(os.environ['POLICY_FIXTURE'])
 p=r/'sleeps'; n=int(p.read_text())+1 if p.exists() else 1; p.write_text(str(n))
 if os.environ['POLICY_CASE']=='late-panel' and n==2:
     (r/'proc/bus/input/devices').write_text('N: Name="Xiaomi_Touch_Input_0"\\n')
+if os.environ['POLICY_CASE']=='driver-delayed-raw-switch' and n==1:
+    (r/'sys/class/touch/touch_dev/enable_touch_raw').write_text('1\\n')
+if os.environ['POLICY_CASE']=='input-disappears-during-settle' and n==1:
+    (r/'proc/bus/input/devices').write_text('')
 '''); sleep.chmod(0o755)
             if label == 'write-fails':
                 # /dev/full rejects writes; no physical device is accessed.
@@ -51,15 +56,24 @@ if os.environ['POLICY_CASE']=='late-panel' and n==2:
                                     text=True, timeout=5, env={**os.environ,
                                     'PATH':str(mock)+':'+os.environ['PATH'],
                                     'POLICY_FIXTURE':str(root), 'POLICY_CASE':label})
-            success = label in ['raw-one', 'cached-zero-still-requested', 'late-panel']
+            success = label in ['raw-one', 'cached-zero-still-requested', 'late-panel',
+                                'driver-delayed-raw-switch']
             assert result.returncode == (0 if success else 1), (label, result)
             sleeps = int((root/'sleeps').read_text()) if (root/'sleeps').exists() else 0
-            assert sleeps == (2 if label == 'late-panel' else 20 if label in ['missing-input','module-coming'] else 0)
+            assert sleeps == (1 if label in ['driver-delayed-raw-switch', 'input-disappears-during-settle',
+                                             'raw-one', 'cached-zero-still-requested', 'write-fails',
+                                             'readback-mismatch']
+                              else 3 if label == 'late-panel'
+                              else 20 if label in ['missing-input','module-coming'] else 0)
             if success:
                 assert node.read_text() == '0\n'
                 assert node.stat().st_mtime_ns != before
                 assert 'event delivery not tested' in result.stdout
+                if label == 'driver-delayed-raw-switch':
+                    assert 'settle window' not in result.stdout
             elif label in ['missing-input', 'module-coming']:
+                assert node.read_text() == '1\n'
+            elif label == 'input-disappears-during-settle':
                 assert node.read_text() == '1\n'
             cases.append(dict(case=label, status='PASS', exit=result.returncode,
                               sleeps=sleeps, stdout=result.stdout, stderr=result.stderr))

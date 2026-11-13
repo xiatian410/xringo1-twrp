@@ -44,7 +44,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "44c9ea213aebda3256b897c592bac398a3981632ef112858aeec440eab97c2fe",
+    "sha256": "ba453ae369667d9ae4a30b1170a7f09323d96f012b6ef56a0f9ca346fb608e8f",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -860,7 +860,7 @@
     "mode": "0o755"
   },
   "dtsrc/O1_asic_dual/profiles/runtime/dijun-touch-reports.sh": {
-    "sha256": "34184d59730f18b7cecdc7132d1df9d0a37fa006efbf32adf6b763cabb689f24",
+    "sha256": "e44694605e377cc0d469e1a2db17f8109ffd2684a78a40e5366541af1586a898",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/runtime/usb_config.cpp": {
@@ -2736,7 +2736,7 @@
     "mode": "0o644"
   },
   "tests/touch_report_policy_test.py": {
-    "sha256": "637555bf64609ab29a60ddbab86850971088c746a929e20675bef2f4a832e4ef",
+    "sha256": "1325fccdf22b3d4b62f50abe03b34d54abeebb8ff29351ab94d8029b5cc7190e",
     "mode": "0o644"
   },
   "tests/touch_spi_emulation.py": {
