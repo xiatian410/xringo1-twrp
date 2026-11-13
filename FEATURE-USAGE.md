@@ -23,6 +23,8 @@
 
 原厂 `OS4.0.4.0.XODCNXM` 完整包已补测安装器的 ZIP / 签名 / A/B 命令入口：旧 media-recreate 候选的三张证书无法验证该包；stock-ota-trust 候选已加入从六份固定哈希原厂 recovery 提取的同一张小米 OTA 公钥，原包开启签名验证后通过。移除这张公钥的负向检查仍拒绝。没有从待安装包动态导入信任，也没有关闭验证。测试子进程仍只核对更新参数、不安装 payload，**完整卡刷尚未验收**，详见[原始包检查范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip)。
 
+另一次真实 ARM64 引擎入口执行已完成全量 payload 和 42 分区校验，但在普通文件块只读设置处返回安装失败 63。它仍未与 ZIP 父进程、真实 SnapshotManager 和安装收尾接通，不能据此认为完整包可正常卡刷，见[真实引擎范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-engine-entry)。
+
 ## 状态栏与屏幕
 
 - 时间、电量、充电和温度来自运行时 backend；缺失值不能伪造为正常。

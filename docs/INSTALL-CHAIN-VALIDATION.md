@@ -35,6 +35,30 @@ python3 scripts/audit_stock_ota_trust_delivery.py
 
 本批签名支持已修正，不再例行重复证书检查。后续接续真实更新引擎，复用独立 payload 证据；完整 OTA 仍未验收。
 
+<a id="stock-engine-entry"></a>
+### 真实更新引擎入口：完成数据与分区校验，安装返回 63
+
+2026-11-13，当前 stock-ota-trust 镜像环境新增 `tests/ota_engine_entry.py`。此前完整 payload 测试直接调用 `DeltaPerformer`；本次链接生产构建的原始 ARM64 `sideload_main.o`、`update_attempter_android.o`、`download_action.o` 等入口对象和原库，使用当前镜像 linker / libc，经固定 QEMU 运行。原主程序解析原始 4.0.4 ZIP 的 URL、offset 与完整 headers，然后执行 `ApplyPayload → ActionProcessor → DownloadAction → FileFetcher → DeltaPerformer → FilesystemVerifierAction → PostinstallRunnerAction`。没有改写这些引擎方法，也没有通过 friend 注入其内部状态。
+
+BootControl / Hardware 工厂和动态分区接口由显式普通文件模型提供：源槽 A、目标槽 B，清理旧更新是 NoOpAction，状态为内存 prefs；42 个输出为私有 chroot 普通文件，10 个动态分区使用真实 COW writer / reader，其视图在映射接口物化供原 verifier 读取。boot_id / mounts 是文件夹具；不执行 SnapshotManager、内核设备映射或真实挂载。原安装器 ZIP 签名入口与此引擎运行仍是两次独立执行，尚未直接接成一个父子进程链。
+
+实际结果：
+
+- 原始 payload 全部 7,883,589,123 字节、4933 个操作经真实下载队列执行，payload 哈希通过；DownloadAction 成功结束。
+- 原 FilesystemVerifierAction 校验 42 个分区全部成功，日志中每个分区哈希均匹配原厂 manifest 对应记录；10 个 COW 视图已读取。
+- 随后原 PostinstallRunnerAction 对 `system.bin` 执行块设备只读设置。普通文件的 ioctl 返回 ENOTTY，安装以 **63 / kPostInstallMountError** 结束。**实际安装结果是失败**；尚未调用挂载、运行原厂 postinstall 程序、切换槽位或合并快照。
+
+第一次夹具错误地预期会停在更后的 mount 调用，且预期返回码写成 7，故保留 `logs/ota-engine-entry-first-attempt.json` 的 FAIL 及 `logs/ota-engine-entry-first-script.py` 原脚本。当前脚本修正了判据，未重跑完整 payload；`scripts/review_ota_engine_entry.py` 绑定原脚本、对象 / 库、原始输出、当前镜像及 42 个哈希，生成 `logs/ota-engine-entry-review.json`。其 PASS 表示上述执行证据核对成立，**不能将引擎的返回 63 改称安装成功**。`logs/ota-engine-entry.json` 原 FAIL 记录也保留。
+
+```bash
+# 完整运行：约十五分钟，使用私有普通文件，不能当作实机安装。
+python3 tests/ota_engine_entry.py
+# 复核本次保留证据，不重复执行完整 payload。
+python3 scripts/review_ota_engine_entry.py
+```
+
+本批没有生产修正或新构建。下一步将 ZIP 原父进程接到该 ARM64 引擎，并明确普通文件的块只读 / postinstall / SnapshotManager 边界；不因模拟文件不支持块 ioctl 修改生产逻辑，不重复本次下载与哈希检查。
+
 ---
 
 2026-11-13 A/B命令修正：0062 将payload_properties提取失败从成功码改为INSTALL_CORRUPT，拒绝空/NUL headers、压缩/空/越界payload，fork前防御空执行命令。真实ZIP/原命令与pipe/fork/wait接续21项通过，旧版同组8失败，普通ZIP36项回归通过。无害主机程序替代更新器，不执行真实OTA。installclean后30并发构建ab-command候选，SHA256 704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb，六profile封装通过；继承XRING O1及NV限制。见docs/INSTALL-CHAIN-VALIDATION.md#ab-command，完整12组保持进行中，源码文档同步GitHub、编译文件不上传。

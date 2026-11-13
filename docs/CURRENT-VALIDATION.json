@@ -1310,14 +1310,24 @@
       "failures": 0,
       "local_report_sha256": "82b7852271b087b01fa0d0109b5973d789b8e15d0c57a053d8bf1614a5cab9c4",
       "scope": "Native ZIP36 regression after stock-image option; not actual OTA."
+    },
+    {
+      "name": "stock-os4-intact-engine-review",
+      "status": "PASS",
+      "cases": 1,
+      "failures": 0,
+      "local_report_sha256": "f83b6a28f0eae492bef52dc0ee89a393adf9d297b80c609e0188054599be5fd0",
+      "scope": "Current-image intact ARM64 sideload main/ApplyPayload/DownloadAction/FileFetcher executed original OS4 stable ZIP4933 operations and42 final partition hashes. Actual install FAILED63 at postinstall block-readonly ioctl on ordinary file, before mount/program/slot/merge. FileControl maps10 COW views; boot/hardware/cleanup/proc are fixtures, no SnapshotManager or ZIP-parent join. First fixture had wrong return/boundary expectation; original FAIL preserved and reviewed without replay. No production change/build.",
+      "installation_result": "FAILED",
+      "engine_returncode": 63
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
   "current_batch_groups": [
     12
   ],
-  "current_batch_document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
-  "current_batch_groups_scope": "Fixed build-time OEM public certificate from six pinned stock recoveries. Current delivered trust accepts original OS4.0.4 ZIP signature; removing only OEM certificate rejects. Device mismatch still rejects. Host installer engine is parameter checker only; no payload application/full OTA. Native ZIP36 regression; no hardware.",
+  "current_batch_document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-engine-entry",
+  "current_batch_groups_scope": "Current-image intact ARM64 sideload main/ApplyPayload/DownloadAction/FileFetcher executed original OS4 stable ZIP4933 operations and42 final partition hashes. Actual install FAILED63 at postinstall block-readonly ioctl on ordinary file, before mount/program/slot/merge. FileControl maps10 COW views; boot/hardware/cleanup/proc are fixtures, no SnapshotManager or ZIP-parent join. First fixture had wrong return/boundary expectation; original FAIL preserved and reviewed without replay. No production change/build.",
   "stock_os4_zip_entry": {
     "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
     "report": "logs/zip-stock-os4-fixed.json",
@@ -1335,5 +1345,24 @@
     "production_changes": true,
     "new_build": true,
     "scope": "Fixed build-time OEM public certificate from six pinned stock recoveries. Current delivered trust accepts original OS4.0.4 ZIP signature; removing only OEM certificate rejects. Device mismatch still rejects. Host installer engine is parameter checker only; no payload application/full OTA. Native ZIP36 regression; no hardware."
+  },
+  "intact_stock_engine_entry": {
+    "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-engine-entry",
+    "review": "logs/ota-engine-entry-review.json",
+    "review_sha256": "f83b6a28f0eae492bef52dc0ee89a393adf9d297b80c609e0188054599be5fd0",
+    "raw_report": "logs/ota-engine-entry-first-attempt.json",
+    "image_sha256": "f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931",
+    "operations": 4933,
+    "partition_hashes": 42,
+    "payload_bytes": 7883589123,
+    "engine_returncode": 63,
+    "installation_result": "FAILED",
+    "full_ota_install": false,
+    "original_zip_installer_joined": false,
+    "snapshot_manager_executed": false,
+    "postinstall_mount_reached": false,
+    "production_changes": false,
+    "new_build": false,
+    "scope": "Current-image intact ARM64 sideload main/ApplyPayload/DownloadAction/FileFetcher executed original OS4 stable ZIP4933 operations and42 final partition hashes. Actual install FAILED63 at postinstall block-readonly ioctl on ordinary file, before mount/program/slot/merge. FileControl maps10 COW views; boot/hardware/cleanup/proc are fixtures, no SnapshotManager or ZIP-parent join. First fixture had wrong return/boundary expectation; original FAIL preserved and reviewed without replay. No production change/build."
   }
 }

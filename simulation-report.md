@@ -15,6 +15,8 @@
 
 ## 后续执行证据
 
+原 ARM64 `update_engine_sideload` 主程序 / `ApplyPayload` / `DownloadAction` / `FileFetcher` 已在当前镜像 linker / libc 环境处理原始 OS4.0.4 ZIP，完成 4933 操作与 payload 哈希，并通过 42 个最终分区哈希校验。其后 postinstall 对普通文件设置块只读失败，**安装返回 63，不是安装成功**。10 个真实 COW 视图由文件映射模型物化；BootControl / Hardware / 清理动作 / proc 状态为明确夹具，没有 SnapshotManager 或实际挂载。ZIP 安装器父进程仍未与此运行接成同一链。本批是接续证据，无生产修改或重编；首版夹具判据错误的 FAIL 原样保留，复核报告只证明实际停止位置与哈希，不覆盖安装失败。见[引擎结果](docs/INSTALL-CHAIN-VALIDATION.md#stock-engine-entry)。
+
 原始 `OS4.0.4.0.XODCNXM` 完整 ZIP 在旧 media-recreate 候选开启验证时被拒绝。本批生产修正为补齐固定小米 OTA 公钥：从六份哈希固定的原厂 recovery 提取，六份证书完全一致；保留原有三张证书，不修改运行时验证逻辑。清理构建后，原始完整 ZIP 开启签名验证通过，移除仅该公钥后拒绝，设备不匹配也拒绝；五项入口检查及普通 ZIP 36 项回归通过。808 来源、六 profile 和封装核对通过，与旧镜像相比仅构建属性、ramdisk 摘要与 otacerts.zip 改变。生产二进制未变。交付核对见本地 `logs/stock-ota-trust-delivery.json`。
 
 这修正了原厂签名支持，**不表示完整卡刷通过**：入口子进程只核对原包 offset / headers / CrAU，不安装 payload。历史完整 payload 执行属于较早 snapshot-map 镜像，不能与当前入口测试拼成完整 OTA 验收，见[范围与结果](docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip)。
