@@ -1,0 +1,108 @@
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -180,6 +180,7 @@
+ }
+ 
+ void MtpServer::run() {
++    mProtocolError = false;
+     if (mHandle->start(mPtp)) {
+         ALOGE("Failed to start usb driver!");
+         mHandle->close();
+@@ -250,6 +251,9 @@
+         }
+ 
+         const bool respond = handleRequest();
++        // A malformed streaming header leaves unread bytes at an unknown
++        // boundary. Do not send a response or treat its tail as a command.
++        if (mProtocolError) break;
+         if (handlePendingReset()) continue;
+         if (respond) {
+             if (!dataIn && mData.hasData()) {
+@@ -1206,6 +1210,29 @@
+     return result;
+ }
+ 
++int MtpServer::readStreamingData(uint32_t size, MtpOperationCode operation) {
++    const int ret = mData.read(mHandle);
++    if (ret < 0) {
++        if (errno == EPROTO) mProtocolError = true;
++        return ret;
++    }
++    // The 32-bit container length saturates for large/unknown objects. Compute
++    // in 64 bits so payload sizes near UINT32_MAX cannot wrap past the header.
++    const uint32_t expected = std::min<uint64_t>(
++            uint64_t(size) + MTP_CONTAINER_HEADER_SIZE, UINT32_MAX);
++    if (mData.getContainerLength() != expected ||
++        mData.getContainerType() != MTP_CONTAINER_TYPE_DATA ||
++        mData.getContainerCode() != operation ||
++        mData.getTransactionID() != mRequest.getTransactionID() ||
++        static_cast<uint64_t>(ret - MTP_CONTAINER_HEADER_SIZE) > size) {
++        mProtocolError = true;
++        mData.reset();
++        errno = EPROTO;
++        return -1;
++    }
++    return ret;
++}
++
+ MtpResponseCode MtpServer::doSendObject() {
+     if (!hasStorage())
+         return MTP_RESPONSE_GENERAL_ERROR;
+@@ -1225,19 +1252,12 @@
+     }
+ 
+     // read the header, and possibly some data
+-    ret = mData.read(mHandle);
++    ret = readStreamingData(mSendObjectFileSize, MTP_OPERATION_SEND_OBJECT);
+     if (ret < MTP_CONTAINER_HEADER_SIZE) {
+         result = MTP_RESPONSE_GENERAL_ERROR;
+         goto done;
+     }
+     initialData = ret - MTP_CONTAINER_HEADER_SIZE;
+-    if (mData.getContainerType() != MTP_CONTAINER_TYPE_DATA ||
+-        mData.getContainerCode() != MTP_OPERATION_SEND_OBJECT ||
+-        mData.getTransactionID() != mRequest.getTransactionID() ||
+-        (mSendObjectFileSize != 0xffffffff && static_cast<size_t>(initialData) > mSendObjectFileSize)) {
+-        result = MTP_RESPONSE_INVALID_PARAMETER;
+-        goto done;
+-    }
+ 
+     if (mSendObjectFormat == MTP_FORMAT_ASSOCIATION) {
+         if (initialData != 0)
+@@ -1443,16 +1463,10 @@
+     if (offset > INT64_MAX || length > static_cast<uint64_t>(INT64_MAX) - offset)
+         return MTP_RESPONSE_INVALID_PARAMETER;
+ 
+-    int ret = mData.read(mHandle);
++    int ret = readStreamingData(length, MTP_OPERATION_SEND_PARTIAL_OBJECT);
+     if (ret < MTP_CONTAINER_HEADER_SIZE)
+         return MTP_RESPONSE_GENERAL_ERROR;
+     const size_t initialData = ret - MTP_CONTAINER_HEADER_SIZE;
+-    if (mData.getContainerType() != MTP_CONTAINER_TYPE_DATA ||
+-        mData.getContainerCode() != MTP_OPERATION_SEND_PARTIAL_OBJECT ||
+-        mData.getTransactionID() != mRequest.getTransactionID() || initialData > length) {
+-        mData.reset();
+-        return MTP_RESPONSE_INVALID_PARAMETER;
+-    }
+ 
+     size_t written = 0;
+     while (written < initialData) {
+--- a/mtp/MtpServer.h
++++ b/mtp/MtpServer.h
+@@ -76,6 +76,8 @@
+     size_t              mSendObjectFileSize;
+     // Absence is distinct from a valid Unix epoch timestamp (zero).
+     std::optional<time_t> mSendObjectModifiedTime;
++    // Streaming data lost its framing; only run() may retire the connection.
++    bool                mProtocolError = false;
+ 
+     std::mutex          mMutex;
+ 
+@@ -135,6 +137,7 @@
+     void                endEdits();
+ 
+     bool                handleRequest();
++    int                 readStreamingData(uint32_t size, MtpOperationCode operation);
+     void                resetSession();
+     bool                handlePendingReset();
+ 

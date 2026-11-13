@@ -406,6 +406,10 @@
         {
           "file": "0110-backup-exclusion-capacity.patch",
           "sha256": "581ec4471f244738e5af8f2951524a28309f16357af2230113b62230fa81ceed"
+        },
+        {
+          "file": "0111-mtp-stream-data-boundary.patch",
+          "sha256": "47e3519d3c94b576f2d08897feaa6bbdb0440689471c964cc33dc6e09ed7969f"
         }
       ],
       "result_files": {
@@ -462,8 +466,8 @@
         "oaes/oaes.cpp": "306acbfddd40512ba8c0ad0b7ad8afc86533425625e6a875f95d0a3ae4e1e356",
         "oaes/oaes.hpp": "256c988afbd924a12db4bdaa4c9c35475dda92b53676cf7693f64e36de0ed3c4",
         "mtp/IMtpDatabase.h": "bbe651b95e206c307ba4b9e9d6c57225697dcc6667bf508bf8d5ac3c59548086",
-        "mtp/MtpServer.cpp": "db16367f632896cd4a947b07edca4cdb62e3fd969d5e5aed6c7a126d11462d9d",
-        "mtp/MtpServer.h": "7b99b314181d4e9ab125d274b71011777867bc6fc30fe43b66478c9bbb3bcaf5",
+        "mtp/MtpServer.cpp": "2827b1c394b0db312b8022fb7693305e7c34d4a1e250d99fa24ac3064a3e9487",
+        "mtp/MtpServer.h": "8ee134a2913fe80785e6255c13bd2e270135ea69469e6f1a24211d5d2d144e4c",
         "mtp/twrp/TwrpMtpDatabase.cpp": "9abf68632a54fc69580c4bbd7a45d620e0a237c84ba3304f754af16d56d05739",
         "mtp/twrp/TwrpMtpDatabase.hpp": "0ffaf9304ae67e9dd3b755593b9ea15b2ff5d2e16b05508401b38882c7735a2b",
         "mtp/twrp/TwrpMtpStorage.cpp": "06f33ac6966815427f673e37bf01c511a1117058a201b1f97ac384acd8beedae",

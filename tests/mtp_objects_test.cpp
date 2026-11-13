@@ -97,12 +97,29 @@ struct Session {
  void start(){ {lock_guard l(peer.mutex);peer.disconnected=false;}worker=thread([&]{server->run();});}
  void stop(){ {lock_guard l(peer.mutex);peer.disconnected=true;peer.cv.notify_all();}if(worker.joinable())worker.join();}
  ~Session(){stop();/* database owns storages and must stop observers before server dies */}
- Reply call(uint16_t op,initializer_list<uint32_t> params={},const Bytes* data=nullptr,uint16_t dataType=2,uint16_t dataCode=0,int transactionDelta=0){
-  ++tx;unique_lock l(peer.mutex);auto first=peer.output.size();peer.input.push_back(packet(1,op,tx,words(params)));if(data)peer.input.push_back(packet(dataType,dataCode?dataCode:op,tx+transactionDelta,*data));peer.cv.notify_all();
+ Reply call(uint16_t op,initializer_list<uint32_t> params={},const Bytes* data=nullptr,uint16_t dataType=2,uint16_t dataCode=0,int transactionDelta=0,uint32_t headerLength=0){
+  ++tx;unique_lock l(peer.mutex);auto first=peer.output.size();peer.input.push_back(packet(1,op,tx,words(params)));if(data){auto p=packet(dataType,dataCode?dataCode:op,tx+transactionDelta,*data);if(headerLength)for(int i=0;i<4;++i)p[i]=headerLength>>(8*i);peer.input.push_back(std::move(p));}peer.cv.notify_all();
   REQUIRE(peer.cv.wait_for(l,2s,[&]{for(size_t i=first;i<peer.output.size();++i){auto& b=peer.output[i];if(b.size()>=12&&(word(b,4)&0xffff)==3&&word(b,8)==tx)return true;}return false;}));
   Reply result;for(size_t i=first;i<peer.output.size();++i){auto& b=peer.output[i];if(word(b,8)!=tx)continue;if((word(b,4)&0xffff)==3){result.code=word(b,4)>>16;result.response=b;}else result.data=b;}return result;
  }
  void open(){REQUIRE(call(MTP_OPERATION_OPEN_SESSION,{1}).code==MTP_RESPONSE_OK);}
+ void rejectStream(uint16_t op, const Bytes& params, Bytes data, const string& kind, uint32_t target){
+  const auto transaction=++tx;
+  auto bad=packet(kind=="wrong-type"?1:2,kind=="wrong-code"?MTP_OPERATION_DELETE_OBJECT:op,
+                  transaction+(kind=="wrong-transaction"?1:0),data);
+  if(kind=="short-length")bad[0]=12;
+  if(kind=="long-length")bad[0]+=4;
+  if(kind=="zero-length")bad[0]=0;
+  if(kind=="short-header"||kind=="stale-cancel")bad.resize(8);
+  {lock_guard l(peer.mutex);if(kind=="stale-cancel")peer.read_errno=ECANCELED;
+   peer.input.push_back(packet(1,op,transaction,params));peer.input.push_back(bad);
+   peer.input.push_back(packet(1,MTP_OPERATION_DELETE_OBJECT,++tx,words({target,0})));
+   peer.cv.notify_all();}
+  {unique_lock l(peer.mutex);REQUIRE(peer.cv.wait_for(l,2s,[]{return peer.closes>0||peer.input.empty();}));}
+  stop();
+  {lock_guard l(peer.mutex);REQUIRE(peer.closes==1&&peer.input.size()==1);
+   for(const auto& b:peer.output)REQUIRE(word(b,8)!=transaction&&word(b,8)!=tx);}
+ }
 };
 uint32_t find(TwrpMtpDatabase& db,uint32_t store,const string& name,uint32_t parent=0xffffffff){
  unique_ptr<MtpObjectHandleList> ids(db.getObjectList(store,0,parent));for(auto id:*ids){MtpObjectInfo info(id);if(db.getObjectInfo(id,info)==MTP_RESPONSE_OK&&name==info.mName)return id;}return 0;
@@ -121,7 +138,36 @@ int main(int argc,char** argv){
  auto* one=s.add(0x10001,"/one");s.add(0x20001,"/two");s.start();
  if(!test.starts_with("session-unopened-"))s.open();
  auto a=find(s.db,0x10001,"a.txt"),dir=find(s.db,0x10001,"dir");REQUIRE(a&&dir);
- if(test.starts_with("data-boundary-valid-")){
+ if(test.starts_with("stream-valid-")){
+  const auto kind=test.substr(13);
+  const uint32_t length=kind=="empty"?0:kind=="limit"?UINT32_MAX-12:kind=="overflow"?UINT32_MAX-5:UINT32_MAX;
+  auto data=info("new.txt",length);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  int receives=0;receiving_probe=[&](int){++receives;};
+  Bytes content(kind=="empty"?0:3,'N');
+  {lock_guard l(peer.mutex);peer.receive_fail=kind!="empty";}
+  // Large transfers stop at the explicit transport error, without allocating
+  // gigabytes or claiming actual large/unknown USB packet completion.
+  auto r=s.call(MTP_OPERATION_SEND_OBJECT,{},&content,2,0,0,kind=="empty"?12:UINT32_MAX);
+  receiving_probe={};{lock_guard l(peer.mutex);peer.receive_fail=false;}
+  REQUIRE(receives==1&&r.code==(kind=="empty"?MTP_RESPONSE_OK:MTP_RESPONSE_GENERAL_ERROR));
+  REQUIRE(kind=="empty"?fs::exists("/one/new.txt")&&fs::file_size("/one/new.txt")==0:!fs::exists("/one/new.txt"));
+  REQUIRE(s.call(MTP_OPERATION_GET_STORAGE_IDS).code==MTP_RESPONSE_OK);
+  cout<<"stream_header_accepted=1 payload_size="<<length<<" actual_large_transfer=0"<<endl;
+ }else if(test.starts_with("stream-boundary-")){
+  auto tail=test.substr(16);auto split=tail.find('-');auto op=tail.substr(0,split),kind=tail.substr(split+1);
+  const bool partial=op=="partial";
+  if(partial)REQUIRE(s.call(MTP_OPERATION_BEGIN_EDIT_OBJECT,{a}).code==MTP_RESPONSE_OK);
+  else {auto data=info(op=="new"?"new.txt":"a.txt",3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);}
+  int receives=0;receiving_probe=[&](int){++receives;};
+  Bytes data(kind=="oversized"?7:3,'N');
+  s.rejectStream(partial?MTP_OPERATION_SEND_PARTIAL_OBJECT:MTP_OPERATION_SEND_OBJECT,
+      partial?words({a,2,0,3}):Bytes{},data,kind,a);
+  receiving_probe={};
+  REQUIRE(readfile("/one/a.txt")=="alpha"&&!fs::exists("/one/new.txt")&&receives==0);
+  if(partial)REQUIRE(edit_closes==1);
+  for(const auto&e:fs::directory_iterator("/one"))REQUIRE(!e.path().filename().string().starts_with(".mtp-upload-"));
+  cout<<"stream_rejected_before_write=1 tail_command_unread=1 session_retired=1"<<endl;
+ }else if(test.starts_with("data-boundary-valid-")){
   if(test.ends_with("rename")){
    Bytes data;str(data,"renamed.txt");
    REQUIRE(s.call(MTP_OPERATION_SET_OBJECT_PROP_VALUE,{a,MTP_PROPERTY_OBJECT_FILE_NAME},&data).code==MTP_RESPONSE_OK);
@@ -178,6 +224,11 @@ int main(int argc,char** argv){
   REQUIRE(s.call(MTP_OPERATION_BEGIN_EDIT_OBJECT,{a}).code==MTP_RESPONSE_OK);
   const bool malformed=kind=="oversized"||kind.starts_with("wrong-");
   const bool ioerror=kind=="zero-write"||kind=="write-error";
+  if(malformed){
+   s.rejectStream(MTP_OPERATION_SEND_PARTIAL_OBJECT,words({a,2,0,3}),Bytes(kind=="oversized"?7:3,'N'),kind,a);
+   REQUIRE(readfile("/one/a.txt")=="alpha"&&edit_writes==0&&edit_receives==0&&edit_closes==1);
+   cout<<"partial_checked=1 malformed=1 stopped=1"<<endl;
+  }else{
   const uint32_t length=kind=="large"?60000:kind=="empty"?0:3;
   Bytes data(kind=="oversized"?7:length,'N');
   edit_write_fault=kind=="short-write"?1:kind=="eintr"?2:kind=="zero-write"?3:kind=="write-error"?4:0;
@@ -200,6 +251,7 @@ int main(int argc,char** argv){
   }
   REQUIRE(s.call(MTP_OPERATION_END_EDIT_OBJECT,{a}).code==MTP_RESPONSE_OK&&edit_closes==1);
   cout<<"partial_checked=1 malformed="<<malformed<<" ioerror="<<ioerror<<" declared="<<length<<endl;
+  }
  }else if(test.starts_with("session-unopened-")||test.starts_with("session-closed-")){
   const auto kind=test.substr(test.starts_with("session-unopened-")?17:15);
   if(test.starts_with("session-closed-"))REQUIRE(s.call(MTP_OPERATION_CLOSE_SESSION).code==MTP_RESPONSE_OK);
@@ -627,8 +679,14 @@ int main(int argc,char** argv){
   uint32_t declared=good?60000:10;Bytes content(good?60000:test=="upload-too-long"?11:test=="upload-short-success"?7:10,'V');
   auto data=info("new.txt",declared);auto r=s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data);REQUIRE(r.code==MTP_RESPONSE_OK);
   {lock_guard l(peer.mutex);peer.receive_short_success=test=="upload-short-success";}
+  if(test=="upload-too-long"||test=="upload-short-success"){
+   // A container whose size disagrees with SendObjectInfo has no trusted tail.
+   s.rejectStream(MTP_OPERATION_SEND_OBJECT,{},content,"valid",a);
+   REQUIRE(!fs::exists("/one/new.txt"));
+  }else{
   r=s.call(MTP_OPERATION_SEND_OBJECT,{},&content);REQUIRE((r.code==MTP_RESPONSE_OK)==good);
   if(good)REQUIRE(readfile("/one/new.txt")==string(60000,'V'));else REQUIRE(!fs::exists("/one/new.txt"));
+  }
  }else if(test=="events-concurrent"){
   {lock_guard l(peer.mutex);peer.events.clear();}
   vector<thread> threads;for(int n=0;n<6;++n)threads.emplace_back([&,n]{for(int i=0;i<500;++i)s.server->sendObjectAdded(10000+n*500+i);});for(auto& t:threads)t.join();

@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-exclusion-capacity.img",
-  "image_sha256": "f8c1c5e2229afcd7626e64d50d5684004d7fdde56da5f3259228c8383e17d9be",
-  "production_sources": 838,
+  "image_name": "recovery-dijun-unified-mtp-stream-boundary.img",
+  "image_sha256": "39f88015131bf0ddb3c79d7eef862b4f023d6d518facf2a4ebcc4996ec07ea09",
+  "production_sources": 839,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2005,6 +2005,22 @@
       "failures": 0,
       "local_report_sha256": "032fbb61781995c8a24c9a903851d91c698d1eb5be453aa852e44f99c75d2512",
       "scope": "Patch0110 applies exclusions to every entry type before stat, measures excluded regular files and links with lstat, and never follows directory or dangling links. Whole source/real private host files under ASan/UBSan11 pass; same-harness old6/11 fail; existing tar/pigz/OAES roundtrip8 pass. Logical estimates only; I/O errors, nested exclusions, allocated blocks, concurrent consistency and full manager/GUI remain open. Does not resolve DRM refresh stall or validate latest-image full OTA."
+    },
+    {
+      "name": "mtp-stream-objects",
+      "status": "PASS",
+      "cases": 229,
+      "failures": 0,
+      "local_report_sha256": "830eb979dd508dd91ae8af06b2d0e9dfe04fd3dbcc81bb4d193f620a68b3dc9c",
+      "scope": "Patch0111 validates streaming SendObject/SendPartialObject container length/type/code/transaction and initial byte bound before writes. Malformed protocol retires connection before response/tail command, resetSession releases pending handles/edit fds. Host production MTP/files/inotify/threads ASan/UBSan229 pass; same-harness old27/31 fail; empty and large/unknown header controls covered. USB/properties/logging are fixtures; large controls stop at transport error, no full large transfer/ARM64 MTP/Windows/actual USB/client reconnect/persistent staging recovery proof."
+    },
+    {
+      "name": "mtp-stream-negative",
+      "status": "FAIL",
+      "cases": 31,
+      "failures": 27,
+      "local_report_sha256": "b50dc3eb41e10f17ca1690d979f9c1931b7c99c1c53281cbda0a86913538ce00",
+      "scope": "Patch0111 validates streaming SendObject/SendPartialObject container length/type/code/transaction and initial byte bound before writes. Malformed protocol retires connection before response/tail command, resetSession releases pending handles/edit fds. Host production MTP/files/inotify/threads ASan/UBSan229 pass; same-harness old27/31 fail; empty and large/unknown header controls covered. USB/properties/logging are fixtures; large controls stop at transport error, no full large transfer/ARM64 MTP/Windows/actual USB/client reconnect/persistent staging recovery proof."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2250,6 +2266,13 @@
     "patch": "0110",
     "scope": "Patch0110 applies exclusions to every entry type before stat, measures excluded regular files and links with lstat, and never follows directory or dangling links. Whole source/real private host files under ASan/UBSan11 pass; same-harness old6/11 fail; existing tar/pigz/OAES roundtrip8 pass. Logical estimates only; I/O errors, nested exclusions, allocated blocks, concurrent consistency and full manager/GUI remain open. Does not resolve DRM refresh stall or validate latest-image full OTA.",
     "document": "docs/BACKUP-SESSION-ADAPTATION.md#exclusion-capacity",
+    "production_changes": true,
+    "new_build": true
+  },
+  "mtp_stream_data_boundary": {
+    "patch": "0111",
+    "scope": "Patch0111 validates streaming SendObject/SendPartialObject container length/type/code/transaction and initial byte bound before writes. Malformed protocol retires connection before response/tail command, resetSession releases pending handles/edit fds. Host production MTP/files/inotify/threads ASan/UBSan229 pass; same-harness old27/31 fail; empty and large/unknown header controls covered. USB/properties/logging are fixtures; large controls stop at transport error, no full large transfer/ARM64 MTP/Windows/actual USB/client reconnect/persistent staging recovery proof.",
+    "document": "docs/MTP-CONTROL-ADAPTATION.md#streaming-data-boundary",
     "production_changes": true,
     "new_build": true
   }

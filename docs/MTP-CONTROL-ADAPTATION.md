@@ -9,6 +9,16 @@
 <a id="command-boundary"></a>
 <a id="metadata-data-boundary"></a>
 
+<a id="streaming-data-boundary"></a>
+
+## 上传与分段编辑数据边界（0111）
+
+SendObject和SendPartialObject此前核对数据类型/操作/事务及初始数据量，却未核对container声明总长度。短头或错误头返回后仍继续读取下一条命令，无法保证剩余传输边界。0111共用流式数据头检查：已知payload长度加12字节头，64位运算后饱和为UINT32_MAX；未知长度沿用UINT32_MAX。校验声明长度、类型、操作、事务和初始payload上限，任何协议错误在写文件前终止连接；不发送该事务响应，不解析尾部，并沿原resetSession释放待传输登记/编辑fd。正常传输的I/O失败、取消与Reset保持各自原路径。
+
+生产server/packet/database/storage、真实私有文件/inotify/线程在ASan/UBSan下共229项通过；同测试旧实现新增31项中27项失败。三类接收（新建/覆盖/分段编辑）各九种坏头覆盖长度过短/过长/零、类型/操作/事务错、短头/残留取消errno及超额初始数据，检查原文件保持、没有临时文件或receiveFile调用、下一条删除命令留在peer队列、无错误事务响应和编辑fd关闭。四项控制覆盖空文件、32位长度临界/溢出及未知长度；大/未知长度仅接入显式transport错误，不分配GB数据、不宣称完整大文件USB传输通过。其余既有上传/日期/原子覆盖/编辑/会话/Reset回归一并通过。
+
+本地报告`logs/mtp-stream-objects.json`、`logs/mtp-stream-negative.json`；固定补丁`0111-mtp-stream-data-boundary.patch`，交付审计`python3 scripts/audit_mtp_stream_delivery.py`。关闭连接用于停止不可信边界，不代表主机自动重连或真实端点恢复已验收。没有ARM64 MTP、物理USB/Windows、断电持久性或跨重启临时文件归属/回收验证；不按文件名前缀删除用户数据。
+
 ## 元数据 DATA 与命令对应（0104）
 
 通用数据阶段读取后，原主循环没有核对容器类型、操作码、事务号或声明长度便进入处理函数。例如 SET_OBJECT_PROP_VALUE 的重命名请求收到另一个事务的数据，仍会修改文件；SEND_OBJECT_INFO 也会登记错误请求。0104 在四个元数据入口（上述两项、SET_OBJECT_REFERENCES、SET_DEVICE_PROP_VALUE）分发前要求完整 DATA 容器及准确身份，不符则停止连接并执行原 resetSession 清理，不再解析后续排队的命令。正常客户端不会触发此拒绝；错误客户端需要重新建立会话。

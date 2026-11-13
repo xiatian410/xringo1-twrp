@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-exclusion-capacity.img` |
-| SHA-256 | `f8c1c5e2229afcd7626e64d50d5684004d7fdde56da5f3259228c8383e17d9be` |
-| 生产来源绑定 | 838 份 |
+| 文件 | `recovery-dijun-unified-mtp-stream-boundary.img` |
+| SHA-256 | `39f88015131bf0ddb3c79d7eef862b4f023d6d518facf2a4ebcc4996ec07ea09` |
+| 生产来源绑定 | 839 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：排除文件的备份容量
+## 本批生产修正：MTP上传数据头与连接收尾
+
+0111补齐SendObject/SendPartialObject数据头的声明长度校验，用64位加法处理32位长度饱和；类型/操作/事务错、短头、超额初始payload等协议错误在写入前拒绝，终止连接后由resetSession释放登记与编辑fd，不解析不可信尾部命令。正常I/O错误与取消仍按原路径处理，不把协议错误混作取消。
+
+原server/packet/database/storage、真实私有文件/inotify/线程在ASan/UBSan下229项通过；同夹具旧实现新增31项中27项失败。另四项正常控制覆盖空文件及大/未知长度头，但大传输停在显式transport错误，不宣称完整GB传输通过。清理构建后839来源与六profile核对通过。详见[流式数据边界](docs/MTP-CONTROL-ADAPTATION.md#streaming-data-boundary)。真实USB、Windows自动恢复、ARM64 MTP和跨重启临时文件回收仍未验收；本批不按前缀删除用户文件，不重复OTA或已解决功能。
+
+## 沿用的排除文件备份容量修正
 
 0110修正容量扫描只排除目录的问题：`/data/adb/ksu/modules.img`等普通文件现在按排除策略跳过，绝对排除项的容量统计可计量文件及链接自身，不跟随目录链接或悬空链接目标。真实私有文件、完整exclude源码与ASan/UBSan下11项通过，同夹具旧实现6/11失败；普通/gzip/AES/组合编码及分卷八项往返通过。清理构建后838来源及六profile核对通过。
 
