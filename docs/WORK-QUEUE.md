@@ -15,7 +15,7 @@
 
 | 优先事项 | 已知情况 | 下一步与边界 |
 | --- | --- | --- |
-| 容量刷新页面停留 | 现场后台约 5.15 秒完成；原 GUI tick / 主循环接续已核对，提交等待会延迟 DONE 呈现，但现场根因未定位 | 后续只追提交等待与实际呈现的新证据；不重复扫描 / DONE 夹具，不根据模拟等待修改 DRM，不要求重复触发采集。见[主循环范围](REFRESH-STUCK-INVESTIGATION.md#gui-loop) |
+| 容量刷新页面停留 | 后台约 5.15 秒成功结束；338.12 秒采样时 `disp_commit_0` 在 `D` 状态等待 `dpu_kms_wait_for_hw_cfg_done`，Recovery 主线程另一个快照位于 DRM atomic commit | 有显示提交等待的直接单点证据，但没有等待时长 / 唤醒序列或因果链。只在已有材料中查找相邻栈与 DRM 完成 / 错误事件；不重跑 worker、扫描、DONE 夹具，不按单点证据改 DRM。见[现场采样分析](REFRESH-STUCK-INVESTIGATION.md#现场采样)及[主循环范围](REFRESH-STUCK-INVESTIGATION.md#gui-loop) |
 | OTA / A/B 安装入口与快照生命周期 | 修正模型 Cleanup 生命周期后，同次原始4.0.4整包真实分配十份COW、4933操作/42哈希、脚本/状态及父进程成功，24项断言通过 | 该命名软件接续缺口已关闭，不再重复整包。真实源LP/内核映射/挂载/HAL/scratch/daemon/槽位/启动合并仍为模型或未验证；后续按具体实现决定推进，见[成功运行范围](INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success) |
 | 文件系统完整生命周期 | 清除错误传播、媒体保留、格式转换及 persist / and-sec / 非 FBE 媒体目录恢复已维护；标签初始化已有实际 ARM64 工具证据，分区工具页面 / 原 worker / 返回详情十个接续场景通过 | 这条页面交接缺口到此收尾，没有新增生产缺陷。manager / 挂载 / 加密 / I/O 与完整 GUI 仍有边界，不重复页面或工具检查。见[页面接续范围](PARTITION-ACTIONS.md#tool-page-worker-lifecycle)及[标签初始化范围](FILESYSTEM-TOOLS-EXECUTION.md#postformat-selinux) |
 | 其他具体缺陷 | 触摸自动启动、安全服务、多用户、备份恢复和 USB 集成仍有缺口 | 按下表剩余边界及新证据排序，每批明确实现决定和结束条件，不启动全量重复审计 |

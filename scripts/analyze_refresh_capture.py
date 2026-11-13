@@ -23,6 +23,22 @@ def main():
   if not task:continue
   tasks.append(dict(pid=int(task[1]),tid=int(task[2]),stack=stack[1] if stack else None))
  main=next((t for t in tasks if t['pid']==t['tid'] and 'drm_mode_atomic_ioctl' in (t['stack'] or '')),None)
- report=dict(status='analyzed-unresolved-presentation',inputs=sources,refresh_start_line=start+1,refresh_end_line=end+1 if end is not None else None,refresh_end=lines[end] if end is not None else None,sizes=sizes,completion_elapsed_upper_bound_ms=after[0]-before[-1] if before and after else None,logs_identical=texts['recovery.log']==texts['recovery-after.log'],main_drm_snapshot=main,task_count=len(tasks),conclusion='Refresh completed successfully; captured main-thread stack passes through XRING DRM atomic commit. One separately read stack/wchan/syscall sample does not prove a persistent driver hang or identify which frame was submitted. No data-size worker remains identifiable in captured task list. UI terminal-state publication/render and display presentation remain investigation targets.',scope='User-supplied logs only. No live device operation, no root-cause or fix claim.')
+ thread_lines=texts['threads.txt'].splitlines()
+ stack_lines=texts['recovery-stacks.txt'].splitlines()
+ uptime=None
+ for index,line in enumerate(stack_lines[:-1]):
+  if line.strip()=='=== UPTIME ===':
+   match=re.match(r'\s*([0-9.]+)',stack_lines[index+1])
+   if match:uptime=float(match.group(1))
+   break
+ dpu_waiters=[]
+ for line in thread_lines:
+  if 'dpu_kms_wait_for_hw_cfg_done' not in line:continue
+  fields=line.split()
+  # ps -AT layout: USER PID TID PPID VSZ RSS WCHAN ADDR S COMMAND
+  if len(fields)>=10 and fields[9]=='disp_commit_0':
+   dpu_waiters.append(dict(pid=int(fields[1]),tid=int(fields[2]),state=fields[8],
+                            wchan=fields[6],name=fields[9]))
+ report=dict(status='analyzed-display-commit-wait-snapshot',inputs=sources,refresh_start_line=start+1,refresh_end_line=end+1 if end is not None else None,refresh_end=lines[end] if end is not None else None,sizes=sizes,completion_elapsed_upper_bound_ms=after[0]-before[-1] if before and after else None,logs_identical=texts['recovery.log']==texts['recovery-after.log'],main_drm_snapshot=main,capture_uptime_seconds=uptime,display_commit_waiters=dpu_waiters,task_count=len(tasks),conclusion='Refresh completed successfully. At the later uptime snapshot, disp_commit_0 was in D state and named dpu_kms_wait_for_hw_cfg_done; the separately sampled recovery main-thread stack passed through XRING DRM atomic commit. This is direct evidence of a display hardware-configuration wait at capture time, but the snapshots are not atomic and do not establish its duration, the submitted frame, or that it caused the refresh page symptom. No data-size worker remains identifiable. GUI terminal-state rendering and display presentation remain distinct investigation targets.',scope='User-supplied extracted logs only. No live device operation, no root-cause or fix claim.')
  args.output.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({k:v for k,v in report.items() if k not in ['inputs','main_drm_snapshot']},indent=2))
 if __name__=='__main__':main()

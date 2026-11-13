@@ -1437,7 +1437,13 @@
       "scope": "Original partition option/confirmation/change-filesystem/progress pages and callbacks, LVGL pointer/swipe input, selected router/back branches, page_host ownership and actual asynchronous tools worker. PartitionManager operations/details, settings/fonts/console/display are explicit fixtures; no mkfs/fsck, full GUI loop, mount or fscrypt. Ten cases; no production change/build."
     }
   ],
-  "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
+  "refresh_stuck_investigation": {
+    "status": "unresolved-with-display-wait-evidence",
+    "refresh_elapsed_upper_bound_ms": 5147,
+    "capture_uptime_seconds": 338.12,
+    "display_thread": "disp_commit_0: D state, dpu_kms_wait_for_hw_cfg_done",
+    "limitations": "Single non-atomic capture snapshot proves the display wait at capture time only; it does not establish duration or causality for the refresh page symptom. No DRM production change or repeated worker/DONE tests."
+  },
   "current_batch_groups": [
     6,
     12

@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "07865b56b93f31137d98b4ca087e5772514f21dae72cff69cec82b7870a3783a",
+    "sha256": "1707c8f3ac0c4ba21af74ea22b651e1405581f3b4bfd318a5fae649fc92f838f",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -140,7 +140,7 @@
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
-    "sha256": "180c1c5af0e0b5b0f63c896c57b9ef69fba75ba351f7fa8e009593a9e47b373b",
+    "sha256": "a89663a3a33aeac1539f01e549a480a44bf62589e1112b7ad820f27a83d228b3",
     "mode": "0o644"
   },
   "docs/RESTORE-SESSION-ADAPTATION.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "ef3abf5077ad3468c1740100f4656410394db00889e786d0c5ad2076562918f2",
+    "sha256": "8258b7c2eab9c1d72811cc1237b8404e03a8707b54058b9df537a790aa351410",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -992,7 +992,7 @@
     "mode": "0o644"
   },
   "scripts/analyze_refresh_capture.py": {
-    "sha256": "551469c2a4bbee091b1ec3d560fead46eeea2d880d5476868de0f40d672fed70",
+    "sha256": "eba54d4e36beaa95c707c67f24b4cf4d601bf7be842a6bc4cdf65ca5cd499e6d",
     "mode": "0o644"
   },
   "scripts/analyze_touch_window.py": {
@@ -1708,7 +1708,7 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "0cd88986b48f3dbd29689ddf8c85e5b9e76bb642353e37505199673200960f79",
+    "sha256": "cdddb38f07d114eb6a24d87f357e37414ef0882e371b03a6337f92ec5dcf6579",
     "mode": "0o644"
   },
   "simulation-report.md": {

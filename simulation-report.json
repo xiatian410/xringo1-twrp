@@ -4955,7 +4955,7 @@
     "scope": "Original ARM64 read/set and OS4 refresh callbacks with MMIO/PMIC/calendar fixtures. Full probe/hctosys/calendar/cold-start and physical drift remain open."
   },
   "refresh_stuck_investigation": {
-    "status": "unresolved-presentation",
+    "status": "unresolved-with-display-wait-evidence",
     "document": "docs/REFRESH-STUCK-INVESTIGATION.md",
     "local_analysis": "logs/refresh-capture-analysis.json",
     "production_fix": true,
@@ -4969,7 +4969,17 @@
     "field_incident_fixed": false,
     "loop_evidence": "logs/refresh-loop.json",
     "loop_scope": "Original gui2_loop_tick and app/gui2_loop.cpp, tools worker/status adapter, LVGL progress and page host. Normal completion, precompleted worker and controlled 220ms submit wait; wait halts GUI ticks despite worker DONE, release updates next tick. Scan, device services, input/perf, console/background polling, route composition and display submission are explicit fixtures. Not real DRM, full Android or field root-cause proof; no production fix.",
-    "next_action": "Use distinguishing presentation/submit-wait evidence; no repeated scan/DONE fixtures or speculative DRM patch."
+    "next_action": "Use distinguishing presentation/submit-wait evidence; no repeated scan/DONE fixtures or speculative DRM patch.",
+    "current_analysis": "logs/refresh-capture-analysis-current.json",
+    "capture_evidence": {
+      "evidence": "logs/refresh-capture-analysis-current.json",
+      "sha256": "b2a63f9c4c363c022c8eb7b2f80d733e1895fba5b2c03e48689432abf11a1430",
+      "refresh_worker_elapsed_upper_bound_ms": 5147,
+      "capture_uptime_seconds": 338.12,
+      "display_waiter": "PID/TID 264 disp_commit_0 state D, wchan dpu_kms_wait_for_hw_cfg_done",
+      "main_recovery_stack": "DRM atomic commit in separate non-atomic stack sample",
+      "scope": "Single capture snapshot. Establishes display configuration wait at capture time, not its duration, cause, or relation to the refresh UI symptom. No production change or repeated worker tests."
+    }
   },
   "finite_maintenance": {
     "date": "2026-11-13",

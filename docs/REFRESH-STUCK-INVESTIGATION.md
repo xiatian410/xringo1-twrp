@@ -1,13 +1,16 @@
 # 刷新容量页面不结束：现场分析
 
-2026-11-13 用户提供 `refresh-stuck-20261113-002627.zip`。原始日志只保留本地，不上传公开仓库。它包含 recovery.log/recovery-after.log、线程栈、线程列表、logcat、dmesg；只有一组线程栈，没有 GUI 截图、用户态栈或提交时间线。
+2026-11-13 用户提供 `refresh-stuck-20261113-002627.zip`。ZIP 容器当前不可用；从先前提取目录复核了原始 `recovery.log`、`recovery-after.log`、线程栈、线程列表、logcat、dmesg，SHA-256 与既有分析记录一致。原始日志只保留本地，不上传公开仓库。没有 GUI 截图、用户态栈或提交时间线。
 
+<a id="现场采样"></a>
 ## 已确定
 
 - recovery.log 第1279行启动 Refreshing Sizes，第1288行记录 Data backup size is 95.0 GB，第1289行完成，第1290行 `operation_end - status=0`。
 - 邻近单调时钟为67535ms和72682ms；因此该次刷新从开始到操作结束不超过约5.15秒。不能用采集时仍显示的文字推断容量扫描持续到338秒。
 - 两份 recovery 日志相同；之后仍有输入相关亮度/反馈记录。不能将用户反馈“页面一直不结束”否定为没有问题，但现场不支持“仍在扫描”的判断。
 - 338.12秒附近采集时，主Recovery进程主线程的内核栈经过 `kthread_flush_work` → `dpu_drm_atomic_commit` → DRM atomic ioctl。其他线程主要为Binder、futex、poll及定时等待；没有可辨认的刷新worker或目录扫描栈。
+- 同一轮线程列表显示 `disp_commit_0`（PID/TID 264）当时处于不可中断 `D` 状态，内核等待点名为 `dpu_kms_wait_for_hw_cfg_done`。这比单独的主线程栈更具体：**采样瞬间确有显示提交线程等待硬件配置完成**，且主Recovery线程另一个非原子快照正在 DRM atomic commit。
+- 两份采样并非同一原子快照；没有重复栈、等待时长、具体提交属性/帧、完成中断或内核错误记录，不能证明该等待持续到采集前、由刷新完成页面触发，或就是页面停留的唯一原因。故这是一条显示路径的直接新线索，不是已定位的 GUI 根因或可据以改 DRM 的证据。
 - 主线程 wchan 为 hrtimer_nanosleep，syscall为ppoll，而单独读取的stack为DRM ioctl。这些字段非原子读取，可能采到不同瞬间。因此**不能据此宣称驱动永久卡死，也不能直接切换DRM模式/加超时冒充修复**。
 
 ## 已核对的代码
@@ -32,7 +35,7 @@
 
 提供 [只读采集器](../tools/refresh-state-collector/README.md)，逐项超时保存两组线程/内核日志。Windows/手机上尚未执行验证。现阶段没有“修复刷新卡住”的新生产补丁或新镜像；当前ab-command候选是此前OTA命令修正，不能作为本故障修复版。
 
-可复查本地报告：`logs/refresh-capture-analysis.json`、`logs/refresh-progress.json`。分析脚本 `scripts/analyze_refresh_capture.py`处理PowerShell UTF-16与UTF-8日志；输出包含原日志摘要和本地来源哈希，公开摘要只列结论，不上传设备原日志内容。
+可复查本地报告：`logs/refresh-capture-analysis-current.json`、`logs/refresh-progress.json`。分析脚本 `scripts/analyze_refresh_capture.py`处理PowerShell UTF-16与UTF-8日志，并从线程清单识别 `disp_commit_0` 等待点；输出包含原日志摘要和本地来源哈希，公开摘要只列结论，不上传设备原日志内容。此次更新没有修改生产代码、DRM 行为或镜像，也没有重跑刷新 worker / DONE 回放。
 
 ## 本轮页面生命周期有限收尾
 
@@ -106,6 +109,6 @@ python3 tests/refresh_loop_test.py
 
 报告为本地 `logs/refresh-loop.json`，包含原源码、夹具、LVGL 库来源和编译命令。使用 UBSan。扫描、DataManager / 操作呈现、字体 / flush、输入、性能策略、提交门控、路由组装及不相关 GUI 服务为显式替身；后台 poll 和 console poll 仅计数，未重新验证 FIFO / 日志窗口。其他页面的进度轮询若意外进入会失败。**这不是完整 Android GUI 或真实 DRM 执行。**
 
-该结果确认：在所述边界返回时，原 tick 与主循环能接到 DONE；提交等待可以使已完成的 worker 暂时无法呈现，但不证明现场有持久 DRM 阻塞。现场非原子内核栈不足以作此结论。下一步应使用能区分提交等待和历史文字的现场证据，不再增加同类 DONE / 扫描夹具，也不根据模拟等待切换 DRM 或加入猜测性超时。
+该结果确认：在所述边界返回时，原 tick 与主循环能接到 DONE；若 GUI 线程等待显示提交，worker 可先完成而终态无法呈现。现场现增加了同一采集时刻 `disp_commit_0` 位于 `dpu_kms_wait_for_hw_cfg_done` 的证据，但缺少跨时采样，仍无法确定卡住持续时间和因果。后续若从已有采集继续分析，应优先查找相邻时间点的 `disp_commit_0` 栈 / 唤醒变化及 DRM 错误 / 完成事件；若没有这些材料，不从单次快照推演生产修改，也不增加同类 DONE / 扫描夹具。
 
 本批只新增执行证据，无生产修正、无新补丁、无镜像重编；当前候选仍以交付报告为准。现场问题保持未解决。
