@@ -5,7 +5,9 @@ Host C++ Wipe/helpers/manager/changefilesystem/Repair/ExecCmd/WaitForChild run i
 private chroot. Exact tool argv pass through QEMU launchers to delivered linker,
 libraries and ARM64 tools. Device resolution/unmount/block-size ioctl (stat),
 properties, empty /proc/mounts and metadata/presentation are explicit fixtures; no physical mount,
-full ARM Recovery, GUI, fscrypt, SELinux labeling or power-loss proof.
+full ARM Recovery, GUI, fscrypt or power-loss proof. Optional --selinux executes
+the active e2fsdroid branch with host libselinux lookup, delivered text contexts
+and actual ARM64 image labeling; it does not test kernel SELinux enforcement.
 """
 import argparse
 import hashlib
@@ -29,6 +31,7 @@ def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--report',type=Path,default=ROOT/'logs/format-tool-chain.json')
+    parser.add_argument('--selinux',action='store_true',help='Only test ext4 labeling and policy-file failures; no ordinary tool regression rerun')
     args=parser.parse_args()
     index=json.loads((ROOT/'simulation-report.json').read_text());image=Path(index['image'])
     assert sha(image)==index['image_sha256']
@@ -52,12 +55,23 @@ def main():
     with tempfile.TemporaryDirectory(prefix='format-tool-chain-') as temp:
         work=Path(temp);jail=work/'jail';jail.mkdir();android=jail/'android'
         entries=ramdisk_entries(boot_parts(image.read_bytes())[1]['ramdisk'])
+        policy=None;policy_name=None;split_policies={}
         for name,mode,*rest in entries:
+            if name in ['file_contexts','prebuilt_file_contexts'] and stat.S_ISREG(mode):
+                if policy is None or name=='prebuilt_file_contexts':policy=rest[-1];policy_name=name
+            if name in ['plat_file_contexts','system_ext_file_contexts','product_file_contexts','vendor_file_contexts','odm_file_contexts'] and stat.S_ISREG(mode):
+                split_policies[name]=rest[-1]
             if not name.startswith(('system/bin/','system/lib64/','system/etc/')) or not stat.S_ISREG(mode):continue
             relative=Path(name);assert not relative.is_absolute() and '..' not in relative.parts
             dest=android/relative;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(rest[-1]);dest.chmod(mode&0o777);extracted[name]=sha(dest)
         (work/'methods.inc').write_text('\n\n'.join(bodies));binary=jail/'test'
         cmd=[str(clang),'-std=c++23','-stdlib=libc++','-O1','-g','-I'+str(work),str(ROOT/'tests/format_tool_chain_test.cpp'),'-Wl,-rpath,'+str(clang.parent.parent/'lib/x86_64-unknown-linux-gnu'),'-o',str(binary)]
+        if args.selinux:
+            assert policy is not None
+            cmd+=['-DTEST_SELINUX','-lselinux']
+            extracted[policy_name]=hashlib.sha256(policy).hexdigest()
+            assert len(split_policies)==5
+            extracted.update({name:hashlib.sha256(data).hexdigest() for name,data in split_policies.items()})
         subprocess.run(cmd,check=True);deps_for(binary)
         for dep in deps:
             dest=jail/dep.relative_to('/');dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(dep,dest);dest.chmod(0o755)
@@ -89,12 +103,16 @@ LD_LIBRARY_PATH=/android/system/lib64 MKE2FS_CONFIG=/android/system/etc/mke2fs.c
             return result
         target('mke2fs',['-t','ext4','-b','4096','-I','512','/fixtures/pristine.img','65536'])
         (jail/'invocations.txt').unlink()
-        for name in ['to-f2fs','to-ext4','global-rmrf','partition-rmrf','too-small','missing-tool']:
+        names=['label-data','label-system','label-combined-missing','label-missing','label-invalid'] if args.selinux else ['to-f2fs','to-ext4','global-rmrf','partition-rmrf','too-small','missing-tool']
+        for name in names:
             path=fixtures/'target.img'
             if name=='too-small':
                 with path.open('wb') as f:f.truncate(4<<20)
             else:shutil.copyfile(pristine,path)
-            if name=='to-ext4':target('make_f2fs',['-g','android','/fixtures/target.img','65536'])
+            if name=='to-ext4' or args.selinux:target('make_f2fs',['-g','android','/fixtures/target.img','65536'])
+            if args.selinux:
+                (jail/'file_contexts').write_bytes(policy)
+                for policy_path,data in split_policies.items():(jail/policy_path).write_bytes(data)
             before=sha(path);record=jail/'invocations.txt';record.unlink(missing_ok=True)
             launcher=jail/'system/bin/make_f2fs'
             if name=='missing-tool':launcher.rename(launcher.with_suffix('.absent'))
@@ -102,7 +120,21 @@ LD_LIBRARY_PATH=/android/system/lib64 MKE2FS_CONFIG=/android/system/etc/mke2fs.c
             if name=='missing-tool':launcher.with_suffix('.absent').rename(launcher)
             invoked=record.read_text().splitlines() if record.exists() else []
             if run.returncode!=0:raise AssertionError((name,run.returncode,run.stdout,run.stderr,invoked))
-            ok=name not in ['too-small','missing-tool'];checks={'caller_status':run.returncode==0,'missing_tool_unchanged':name!='missing-tool' or sha(path)==before}
+            ok=name not in ['too-small','missing-tool','label-missing','label-invalid'];checks={'caller_status':run.returncode==0,'missing_tool_unchanged':name!='missing-tool' or sha(path)==before}
+            if args.selinux:
+                checks['formatted_ext4']=path.read_bytes()[1080:1082]==b'\x53\xef'
+                checks['disk_changed']=sha(path)!=before
+                checks['original_tool_arguments']=invoked[:12]==['mke2fs','-t','ext4','-b','4096','-I','512','-O','metadata_csum,64bit,extent','/fixtures/target.img','65536','e2fsdroid'] and invoked[12:]==['-e','-S','/file_contexts','-a','/' if name=='label-system' else '/data','/fixtures/target.img']+(['e2fsck','-fp','/fixtures/target.img'] if ok else [])
+                # Independent ext reader: inspect bytes stored in the image,
+                # rather than treating a successful tool exit as proof.
+                read=subprocess.run([str(debugfs),'-R','ea_list /',str(path)],capture_output=True,text=True,timeout=15)
+                root_context='u:object_r:rootfs:s0' if name=='label-system' else 'u:object_r:system_data_root_file:s0'
+                checks['root_label']=read.returncode==0 and ('security.selinux' in read.stdout and root_context in read.stdout if ok else 'security.selinux' not in read.stdout)
+                if not ok:
+                    checks['failure_propagated']='RESULT status=1 filesystem=ext4 repair=0' in run.stdout and 'e2fsck' not in invoked
+                cases.append(dict(name=name,status='PASS' if all(checks.values()) else 'FAIL',checks=checks,invocations=invoked,stdout=run.stdout,stderr=run.stderr,label_readback=dict(stdout=read.stdout,stderr=read.stderr)))
+                print(name,cases[-1]['status'],checks,flush=True)
+                continue
             if ok:
                 blob=path.read_bytes();checks['disk_changed']=sha(path)!=before
                 if name=='to-ext4':
@@ -121,6 +153,7 @@ LD_LIBRARY_PATH=/android/system/lib64 MKE2FS_CONFIG=/android/system/etc/mke2fs.c
             cases.append(dict(name=name,status='PASS' if all(checks.values()) else 'FAIL',checks=checks,invocations=invoked,stdout=run.stdout,stderr=run.stderr))
             print(name,cases[-1]['status'],checks,flush=True)
     paths=[*selected,Path(__file__),ROOT/'tests/format_tool_chain_test.cpp',ROOT/'tests/nested_partition_path_test.py',ROOT/'scripts/firmware_facts.py',ROOT/'scripts/acquire_firmware.py',SRC/'partitions.hpp',image,qemu,qsource,clang,debugfs,*deps]
+    if args.selinux:paths += [Path('/usr/include/selinux/label.h'),Path('/usr/include/selinux/selinux.h')]
     report=dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL',scope=__doc__,image_sha256=index['image_sha256'],cases=cases,tool_transcripts=transcripts,launchers=launchers,ramdisk_files=extracted,sources={str(p):sha(p) for p in paths})
     args.report.write_text(json.dumps(report,indent=2)+'\n')
     return report['status']!='PASS'

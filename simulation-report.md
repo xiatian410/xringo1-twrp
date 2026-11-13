@@ -13,6 +13,10 @@
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
+## 本批证据：ext4 标签初始化
+
+扩展既有工具接续，实际执行当前镜像 ARM64 e2fsdroid：`/data` 与 System 根标签经独立 debugfs 读回确认，Android 分离规则选择及缺失 / 无效规则的失败返回五项通过；共用测试工具的原六项场景回归通过。首次夹具漏复制镜像已有的分离规则，失败保留，没有据此修改生产代码。镜像及 809 来源不变，无新增构建；真实挂载 / 加密 / 完整 GUI 生命周期仍未完成。范围与结果见[文件系统标签初始化](docs/FILESYSTEM-TOOLS-EXECUTION.md#postformat-selinux)。
+
 ## 0090 当前交付：COW 初始化失败不再崩溃
 
 真实 ARM64 快照初始化测试发现：COW 头部 `fsync` 返回 I/O 错误后，`CreateCowWriter` 返回空指针，旧 SnapshotManager 仍调用 `Finalize` 并触发 SIGSEGV。0090 补齐空判断，返回原有错误路径并执行清理。新候选已按要求清理构建，809 来源与六 profile 封装核对通过。

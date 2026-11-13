@@ -1,5 +1,31 @@
 # 当前镜像文件系统工具实际执行
 
+<a id="postformat-selinux"></a>
+## ext4 格式化后的实际标签初始化
+
+既有工具接续将 `selinux_handle` 设为空，没有执行 `WipeExtfs` 中的标签初始化分支。本次扩展原 `format_tool_chain_test` 的 `--selinux` 模式：主机编译的原 Wipe / helper / manager / changefilesystem / ExecCmd 使用 host libselinux 读取当前镜像的合并标签文件；原命令通过固定 QEMU、同镜像 linker / 库执行 ARM64 mke2fs、e2fsdroid 和 e2fsck。目标均为私有 256 MiB 普通文件，卸载和设备容量等仍为明确边界。
+
+Android 版 e2fsdroid 的 `android_configure_fs` 使用 `selinux_android_file_context_handle()`，**不会使用 `-S /file_contexts` 传入的规则**。它先查找各分区 `etc/selinux` 下的文件，再回退到 ramdisk 根目录的 `plat_file_contexts`、`system_ext_file_contexts`、`product_file_contexts`、`vendor_file_contexts` 和 `odm_file_contexts`。当前镜像包含这五份文本规则。首次夹具只复制合并文件，导致工具找不到规则；该失败日志保留为本地 `logs/format-selinux-chain.log`，不能据此认定生产镜像缺文件或修改生产库。
+
+| 定向场景 | 实际结果 |
+| --- | --- |
+| `/data` 格式化后初始化标签 | e2fsdroid 与前置 mke2fs、后续 e2fsck 成功；独立 host debugfs 读到根 inode 的 `security.selinux=u:object_r:system_data_root_file:s0` |
+| `/system_root` 规范化为 `/` | 原 helper 传入 `-a /`；独立读到根 inode 的 `u:object_r:rootfs:s0` |
+| 父进程加载 handle 后删除合并文件 | Android 工具仍使用镜像的五份分离规则，实际标签与修复成功，确认两种路径选择不同 |
+| 五份分离规则全部缺失 | 原工具返回错误，manager / backend 失败；盘面已经是 ext4，保持新类型，不执行目录重建或 Repair，不承诺回滚格式化 |
+| platform 规则中的正则无效 | 实际规则查找失败，错误按同一路径传回；未写入根标签，不误报完成 |
+
+五项通过；共用测试工具改变后，原六项格式转换 / 修复工具场景做了一次必要回归并通过。独立读回检查的是文件镜像里的根 inode xattr，不是依据工具退出码推断标签正确。没有新增生产修正或构建，当前镜像及 809 份生产来源不变。
+
+```bash
+# 已执行。相关输入不变时复用，不例行重跑。
+python3 tests/format_tool_chain_test.py --selinux --report logs/format-selinux-chain-current.json
+python3 tests/format_tool_chain_test.py --report logs/format-selinux-native-regression.json
+python3 scripts/audit_format_selinux_chain.py
+```
+
+本地报告保存每项命令、错误输出、独立标签读回和同镜像资源摘要；公开结果见 [CURRENT-VALIDATION.json](CURRENT-VALIDATION.json)。父进程的标签解析是主机 libselinux，不是完整 ARM64 Recovery；本次使用 ramdisk 的文本规则回退，没有证明挂载原系统后优先规则、内核 SELinux 强制访问控制、FBE / fscrypt、真实挂载或完整页面生命周期。可选 USE_EXT4 内建 formatter 仍按原范围记录，不能用此 e2fsdroid 分支的通过替代证明。
+
 <a id="format-mounted-guards"></a>
 ## 离线格式化的挂载前置检查（0086）
 

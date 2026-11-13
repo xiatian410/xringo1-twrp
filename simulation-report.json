@@ -1936,7 +1936,7 @@
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
     "MTP remaining media metadata and final post-child directory date semantics (file epoch0/timestamp-error publication and directory SendObjectInfo time/completion16 cases covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
     "backup/restore real archive codec/GUI and sparse-hole/progress behavior, actual filesystem power-loss durability and content authenticity; new-backup completion manifests and restore rejection are covered by17 helper,55 RunBackup and56 RunRestore host cases but do not prove sudden power-loss behavior",
-    "full GUI/PartitionManager write/format/repair lifecycle and I/O faults; current-image tools17 historical cases, e2fsck result146 assertions and current-image wrapper/lookup/Repair/ExecCmd/ARM64 checker7 joined cases covered with explicit unmount/device/presentation fixtures; real mounts/full GUI still pending; patch0073 covers RemoveDir + WipeRmrf/AndSec/DataCache -> manager -> backend LIST/run terminal result with real private permission failures; patch0074 executes media-preserving recursion and real exclusion matching through manager/backend13 cases; full Wipe dispatch, GUI/format lifecycle, concurrent writers and power-loss remain pending; patch0075 covers Dalvik mount/query/delete failures and internal-media root retention through backend16 cases, inode/user xattr marker is not actual fscrypt proof; full GUI/format/repair, real mounts/MTP and I/O lifecycle remain pending; patch0076 covers requested format dispatch/rmrf override/missing tools/result state25 fixture cases; actual target formatter -> readback -> repair -> full GUI/mount lifecycle still pending; actual current-image ARM64 ext4/F2FS formatter + original caller/ExecCmd/Repair chain6 now covered on regular files, ext4 independent payload readback and F2FS populated structural check; full mounts/GUI/fscrypt/SELinux and independent F2FS content readback still pending; patch0087 covers ext post-format type and persist temporary mount/delete/unmount failures, Android Secure recreation return/bind errors covered by0088; media recreation/full mount/GUI remains pending;0089 covers non-FBE startup media mkdir/query/bind ordering, not full init/GUI/fscrypt or optional USE_EXT4 postprocessing",
+    "Full filesystem format/write/repair lifecycle through GUI/manager, real mounts/fscrypt, concurrent changes and I/O/power-loss cleanup remain pending. Maintained paths cover deletion error propagation/media preservation, conversion dispatch, mount guards, persist temporary-mount cleanup, Android Secure recreation and non-FBE startup media creation. Current-image ARM64 ext4/F2FS tools execute on private regular files; ext4 post-format e2fsdroid now has five joined labeling/policy-failure cases with independent root xattr readback. This does not prove real SELinux enforcement, FBE or full GUI lifecycle.",
     "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
     "video target ARM64 codec/display-shadow sampling integration, real storage/codec fault behavior, hour-scale stability and seek/index performance (bounded12.5s multi-cluster/keyframe correctness covered), GUI player rendering and full-resolution performance; host frames/queue/failure recovery plus independent FFmpeg native decode and72 short input seeks covered",
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
@@ -3704,6 +3704,22 @@
       "evidence_sha256": "8749c589d0a2cc4ae43a93f479431cb0bc28c342c8499a9c2007a0b3dde9393e",
       "scope": "Model lifetime probe: static ownership reproduces exit SIGSEGV; scoped Cleanup/reset exits0. Current probe supersedes prior fixed-path report; earlier digest retained. No payload/production change.",
       "previous_evidence_sha256": "7dbee9d443ea9f7755ea0486e7a0326777309f81ed2878059785d60f72f3fbfe"
+    },
+    {
+      "name": "ext4-postformat-selinux-chain",
+      "result": "pass",
+      "count": 5,
+      "evidence": "logs/format-selinux-chain-current.json",
+      "evidence_sha256": "4e60d1d76c88d98847b8d96f729a245e6eaa537bc6aea8f1f0e9ed37824676e1",
+      "scope": "Original format/repair call chain executes current-image ARM64 tools on files.\n\nHost C++ Wipe/helpers/manager/changefilesystem/Repair/ExecCmd/WaitForChild run in\nprivate chroot. Exact tool argv pass through QEMU launchers to delivered linker,\nlibraries and ARM64 tools. Device resolution/unmount/block-size ioctl (stat),\nproperties, empty /proc/mounts and metadata/presentation are explicit fixtures; no physical mount,\nfull ARM Recovery, GUI, fscrypt or power-loss proof. Optional --selinux executes\nthe active e2fsdroid branch with host libselinux lookup, delivered text contexts\nand actual ARM64 image labeling; it does not test kernel SELinux enforcement.\n"
+    },
+    {
+      "name": "ext4-postformat-default-tool-regression",
+      "result": "pass",
+      "count": 6,
+      "evidence": "logs/format-selinux-native-regression.json",
+      "evidence_sha256": "9ec77ae8bb41cbf0960bdd7e861368a80a9ace435765de1f9edc010a6befad36",
+      "scope": "Original format/repair call chain executes current-image ARM64 tools on files.\n\nHost C++ Wipe/helpers/manager/changefilesystem/Repair/ExecCmd/WaitForChild run in\nprivate chroot. Exact tool argv pass through QEMU launchers to delivered linker,\nlibraries and ARM64 tools. Device resolution/unmount/block-size ioctl (stat),\nproperties, empty /proc/mounts and metadata/presentation are explicit fixtures; no physical mount,\nfull ARM Recovery, GUI, fscrypt or power-loss proof. Optional --selinux executes\nthe active e2fsdroid branch with host libselinux lookup, delivered text contexts\nand actual ARM64 image labeling; it does not test kernel SELinux enforcement.\n"
     }
   ],
   "source_review_followups": [
@@ -3928,7 +3944,20 @@
       "No GUI/PartitionManager operation, mount, encryption, discard or physical I/O.",
       "No claim of complete F2FS data-content readback or kernel casefold behavior."
     ],
-    "full_lifecycle": "pending"
+    "full_lifecycle": "pending",
+    "postformat_selinux": {
+      "image_sha256": "cc73c3cb1335bc6059a079047da87d044ba7dd1033104458d741a8f995908f8b",
+      "evidence": "logs/format-selinux-chain-current.json",
+      "evidence_sha256": "4e60d1d76c88d98847b8d96f729a245e6eaa537bc6aea8f1f0e9ed37824676e1",
+      "cases": 5,
+      "scope": "Original host Wipe/helper/manager/backend and ExecCmd -> delivered ARM64 e2fsdroid/e2fsck; host parent selabel handle, shipped combined and split contexts, independent debugfs root security.selinux readback. No physical device or mount.",
+      "android_policy_selection": "Android e2fsdroid ignores -S in favor of selinux_android_file_context_handle split policy paths. First fixture omitted these paths; current image contains all five; no production patch justified.",
+      "failures": "Missing all split policies or invalid platform regex cause actual e2fsdroid failure, backend1, formatted ext4 state retained, no directory recreation or Repair. Combined policy deletion after parent handle loading leaves split tool lookup working.",
+      "production_changed": false,
+      "new_build": false,
+      "kernel_selinux_enforcement": false,
+      "full_lifecycle": false
+    }
   },
   "repair_exit_status": {
     "patch": "dtsrc/O1_asic_dual/patches/0030-e2fsck-corrected-result.patch",

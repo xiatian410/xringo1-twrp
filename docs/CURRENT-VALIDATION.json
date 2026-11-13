@@ -1411,14 +1411,30 @@
       "local_report_sha256": "8749c589d0a2cc4ae43a93f479431cb0bc28c342c8499a9c2007a0b3dde9393e",
       "scope": "Preserved one-run original OS4.0.4 full ZIP: signature/host parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager allocation10 COWs -> original controller writer/all4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified state then modeled slot. No seeded allocation. Engine subsequently SIGSEGV/exits1 after success callbacks; parent correctly INSTALL_ERROR. INSTALLATION FAILED. Exact-adapter allocation-only probe reproduces crash with process-static controller, exits0 with scoped reset; model lifetime issue, not proven production defect. Synthetic32GiB LP/independent file mappings/readonly/mount/HAL/slot/proc/cleanup/GUI remain models, scratch/daemon disabled. No production changes/build; no full payload replay to hide failure.",
       "previous_report_sha256": "7dbee9d443ea9f7755ea0486e7a0326777309f81ed2878059785d60f72f3fbfe"
+    },
+    {
+      "name": "ext4-postformat-selinux-chain",
+      "status": "PASS",
+      "cases": 5,
+      "failures": 0,
+      "local_report_sha256": "4e60d1d76c88d98847b8d96f729a245e6eaa537bc6aea8f1f0e9ed37824676e1",
+      "scope": "Original format/repair call chain executes current-image ARM64 tools on files.\n\nHost C++ Wipe/helpers/manager/changefilesystem/Repair/ExecCmd/WaitForChild run in\nprivate chroot. Exact tool argv pass through QEMU launchers to delivered linker,\nlibraries and ARM64 tools. Device resolution/unmount/block-size ioctl (stat),\nproperties, empty /proc/mounts and metadata/presentation are explicit fixtures; no physical mount,\nfull ARM Recovery, GUI, fscrypt or power-loss proof. Optional --selinux executes\nthe active e2fsdroid branch with host libselinux lookup, delivered text contexts\nand actual ARM64 image labeling; it does not test kernel SELinux enforcement.\n"
+    },
+    {
+      "name": "ext4-postformat-default-tool-regression",
+      "status": "PASS",
+      "cases": 6,
+      "failures": 0,
+      "local_report_sha256": "9ec77ae8bb41cbf0960bdd7e861368a80a9ace435765de1f9edc010a6befad36",
+      "scope": "Original format/repair call chain executes current-image ARM64 tools on files.\n\nHost C++ Wipe/helpers/manager/changefilesystem/Repair/ExecCmd/WaitForChild run in\nprivate chroot. Exact tool argv pass through QEMU launchers to delivered linker,\nlibraries and ARM64 tools. Device resolution/unmount/block-size ioctl (stat),\nproperties, empty /proc/mounts and metadata/presentation are explicit fixtures; no physical mount,\nfull ARM Recovery, GUI, fscrypt or power-loss proof. Optional --selinux executes\nthe active e2fsdroid branch with host libselinux lookup, delivered text contexts\nand actual ARM64 image labeling; it does not test kernel SELinux enforcement.\n"
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
   "current_batch_groups": [
-    12
+    6
   ],
-  "current_batch_document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success",
-  "current_batch_groups_scope": "After model Cleanup releases controller before process-static destruction, one original OS4.0.4 full ZIP run succeeds in explicit file model: whole-file signature/host ZIP parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager initializes10 COWs -> original controller writer4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified publication -> modeled slot/unmap/Cleanup -> engine0/wait0/parent INSTALL_SUCCESS0.24 checks pass,881seconds. Synthetic32GiB source LP, independent file DM views, readonly/mount/HAL/slot/proc/cleanup/GUI remain models; scratch/daemon disabled. No production change/build or physical mapping/boot/merge/full device OTA.",
+  "current_batch_document": "docs/FILESYSTEM-TOOLS-EXECUTION.md#postformat-selinux",
+  "current_batch_groups_scope": "Test evidence: active ext4 post-format labeling and policy failures; five new joined cases plus six necessary shared-harness regressions. Production image unchanged; no complete filesystem/GUI or hardware claim.",
   "stock_os4_zip_entry": {
     "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
     "report": "logs/zip-stock-os4-fixed.json",
