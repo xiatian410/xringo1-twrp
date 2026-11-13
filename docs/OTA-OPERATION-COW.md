@@ -481,3 +481,23 @@ python3 scripts/audit_snapuserd_handler.py --ordered
 六项及共享夹具受影响的原handler八项回归通过。报告为 `logs/ota-snapuserd-ordered.json`、`logs/ota-snapuserd-ordered-handler-regression.json`、`logs/snapuserd-ordered-audit.json`；公开摘要见CURRENT-VALIDATION。旧handler报告保持原始哈希，新增可选模式不自动使历史报告成为当前来源一致。没有新增生产缺陷或重编镜像，也不重复0080 EOF与其他未变功能。
 
 本批只覆盖一个小型read-ahead窗口、同步I/O与合成COW。多窗口、大规模依赖、io_uring、预读持久区的进程死亡/重启重建、SnapshotManager到实际服务端完整接续、内核映射和完整OTA仍未覆盖。不能将scratch正常写入读回称为断电恢复。后续优先针对持久续合并这一独立边界推进，不重复同类COPY/XOR正常场景。
+
+<a id="snapuserd-resume"></a>
+
+## 合并进程退出后的 scratch 重建与已提交进度恢复
+
+前节仅正常写入scratch。本节复用同一runner和handler，新增 `--resume`：在原始ARM64 MergeWorker第一次目标pwrite前、完成一块后、完成全部ordered块后，或原始header msync已提交两项后，让整个服务进程执行 `_exit(86)`，不走析构或优雅停止。父进程waitpid确认退出，再创建全新的socketpair、服务进程、client和handler。fixture不改写COW header、scratch数据或进度，也不修改生产代码。
+
+四种中断均已执行。前三种中断核对scratch状态为Done、进度0，目标分别保持原样/只改首块/改两块；新服务真实 `ReconstructDataFromCow` 重建旧源数据，恢复后的快照内容在再次发起合并前逐块核对。第四种在实际msync成功后退出，重新打开COW核对进度2和scratch InProgress；新handler只剩replace/zero两项，沿已提交进度继续，而不是重复读取已覆盖的COPY/XOR源。最终均核对整个64 KiB目标、未修改尾部、COW进度4及完成/删除/停止。
+
+partial/full写入退出点在真实写入后额外同步私有目标文件，便于确定测试中的落地内容；这不是对手机断电窗口的模拟。msync退出点只在实际成功返回且header进度为2时触发。旧源码和正常读写方法均未改，底层容量与dm-user控制端点仍为普通文件/socket替身。
+
+```bash
+python3 tests/ota_snapuserd_server.py --resume
+python3 tests/ota_snapuserd_server.py --ordered --report logs/ota-snapuserd-resume-ordered-regression.json
+python3 scripts/audit_snapuserd_handler.py --resume
+```
+
+四项进程重建和受影响有序合并六项回归通过。报告为 `logs/ota-snapuserd-resume.json`、`logs/ota-snapuserd-resume-ordered-regression.json` 和 `logs/snapuserd-resume-audit.json`；当前0080镜像、798份生产来源和六profile不变，无新生产修正或重编。历史报告保留原哈希，不把扩展后的测试入口视为旧报告已自动更新。
+
+该证据证明本合成窗口在指定进程退出点能够从实际保存状态重建，不证明硬件断电、主机page cache丢失、任意撕裂写、io_uring、多窗口/大规模依赖或损坏scratch的行为。仍未接入SnapshotManager到这套真实服务端、init/属性/SELinux、内核映射及完整OTA。此四个退出点收尾，不增加等价重复回放；后续按多窗口或manager收尾接续的具体实现决定推进。

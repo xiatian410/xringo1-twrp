@@ -60,7 +60,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "09b9a92a57a33a4c9693d2fa6f3ae55e922189c44a38f9bacd0a785c7a4c6cf3",
+    "sha256": "cc6739d66b4cf5f60c7b4f55eb94c57b4d95193a49c1ceff5ac90e5ce9d6b179",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -112,7 +112,7 @@
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
-    "sha256": "4fd93fbd7c46046e23fae6ff903bda9d569537a48250bfaf23901d941ab39251",
+    "sha256": "fa2f1c501cd41c3c0ffb7b8e82d5dd8248cb29d90fa9ddbdbb0b54cfcc2f0b2a",
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
@@ -156,7 +156,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "7b7e471ce578d113f278505ecfe16c6d30c0fa2a4261c721ecb6a1e5b2665835",
+    "sha256": "a6a7c283f456c8585cb0e3ba9d1e569af546d8afcf79d31743c32a6bdd0e7969",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1272,7 +1272,7 @@
     "mode": "0o644"
   },
   "scripts/audit_snapuserd_handler.py": {
-    "sha256": "6d34d7d5f3ee478f4b531084b677bc6da059c6defa574f7e2fed93c137ee6329",
+    "sha256": "331c3391b5c1174045d83e5212b8f2f2b9dbcb27f0284495a07eda57eddce3a7",
     "mode": "0o644"
   },
   "scripts/audit_snapuserd_socket.py": {
@@ -1644,11 +1644,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "1a5eb0f5343923a96c58e5cc9e677d326d4648553b62dfec0199d855fbeb6c5c",
+    "sha256": "a284144b7faa2dab50b387abaf7f666fa182dc3de774b38ce2113710741e8367",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "e59c856a1e0be05a7453c2216e36e8f202b6b5c1018553a9dbe1659efd0fd0ce",
+    "sha256": "fbf50f190e81561a6ae67c5fc90b5e4a69b4ce09629ce7dc58cd87f8bfe437e0",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2260,7 +2260,7 @@
     "mode": "0o644"
   },
   "tests/ota_snapuserd_handler.cpp": {
-    "sha256": "35e6e4e5e6be809fce31d9c96d049e1e4f53a4d615506b7e00f7bf230e7cb5be",
+    "sha256": "0b42bb0671899e520451510eb81300b3480373532ebd1356df4f54a58a24770a",
     "mode": "0o644"
   },
   "tests/ota_snapuserd_server.cpp": {
@@ -2268,7 +2268,7 @@
     "mode": "0o644"
   },
   "tests/ota_snapuserd_server.py": {
-    "sha256": "78e933ea761361b378a94dc3f789e6b4c0afef32f5fc7eb1acb8291e851dcc5c",
+    "sha256": "8dd632612016bca9b82a75d23a862437c62baf361770cbfe72d02b884c873484",
     "mode": "0o644"
   },
   "tests/ota_snapuserd_socket.cpp": {

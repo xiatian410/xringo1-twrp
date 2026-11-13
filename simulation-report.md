@@ -15,9 +15,11 @@
 
 ## 后续执行证据
 
-有序COPY/XOR与实际ReadAhead已补六场景，覆盖双块依赖、XOR偏移21、混合操作、scratch区和写入/同步失败；整文件与重新打开COW进度核对通过，共享handler八项回归通过。无生产修改或重编，持久区进程死亡续合并、多窗口与内核接续仍未验证，见[有序合并范围](docs/OTA-OPERATION-COW.md#snapuserd-ordered)。
+scratch保存后，在目标写入前/一块后/ordered块全写后及header提交两项后退出整个服务，再创建新client/server/handler的四项恢复通过：前三项走真实scratch重建，第四项沿进度2继续，重启后快照读取、最终全文件及进度4均核对。受影响ordered六项回归通过。没有生产修正或重编；进程退出恢复不等于手机断电，见[恢复范围](docs/OTA-OPERATION-COW.md#snapuserd-resume)。
 
-实际 client Connect/query、server、SnapshotHandlerManager、ReadWorker 与 replace/zero MergeWorker 已接续八场景。真实COW压缩数据/零块读取、64 KiB合并内容与未改尾部逐字节核对，写入/同步故障均保持失败；容量查询和dm-user端点为明确替身。没有发现新增生产缺陷，不重编0080镜像。该检查点未包含COPY/XOR/RA；后续有序合并见上文，持久续合并、内核映射和完整OTA仍待完成，见[范围](docs/OTA-OPERATION-COW.md#snapuserd-handler)。
+有序COPY/XOR与实际ReadAhead已补六场景，覆盖双块依赖、XOR偏移21、混合操作、scratch区和写入/同步失败；整文件与重新打开COW进度核对通过，共享handler八项回归通过。无生产修改或重编，此检查点未验证进程死亡续合并（后续见上文），多窗口与内核接续仍未验证，见[有序合并范围](docs/OTA-OPERATION-COW.md#snapuserd-ordered)。
+
+实际 client Connect/query、server、SnapshotHandlerManager、ReadWorker 与 replace/zero MergeWorker 已接续八场景。真实COW压缩数据/零块读取、64 KiB合并内容与未改尾部逐字节核对，写入/同步故障均保持失败；容量查询和dm-user端点为明确替身。没有发现新增生产缺陷，不重编0080镜像。该检查点未包含COPY/XOR/RA；后续有序合并见上文，进程退出后的局部续合并见上文，硬件断电、内核映射和完整OTA仍待完成，见[范围](docs/OTA-OPERATION-COW.md#snapuserd-handler)。
 
 ## 0080交付时的定向验证
 

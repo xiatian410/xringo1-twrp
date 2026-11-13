@@ -5,6 +5,7 @@
 #include <signal.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <cstdarg>
@@ -31,6 +32,7 @@ static dev_t base_dev;
 static ino_t base_ino;
 static bool fail_write = false, fail_sync = false;
 static int injected_writes = 0, injected_syncs = 0;
+static int crash_point = 0;
 static bool is_base(int fd) {
     struct stat st{};
     return !fstat(fd, &st) && S_ISREG(st.st_mode) && st.st_dev==base_dev && st.st_ino==base_ino;
@@ -38,12 +40,28 @@ static bool is_base(int fd) {
 extern "C" ssize_t __real_pwrite(int, const void*, size_t, off_t);
 extern "C" int __real_fsync(int);
 extern "C" ssize_t __wrap_pwrite(int fd, const void* data, size_t size, off_t off) {
+    if (crash_point && crash_point<4 && is_base(fd)) {
+        if (crash_point==1) _exit(86);
+        size_t amount=crash_point==2 ? 4096 : size;
+        ssize_t result=__real_pwrite(fd, data, amount, off);
+        if (result!=static_cast<ssize_t>(amount) || __real_fsync(fd)) _exit(87);
+        _exit(86);
+    }
     if (fail_write && is_base(fd)) { ++injected_writes; errno=EIO; return -1; }
     return __real_pwrite(fd, data, size, off);
 }
 extern "C" int __wrap_fsync(int fd) {
     if (fail_sync && is_base(fd)) { ++injected_syncs; errno=EIO; return -1; }
     return __real_fsync(fd);
+}
+extern "C" int __real_msync(void*, size_t, int);
+extern "C" int __wrap_msync(void* address, size_t size, int flags) {
+    int result=__real_msync(address,size,flags);
+    if (crash_point==4 && result==0 && size==4096) {
+        auto* header=static_cast<CowHeader*>(address);
+        if (header->prefix.magic==kCowMagicNumber && header->num_merge_ops==2) _exit(86);
+    }
+    return result;
 }
 extern "C" int __real_open(const char*, int, ...);
 extern "C" int __real___open_2(const char*, int);
@@ -85,13 +103,87 @@ static bool read_block(int fd, uint64_t sector, const std::vector<char>& expecte
     std::vector<char> data(expected.size());
     return readable(fd) && android::base::ReadFully(fd, data.data(), data.size()) && data == expected;
 }
+static int restart_merge(const std::string& name, const std::vector<char>& initial,
+                         const std::vector<char>& expected) {
+    const int point=name=="resume-before-write" ? 1 : name=="resume-partial-write" ? 2 : name=="resume-after-write" ? 3 : 4;
+    for (int phase=0; phase<2; ++phase) {
+        unlink("/dev/socket/offline-snapuserd");
+        int sockets[2], pipes[2];
+        if (socketpair(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0, sockets) || pipe(pipes)) return 21;
+        unique_fd kernel(sockets[0]), daemon(sockets[1]), r(pipes[0]), w(pipes[1]);
+        control_fd=daemon.get();
+        pid_t child=fork();
+        if (child<0) return 22;
+        if (!child) {
+            kernel.reset(); r.reset(); crash_point=phase==0 ? point : 0;
+            UserSnapshotServer server;
+            server.Initialize(false);
+            if (!server.Start("offline-snapuserd") || write(w,"1",1)!=1) _exit(23);
+            w.reset(); bool ok=server.Run(); _exit(ok?0:24);
+        }
+        daemon.reset(); w.reset(); char marker=0;
+        bool ok=readable(r) && read(r,&marker,1)==1 && marker=='1';
+        auto client=ok ? SnapuserdClient::Connect("offline-snapuserd", std::chrono::milliseconds(500)) : nullptr;
+        ok=ok && bool(client) && client->InitDmUserCow("offline","/work/cow","/work/base","/work/base")==128 &&
+           client->AttachDmUser("offline");
+        if (phase==1) {
+            // Real startup reconstructs scratch BEFORE serving reads or resuming the merge.
+            for (size_t block=0; ok && block<4; ++block) {
+                ok=read_block(kernel,block*8,std::vector<char>(expected.begin()+block*4096,expected.begin()+(block+1)*4096));
+            }
+            printf("restart_snapshot_readback=%d\n",int(ok));
+        }
+        ok=ok && client->InitiateMerge("offline");
+        if (phase==1) {
+            bool done=false;
+            for (int i=0; ok && i<300; ++i) {
+                auto state=client->QuerySnapshotStatus("offline");
+                if (state=="snapshot-merge-complete") { done=true; break; }
+                if (state=="snapshot-merge-failed") { ok=false; break; }
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+            std::vector<char> content(expected.size());
+            unique_fd base(open("/work/base",O_RDONLY));
+            ok=ok && done && base>=0 && android::base::ReadFully(base,content.data(),content.size()) && content==expected;
+            ok=shutdown(kernel,SHUT_RDWR)==0 && ok;
+            ok=ok && client->WaitForDeviceDelete("offline") && client->StopSnapuserd();
+            printf("restart_merge_complete=%d whole_base_readback=%d\n",int(done),int(ok));
+        }
+        if (!ok) kill(child,SIGKILL);
+        int status=0;
+        bool waited=TEMP_FAILURE_RETRY(waitpid(child,&status,0))==child;
+        ok=ok && waited && WIFEXITED(status) && WEXITSTATUS(status)==(phase==0?86:0);
+        client.reset();
+        CowReader persisted;
+        bool parsed=persisted.Parse(unique_fd(open("/work/cow",O_RDONLY)));
+        ok=ok && parsed && persisted.GetHeader().num_merge_ops==(phase==0 ? (point==4?2:0) : 4);
+        if (phase==0) {
+            std::vector<char> content(initial.size()), partial=initial;
+            if (point>1) std::copy(expected.begin(),expected.begin()+(point==2?4096:8192),partial.begin());
+            unique_fd base(open("/work/base",O_RDONLY)), cow(open("/work/cow",O_RDONLY));
+            BufferState state{};
+            ok=ok && base>=0 && android::base::ReadFully(base,content.data(),content.size()) && content==partial &&
+               cow>=0 && android::base::ReadFullyAtOffset(cow,&state,sizeof(state),persisted.GetHeader().prefix.header_size) &&
+               state.read_ahead_state==(point==4?kCowReadAheadInProgress:kCowReadAheadDone);
+            printf("crash_point=%d child_exit=%d scratch_state=%d persisted_progress=%llu partial_base_readback=%d\n",point,
+                   WIFEXITED(status)?WEXITSTATUS(status):-1,int(state.read_ahead_state),
+                   parsed?static_cast<unsigned long long>(persisted.GetHeader().num_merge_ops):999ULL,int(ok));
+        } else {
+            printf("resume_progress=%llu result=%s\n",parsed?static_cast<unsigned long long>(persisted.GetHeader().num_merge_ops):999ULL,ok?"PASS":"FAIL");
+        }
+        if (!ok) return 25+phase;
+    }
+    return 0;
+}
+
 int main(int argc, char** argv) {
     android::base::InitLogging(argv, android::base::StderrLogger);
     if (argc != 2) return 2;
     const std::string name = argv[1];
-    const bool ordered = name.rfind("ordered-", 0)==0;
+    const bool resume = name.rfind("resume-", 0)==0;
+    const bool ordered = name.rfind("ordered-", 0)==0 || resume;
     const bool merge = name.rfind("merge-", 0)==0 || ordered;
-    const bool scratch = name=="ordered-scratch";
+    const bool scratch = name=="ordered-scratch" || resume;
     fail_write = name=="merge-write-error" || name=="ordered-write-error";
     fail_sync = name=="merge-sync-error" || name=="ordered-sync-error";
     std::vector<char> raw(4096);
@@ -143,6 +235,7 @@ int main(int argc, char** argv) {
         } else if (!writer->AddRawBlocks(0, raw.data(), raw.size()) || !writer->AddZeroBlocks(1, 1)) return 4;
         if (!writer->Finalize()) return 4;
     }
+    if (resume) return restart_merge(name,initial,expected_ordered);
     if (name == "corrupt-cow") {
         unique_fd cow(open("/work/cow", O_RDWR));
         uint64_t zero=0;

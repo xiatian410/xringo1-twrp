@@ -3275,6 +3275,14 @@
       "evidence": "logs/ota-snapuserd-ordered.json",
       "evidence_sha256": "e74d55e841b403f68740999b0156ee3cded2bbaf4d12e85d684bd3927c24a350",
       "scope": "Actual ARM64 client/server/handler ReadWorker + ReadAhead + ordered COPY/XOR MergeWorker, cyclic sources and XOR offset21; replace/zero mixed and scratch-space case. Real COW, ordinary-file base, socketpair dm-user endpoint/size doubles. Independent whole-file content, persisted COW progress and ordered write/fsync errors. No kernel mappings, process-death resume, io_uring or full OTA."
+    },
+    {
+      "name": "actual-snapuserd-process-resume",
+      "result": "pass",
+      "count": 4,
+      "evidence": "logs/ota-snapuserd-resume.json",
+      "evidence_sha256": "c6d516823d3f8d4b1c021e4a9019223e04cfb000f6c41d671f70aca1807dc39e",
+      "scope": "Actual ARM64 server exits abruptly from base pwrite boundary before/after partial/full ordered writes or after real header msync commits two ops; scratch and progress unchanged by fixture. New server process reconstructs original scratch before reads, resumes merge, independently verifies whole base and persisted progress. Ordinary-file base/size and dm-user socket doubles, no kernel mapping, hardware power loss, init or full OTA."
     }
   ],
   "source_review_followups": [
@@ -4142,6 +4150,23 @@
       "production_changed": false,
       "kernel_mapping": false,
       "persistent_resume": false,
+      "full_ota_install": false
+    },
+    "snapuserd_process_resume": {
+      "document": "docs/OTA-OPERATION-COW.md#snapuserd-resume",
+      "report": "logs/ota-snapuserd-resume.json",
+      "cases": 4,
+      "regression": "logs/ota-snapuserd-resume-ordered-regression.json",
+      "regression_cases": 6,
+      "actual_process_restart": true,
+      "actual_scratch_reconstruction": true,
+      "actual_committed_progress_resume": true,
+      "whole_base_readback": true,
+      "capacity_dm_user_boundaries": true,
+      "production_changed": false,
+      "power_loss": false,
+      "multiple_windows": false,
+      "kernel_mapping": false,
       "full_ota_install": false
     }
   },

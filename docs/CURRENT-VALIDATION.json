@@ -958,12 +958,28 @@
       "failures": 0,
       "local_report_sha256": "7aa08b50f61aebb2b953a1d28c9dbf87a644297fd602b18e5c0cf316a6631f92",
       "scope": "Actual ARM64 SnapuserdClient Connect/query/init/start/delete and original server/handler/COW/ReadWorker. Base size and dm-user open are explicit ordinary-file/socket doubles. Real AF_UNIX, COW writer/reader, decompression, worker exit/delete/reinitialize, replace/zero merge and whole-base readback; injected base pwrite/fsync errors. No kernel mapping, physical device, init properties, COPY/XOR/RA or persistent merge resume."
+    },
+    {
+      "name": "actual-snapuserd-process-resume",
+      "status": "PASS",
+      "cases": 4,
+      "failures": 0,
+      "local_report_sha256": "c6d516823d3f8d4b1c021e4a9019223e04cfb000f6c41d671f70aca1807dc39e",
+      "scope": "Actual ARM64 server exits abruptly from base pwrite boundary before/after partial/full ordered writes or after real header msync commits two ops; scratch and progress unchanged by fixture. New server process reconstructs original scratch before reads, resumes merge, independently verifies whole base and persisted progress. Ordinary-file base/size and dm-user socket doubles, no kernel mapping, hardware power loss, init or full OTA."
+    },
+    {
+      "name": "process-resume-ordered-regression",
+      "status": "PASS",
+      "cases": 6,
+      "failures": 0,
+      "local_report_sha256": "5ea7b62c79fb73f1c29445081df644e61f6cc2aed14c6cc3cf9abf4405585592",
+      "scope": "Actual ARM64 client/server/handler ReadWorker + ReadAhead + ordered COPY/XOR MergeWorker, cyclic sources and XOR offset21; replace/zero mixed and scratch-space case. Real COW, ordinary-file base, socketpair dm-user endpoint/size doubles. Independent whole-file content, persisted COW progress and ordered write/fsync errors. No kernel mappings, process-death resume, io_uring or full OTA."
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
   "current_batch_groups": [
     12
   ],
-  "current_batch_document": "docs/OTA-OPERATION-COW.md#snapuserd-ordered",
-  "current_batch_groups_scope": "Execution evidence only: actual ordered COPY/XOR/ReadAhead six cases, cyclic sources/offset21/scratch/write-sync failures, whole-file readback and persisted COW progress. Handler8 affected regression. No production change, rebuild, process-death resume, kernel mapping or full OTA."
+  "current_batch_document": "docs/OTA-OPERATION-COW.md#snapuserd-resume",
+  "current_batch_groups_scope": "Execution evidence only: four abrupt process exit points with fresh server/client/handler restart. Actual scratch reconstruction/committed progress resume, premerge snapshot reads, whole-base readback and COW progress; ordered6 regression. No production change/rebuild, hardware power loss, multiwindow, kernel mapping or full OTA."
 }
