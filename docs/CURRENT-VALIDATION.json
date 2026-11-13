@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-stock-ota-trust.img",
-  "image_sha256": "f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931",
-  "production_sources": 808,
+  "image_name": "recovery-dijun-unified-snapshot-cow-init.img",
+  "image_sha256": "cc73c3cb1335bc6059a079047da87d044ba7dd1033104458d741a8f995908f8b",
+  "production_sources": 809,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -1367,14 +1367,32 @@
       "synthetic_source_layout": true,
       "full_ota_install": false,
       "scope": "Actual ARM64 production PreparePartitionsForUpdate -> SnapshotManager allocation -> CancelUpdate -> intact direct LP preparation, using stock OS4.0.4 manifest and synthetic regular-file source LP. Mapping denial/NO_SPACE fall back only after cancellation succeeds; cancellation fsync failure stops before direct operations, unmap/store failures propagate. Real liblp writes/reads target metadata; source metadata bytes preserved, target/source extents overlap18676176 sectors. Directory/mount token/HAL/AVB-no-op/unmap/store error boundaries explicit; no real devices/payload replay/full OTA. No production change/build."
+    },
+    {
+      "name": "stock-os4-snapshot-initialization",
+      "status": "PASS",
+      "expected_failure": false,
+      "cases": 3,
+      "failures": 0,
+      "local_report_sha256": "f1d778f99b9b1e7decebd0cff6a70d89dd00a31f4781f18febdf07e56b333722",
+      "scope": "Patch0090 handles CreateCowWriter initialization failure before Finalize; original old implementation crashes on null after injected header fsync EIO. Actual ARM64 SnapshotManager with unchanged OS4.0.4 manifest initializes and CowReader parses10 empty COWs, publishes target LP, recreates manager and finishes to Unverified2/HAL1. Normal/path error/header-sync error3 pass; same harness and image libraries with old snapshot TU reproduces exactly1 null crash. Explicit synthetic32GiB source LP and separate sparse file DM views, HAL/kernel/ImageManager boundaries; IsTestDevice disables scratch and daemon. No payload replay, real mapping/mount/slot/boot/merge or full OTA. Production patch and clean build809; six profiles unchanged."
+    },
+    {
+      "name": "stock-os4-snapshot-initialization-negative",
+      "status": "FAIL",
+      "expected_failure": true,
+      "cases": 3,
+      "failures": 1,
+      "local_report_sha256": "2419f29761916e63d61c62688411f4d42a99f530ecbf8fa3eb3f06a590773636",
+      "scope": "Patch0090 handles CreateCowWriter initialization failure before Finalize; original old implementation crashes on null after injected header fsync EIO. Actual ARM64 SnapshotManager with unchanged OS4.0.4 manifest initializes and CowReader parses10 empty COWs, publishes target LP, recreates manager and finishes to Unverified2/HAL1. Normal/path error/header-sync error3 pass; same harness and image libraries with old snapshot TU reproduces exactly1 null crash. Explicit synthetic32GiB source LP and separate sparse file DM views, HAL/kernel/ImageManager boundaries; IsTestDevice disables scratch and daemon. No payload replay, real mapping/mount/slot/boot/merge or full OTA. Production patch and clean build809; six profiles unchanged."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
   "current_batch_groups": [
     12
   ],
-  "current_batch_document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-engine-joined",
-  "current_batch_groups_scope": "One-run host original TWinstall_zip/signature/A-B command/fork/pipe -> explicit QEMU bridge/current linker -> original ARM64 sideload main/ApplyPayload/DownloadAction/FileFetcher. Stock OS4 ZIP signature accepted;4933 operations/payload hash/42 final hashes pass; actual engine exits63 at ordinary-file block-readonly, original parent INSTALL_ERROR1/wait16128, protocol/progress/cleanup/reap pass. INSTALLATION FAILED; no SnapshotManager/postinstall mount/program/slot/merge. No production change/build.",
+  "current_batch_document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization",
+  "current_batch_groups_scope": "Patch0090 handles CreateCowWriter initialization failure before Finalize; original old implementation crashes on null after injected header fsync EIO. Actual ARM64 SnapshotManager with unchanged OS4.0.4 manifest initializes and CowReader parses10 empty COWs, publishes target LP, recreates manager and finishes to Unverified2/HAL1. Normal/path error/header-sync error3 pass; same harness and image libraries with old snapshot TU reproduces exactly1 null crash. Explicit synthetic32GiB source LP and separate sparse file DM views, HAL/kernel/ImageManager boundaries; IsTestDevice disables scratch and daemon. No payload replay, real mapping/mount/slot/boot/merge or full OTA. Production patch and clean build809; six profiles unchanged.",
   "stock_os4_zip_entry": {
     "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
     "report": "logs/zip-stock-os4-fixed.json",
@@ -1433,5 +1451,26 @@
     "production_changes": false,
     "new_build": false,
     "scope": "One-run host original TWinstall_zip/signature/A-B command/fork/pipe -> explicit QEMU bridge/current linker -> original ARM64 sideload main/ApplyPayload/DownloadAction/FileFetcher. Stock OS4 ZIP signature accepted;4933 operations/payload hash/42 final hashes pass; actual engine exits63 at ordinary-file block-readonly, original parent INSTALL_ERROR1/wait16128, protocol/progress/cleanup/reap pass. INSTALLATION FAILED; no SnapshotManager/postinstall mount/program/slot/merge. No production change/build."
+  },
+  "stock_snapshot_initialization": {
+    "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization",
+    "report": "logs/ota-snapshot-initialize.json",
+    "report_sha256": "f1d778f99b9b1e7decebd0cff6a70d89dd00a31f4781f18febdf07e56b333722",
+    "negative_report": "logs/ota-snapshot-initialize-negative.json",
+    "negative_report_sha256": "2419f29761916e63d61c62688411f4d42a99f530ecbf8fa3eb3f06a590773636",
+    "audit": "logs/snapshot-cow-init-delivery.json",
+    "patch": "0090-snapshot-cow-initialization-failure.patch",
+    "cases": 3,
+    "old_failures": 1,
+    "image_sha256": "cc73c3cb1335bc6059a079047da87d044ba7dd1033104458d741a8f995908f8b",
+    "initialized_cows": 10,
+    "synthetic_source_layout": true,
+    "file_mapping_model": true,
+    "scratch_and_daemon_disabled_for_test": true,
+    "actual_kernel_mapping": false,
+    "full_ota_install": false,
+    "production_changes": true,
+    "new_build": true,
+    "scope": "Patch0090 handles CreateCowWriter initialization failure before Finalize; original old implementation crashes on null after injected header fsync EIO. Actual ARM64 SnapshotManager with unchanged OS4.0.4 manifest initializes and CowReader parses10 empty COWs, publishes target LP, recreates manager and finishes to Unverified2/HAL1. Normal/path error/header-sync error3 pass; same harness and image libraries with old snapshot TU reproduces exactly1 null crash. Explicit synthetic32GiB source LP and separate sparse file DM views, HAL/kernel/ImageManager boundaries; IsTestDevice disables scratch and daemon. No payload replay, real mapping/mount/slot/boot/merge or full OTA. Production patch and clean build809; six profiles unchanged."
   }
 }

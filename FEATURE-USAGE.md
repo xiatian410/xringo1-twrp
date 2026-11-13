@@ -23,9 +23,9 @@
 
 原厂 A/B 完整包在 Recovery 中可能因快照分配失败而转入直接更新。该路径会复用源分区空间，不能把 A/B 标识理解为安装中断后旧系统必然可启动。原控制器在取消旧快照失败时会停止，离线接续结果与限制见[取消与回退](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-preparation)。
 
-原厂 `OS4.0.4.0.XODCNXM` 完整包已补测安装器的 ZIP / 签名 / A/B 命令入口：旧 media-recreate 候选的三张证书无法验证该包；stock-ota-trust 候选已加入从六份固定哈希原厂 recovery 提取的同一张小米 OTA 公钥，原包开启签名验证后通过。移除这张公钥的负向检查仍拒绝。没有从待安装包动态导入信任，也没有关闭验证。测试子进程仍只核对更新参数、不安装 payload，**完整卡刷尚未验收**，详见[原始包检查范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip)。
+原厂 `OS4.0.4.0.XODCNXM` 原始完整包已在明确模型中接通完整签名验证、真实 ARM64 引擎 4933 操作 / 42 分区哈希、原厂 Recovery postinstall 保护分支与真实快照完成状态发布；引擎及父安装器返回成功。真实映射、挂载、槽位与重启合并仍未验收，不能据此保证实机卡刷成功，见[整包模型范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-model-finish)。
 
-后续已把原 ZIP 父进程接到真实 ARM64 引擎，在一次运行中完成签名、全量 payload 和 42 分区校验；普通文件块只读设置失败后，引擎返回 63，父安装器正确报告失败并清理。真实 SnapshotManager 和安装收尾仍未贯通，**不能据此认为完整包可正常卡刷**，见[父子接续范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-engine-joined)。
+0090 修复快照创建阶段 COW 初始化失败引发的空指针崩溃，改为报告失败并清理。独立 ARM64 普通文件测试覆盖十份空 COW 初始化及两种失败；不能把这些阶段与此前整包运行拼成一次设备安装验收，见[初始化范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization)。
 
 ## 状态栏与屏幕
 

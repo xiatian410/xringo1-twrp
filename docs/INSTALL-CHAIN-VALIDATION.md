@@ -1,5 +1,30 @@
 # 镜像路由与 ZIP 安装链离线验收
 
+<a id="stock-snapshot-initialization"></a>
+## 当前修正：快照 COW 初始化失败空指针崩溃（0090）
+
+真实 `SnapshotManager::InitializeUpdateSnapshots` 调用 `CreateCowWriter` 后，原实现直接解引用返回值。原 COW writer 在头部同步失败时返回空指针；注入一次 `fsync=EIO` 后，旧实现发生 `SIGSEGV / fault addr 0x0`，绕过清理。0090 将判据改为 `!writer || !writer->Finalize()`，保留原有错误返回与 RAII 清理，不把失败视为成功。
+
+当前候选 `recovery-dijun-unified-snapshot-cow-init.img`，SHA-256 `cc73c3cb1335bc6059a079047da87d044ba7dd1033104458d741a8f995908f8b`，已执行 `installclean` 与 `make -j$(nproc)`，绑定 809 份生产来源。测试链接本次构建的原始 ARM64 库，经同镜像 linker / libc 和固定 QEMU 执行；未重跑完整 payload。
+
+| 定向场景 | 原生产方法的执行结果 |
+| --- | --- |
+| 正常初始化 | 原始 4.0.4 manifest 驱动 `BeginUpdate → CreateUpdateSnapshots`，规划十份快照 / COW；真实 writer 初始化 / Finalize，真实 reader 逐份解析版本、块大小与空操作；发布目标 LP，重建 manager 后真实完成状态到 Unverified=2，HAL 记录 SNAPSHOTTED 一次 |
+| 第二份映射路径查询失败 | 返回错误，移除已创建视图与十份状态文件，LP 前缀不变，保持 Initiated=1 |
+| 第二份 COW 头部同步失败 | 注入一次真实同步边界 EIO；工厂返回空，修复后返回错误并完成同样清理；不发布完成 |
+
+当前三项通过；同一夹具、新镜像库与输入、仅替换旧 `snapshot.cpp` 的负向运行前两项通过，最后一项复现空指针崩溃。历史失败报告原样保留。改前 / 改后源文件仅该空判断不同。
+
+**边界：**源 LP 为合成 32 GiB，源分区尺寸来自目标 manifest，不能代表手机现状或实际可用空间。原代码构造映射表后，映射接口为每个 COW 返回独立稀疏普通文件；它不是内核 DM，也不与 super 的实际 extent 共用数据。内核能力、ImageManager、HAL / 属性为明确替身；`IsTestDevice=true` 关闭 scratch 与 daemon 启动。此处初始化的是空 COW，没有执行 payload、真实挂载、init / 槽位切换、重启或合并。该阶段与下文整包模型是不同运行，不能拼接宣称完整设备 OTA 验收。
+
+本地证据为 `logs/ota-snapshot-initialize.json`、`logs/ota-snapshot-initialize-negative.json` 及 `logs/snapshot-cow-init-delivery.json`，公开摘要见 [CURRENT-VALIDATION.json](CURRENT-VALIDATION.json)。封装变化只涉及构建属性、摘要及静态链接 snapshot 的 recovery / init / fastbootd / update_engine_sideload；六 profile、信任库与其余条目不变。
+
+```bash
+# 已执行，相关输入未变时复用，不例行重跑。
+python3 tests/ota_snapshot_initialize.py
+python3 scripts/audit_snapshot_cow_init_delivery.py
+```
+
 <a id="stock-zip-model-finish"></a>
 ## 原始 OS4.0.4 完整包：模型内安装链成功，完整设备安装尚未验收
 
@@ -16,7 +41,7 @@
 
 **模型边界必须保留：**块设备只读设置与 `/postinstall` 挂载 / 卸载由替身返回；脚本预先提取到目录，没有实际挂载文件系统。PreparePartitionsForUpdate 使用普通文件 / COW 模型，并预置十份快照分配状态，未执行真实 SnapshotManager 分配。Boot HAL、槽位、旧更新清理、proc 与 GUI 为夹具；完成状态发布不会创建内核映射，也未贯通 snapuserd、真实重启或快照合并。ZIP 父进程仍是主机编译，并非完整 ARM64 Recovery / GUI 启动。不能据此宣称该 ZIP 在手机上刷入、启动和合并均正常。
 
-本地报告 `logs/zip-engine-model-finish.json` 绑定原始输出、源码、原对象 / 库、镜像输入及所有断言；独立核对入口为 `scripts/audit_zip_engine_join.py --model-finish`，公开摘要见 [CURRENT-VALIDATION.json](CURRENT-VALIDATION.json)。模型没有触发生产缺陷修正，当前镜像仍为 `recovery-dijun-unified-stock-ota-trust.img`，SHA-256 `f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931`，808 生产来源；未重编。
+本地报告 `logs/zip-engine-model-finish.json` 绑定原始输出、源码、原对象 / 库、镜像输入及所有断言；独立核对入口为 `scripts/audit_zip_engine_join.py --model-finish`，公开摘要见 [CURRENT-VALIDATION.json](CURRENT-VALIDATION.json)。该轮模型没有触发生产缺陷修正，当时镜像为 `recovery-dijun-unified-stock-ota-trust.img`，SHA-256 `f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931`，808 生产来源；未重编。
 
 ```bash
 # 已完成；输入与相关源码未变时复用报告，不例行重复约十五分钟的全量执行。

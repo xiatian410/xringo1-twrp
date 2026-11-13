@@ -6,14 +6,22 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-stock-ota-trust.img` |
-| SHA-256 | `f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931` |
-| 生产来源绑定 | 808 份 |
+| 文件 | `recovery-dijun-unified-snapshot-cow-init.img` |
+| SHA-256 | `cc73c3cb1335bc6059a079047da87d044ba7dd1033104458d741a8f995908f8b` |
+| 生产来源绑定 | 809 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 后续执行证据
+## 0090 当前交付：COW 初始化失败不再崩溃
+
+真实 ARM64 快照初始化测试发现：COW 头部 `fsync` 返回 I/O 错误后，`CreateCowWriter` 返回空指针，旧 SnapshotManager 仍调用 `Finalize` 并触发 SIGSEGV。0090 补齐空判断，返回原有错误路径并执行清理。新候选已按要求清理构建，809 来源与六 profile 封装核对通过。
+
+正常、路径查询失败、头部同步失败三项定向检查通过；使用同一夹具和镜像库、替换为旧 SnapshotManager 的负向检查仅同步失败项崩溃。正常项真实初始化并解析十份空 COW，发布目标 LP，重建 manager 后持久化 Unverified 状态；两种失败均清除临时映射 / 状态、保持 Initiated，不误报完成。内核映射由独立稀疏普通文件代替，源 LP 为合成 32 GiB，HAL / kernel / ImageManager 为明确边界；测试模式关闭 scratch 和 daemon 启动。**没有重跑整包，不代表真实映射 / 挂载 / 槽位 / 重启合并验收。** 见[初始化与故障范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization)，本地交付核对 `logs/snapshot-cow-init-delivery.json`。
+
+## 历史阶段证据
+
+以下条目保留各轮执行时的镜像与边界；“无新构建”仅指该轮，当前候选以上表为准。
 
 原控制器分配失败到回退接续新增五项：真实 `PreparePartitionsForUpdate → SnapshotManager → CancelUpdate → 直接 LP 准备` 在原始 manifest / 普通文件布局中执行；映射失败或空间不足会在取消成功后发布目标 LP，取消 fsync 失败则停止，卸载 / 保存失败也返回 false。两项成功准备的源目标范围重叠，不能据源 metadata 保留宣称中断可回滚。共享布局夹具相关七项回归通过；无生产修改或新构建，见[回退与取消门控](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-preparation)。
 
