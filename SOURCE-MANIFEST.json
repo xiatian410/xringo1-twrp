@@ -28,7 +28,7 @@
     "mode": "0o644"
   },
   "FEATURE-USAGE.md": {
-    "sha256": "9499b7151c7713a4444ddd3caf7b35e2280fa1f13a57657533785c0bed82d595",
+    "sha256": "f4c96ccf84355e297f9390e501ba9eba93d8a2d74160460a576fbb1b628130ba",
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "0a130ce9709f4ec8ab2605875d8b1db84b4ac732162d0214e3d0b12bc1abf880",
+    "sha256": "201612ade4e183466dd604e0f42f85a9736276cb1ebb85708d4ecc6af7d312d5",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -80,7 +80,7 @@
     "mode": "0o644"
   },
   "docs/INSTALL-CHAIN-VALIDATION.md": {
-    "sha256": "73feb75d0e6d60d557af185a341ee84658df672555b0f95eb5d02c9b84cff64f",
+    "sha256": "4727f0adc64912ccad2f759404ebe3aa39e19471beb76715a646863b3517830a",
     "mode": "0o644"
   },
   "docs/MODULE-STATE-ADAPTATION.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "6fe19f22b1b205979e4b7008089594459bb339a0ac8990997b9a37a412cc48d8",
+    "sha256": "073fd49af1a9e90e67b7a7a5dddc470c0bc90be305bfbe7fe641e1e87b57c9af",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1672,11 +1672,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "c8754bfcb4dbb14cb769ecc628a2d23e23dc6f6e6b4567532671826f80ec51bf",
+    "sha256": "758b1bb2ede81c6e01a4789a62b5a4edd5a2843d16226e0c2979deead77e7af7",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "8591aa969cab11dee8a76fb7c1584d29a28d637a47abf6137cf43ba825681e96",
+    "sha256": "ff776e7cf242f856d618a8ff7e6bc78cc5e8516d7ea827764b7dcac25812bc6f",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2744,7 +2744,7 @@
     "mode": "0o644"
   },
   "tests/zip_install_chain_test.py": {
-    "sha256": "8c5afefdc9787ee4254fc3d8c9c89bba6431fc52ccdd7d45cf3411ecf092d0ef",
+    "sha256": "2c0490960d64acf6fd61aba9b98d1d665686a47e88a7fed652d677db3cf05db5",
     "mode": "0o644"
   },
   "tests/zip_install_fixture.cpp": {
@@ -2761,6 +2761,10 @@
   },
   "tests/zip_queue_fixture.cpp": {
     "sha256": "1aa3cee89010dc2f54eec737ec04ea42d128e175ac6ec182dd4328f392ec12cb",
+    "mode": "0o644"
+  },
+  "tests/zip_stock_support.py": {
+    "sha256": "181a81aa85eaff28ebe9707e91f23dced82c66dfd054af3ad905cb477d26d0db",
     "mode": "0o644"
   },
   "tests/zip_updater_fixture.cpp": {

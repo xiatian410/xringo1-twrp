@@ -15,6 +15,8 @@
 
 ## 后续执行证据
 
+原始 `OS4.0.4.0.XODCNXM` 完整 ZIP 补测发现：**当前镜像开启 ZIP 签名验证时会拒绝该包**，现有三张证书均无法验证整包签名。诊断环境单独使用包内证书后签名可通过；关闭可选验证时原安装器可正确生成 A/B 命令。四项检查通过指符合这些预期（包含拒绝），不表示四次安装成功；子进程只核对原包 offset / headers / CrAU，不安装 payload。普通 ZIP 36 项回归通过，807 生产来源仍匹配；本批是新证据，无生产修正、证书变更或重编。历史完整 payload 执行属于较早 snapshot-map 镜像，不能与当前入口测试拼成完整 OTA 验收，见[范围与结果](docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip)。
+
 容量刷新新增原 `gui2_loop_tick` / app 主循环接续证据：正常结束、建页前结束与人为提交等待三场景通过。等待期间 worker DONE 不会使阻塞中的 GUI 继续轮询，解除后下一轮更新完成；不证明现场 DRM 长期等待。扫描、提交及设备服务有明确替身，现场根因仍未解决。无生产修改或重编，不重复同类夹具，见[范围](docs/REFRESH-STUCK-INVESTIGATION.md#gui-loop)。
 
 scratch保存后，在目标写入前/一块后/ordered块全写后及header提交两项后退出整个服务，再创建新client/server/handler的四项恢复通过：前三项走真实scratch重建，第四项沿进度2继续，重启后快照读取、最终全文件及进度4均核对。受影响ordered六项回归通过。没有生产修正或重编；进程退出恢复不等于手机断电，见[恢复范围](docs/OTA-OPERATION-COW.md#snapuserd-resume)。

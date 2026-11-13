@@ -1,5 +1,27 @@
 # 镜像路由与 ZIP 安装链离线验收
 
+<a id="stock-os4-zip"></a>
+## 原始 OS4.0.4 完整包：入口已测，完整卡刷未通过
+
+2026-11-13，使用用户提供的 `OS4.0.4.0.XODCNXM` 原始完整 ZIP，大小 7,883,598,024 字节，SHA-256 `a1dcfecccf4397943e6836539bea6573ade01c84ef9ee1e360df9c233493f04b`。当前 media-recreate 镜像及其 807 生产来源绑定保持不变。
+
+`tests/zip_install_chain_test.py --stock-os4` 执行主机编译的原 `TWinstall_zip`、ZIP 映射、整包签名验证、原 A/B metadata 检查与命令构造，以及 fork / pipe / wait。私有 chroot 中只访问普通文件，挂载、属性、GUI 和更新引擎为明确替身。
+
+| 检查 | 实际结果 |
+| --- | --- |
+| 开启签名验证，使用当前镜像原有证书 | 三张证书均无法验证，整包拒绝，更新器未启动 |
+| 开启签名验证，仅在诊断环境使用包内证书 | 原验证器通过整包签名，进入参数核对程序；没有修改生产信任库 |
+| 关闭可选签名验证，原始 ZIP | A/B 命令进入参数核对程序；不表示安装 payload 成功 |
+| 设备属性不匹配 | metadata 检查拒绝，更新器未启动 |
+
+四项 PASS 表示符合上述预期，包含两项拒绝，不能理解为四次刷入成功。参数核对程序确认原始 ZIP 路径、payload 偏移 5229、完整 headers、状态 fd 和该偏移处的 `CrAU`，发送进度并退出；**它没有执行真实 update_engine 或任何 payload 操作**。普通 ZIP 36 项回归也通过。报告为本地 `logs/zip-stock-os4.json` 和 `logs/zip-stock-host-regression.json`，公开摘要见 [CURRENT-VALIDATION.json](CURRENT-VALIDATION.json)。
+
+此前完整 payload 独立执行已覆盖 42 个分区、4933 个操作及全部最终分区哈希，但基于旧 snapshot-map 镜像。不能把历史 payload 执行与这次替身更新器接起来，宣称当前完整 ZIP 安装成功。真实 ZIP → update_engine → SnapshotManager / postinstall → 槽位与合并仍未贯通。详见 [完整 payload 记录](OTA-OPERATION-COW.md)。
+
+本批仅补齐原始 ZIP 入口证据并暴露签名信任限制，不修改生产证书、不自动关闭验证、不生成新镜像。后续应先明确原厂签名信任支持方案，再接续真实引擎，复用已完成的独立 payload 证据。
+
+---
+
 2026-11-13 A/B命令修正：0062 将payload_properties提取失败从成功码改为INSTALL_CORRUPT，拒绝空/NUL headers、压缩/空/越界payload，fork前防御空执行命令。真实ZIP/原命令与pipe/fork/wait接续21项通过，旧版同组8失败，普通ZIP36项回归通过。无害主机程序替代更新器，不执行真实OTA。installclean后30并发构建ab-command候选，SHA256 704b58f5e97563ba9747bbf3c8d0129b83e1233581dec2941d837dfb704aceeb，六profile封装通过；继承XRING O1及NV限制。见docs/INSTALL-CHAIN-VALIDATION.md#ab-command，完整12组保持进行中，源码文档同步GitHub、编译文件不上传。
 
 2026-11-12 新增下文“真实 ARM64 测试 updater”：20项执行当前镜像linker/libc和ZIP内AArch64 ELF，原主机36项回归通过。安装父进程仍为主机程序，execve处显式桥接QEMU；不是完整ARM Recovery、真实OTA updater或payload验收。当前生产镜像保持sideload-reboot候选，未新增生产修正或构建。下文“ARM updater未执行”是此前检查点的范围。

@@ -1278,6 +1278,22 @@
       "failures": 0,
       "local_report_sha256": "9f7209194f2b2de9dec7ee39d18b276a292e0b185b63abdb5281571051e50ee5",
       "scope": "Patch0089 startup RecreateMediaFolder stops on directory query/creation failure, rejects non-directory/symlink, repairs missing user path even if media root exists, restores only missing bind without toggling parent mount. FBE skips remain.13 private-chroot cases pass, old10 fail;16 manager wipe regressions pass. Real directory operations/uid65534 permission failures; mounts/bind, metadata cache and presentation explicit fixtures. No full init/GUI/fscrypt/hardware proof."
+    },
+    {
+      "name": "stock-os4-zip-entry",
+      "status": "PASS",
+      "cases": 4,
+      "failures": 0,
+      "local_report_sha256": "eba1d51c33fb187a375a16750d7445c0ad352e4cdf78928ab7fb06e60b28574c",
+      "scope": "Original OS4.0.4 full ZIP on current host installer. Signature ON with unchanged delivered trust rejects; package-cert acceptance is diagnostic only. Signature OFF reaches harmless A/B argv/offset/header/CrAU checker, NOT payload installation. Wrong-device metadata rejects. No production or trust change; not complete OTA."
+    },
+    {
+      "name": "stock-os4-native-zip-regression",
+      "status": "PASS",
+      "cases": 36,
+      "failures": 0,
+      "local_report_sha256": "3c8af4484ccdf93a87dad771acd4e9a116c15bd493f277ad8dfbed658169afb1",
+      "scope": "Native ZIP regression after adding stock OS4 mode; host fixtures, not real OTA."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
@@ -1285,5 +1301,22 @@
     4
   ],
   "current_batch_document": "docs/MTP-CONTROL-ADAPTATION.md#bulk-completion-error",
-  "current_batch_groups_scope": "Patch0082: native waitEvents returns immediately with original errno when io_getevents fails; no negative-to-unsigned event-array iteration. Real host AIO/pipes/files + one-shot completion fault. EIO/EAGAIN old ASan stack overflow, fixed safe -1; EINTR real retry control; native/compat transport regression. Properties/logging substituted; no physical UDC/Windows, live transfer recovery or full cancel/reset."
+  "current_batch_groups_scope": "Patch0082: native waitEvents returns immediately with original errno when io_getevents fails; no negative-to-unsigned event-array iteration. Real host AIO/pipes/files + one-shot completion fault. EIO/EAGAIN old ASan stack overflow, fixed safe -1; EINTR real retry control; native/compat transport regression. Properties/logging substituted; no physical UDC/Windows, live transfer recovery or full cancel/reset.",
+  "stock_os4_zip_entry": {
+    "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
+    "report": "logs/zip-stock-os4.json",
+    "report_sha256": "eba1d51c33fb187a375a16750d7445c0ad352e4cdf78928ab7fb06e60b28574c",
+    "cases": 4,
+    "image_sha256": "cca13c246a7828aa81c707e63789491586e925b7b050d1440146e549f0e2988d",
+    "source_zip_sha256": "a1dcfecccf4397943e6836539bea6573ade01c84ef9ee1e360df9c233493f04b",
+    "source_zip_bytes": 7883598024,
+    "unchanged_trust_signature_result": "REJECTED",
+    "diagnostic_package_certificate_result": "signature accepted; engine only checks parameters",
+    "signature_disabled_result": "A/B argument checker reached; no payload install",
+    "full_ota_install": false,
+    "production_trust_changed": false,
+    "production_changes": false,
+    "new_build": false,
+    "scope": "Original OS4.0.4 full ZIP on current host installer. Signature ON with unchanged delivered trust rejects; package-cert acceptance is diagnostic only. Signature OFF reaches harmless A/B argv/offset/header/CrAU checker, NOT payload installation. Wrong-device metadata rejects. No production or trust change; not complete OTA."
+  }
 }

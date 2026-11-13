@@ -27,7 +27,9 @@ def main():
     ap.add_argument('--source',type=Path,default=SRC/'twrpinstall/twinstall.cpp')
     ap.add_argument('--report',type=Path,default=ROOT/'logs/zip-install-chain.json')
     ap.add_argument('--arm64',action='store_true',help='Execute genuine target ELF through explicit QEMU exec boundary')
+    ap.add_argument('--stock-os4',action='store_true',help='Original OS4 stable ZIP, delivered trust and A/B dispatch; harmless child only')
     args=ap.parse_args();android=SRC.parents[1]
+    if args.stock_os4 and args.arm64:ap.error('Select one execution scope')
     clang=android/'prebuilts/clang/host/linux-x86/clang-r547379/bin/clang++'
     host=android/'out/host/linux-x86/lib64';base=android/'system/libbase';archive=android/'system/libziparchive'
     crypto=android/'out/soong/.intermediates/external/boringssl/libcrypto/linux_glibc_x86_64_static/libcrypto.a'
@@ -39,6 +41,9 @@ def main():
     bodies=[method(text,s) for s in signatures]
     commands_text=(SRC/'twrpinstall/installcommand.cpp').read_text()
     bodies += [method(commands_text,'int\nupdate_binary_command('),method(commands_text,'bool verify_package_compatibility(')]
+    if args.stock_os4:
+        for sig in ['static int parse_build_number(', 'bool read_metadata_from_package(', 'void read_source_target_build(', 'static int check_newer_ab_build(', 'int\nabupdate_binary_command(']:
+            bodies.append(method(re.sub(r'^\s*//[^\n]*','',commands_text,flags=re.M),sig))
     func=(SRC/'twrp_functions.cpp').read_text()
     bodies += [method(func,'int TWFunc::WaitForChild('),method(func,'static std::vector<std::string> SplitByCharset('),
                method(func,'std::vector<std::string> TWFunc::SplitString(const std::string& in, const char')]
@@ -61,7 +66,8 @@ def main():
               'arch-both','arch-reversed','arch-empty-fallback','generic-no-properties'}
     cases=[];transcripts=[]
     target=None
-    with tempfile.TemporaryDirectory(prefix='zip-install-chain-') as temp:
+    stock=None
+    with tempfile.TemporaryDirectory(prefix='zip-install-chain-',dir=ROOT/'logs' if args.stock_os4 else None) as temp:
         work=Path(temp);harness=work/'test.cpp'
         if args.arm64:
             from zip_arm64_support import Arm64, BRIDGE
@@ -70,6 +76,10 @@ def main():
                    'digest-sha256-good','digest-bad','arch-first','arch-none','generic-priority','generic-no-properties',
                    'arch-unsupported','arch-empty-fallback','extract-open-error','updater-nonzero',
                    'updater-badprogress','target-link-failure','target-missing-lib','target-signal','target-partial-failure']
+        if args.stock_os4:
+            from zip_stock_support import Stock
+            stock=Stock(work)
+            names=stock.names
         inserted='\n'.join(bodies)
         if target:inserted=BRIDGE+inserted+'\n#undef execve\n#undef waitpid\n'
         fixture=(ROOT/'tests/zip_install_chain_test.cpp').read_text()
@@ -78,6 +88,7 @@ def main():
                 'static void SetProgress(float f,bool=false) {printf("target_progress=%g\\n",f);')
             fixture=fixture.replace('static void ShowProgress(float f,int s) {',
                 'static void ShowProgress(float f,int s) {printf("target_show_progress=%g,%d\\n",f,s);')
+        if stock:fixture=stock.fixture(fixture)
         harness.write_text(fixture.replace('// PRODUCTION_METHODS',inserted))
         exe=work/'zip-install'
         cmd=[str(clang),'-std=c++23','-stdlib=libc++','-O1','-g','-Wno-deprecated-declarations',
@@ -88,7 +99,13 @@ def main():
              '-I'+str(android/'system/logging/liblog/include'),'-I'+str(android/'system/core/libcutils/include'),
              '-I'+str(android/'external/googletest/googletest/include'),str(harness),*map(str,library),str(crypto),
              '-L'+str(host),'-Wl,-rpath,'+str(host),'-lbase','-llog','-lz','-ldl','-lpthread','-o',str(exe)]
+        if stock:cmd.insert(1,'-DAB_OTA_UPDATER')
         subprocess.run(cmd,check=True)
+        if stock:
+            report=stock.run(exe,cmd,crypto,clang,[args.source,SRC/'twrpinstall/installcommand.cpp',SRC/'twrp_functions.cpp',SRC/'digest/twrp_digest_driver.cpp',ROOT/'tests/zip_install_chain_test.cpp',Path(__file__).resolve(),ROOT/'tests/nested_partition_path_test.py',*library,*list((SRC/'twrpinstall/include').rglob('*.h')),*list((SRC/'otautil/include').rglob('*.h'))])
+            dest=args.report if args.report!=ROOT/'logs/zip-install-chain.json' else ROOT/'logs/zip-stock-os4.json'
+            dest.write_text(json.dumps(report,indent=2)+'\n')
+            return report['status']!='PASS'
         binaries={}
         for tag in ([] if target else ['generic','arm64','arm32']):
             p=work/('updater-'+tag)
