@@ -22,6 +22,7 @@
 #include <linux/xattr.h>
 #include <linux/capability.h>
 #include <unistd.h>
+#include <zlib.h>
 #include <android-base/file.h>
 #include <android-base/unique_fd.h>
 #include "twrpTar.hpp"
@@ -200,6 +201,33 @@ int main(int argc,char** argv){
   if(scenario=="wait-eintr")ualarm(5000,0);
   int result=TWFunc::WaitForChild(child,&status,"fixture wait");
   CHECK((result==0)==(scenario=="wait-eintr"));puts("PASS child wait status");return 0;
+ }
+ if(scenario.find("-path")!=string::npos){
+  const bool split=scenario.ends_with("-split"), encrypted=scenario.starts_with("aes")||scenario.starts_with("both");
+  const bool compressed=scenario.starts_with("gzip")||scenario.starts_with("both");
+  const bool symlink_case=scenario.find("-symlink")!=string::npos;
+  fs::create_directory("/src");fs::create_directory("/outside");fs::create_directory("/backup");
+  write_file("/outside/keep","DO NOT MODIFY");
+  if(symlink_case)CHECK(symlink("/outside","/src/jump")==0);
+  auto volume=[&](const string& out,const string& name){
+   TAR* handle=nullptr;CHECK(tar_open(&handle,"/backup/plain",nullptr,O_WRONLY|O_CREAT|O_TRUNC,0600,TAR_GNU)==0);
+   th_set_path(handle,const_cast<char*>(name.c_str()));handle->th_buf.typeflag=REGTYPE;th_set_size(handle,0);
+   CHECK(th_write(handle)==0&&tar_append_eof(handle)==0&&tar_close(handle)==0);
+   string input="/backup/plain";
+   if(compressed){
+    string data=read_file(input);gzFile gz=gzopen("/backup/compressed","wb");CHECK(gz);
+    CHECK(gzwrite(gz,data.data(),data.size())==static_cast<int>(data.size()));CHECK(gzclose(gz)==Z_OK);input="/backup/compressed";
+   }
+   if(encrypted)transform(true,input,out);else fs::copy_file(input,out,fs::copy_options::overwrite_existing);
+  };
+  const string archive="/backup/data.ext4.win";
+  const string bad=symlink_case?(split?"/src/jump/keep":"jump/keep"):(split?"/outside/keep":"../outside/keep");
+  if(split){volume(archive+"000","/src/good");volume(archive+(encrypted?"100":"001"),bad);}
+  else volume(archive,bad);
+  ProgressTracking progress(512);PartitionSettings settings;settings.progress=&progress;
+  twrpTar restore;restore.setdir("/src");restore.setfn(archive);restore.setpassword("fixture-password");restore.part_settings=&settings;
+  CHECK(restore.extractTarFork()!=0);CHECK(read_file("/outside/keep")=="DO NOT MODIFY");
+  puts("PASS codec/volume selected-root rejection reaches parent; outside sentinel unchanged");return 0;
  }
  application_xattrs=scenario.find("-xattr")!=string::npos;
  directory_fixture=scenario.find("-dirtime")!=string::npos;

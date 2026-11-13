@@ -24,6 +24,8 @@ CASES += ['gzip-dirtime-bad-crc','both-dirtime-truncated']
 CASES += [kind+'-dirtime-'+fault for kind in ['plain','aes'] for fault in ['symlink','replace']]
 CASES += [kind+'-xattr'+suffix for kind in ['plain','gzip','aes','both','mixed','mixed-gzip'] for suffix in ['', '-split']]
 CASES += [kind+'-xattr-'+fault for kind in ['plain','gzip','aes','both'] for fault in ['write-error','read-error']]
+CASES += [kind+'-path'+suffix for kind in ['plain','gzip','aes','both'] for suffix in ['', '-split']]
+CASES += [kind+'-path-symlink'+suffix for kind in ['plain','aes'] for suffix in ['', '-split']]
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source',type=Path,default=SRC)

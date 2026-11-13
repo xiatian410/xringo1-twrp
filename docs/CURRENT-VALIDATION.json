@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-user-xattrs.img",
-  "image_sha256": "83f6e881f7844c14364692d683b72262a102d90fcc99d6bc46816c1ad29c9227",
-  "production_sources": 819,
+  "image_name": "recovery-dijun-unified-restore-paths.img",
+  "image_sha256": "fb27832383884206ddce0ae7233da11dfc41034b51124d1c4cdbf2852b656c93",
+  "production_sources": 821,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -12,6 +12,38 @@
     "scope": "After Synaptics is live and Xiaomi input is registered, wait 2 seconds, request ordinary touch reports, and check the software cache. This does not prove controller acknowledgement or event delivery. Prior manual raw0 user capture observed 215 Linux input events; this automatic-startup candidate has no corresponding hardware observation."
   },
   "checks": [
+    {
+      "name": "archive-path-restore",
+      "status": "PASS",
+      "cases": 79,
+      "failures": 0,
+      "local_report_sha256": "3bfa8b416cc82244e3bc63c816926cba66fa47e34f51ddd68f977cc1972e4f4d",
+      "scope": "Host original libtar/codecs/fork/volumes reject dotdot, out-of-root absolute names and hardlink targets, existing symlink paths; shared regular inodes detached before truncation. Normal absolute split backups preserved. No race-free fd-relative ancestor traversal, bind-mount isolation, ARM64/full GUI/manager/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-path-negative",
+      "status": "FAIL",
+      "cases": 15,
+      "failures": 11,
+      "local_report_sha256": "6aa5031ec3251949f48e872ddc406809d97949fe4e75bacfa23b11b90ddbe859",
+      "scope": "Host original libtar/codecs/fork/volumes reject dotdot, out-of-root absolute names and hardlink targets, existing symlink paths; shared regular inodes detached before truncation. Normal absolute split backups preserved. No race-free fd-relative ancestor traversal, bind-mount isolation, ARM64/full GUI/manager/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-path-pipeline",
+      "status": "PASS",
+      "cases": 116,
+      "failures": 0,
+      "local_report_sha256": "75b38296744e1e58a97700d9dec6c02d760a55f482239f734d4aaa65dc4956c2",
+      "scope": "Host original libtar/codecs/fork/volumes reject dotdot, out-of-root absolute names and hardlink targets, existing symlink paths; shared regular inodes detached before truncation. Normal absolute split backups preserved. No race-free fd-relative ancestor traversal, bind-mount isolation, ARM64/full GUI/manager/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-path-pipeline-negative",
+      "status": "FAIL",
+      "cases": 12,
+      "failures": 12,
+      "local_report_sha256": "2632e8bcd93be51996198646df03bed6aa88bbe1c42f48765d101fd1ac82fd06",
+      "scope": "Host original libtar/codecs/fork/volumes reject dotdot, out-of-root absolute names and hardlink targets, existing symlink paths; shared regular inodes detached before truncation. Normal absolute split backups preserved. No race-free fd-relative ancestor traversal, bind-mount isolation, ARM64/full GUI/manager/power-loss or rollback proof."
+    },
     {
       "name": "archive-xattr-restore",
       "status": "PASS",

@@ -244,3 +244,14 @@ python3 tests/raw_image_test.py --source backups/raw-image-pre-fix/partition.cpp
 首次独立GNU读回失败记录在 `logs/archive-xattr-restore.log`：每属性独立扩展头被GNU读取时覆盖；合并头后通过。早期PAX构造测试长度常量错误也在确认运行前修正。最终报告 `logs/archive-xattr-restore-delivery.json`、`logs/archive-xattr-negative.json`、`logs/archive-xattr-pipeline-delivery.json`、`logs/archive-xattr-pipeline-negative.json`；交付核对 `scripts/audit_archive_xattr_delivery.py`。
 
 **兼容与限制：**新备份含较大应用属性时，使用多块PAX头，旧Recovery可能明确拒绝；恢复这类备份应使用本次或确认支持该格式的版本。此次沿用旧备份读取语义，没有对旧包增加属性要求。主机用户属性和codec真实运行，挂载/UI/fscrypt/安全provider为替身。没有ARM64恢复、完整manager/GUI、实时应用并发快照、断电或特权xattr验证。失败不回滚已经写入的内容。
+
+<a id="restore-path-boundary"></a>
+## 恢复路径范围（0096）
+
+所选恢复根在打开归档时规范化，并传递给所有分卷和加密线程。拒绝 `..`、越过根边界的绝对路径、现有符号链接祖先以及外部 / 符号链接硬链接源。普通文件使用 `O_NOFOLLOW`；覆盖多硬链接目标时解除当前链接再创建文件，保留目录外共享inode内容。独立符号链接归档仍可保存外部链接文字，但随后不能沿该链接恢复子文件。路径过长返回失败，不截断为另一个路径。正常旧分卷的包内绝对路径仍接受于所选根内。
+
+原始libtar79项和codec/fork/分卷116项通过；同夹具旧实现新增场景分别11/15和12/12失败。codec场景包含plain/gzip/AES/组合格式，第二分卷及独立加密线程的越界项，核对父进程失败与外部哨兵内容不变。首轮长路径夹具只有约4KiB以内，误设为应拒绝；已增加到实际超长输入，未据此改生产逻辑。原始失败报告保留本地。
+
+本修正使用路径检查后调用原提取方法，不是逐层目录描述符隔离；并发祖先替换仍有TOCTOU窗口，根内bind mount也不被识别。不存在完整恶意归档沙箱、ARM64恢复、真实挂载/GUI/manager或断电证明。拒绝发生前已恢复内容不回滚。
+
+本地证据：`logs/archive-path-restore-final.json`、`logs/archive-path-negative.json`、`logs/archive-path-pipeline.json`、`logs/archive-path-pipeline-negative.json`与`logs/archive-path-delivery-audit.json`。相关输入未变时复用，不重复运行。

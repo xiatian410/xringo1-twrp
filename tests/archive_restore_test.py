@@ -42,6 +42,10 @@ cases += ['security-'+name for name in ['selinux-file', 'selinux-directory', 'se
           'selinux-unsupported', 'capability-denied', 'capability-io']]
 cases += ['xattr-'+name for name in ['file','directory','disabled','no-support','list-error','list-race','read-error','read-race','write-error']]
 cases += ['xattr-pax-'+name for name in ['duplicate','null-key','missing-equal','oversize','truncated']]
+cases += ['path-'+name for name in ['dotdot','nested-dotdot','symlink-parent','symlink-file',
+          'archive-symlink','hardlink-outside','hardlink-symlink','hardlink-shared',
+          'sibling-root','absolute-in-root','absolute-outside','glob-dotdot','dot-component',
+          'long-name','root-not-directory']]
 cases = args.cases or cases
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 with tempfile.TemporaryDirectory(prefix='dijun-archive-', dir='/tmp') as tmp:

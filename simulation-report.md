@@ -6,14 +6,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-user-xattrs.img` |
-| SHA-256 | `83f6e881f7844c14364692d683b72262a102d90fcc99d6bc46816c1ad29c9227` |
-| 生产来源绑定 | 819 份 |
+| 文件 | `recovery-dijun-unified-restore-paths.img` |
+| SHA-256 | `fb27832383884206ddce0ae7233da11dfc41034b51124d1c4cdbf2852b656c93` |
+| 生产来源绑定 | 821 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：应用 user 扩展属性往返
+## 本批生产修正：恢复路径约束
+
+0096 将所选恢复根传给全部分卷工作线程，拒绝 `..`、越界绝对路径、现有符号链接父路径及越界硬链接目标；覆盖已有多硬链接普通文件时先解除当前链接，避免截断目录外共享内容。正常分卷的包内绝对路径格式保留。libtar79项、codec/fork/分卷116项通过，同夹具旧实现分别11/15与12/12失败。已清理构建并核对六profile封装，详见[路径范围](docs/BACKUP-DATA-PATHS.md#restore-path-boundary)。
+
+这是已观察路径缺陷的修正；尚非基于逐层目录描述符的并发隔离，祖先目录并发替换、bind mount、完整manager/ARM64恢复和断电仍无验收。失败保留部分恢复内容。本批没有重跑OTA整包或已解决功能。
+
+## 沿用的应用 user 扩展属性往返
 
 0095 补齐应用 `user.*` 属性的采集、二进制 PAX 保存、读取与恢复。原实现只维护专用安全属性与三种 Android 标记，其他应用属性丢失。属性列表 / 值读取失败阻止备份成功发布，写入失败传到恢复父进程；空值和多块值保留，不把 Android inode 引用按旧数值复制。归档64项（含 GNU tar 独立读回）和完整codec104项通过；旧实现分别10/14及20/20失败。最终清理构建、819来源与六profile封装核对通过，详见[应用属性](docs/BACKUP-DATA-PATHS.md#application-xattrs)。
 

@@ -230,6 +230,57 @@ static void hardlink_case(const char *which) {
     snprintf(dest,sizeof dest,"%s/alias",used?used:"."); CHECK(stat(dest,&b)==0);
     CHECK(a.st_ino==b.st_ino && a.st_dev==b.st_dev && a.st_nlink==2);
 }
+static void path_case(const char *which) {
+    CHECK(mkdir("outside",0700)==0); putfile("outside/keep",513);
+    putfile("input/new",777); putfile("input/marker",513);
+    char name[5000]="payload", target[4096], cwd[4096];
+    CHECK(getcwd(cwd,sizeof cwd));
+    int allowed=0;
+    if(!strcmp(which,"dotdot")||!strcmp(which,"glob-dotdot"))strcpy(name,"../outside/keep");
+    else if(!strcmp(which,"nested-dotdot"))strcpy(name,"safe/../../outside/keep");
+    else if(!strcmp(which,"symlink-parent")){
+        CHECK(symlink("../outside","restore/jump")==0);strcpy(name,"jump/keep");
+    }else if(!strcmp(which,"symlink-file")){
+        CHECK(symlink("../outside/keep","restore/payload")==0);
+    }else if(!strcmp(which,"absolute-in-root")){
+        snprintf(name,sizeof name,"%s/restore/payload",cwd);allowed=1;
+    }else if(!strcmp(which,"absolute-outside"))snprintf(name,sizeof name,"%s/outside/keep",cwd);
+    else if(!strcmp(which,"sibling-root")){
+        CHECK(mkdir("restore-other",0700)==0);snprintf(name,sizeof name,"%s/restore-other/payload",cwd);
+    }else if(!strcmp(which,"dot-component")){strcpy(name,"./safe/./payload");allowed=1;}
+    else if(!strcmp(which,"long-name")){
+        for(int i=0;i<23;++i){strcat(name,"/");size_t at=strlen(name);memset(name+at,'a',180);name[at+180]=0;}
+    }else if(!strcmp(which,"hardlink-shared")){
+        CHECK(link("outside/keep","restore/payload")==0);allowed=1;
+    }
+    TAR *t=writer();
+    if(!strcmp(which,"archive-symlink")){
+        CHECK(symlink("../outside","input/link")==0);
+        CHECK(tar_append_file(t,"input/link","jump")==0);strcpy(name,"jump/keep");
+    }
+    if(!strncmp(which,"hardlink-",9)&&strcmp(which,"hardlink-shared")){
+        th_set_path(t,"alias");t->th_buf.typeflag=LNKTYPE;
+        if(!strcmp(which,"hardlink-symlink")){
+            CHECK(symlink("../outside/keep","restore/target")==0);strcpy(target,"target");
+        }else strcpy(target,"../outside/keep");
+        th_set_link(t,target);th_set_size(t,0);CHECK(th_write(t)==0);
+    }else CHECK(tar_append_file(t,"input/new",name)==0);
+    finish(t);
+    CHECK(tar_open(&t,"backup.tar",NULL,O_RDONLY,0,FLAGS)==0);
+    int progress=0,result;
+    if(!strcmp(which,"root-not-directory"))result=tar_extract_all(t,"outside/keep",&progress);
+    else if(!strcmp(which,"glob-dotdot"))result=tar_extract_glob(t,"../outside/*","restore");
+    else if(!strncmp(which,"absolute-",9)||!strcmp(which,"sibling-root")){
+        /* Direct entry API: selected prefix still defines the root. */
+        CHECK(th_read(t)==0);result=tar_extract_file(t,name,"restore",&progress);
+    }else result=tar_extract_all(t,"restore",&progress);
+    CHECK(tar_close(t)==0);
+    CHECK((result==0)==allowed);
+    compare("input/marker","outside/keep");
+    if(allowed)compare("input/new",!strcmp(which,"dot-component")?"restore/safe/payload":"restore/payload");
+    if(!strcmp(which,"sibling-root"))CHECK(access("restore-other/payload",F_OK)!=0);
+    puts("PASS selected root / links / traversal and outside sentinel preserved");
+}
 int main(int argc,char **argv) {
     CHECK(argc==2);
     char cwd[4096]; CHECK(getcwd(cwd,sizeof cwd)!=NULL);
@@ -237,7 +288,9 @@ int main(int argc,char **argv) {
     CHECK(access(".fixture",F_OK)==0);
     CHECK(mkdir("input",0700)==0); CHECK(mkdir("restore",0700)==0);
     const char *c=argv[1];
-    if(!strncmp(c,"xattr-pax-",10)) {
+    if(!strncmp(c,"path-",5)) {
+        path_case(c+5);
+    } else if(!strncmp(c,"xattr-pax-",10)) {
         char payload[5000]={0},record[5100]={0};size_t length=0;
         if(!strcmp(c,"xattr-pax-duplicate")){
             length=pax_record(record,"SCHILY.xattr.user.note=first",28);
