@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-security-metadata.img",
-  "image_sha256": "cb3083794d3cd3cf8f38af4251d77955b9651bf8941eac6ebf5ef0dbb04848b1",
-  "image_status": "Clean installclean + make -j$(nproc); patch0093 propagates SELinux/capability restore errors.812 sources/six profiles; libtar50/codec62pass, old4/10 and8/12fail. Kernel security calls are fixtures; hardware unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-directory-times.img",
+  "image_sha256": "98cddd6b3f3fe132161131f79fa1fa885669316924ab4873628bc2e78b345276",
+  "image_status": "Clean installclean + make -j$(nproc); patch0094 finalizes archived directory times only after all volumes/workers/codecs succeed.814 sources/six profiles; pipeline84/libtar50pass, old20/22fail. Host files only, hardware unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1935,7 +1935,7 @@
     "Security services: original six-profile ARM64 relocation18, missing-library6 and undefined-symbol6 covered; actual default namespace fields and config removal/marker12 controls now covered in private chroot (42-case suite). Real init/mount namespace/APEX/property/proc runtime, service initialization/Binder/TEE/key operations and synthetic crypto volumes remain open.",
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
     "MTP remaining media metadata and final post-child directory date semantics (file epoch0/timestamp-error publication and directory SendObjectInfo time/completion16 cases covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
-    "Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified.",
+    "Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix.",
     "Full filesystem GUI/manager/tool format/write/repair lifecycle, real mounts/fscrypt, concurrent changes and I/O/power-loss cleanup remain pending. Ten original partition-tool page/worker/return-detail cases now cover that handoff with an explicit manager fixture; they do not join the independent ARM64 tool runs into one full lifecycle. Existing deletion/media/conversion/mount/persist/Android Secure/startup media fixes and ext4 labeling evidence are reused.",
     "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
     "video target ARM64 codec/display-shadow sampling integration, real storage/codec fault behavior, hour-scale stability and seek/index performance (bounded12.5s multi-cluster/keyframe correctness covered), GUI player rendering and full-resolution performance; host frames/queue/failure recovery plus independent FFmpeg native decode and72 short input seeks covered",
@@ -3860,6 +3860,30 @@
       "evidence": "logs/archive-security-pipeline-negative.json",
       "evidence_sha256": "b5d88a0333ec274348aa849f36f1f0cb855b290fa767ba783eb925dea1aa20d4",
       "scope": "Original libtar serialization/extraction and whole tar/pigz/OAES/BoringSSL host pipeline; ordinary files, ASan/UBSan. Security syscalls explicitly redirected to user xattrs, UI/fscrypt/mount fixtures. Error propagates through extractTarFork; no kernel SELinux/capability, ARM64 restore, full GUI/manager or rollback proof."
+    },
+    {
+      "name": "archive-directory-restore",
+      "status": "PASS",
+      "count": 50,
+      "evidence": "logs/archive-directory-restore.json",
+      "evidence_sha256": "b0772d4c83c0f489f6460fcea921aae1b6e04b6a9bb3a615f0142cf8dd5c02ef",
+      "scope": "Actual host libtar + whole tar/pigz/OAES/BoringSSL/fork/threads; archived nested directory mtimes restored after every worker and codec succeeds; final timestamp errors and replaced-directory identities fail parent. Mount/UI/fscrypt fixtures; tar seconds precision, no unarchived root timestamp, ARM64 restore/full GUI/manager/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-directory-pipeline",
+      "status": "PASS",
+      "count": 84,
+      "evidence": "logs/archive-directory-pipeline-verified.json",
+      "evidence_sha256": "200411bb2ae7d832b5d79dd2a2979c332d3e9d7d3d0d8f7810230e053465e226",
+      "scope": "Actual host libtar + whole tar/pigz/OAES/BoringSSL/fork/threads; archived nested directory mtimes restored after every worker and codec succeeds; final timestamp errors and replaced-directory identities fail parent. Mount/UI/fscrypt fixtures; tar seconds precision, no unarchived root timestamp, ARM64 restore/full GUI/manager/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-directory-negative",
+      "status": "FAIL",
+      "count": 22,
+      "evidence": "logs/archive-directory-negative-verified.json",
+      "evidence_sha256": "02bae14409809504113a35771967ede5ee2f431e93f87e8bd399540af8a12d91",
+      "scope": "Actual host libtar + whole tar/pigz/OAES/BoringSSL/fork/threads; archived nested directory mtimes restored after every worker and codec succeeds; final timestamp errors and replaced-directory identities fail parent. Mount/UI/fscrypt fixtures; tar seconds precision, no unarchived root timestamp, ARM64 restore/full GUI/manager/power-loss or rollback proof."
     }
   ],
   "source_review_followups": [
@@ -4198,10 +4222,10 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/archive-security-delivery-audit.json",
-    "evidence_sha256": "c807e0565c9e45d7d7281d05af2770a53a77555db650aed2af817e67df652c8e",
-    "scope": "Patch0093 returns failure after SELinux/capability restoration errors. Clean812-source image/six profiles; recovery/property/digest only changed vs0092. Host libtar50/codec62pass, old4/10 and8/12fail with identical harnesses; security syscalls substituted. Partial restore not rollback; full GUI/manager, ARM64 and actual security enforcement unverified.",
-    "hardware": "unverified"
+    "evidence": "logs/archive-directory-delivery-audit.json",
+    "scope": "Actual host libtar + whole tar/pigz/OAES/BoringSSL/fork/threads; archived nested directory mtimes restored after every worker and codec succeeds; final timestamp errors and replaced-directory identities fail parent. Mount/UI/fscrypt fixtures; tar seconds precision, no unarchived root timestamp, ARM64 restore/full GUI/manager/power-loss or rollback proof.",
+    "hardware": "unverified",
+    "evidence_sha256": "51c7007bba4343b6e5f1071369af4c2f0e44989be3c60ccfeb882f3ec375f4a9"
   },
   "delivery_evidence_refresh": {
     "date": "2026-11-12",

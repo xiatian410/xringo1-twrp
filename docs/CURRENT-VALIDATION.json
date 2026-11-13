@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-security-metadata.img",
-  "image_sha256": "cb3083794d3cd3cf8f38af4251d77955b9651bf8941eac6ebf5ef0dbb04848b1",
-  "production_sources": 812,
+  "image_name": "recovery-dijun-unified-directory-times.img",
+  "image_sha256": "98cddd6b3f3fe132161131f79fa1fa885669316924ab4873628bc2e78b345276",
+  "production_sources": 814,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -12,6 +12,30 @@
     "scope": "After Synaptics is live and Xiaomi input is registered, wait 2 seconds, request ordinary touch reports, and check the software cache. This does not prove controller acknowledgement or event delivery. Prior manual raw0 user capture observed 215 Linux input events; this automatic-startup candidate has no corresponding hardware observation."
   },
   "checks": [
+    {
+      "name": "archive-directory-restore",
+      "status": "PASS",
+      "cases": 50,
+      "failures": 0,
+      "local_report_sha256": "b0772d4c83c0f489f6460fcea921aae1b6e04b6a9bb3a615f0142cf8dd5c02ef",
+      "scope": "Actual host libtar + whole tar/pigz/OAES/BoringSSL/fork/threads; archived nested directory mtimes restored after every worker and codec succeeds; final timestamp errors and replaced-directory identities fail parent. Mount/UI/fscrypt fixtures; tar seconds precision, no unarchived root timestamp, ARM64 restore/full GUI/manager/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-directory-pipeline",
+      "status": "PASS",
+      "cases": 84,
+      "failures": 0,
+      "local_report_sha256": "200411bb2ae7d832b5d79dd2a2979c332d3e9d7d3d0d8f7810230e053465e226",
+      "scope": "Actual host libtar + whole tar/pigz/OAES/BoringSSL/fork/threads; archived nested directory mtimes restored after every worker and codec succeeds; final timestamp errors and replaced-directory identities fail parent. Mount/UI/fscrypt fixtures; tar seconds precision, no unarchived root timestamp, ARM64 restore/full GUI/manager/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-directory-negative",
+      "status": "FAIL",
+      "cases": 22,
+      "failures": 20,
+      "local_report_sha256": "02bae14409809504113a35771967ede5ee2f431e93f87e8bd399540af8a12d91",
+      "scope": "Actual host libtar + whole tar/pigz/OAES/BoringSSL/fork/threads; archived nested directory mtimes restored after every worker and codec succeeds; final timestamp errors and replaced-directory identities fail parent. Mount/UI/fscrypt fixtures; tar seconds precision, no unarchived root timestamp, ARM64 restore/full GUI/manager/power-loss or rollback proof."
+    },
     {
       "name": "archive-security-pipeline-negative",
       "status": "FAIL",

@@ -52,7 +52,7 @@ tar 写出结束后会检查 close、编码器退出和输出文件 fsync；失�
 | 加密 | OAES/BoringSSL 在主机真实执行；不涉及 ARM64、MiTEE、FBE、RPMB 或 UFS wrapped-key |
 | fscrypt | provider 返回无策略，不证明合成加密卷或实际 fscrypt 映射 |
 | 随机源 | 夹具文件装入主机随机字节；缺失和短输入专门注入，不是手机熵源验证 |
-| 文件属性 | 此阶段检查内容、mode、链接及 Android 目录标记；后续 0092 补齐零区恢复、0093 补齐 SELinux/capability 失败返回。任意应用 xattr、最终目录时间及真实安全策略仍待补 |
+| 文件属性 | 此阶段检查内容、mode、链接及 Android 目录标记；后续 0092 补齐零区恢复、0093 补齐 SELinux/capability 失败返回。0094 已补齐实际恢复入口的最终目录时间（见下文）；任意应用 xattr 及真实安全策略仍待补 |
 
 旧 OAES CBC 格式没有认证标签。本次错误检测不等于能检测所有密文篡改，也不能证明最后一个完整分卷及其 sidecar 一同消失时仍可发现；需要另外的可信完整清单/校验设计。不能把“错误密码用例被拒绝”说成格式已经获得完整认证。
 
@@ -216,3 +216,15 @@ python3 tests/raw_image_test.py --source backups/raw-image-pre-fix/partition.cpp
 第二条是负向对照，预期失败。物理震动、TEE 和真实手机读写仍保持未验证。
 
 后续恢复 manager 预检另有[54 项回放](RESTORE-SESSION-ADAPTATION.md)：会话入口清除旧取消、固定父子目标清单、预先检查全部已选镜像容量与 digest，再进入本页的原始复制。完整管理器归档端到端和 FlashImage/repacker 独立入口仍未完成；压缩/加密分卷另由[46 项管道回放](BACKUP-DATA-PATHS.md#archive-pipeline)覆盖。
+
+<a id="directory-times"></a>
+
+## 归档目录时间在全部恢复工作结束后收尾
+
+0094 修正目录头时间被后续子文件创建覆盖的问题。libtar 完成目录提取和元数据设置后向调用者登记路径、设备号、inode 和归档 mtime。实际 twrpTar 恢复入口按 worker 分别收集；全部分卷解包、尾部与 codec 校验成功、并行线程全部 join 后才汇总处理。单卷走同样的成功门控。逆序处理目录记录，同一 inode 的最后一个头生效；使用目录描述符、O_NOFOLLOW 与设备号 / inode 校验，拒绝替换对象，时间 / 打开 / 关闭失败传到恢复父进程。
+
+有限验证扩展原 `tests/archive_pipeline_test.py`：84项通过，包括原62项回归、普通/gzip/AES/组合/混合加密及各自分卷的嵌套目录时间、四类最终时间写入错误、两类codec损坏不收尾，以及普通/加密恢复中符号链接或目录替换拒绝。同一22项新增夹具对0093源码有20项失败；两项损坏流拒绝本来就正常。libtar50项回归通过。首次检查误要求归档没有保存的挂载根时间，失败报告保留为 `logs/archive-directory-pipeline.json`，修正测试预期，没有据此添加根目录头。后续收尾前替换路径由 open 边界故障注入，实际身份检查和 futimens 执行生产代码。
+
+本地证据：`logs/archive-directory-pipeline-verified.json`、`logs/archive-directory-negative-verified.json`、`logs/archive-directory-restore.json`；交付核对 `scripts/audit_archive_directory_delivery.py`。镜像与哈希见交付报告。普通文件、实际主机codec/fork/thread和ASan/UBSan；UI、挂载及fscrypt是替身。没有运行ARM64恢复或完整manager/GUI，不证明断电持久性。
+
+时间仍为tar秒级，沿用atime=mtime。仅处理归档目录头，未归档挂载根的原时间无法重建。回调未安装的直接libtar wrapper调用维持旧行为；完整归档路径约束仍独立未完成。途中失败会保留已写文件与早期元数据，不提供回滚。

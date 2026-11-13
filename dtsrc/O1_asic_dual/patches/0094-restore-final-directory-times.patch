@@ -1,0 +1,139 @@
+diff --git a/libtar/libtar.h b/libtar/libtar.h
+--- a/libtar/libtar.h
++++ b/libtar/libtar.h
+@@ -113,6 +113,10 @@
+ 
+ 	/* introduced in libtar 1.2.21 */
+ 	char *th_pathname;
++
++	/* Optional caller-owned directory finalization across volumes/threads. */
++	int (*directory_restore)(void *, const char *, time_t);
++	void *directory_restore_data;
+ }
+ TAR;
+ 
+diff --git a/libtar/extract.c b/libtar/extract.c
+--- a/libtar/extract.c
++++ b/libtar/extract.c
+@@ -215,6 +215,12 @@
+ 			return -1;
+ 		}
+ 	}
++
++	if (TH_ISDIR(t) && t->directory_restore &&
++	    t->directory_restore(t->directory_restore_data,
++	                         realname ? realname : th_get_pathname(t),
++	                         th_get_mtime(t)) != 0)
++		return -1;
+ 
+ #ifdef LIBTAR_FILE_HASH
+ 	pn = th_get_pathname(t);
+diff --git a/twrpTar.hpp b/twrpTar.hpp
+--- a/twrpTar.hpp
++++ b/twrpTar.hpp
+@@ -107,6 +107,16 @@
+ 	string basefn;
+ 	string password;
+ 
++	struct DirectoryTime {
++		std::string path;
++		dev_t device;
++		ino_t inode;
++		time_t mtime;
++	};
++	std::vector<DirectoryTime> directory_times;
++	static int rememberDirectory(void *cookie, const char *path, time_t mtime);
++	int finishDirectoryTimes();
++
+ 	std::vector<TarListStruct> *ItemList;
+ 	int output_fd;                                                                  // this stores the output fd that gzip will read from
+ 	unsigned thread_id;
+diff --git a/twrpTar.cpp b/twrpTar.cpp
+--- a/twrpTar.cpp
++++ b/twrpTar.cpp
+@@ -39,6 +39,7 @@
+ #include <sys/syscall.h>
+ #include <zlib.h>
+ #include <semaphore.h>
++#include <set>
+ #include <android-base/file.h>
+ #include <android-base/unique_fd.h>
+ #include "twrpTar.hpp"
+@@ -518,6 +519,41 @@
+ 	return 0;
+ }
+ 
++// Each extraction worker owns its records. Finalize only after every volume,
++// worker and codec succeeded, so later child creation cannot change the time.
++int twrpTar::rememberDirectory(void *cookie, const char *path, time_t mtime) {
++	struct stat st{};
++	if (lstat(path, &st) != 0) return -1;
++	if (!S_ISDIR(st.st_mode)) { errno = ENOTDIR; return -1; }
++	auto *archive = static_cast<twrpTar *>(cookie);
++	archive->directory_times.push_back({TWFunc::RemoveTrailingSlashes(path), st.st_dev, st.st_ino, mtime});
++	return 0;
++}
++
++int twrpTar::finishDirectoryTimes() {
++	// Reverse archive order handles the normal parent-before-child traversal.
++	// Times are applied through verified directory descriptors, never a symlink
++	// replacing the recorded directory. Repeated headers keep the last value.
++	std::set<std::pair<dev_t, ino_t>> finished;
++	for (auto it = directory_times.rbegin(); it != directory_times.rend(); ++it) {
++		const int dir = open(it->path.c_str(), O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
++		if (dir < 0) return -1;
++		struct stat st{};
++		bool ok = fstat(dir, &st) == 0;
++		if (ok && (st.st_dev != it->device || st.st_ino != it->inode)) {
++			errno = ESTALE;
++			ok = false;
++		}
++		const struct timespec times[2] = {{it->mtime, 0}, {it->mtime, 0}};
++		if (ok && finished.insert({it->device, it->inode}).second && futimens(dir, times) != 0) ok = false;
++		const int saved_errno = errno;
++		if (close(dir) != 0 && ok) return -1;
++		if (!ok) { errno = saved_errno; return -1; }
++	}
++	directory_times.clear();
++	return 0;
++}
++
+ int twrpTar::extractTarFork() {
+ 	BackupProcess restore_process;
+ 	pid_t tar_fork_pid;
+@@ -536,9 +572,10 @@
+ 		{
+ 			close(progress_pipe[0]);
+ 			progress_pipe_fd = progress_pipe[1];
++			directory_times.clear();
+ 			if (TWFunc::IsPathExists(tarfn)) {
+ 				LOGINFO("Single archive\n");
+-				if (extract() != 0)
++				if (extract() != 0 || finishDirectoryTimes() != 0)
+ 					_exit(-1);
+ 				else {
+ 					_exit(0);
+@@ -657,6 +694,14 @@
+ 					close(progress_pipe_fd);
+ 					_exit(-1);
+ 				}
++				for (auto& archive : tars)
++					directory_times.insert(directory_times.end(), archive.directory_times.begin(), archive.directory_times.end());
++				if (finishDirectoryTimes() != 0) {
++					LOGERR("Failed to restore final directory times: %s\n", strerror(errno));
++					gui2_console::log_error("restore_error");
++					close(progress_pipe_fd);
++					_exit(-1);
++				}
+ 				LOGINFO("Finished encrypted restore.\n");
+ 				close(progress_pipe_fd);
+ 				_exit(0);
+@@ -740,6 +785,8 @@
+ 
+ int twrpTar::extractTar() {
+ 	if (openTar() != 0) return -1;
++	t->directory_restore = rememberDirectory;
++	t->directory_restore_data = this;
+ 	bool ok = tar_extract_all(t, const_cast<char*>(tardir.c_str()), &progress_pipe_fd) == 0;
+ 	if (ok) {
+ 		// Finish the stream, checking both codec trailers and tar padding.

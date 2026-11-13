@@ -338,6 +338,10 @@
         {
           "file": "0093-restore-security-metadata-errors.patch",
           "sha256": "2f79387c08f82bacd604864b45772ae0de8cf49485b1072bd76d971a4b677999"
+        },
+        {
+          "file": "0094-restore-final-directory-times.patch",
+          "sha256": "31d18a289af4b2d5ef7565b28452892facd9d499c61462aaee783e04073e154d"
         }
       ],
       "result_files": {
@@ -378,13 +382,13 @@
         "gui2/components/keyboard.cpp": "8ce7f769be4a4c7d528e7b209d233d7915f26840bca51effbccefe7dc97fe550",
         "gui2/components/swipe_slider.cpp": "c4d7eee908432f4aba1a9ae52abfb0db0d8c5b187f82c3de8f130cf226e5eb94",
         "libtar/block.c": "73f7891968ed29ea41d8831009ce2e0331e088635cf99e5f2243d48982472f4a",
-        "libtar/extract.c": "73373d0d612d5e0c5b7103ee4d3235859bd56750ecbfc49b1a2fc07039f0b633",
+        "libtar/extract.c": "9d4c0fff2d301756d4a9090f8190221eb26721c033244e9591b972ce82b84c09",
         "gui2/backend/twrp_operation.cpp": "a2aaa78468023cd7a2024334ef995838702a5b6904686ec0665c12f142cd1ace",
         "partitions.hpp": "5970edacc232ae54da157f39310dddd47929ffad7bb2fbe8620fe6108f8da7aa",
         "digest/twrp_digest_driver.cpp": "6e2e62e3fdf570be857ac5b62c6befcd8474633f736dcca5a8f2a2ad5ec55ab5",
         "digest/twrp_digest_driver.hpp": "266f16b28f4d3ace274a5ea42253ee993fd6790ce323a8e5b79e885f2e9a6fa4",
-        "twrpTar.cpp": "c21fd4a2a6621b23b215265f0434f90e17221b5d21cd6c5e3601bc19d91cf149",
-        "twrpTar.hpp": "b388e4ee12ee6b024eda0ba4056b1395ec5cdfc1f6bc209063c9f7b5477c0e8a",
+        "twrpTar.cpp": "60e9ccdfc636ca8054500d4c599a5105bfd3b087c46c23a840a5a41cc92b4a0d",
+        "twrpTar.hpp": "e1fea280d67b97ce5921b07c9e06a266cb22bd027f9c80875ad98a4eb8f500b9",
         "gui2/backend/twrp_backup_backend.cpp": "925155463e34f59103a0b94473363638cb47afb35f80ea782da065eb2e2c985e",
         "backup_process.hpp": "5d4a5d4973bba52d7a796dee1ed5e3d8258cebfb438dad33cfbcbb964b1ee225",
         "twrpRepacker.cpp": "4b95330ee0cff1df83da0231da203365121be14be2830fefbb4772b0b5c727c7",
@@ -437,7 +441,8 @@
         "gui2/backend/twrp_wipe_backend.cpp": "0cfc499ccf3e0296bbdc028eedb8e43c5f1b722edbd43a380a1106311c6c0e73",
         "gui2/backend/twrp_tools_backend.cpp": "52dfe873375bf6fb9726337872b9b6b629fd6b81193638b26d683f79401ad3a8",
         "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a",
-        "gui2/backend/twrp_background_backend.cpp": "2459e31f131aef5cfd9fe977b55b5611744809ab6e8d954496f1c8872a900bb5"
+        "gui2/backend/twrp_background_backend.cpp": "2459e31f131aef5cfd9fe977b55b5611744809ab6e8d954496f1c8872a900bb5",
+        "libtar/libtar.h": "4e5dd49adeb53d61f6cadfa1fa638e9cc62ba9571a0094f6eeed1b283805a7a2"
       }
     },
     "system/sepolicy": {

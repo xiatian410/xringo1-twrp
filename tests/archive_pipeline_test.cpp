@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cerrno>
 #include <csignal>
+#include <cstdarg>
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
@@ -70,6 +71,33 @@ extern "C" int __wrap_setxattr(const char* path,const char* name,const void* val
   return __real_setxattr(path,"user.fixture_capability",value,size,flags);
  }
  return __real_setxattr(path,name,value,size,flags);
+}
+static bool directory_fixture=false;
+static string directory_fault;
+static constexpr time_t root_time=1600000000, child_time=1600000100;
+extern "C" int __real_open(const char*,int,...);
+extern "C" int __wrap_open(const char* path,int flags,...){
+ mode_t mode=0;
+ if(flags&O_CREAT){va_list ap;va_start(ap,flags);mode=va_arg(ap,int);va_end(ap);}
+ if(directory_fixture&&(flags&O_DIRECTORY)&&(flags&O_NOFOLLOW)&&
+    fs::path(path).lexically_normal()=="/src/dir"&&
+    (directory_fault=="symlink"||directory_fault=="replace")){
+  CHECK(rename("/src/dir","/src/held")==0);
+  if(directory_fault=="symlink")CHECK(symlink("held","/src/dir")==0);
+  else CHECK(mkdir("/src/dir",0700)==0);
+  metadata_call("identity-replaced\n");
+ }
+ return __real_open(path,flags,mode);
+}
+extern "C" int __real_futimens(int,const struct timespec[2]);
+extern "C" int __wrap_futimens(int fd,const struct timespec times[2]){
+ if(!directory_fixture)return __real_futimens(fd,times);
+ struct stat st{};CHECK(fstat(fd,&st)==0&&S_ISDIR(st.st_mode));
+ CHECK(times[0].tv_sec==times[1].tv_sec&&times[0].tv_nsec==0&&times[1].tv_nsec==0);
+ CHECK(times[1].tv_sec==root_time||times[1].tv_sec==child_time);
+ metadata_call("directory-time\n");
+ if(directory_fault=="error"){errno=EIO;return -1;}
+ return __real_futimens(fd,times);
 }
 bool datamedia=false;
 extern "C" {
@@ -157,6 +185,7 @@ int main(int argc,char** argv){
   int result=TWFunc::WaitForChild(child,&status,"fixture wait");
   CHECK((result==0)==(scenario=="wait-eintr"));puts("PASS child wait status");return 0;
  }
+ directory_fixture=scenario.find("-dirtime")!=string::npos;
  bool compressed=scenario.find("gzip")!=string::npos||scenario.starts_with("both");
  bool encrypted=scenario.starts_with("aes")||scenario.starts_with("both")||scenario.starts_with("mixed");
  bool mixed=scenario.starts_with("mixed");
@@ -191,6 +220,16 @@ int main(int argc,char** argv){
    }
   }
  }
+ if(directory_fixture){
+  fs::create_directory("/src/dir/nested");write_file("/src/dir/nested/payload","nested-content");
+  contents["dir/nested/payload"]="nested-content";CHECK(chmod("/src/dir/nested/payload",0640)==0);
+  const struct timespec times[2]={{root_time,0},{root_time,0}};
+  const struct timespec child[2]={{child_time,0},{child_time,0}};
+  CHECK(utimensat(AT_FDCWD,"/src",times,0)==0);
+  CHECK(utimensat(AT_FDCWD,"/src/dir",child,0)==0);
+  CHECK(utimensat(AT_FDCWD,"/src/dir/nested",child,0)==0);
+  if(mixed)CHECK(utimensat(AT_FDCWD,"/src/app",child,0)==0);
+ }
  if(no_codec)fs::remove("/bin/pigz");
  if(scenario=="aes-random-missing")fs::remove("/dev/urandom");
  if(scenario=="both-random-short")fs::resize_file("/dev/urandom",7);
@@ -221,8 +260,33 @@ int main(int argc,char** argv){
  fs::remove_all("/src");fs::create_directory("/src");
  twrpTar restore;restore.setdir("/src");restore.setfn(archive);restore.part_settings=&settings;
  bool wrong=scenario.find("wrong-password")!=string::npos;restore.setpassword(wrong?"incorrect":"fixture-password");
+ if(directory_fixture){
+  if(scenario.ends_with("-error"))directory_fault="error";
+  if(scenario.ends_with("-symlink"))directory_fault="symlink";
+  if(scenario.ends_with("-replace"))directory_fault="replace";
+ }
  if(security_fixture)security_fault=scenario.substr(scenario.find("-security-")+10);
  result=restore.extractTarFork();
+ if(directory_fixture){
+  if(corrupt||wrong){CHECK(result!=0);CHECK(!fs::exists("/backup/security-calls"));puts("PASS invalid codec never finalizes directory times");return 0;}
+  const auto calls=read_file("/backup/security-calls");
+  CHECK(!calls.empty());
+  if(!directory_fault.empty()){
+   CHECK(result!=0);
+   if(directory_fault!="error"){
+    CHECK(calls.find("identity-replaced\n")!=string::npos);
+    struct stat held{},changed{};CHECK(stat("/src/held",&held)==0&&held.st_mtime!=child_time);
+    CHECK(lstat("/src/dir",&changed)==0);
+    CHECK((directory_fault=="symlink")==static_cast<bool>(S_ISLNK(changed.st_mode)));
+   }
+   puts("PASS directory finalization failure reaches restore parent");return 0;
+  }
+  struct stat root{},dir{},nested{};CHECK(stat("/src",&root)==0&&stat("/src/dir",&dir)==0);
+  CHECK(stat("/src/dir/nested",&nested)==0&&nested.st_mtime==child_time);
+  CHECK(dir.st_mtime==child_time);
+  if(mixed){struct stat app{};CHECK(stat("/src/app",&app)==0&&app.st_mtime==child_time);}
+  printf("PASS archived directory times after all workers/codecs volumes=%zu root_unarchived=%ld child=%ld\n",archives.size(),root.st_mtime,dir.st_mtime);
+ }
  if(security_fixture){
   const string calls=read_file("/backup/security-calls");
   CHECK(calls==(security_fault=="label-error"?"label\n":"label\ncap\n"));

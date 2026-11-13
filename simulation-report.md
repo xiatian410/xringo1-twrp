@@ -6,14 +6,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-security-metadata.img` |
-| SHA-256 | `cb3083794d3cd3cf8f38af4251d77955b9651bf8941eac6ebf5ef0dbb04848b1` |
-| 生产来源绑定 | 812 份 |
+| 文件 | `recovery-dijun-unified-directory-times.img` |
+| SHA-256 | `98cddd6b3f3fe132161131f79fa1fa885669316924ab4873628bc2e78b345276` |
+| 生产来源绑定 | 814 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：安全元数据失败不再误报恢复成功
+## 本批生产修正：分卷和并行恢复的目录时间收尾
+
+0094 记录已归档目录的时间与设备号 / inode，在全部分卷、工作线程及解码验证成功后统一恢复时间。原先目录头先设置时间，后续创建子文件将其覆盖。最终写入失败、目录被符号链接或其他 inode 替换时返回恢复失败。编解码84项和 libtar50项通过；同一新增夹具旧实现22项中20项失败，另两项确认损坏解码流不进入最终收尾。清理构建、814来源 / 六profile封装核对通过。详见[目录时间](docs/BACKUP-DATA-PATHS.md#directory-times)。
+
+仅恢复归档中存在的目录时间，沿用 tar 秒级精度和 atime=mtime；未归档的挂载根不凭空补元数据。直接 libtar 调用未安装回调时维持旧行为；实际恢复入口已接入。没有真实挂载、ARM64恢复、完整GUI/manager或断电验收，失败不回滚。本批未重跑OTA、触摸、震动或MTP。
+
+## 沿用的安全元数据失败不再误报恢复成功
 
 0093 在归档 SELinux 标签或 capability 写入失败后保存 errno 并返回失败，原 libtar / codec / fork 链向上传递；原先只打印错误却继续成功。恢复50项、编解码62项通过；旧实现同夹具分别4/10与8/12故障场景误报成功。最终清理构建、812来源 / 六profile核对通过，相对0092仅 recovery、构建属性和摘要变化。范围见[安全元数据](docs/BACKUP-DATA-PATHS.md#security-metadata-errors)。
 
