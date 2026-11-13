@@ -16,7 +16,7 @@
 | 优先事项 | 已知情况 | 下一步与边界 |
 | --- | --- | --- |
 | 容量刷新页面停留 | 现场后台约 5.15 秒完成；原 GUI tick / 主循环接续已核对，提交等待会延迟 DONE 呈现，但现场根因未定位 | 后续只追提交等待与实际呈现的新证据；不重复扫描 / DONE 夹具，不根据模拟等待修改 DRM，不要求重复触发采集。见[主循环范围](REFRESH-STUCK-INVESTIGATION.md#gui-loop) |
-| OTA / A/B 安装入口与快照生命周期 | 固定原厂公钥补齐后原包签名通过；当前镜像下原 ARM64 sideload 主程序 / ApplyPayload / 下载队列完成 4933 操作及 42 分区校验，随后普通文件块只读 ioctl 失败，安装返回 63 | ZIP 原父进程到此真实引擎仍未直接接续，postinstall / SnapshotManager / 槽位与合并未完成。保留失败，处理明确边界，不重复下载、哈希或证书检查。见[真实引擎结果](INSTALL-CHAIN-VALIDATION.md#stock-engine-entry)及[OTA 范围](OTA-OPERATION-COW.md) |
+| OTA / A/B 安装入口与快照生命周期 | 原 ZIP 父进程整包验签后，已通过原 fork / pipe 接到真实 ARM64 引擎，完成 4933 操作与 42 分区校验；普通文件块只读失败使引擎返回 63，父安装器正确返回 INSTALL_ERROR 并清理 | postinstall / SnapshotManager / 槽位与合并仍未贯通。保留安装失败，后续处理收尾边界，不重复已完成的 ZIP / 引擎 / 哈希 / 证书接续。见[父子接续结果](INSTALL-CHAIN-VALIDATION.md#stock-zip-engine-joined)及[OTA 范围](OTA-OPERATION-COW.md) |
 | 文件系统完整生命周期 | 清除错误传播、媒体保留、格式转换和 ARM64 工具接续已维护 | persist / and-sec 后处理与非 FBE 启动媒体目录恢复已由 0087–0089 收尾；接续可选内建 ext4 后处理及 GUI / 加密与 I/O 故障收尾，不重复已通过的命令和内容检查。见[文件系统说明](FILESYSTEM-TOOLS-EXECUTION.md) |
 | 其他具体缺陷 | 触摸自动启动、安全服务、多用户、备份恢复和 USB 集成仍有缺口 | 按下表剩余边界及新证据排序，每批明确实现决定和结束条件，不启动全量重复审计 |
 

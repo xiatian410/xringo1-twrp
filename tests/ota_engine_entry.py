@@ -7,6 +7,7 @@ complete payload download and partition verification, never a full OTA success.
 No device is operated. The mount wrapper is a further guard, not a reached step.
 """
 import hashlib
+import argparse
 import json
 import os
 from pathlib import Path
@@ -34,6 +35,9 @@ def sha(path):
 
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--join-zip',action='store_true',help='Run host original ZIP parent, with its actual argv/pipe passed to this ARM64 engine')
+    args=parser.parse_args()
     index = json.loads((ROOT/'simulation-report.json').read_text())
     image = Path(index['image'])
     assert sha(image) == index['image_sha256']
@@ -148,6 +152,12 @@ extern "C" int __wrap_umount(const char*) { assert(false);return -1; }
         os.link(source,jail/'work/source.zip')
         shutil.copyfile(qemu,jail/'qemu');(jail/'qemu').chmod(0o755)
         shutil.copyfile(work/'engine',jail/'engine');(jail/'engine').chmod(0o755)
+        if args.join_zip:
+            from zip_engine_join import run_joined
+            return run_joined(jail, dict(sources=sources,dependencies=deps,
+                image_sha256=sha(image),image_entries=entries,adapter_sha256=hashlib.sha256(adapter.encode()).hexdigest(),
+                fixture_elf_machine=183,fixture_sha256=sha(work/'engine'),
+                compile_command=compile_cmd,link_command=link_cmd))
         def isolate():
             os.chroot(jail);os.chdir('/')
         command=['/qemu','-L','/android','-E','LD_LIBRARY_PATH=/android/system/lib64',

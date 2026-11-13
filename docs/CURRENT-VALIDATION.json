@@ -1320,14 +1320,24 @@
       "scope": "Current-image intact ARM64 sideload main/ApplyPayload/DownloadAction/FileFetcher executed original OS4 stable ZIP4933 operations and42 final partition hashes. Actual install FAILED63 at postinstall block-readonly ioctl on ordinary file, before mount/program/slot/merge. FileControl maps10 COW views; boot/hardware/cleanup/proc are fixtures, no SnapshotManager or ZIP-parent join. First fixture had wrong return/boundary expectation; original FAIL preserved and reviewed without replay. No production change/build.",
       "installation_result": "FAILED",
       "engine_returncode": 63
+    },
+    {
+      "name": "stock-os4-zip-engine-joined",
+      "status": "PASS",
+      "cases": 1,
+      "failures": 0,
+      "local_report_sha256": "a6aca4df42a947a8bcaef92081e901e27cc39e90f7511f60f179f3c96a9f7ccd",
+      "scope": "One-run host original TWinstall_zip/signature/A-B command/fork/pipe -> explicit QEMU bridge/current linker -> original ARM64 sideload main/ApplyPayload/DownloadAction/FileFetcher. Stock OS4 ZIP signature accepted;4933 operations/payload hash/42 final hashes pass; actual engine exits63 at ordinary-file block-readonly, original parent INSTALL_ERROR1/wait16128, protocol/progress/cleanup/reap pass. INSTALLATION FAILED; no SnapshotManager/postinstall mount/program/slot/merge. No production change/build.",
+      "installation_result": "FAILED",
+      "engine_returncode": 63
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
   "current_batch_groups": [
     12
   ],
-  "current_batch_document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-engine-entry",
-  "current_batch_groups_scope": "Current-image intact ARM64 sideload main/ApplyPayload/DownloadAction/FileFetcher executed original OS4 stable ZIP4933 operations and42 final partition hashes. Actual install FAILED63 at postinstall block-readonly ioctl on ordinary file, before mount/program/slot/merge. FileControl maps10 COW views; boot/hardware/cleanup/proc are fixtures, no SnapshotManager or ZIP-parent join. First fixture had wrong return/boundary expectation; original FAIL preserved and reviewed without replay. No production change/build.",
+  "current_batch_document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-engine-joined",
+  "current_batch_groups_scope": "One-run host original TWinstall_zip/signature/A-B command/fork/pipe -> explicit QEMU bridge/current linker -> original ARM64 sideload main/ApplyPayload/DownloadAction/FileFetcher. Stock OS4 ZIP signature accepted;4933 operations/payload hash/42 final hashes pass; actual engine exits63 at ordinary-file block-readonly, original parent INSTALL_ERROR1/wait16128, protocol/progress/cleanup/reap pass. INSTALLATION FAILED; no SnapshotManager/postinstall mount/program/slot/merge. No production change/build.",
   "stock_os4_zip_entry": {
     "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
     "report": "logs/zip-stock-os4-fixed.json",
@@ -1364,5 +1374,27 @@
     "production_changes": false,
     "new_build": false,
     "scope": "Current-image intact ARM64 sideload main/ApplyPayload/DownloadAction/FileFetcher executed original OS4 stable ZIP4933 operations and42 final partition hashes. Actual install FAILED63 at postinstall block-readonly ioctl on ordinary file, before mount/program/slot/merge. FileControl maps10 COW views; boot/hardware/cleanup/proc are fixtures, no SnapshotManager or ZIP-parent join. First fixture had wrong return/boundary expectation; original FAIL preserved and reviewed without replay. No production change/build."
+  },
+  "stock_zip_engine_joined": {
+    "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-engine-joined",
+    "report": "logs/zip-engine-joined.json",
+    "report_sha256": "a6aca4df42a947a8bcaef92081e901e27cc39e90f7511f60f179f3c96a9f7ccd",
+    "audit": "logs/zip-engine-joined-audit.json",
+    "image_sha256": "f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931",
+    "operations": 4933,
+    "partition_hashes": 42,
+    "payload_bytes": 7883589123,
+    "original_zip_installer_joined": true,
+    "signature_enabled": true,
+    "engine_returncode": 63,
+    "parent_result": "INSTALL_ERROR=1",
+    "wait_status": 16128,
+    "installation_result": "FAILED",
+    "full_ota_install": false,
+    "snapshot_manager_executed": false,
+    "postinstall_mount_reached": false,
+    "production_changes": false,
+    "new_build": false,
+    "scope": "One-run host original TWinstall_zip/signature/A-B command/fork/pipe -> explicit QEMU bridge/current linker -> original ARM64 sideload main/ApplyPayload/DownloadAction/FileFetcher. Stock OS4 ZIP signature accepted;4933 operations/payload hash/42 final hashes pass; actual engine exits63 at ordinary-file block-readonly, original parent INSTALL_ERROR1/wait16128, protocol/progress/cleanup/reap pass. INSTALLATION FAILED; no SnapshotManager/postinstall mount/program/slot/merge. No production change/build."
   }
 }

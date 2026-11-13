@@ -57,7 +57,27 @@ python3 tests/ota_engine_entry.py
 python3 scripts/review_ota_engine_entry.py
 ```
 
-本批没有生产修正或新构建。下一步将 ZIP 原父进程接到该 ARM64 引擎，并明确普通文件的块只读 / postinstall / SnapshotManager 边界；不因模拟文件不支持块 ioctl 修改生产逻辑，不重复本次下载与哈希检查。
+该独立引擎检查点没有生产修正或新构建。当时 ZIP 父进程尚未接入；下一段记录后续已完成的父子接续。块只读 / postinstall / SnapshotManager 边界仍保留，不因普通文件不支持块 ioctl 修改生产逻辑。
+
+<a id="stock-zip-engine-joined"></a>
+### 原始 ZIP 父进程已接到真实 ARM64 引擎，失败正确返回
+
+2026-11-13，`tests/ota_engine_entry.py --join-zip` 复用同一普通文件引擎模型，通过 `tests/zip_engine_join.py` 接入原主机编译 ZIP 安装链。一次运行中执行：原始完整 ZIP → 当前镜像固定信任库整包签名验证 → 原 A/B 命令 → 原 fork / pipe → 显式 QEMU / 当前镜像 linker 桥接 → 原 ARM64 sideload main / ApplyPayload / 下载动作队列 → 原父进程协议解析与 WaitForChild。桥接核对原路径、偏移 5229、完整 headers，保留原状态 fd 和每个更新参数；不是参数核对替身返回成功，也不是把两次独立运行拼成全链。ZIP 父进程仍为 x86 主机编译，尚未执行完整 ARM64 Recovery / GUI。
+
+本次约 913 秒。整包签名通过，真实引擎完成 4933 个操作、7,883,589,123 字节及 payload 哈希，42 个最终分区哈希全部匹配原厂 manifest。两阶段真实进度经原 pipe 被父解析器消费：开启签名验证后的每段 progress 比例为 0.375；无非法协议诊断。
+
+postinstall 设置普通文件块只读时仍返回 63。父进程观察真实 wait status **16128（63 << 8）**，原 `TWinstall_zip` 返回 **INSTALL_ERROR=1**；外层挂载替身有一次准备和一次清理，原 WaitForChild 回收子进程后无残留可等待子进程。夹具的 PASS 表示上述接续及失败传播符合预期，**安装结果明确为 FAILED**。没有调用 postinstall 挂载、程序、FinishUpdate / 槽位切换或快照合并。
+
+保留引擎生产 Recovery 构建行为：外层 ZIP 的密码学签名实际验证，payload 全量哈希 / 操作数据与分区哈希执行；内层 metadata / payload 签名检查沿用既有 `__ANDROID_RECOVERY__` 编译条件，本批没有改变其策略，不能声称内外层所有签名函数均执行。BootControl / Hardware 工厂、动态分区映射、旧更新清理、proc、GUI 与外层挂载仍有明确替身；10 个真实 COW 视图在映射接口物化，不是实际 SnapshotManager / snapuserd / 内核设备。
+
+本地 `logs/zip-engine-joined.json` 绑定源码、父程序依赖、ARM64 原对象 / 库、当前镜像库、原始 stdout / stderr、42 个哈希和所有断言；`scripts/audit_zip_engine_join.py` 核对记录及当前 808 生产来源。公开摘要见 [CURRENT-VALIDATION.json](CURRENT-VALIDATION.json)。
+
+```bash
+python3 tests/ota_engine_entry.py --join-zip
+python3 scripts/audit_zip_engine_join.py
+```
+
+本批仅增加接续证据，没有生产修正或重编。ZIP 父进程到引擎及失败返回已覆盖，后续不重复本运行；未完成范围转向 postinstall / SnapshotManager / 槽位与合并的具体接续，完整模拟安装仍未通过。
 
 ---
 
