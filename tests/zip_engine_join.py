@@ -19,6 +19,8 @@ from zip_stock_support import ROOT, Stock, sha
 def run_joined(jail, engine):
     import zip_stock_support
     import zip_install_chain_test
+    model=engine.get('finish_model')
+    prefix='zip-engine-model-finish' if model else 'zip-engine-joined'
 
     class Joined(Stock):
         def fixture(self, text):
@@ -57,6 +59,10 @@ static pid_t observed_waitpid(pid_t p,int*status,int flags){
                               'static void SetProgress(float f,bool=false) {printf("joined_progress=%g\\n",f);')
             text=text.replace('static void ShowProgress(float f,int s) {',
                               'static void ShowProgress(float f,int s) {printf("joined_show=%g,%d\\n",f,s);')
+            if model:
+                text=text.replace('#include <fstream>','#include <fstream>\n#include <sys/resource.h>')
+                text=text.replace('assert(string(path)=="/system/bin/update_engine_sideload");',
+                                 'assert(string(path)=="/system/bin/update_engine_sideload");\n struct rlimit lim{256,256};assert(setrlimit(RLIMIT_NOFILE,&lim)==0);')
             return text
 
         def run(self, executable, command, crypto, clang, sources):
@@ -73,9 +79,9 @@ static pid_t observed_waitpid(pid_t p,int*status,int flags){
             (jail/'packages/properties').write_bytes(self.properties)
             # Use certs already extracted from the delivered image, unchanged.
             assert (jail/'system/etc/security/otacerts.zip').read_bytes()==self.certs
-            stdout=ROOT/'logs/zip-engine-joined.stdout';stderr=ROOT/'logs/zip-engine-joined.stderr'
+            stdout=ROOT/'logs'/(prefix+'.stdout');stderr=ROOT/'logs'/(prefix+'.stderr')
             with stdout.open('w') as out,stderr.open('w') as err:
-                child=subprocess.run(['chroot',str(jail),'/test','stock-current-trust','0'],
+                child=subprocess.run(['chroot',str(jail),'/test','stock-current-trust','1' if model else '0'],
                                      stdout=out,stderr=err,timeout=1800)
             output=stdout.read_text();errors=stderr.read_text()
             inventory=ROOT/'firmware/samples/os4-stable/inventory.json'
@@ -97,24 +103,43 @@ static pid_t observed_waitpid(pid_t p,int*status,int flags){
                 pipe_progress=output.count('joined_progress=')>100 and output.count('joined_show=0.375,0')==2,
                 no_protocol_error='Invalid updater' not in output and 'Unable to read updater output' not in output,
                 cow_views=output.count('BOUNDARY mapped COW view ')==10)
+            if model:
+                for key in ['child_exit63','install_failure','postinstall_failure','readonly_boundary','mount_not_reached']:
+                    del checks[key]
+                checks.update(child_exit0='engine_wait_status=0' in output,
+                    parent_success='stock_result=0 engine_entered=1 mounts=1 unmounts=1' in output,
+                    postinstall_success='finished last action PostinstallRunnerAction with code ErrorCode::kSuccess' in errors,
+                    stock_script='boot-complete not detected' in errors,
+                    actual_getprop=(jail/'work/getprop-called').is_file() and (jail/'work/getprop-called').read_text()=='dev.bootcomplete',
+                    model_mounted='MODEL mount system at /postinstall' in output,
+                    model_unmounted='MODEL unmount postinstall' in output,
+                    manager_state='MODEL actual FinishedSnapshotWrites result=1 state=2 merges=1' in output,
+                    model_slot=(jail/'work/model-active-slot').is_file() and (jail/'work/model-active-slot').read_text()=='1',
+                    actual_state_persisted=(jail/'work/meta/state').is_file(),
+                    actual_boot_marker=(jail/'work/meta/snapshot-boot').read_text()=='_a')
             report=dict(status='PASS' if all(checks.values()) else 'FAIL',scope=__doc__,checks=checks,
                 image=str(self.image),image_sha256=sha(self.image),source_zip_sha256=self.source_hash,
                 source_zip_bytes=self.source.stat().st_size,delivered_cert_zip_sha256=hashlib.sha256(self.certs).hexdigest(),
                 sources={str(p):sha(p) for p in [*sources,Path(__file__),ROOT/'tests/zip_stock_support.py',ROOT/'scripts/firmware_facts.py',ROOT/'scripts/acquire_firmware.py']},
                 binary_dependencies=dependencies,compile_command=command,engine=engine,
                 stdout_sha256=sha(stdout),stderr_sha256=sha(stderr),inventory_sha256=sha(inventory),
-                partition_hashes=dict(rows),installation_result='FAILED',engine_returncode=63,
+                partition_hashes=dict(rows),installation_result='MODEL_SUCCESS' if model else 'FAILED',engine_returncode=0 if model else 63,
                 original_zip_installer_joined=True,signature_enabled=True,full_payload_installed=True,
                 full_ota_install=False,production_trust_changed=False,postinstall_mount_reached=False,
-                snapshot_manager_executed=False,slot_switched=False,hardware_testing=False)
-            (ROOT/'logs/zip-engine-joined.json').write_text(json.dumps(report,indent=2)+'\n')
-            print(report['status'],'ZIP parent -> actual ARM64 engine; install FAILED63; checks',checks,flush=True)
+                snapshot_manager_executed=bool(model),slot_switched=False,hardware_testing=False)
+            if model:
+                report.update(scope=__doc__+'\nModel finish mode: block-readonly/mount/allocation/HAL/slot are explicit models; exact stock script, actual getprop and SnapshotManager state publication run. Model success is NOT full OTA/hardware acceptance.',
+                    postinstall_mount_reached=True,postinstall_mount_is_model=True,postinstall_program_executed=True,
+                    slot_model_updated=True,physical_slot_switched=False,
+                    metadata_state_sha256=sha(jail/'work/meta/state'))
+            (ROOT/'logs'/(prefix+'.json')).write_text(json.dumps(report,indent=2)+'\n')
+            print(report['status'],'ZIP parent -> actual ARM64 engine;',report['installation_result'],'checks',checks,flush=True)
             return report
 
     original=zip_stock_support.Stock
     argv=sys.argv
     zip_stock_support.Stock=Joined
-    sys.argv=['zip_install_chain_test.py','--stock-os4','--report',str(ROOT/'logs/zip-engine-joined.json')]
+    sys.argv=['zip_install_chain_test.py','--stock-os4','--report',str(ROOT/'logs'/(prefix+'.json'))]
     try:
         return int(zip_install_chain_test.main())
     finally:

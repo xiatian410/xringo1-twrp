@@ -15,6 +15,8 @@
 
 ## 后续执行证据
 
+最新原始 4.0.4 整包模拟在模型内成功：一次运行完成整包验签、真实 ARM64 引擎 4933 操作 / payload 哈希 / 42 分区哈希，接到精确原厂 postinstall 的 Recovery 保护分支及真实 SnapshotManager 的 Unverified 状态发布，再记录模型目标槽。引擎退出 0，原父安装器返回 INSTALL_SUCCESS=0，21 项断言通过，约 861 秒。**结果为 MODEL_SUCCESS，完整设备 OTA 仍未验收**：块只读、挂载、快照分配、HAL / 槽位仍有模型，没有真实启动或合并。无生产修改或新构建；保留此前 FAILED63 记录。见[当前模型范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-model-finish)。以下为各阶段历史证据，不能把阶段边界当作最新队列。
+
 原 ZIP 父进程到真实 ARM64 引擎已在一次运行中接续：当前固定信任库验证原始 4.0.4 整包签名后，原 A/B 命令 / fork / pipe 经显式 QEMU 桥接启动原主程序与下载队列，完成 4933 操作及 42 最终哈希。引擎在普通文件块只读设置处返回 63，父进程消费真实两阶段进度，观察 wait status16128，正确返回 INSTALL_ERROR=1 并清理 / 回收；没有误报成功。**安装仍为 FAILED**，postinstall 挂载 / 程序、SnapshotManager、槽位和合并未执行。父为主机编译，HAL / 文件映射等替身保留；无生产修正或新镜像。见[一次父子接续范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-engine-joined)。
 
 原 ARM64 `update_engine_sideload` 主程序 / `ApplyPayload` / `DownloadAction` / `FileFetcher` 已在当前镜像 linker / libc 环境处理原始 OS4.0.4 ZIP，完成 4933 操作与 payload 哈希，并通过 42 个最终分区哈希校验。其后 postinstall 对普通文件设置块只读失败，**安装返回 63，不是安装成功**。10 个真实 COW 视图由文件映射模型物化；BootControl / Hardware / 清理动作 / proc 状态为明确夹具，没有 SnapshotManager 或实际挂载。ZIP 安装器父进程仍未与此运行接成同一链。本批是接续证据，无生产修改或重编；首版夹具判据错误的 FAIL 原样保留，复核报告只证明实际停止位置与哈希，不覆盖安装失败。见[引擎结果](docs/INSTALL-CHAIN-VALIDATION.md#stock-engine-entry)。

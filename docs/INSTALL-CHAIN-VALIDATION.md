@@ -1,7 +1,31 @@
 # 镜像路由与 ZIP 安装链离线验收
 
+<a id="stock-zip-model-finish"></a>
+## 原始 OS4.0.4 完整包：模型内安装链成功，完整设备安装尚未验收
+
+2026-11-13，使用用户提供的原始 `OS4.0.4.0.XODCNXM` ZIP（7,883,598,024 字节，SHA-256 `a1dcfecccf4397943e6836539bea6573ade01c84ef9ee1e360df9c233493f04b`），一次运行接通原 ZIP 安装器、真实 ARM64 引擎、原厂 postinstall 脚本与真实 SnapshotManager 完成状态发布。父进程记录安装约 861 秒，21 项断言通过，结果为 **MODEL_SUCCESS**。此前未替代块设备 ioctl 的运行仍为 FAILED / 63，保留在下文，不改写为成功。
+
+| 环节 | 本次执行与结果 |
+| --- | --- |
+| ZIP 入口 | 主机编译原 `TWinstall_zip`，当前镜像固定证书库验证完整 ZIP 签名；原 A/B 参数、fork、pipe、wait 接续 |
+| ARM64 更新引擎 | 经显式 QEMU / 当前镜像 linker 桥接运行原 sideload main、ApplyPayload、下载与动作队列，完成 4933 操作、7,883,589,123 payload 字节及 payload 哈希 |
+| 分区内容 | 42 个最终分区哈希全部匹配原厂 manifest；10 个真实 COW 视图由普通文件映射模型物化 |
+| postinstall | 运行从哈希固定原厂 system 提取的精确 `otapreopt_script`，使用交付 ARM64 shell / getprop；没有 boot-complete 属性，脚本按原厂 Recovery 保护分支退出 0，未执行 ART |
+| 完成状态 | 原 `DynamicPartitionControlAndroid::FinishUpdate` 调用真实 `SnapshotManager::FinishedSnapshotWrites`，持久化 Unverified 状态及源槽 `_a` 标记；之后才记录模型目标槽 B |
+| 父子收尾 | 引擎退出 0，真实 wait status 为 0，原父安装器返回 `INSTALL_SUCCESS=0`；协议、进度、清理与子进程回收断言通过 |
+
+**模型边界必须保留：**块设备只读设置与 `/postinstall` 挂载 / 卸载由替身返回；脚本预先提取到目录，没有实际挂载文件系统。PreparePartitionsForUpdate 使用普通文件 / COW 模型，并预置十份快照分配状态，未执行真实 SnapshotManager 分配。Boot HAL、槽位、旧更新清理、proc 与 GUI 为夹具；完成状态发布不会创建内核映射，也未贯通 snapuserd、真实重启或快照合并。ZIP 父进程仍是主机编译，并非完整 ARM64 Recovery / GUI 启动。不能据此宣称该 ZIP 在手机上刷入、启动和合并均正常。
+
+本地报告 `logs/zip-engine-model-finish.json` 绑定原始输出、源码、原对象 / 库、镜像输入及所有断言；独立核对入口为 `scripts/audit_zip_engine_join.py --model-finish`，公开摘要见 [CURRENT-VALIDATION.json](CURRENT-VALIDATION.json)。模型没有触发生产缺陷修正，当前镜像仍为 `recovery-dijun-unified-stock-ota-trust.img`，SHA-256 `f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931`，808 生产来源；未重编。
+
+```bash
+# 已完成；输入与相关源码未变时复用报告，不例行重复约十五分钟的全量执行。
+python3 tests/ota_engine_entry.py --join-zip --model-finish
+python3 scripts/audit_zip_engine_join.py --model-finish
+```
+
 <a id="stock-os4-zip"></a>
-## 原始 OS4.0.4 完整包：入口已测，完整卡刷未通过
+## 历史检查：原始完整包入口与证书修正
 
 2026-11-13，使用用户提供的 `OS4.0.4.0.XODCNXM` 原始完整 ZIP，大小 7,883,598,024 字节，SHA-256 `a1dcfecccf4397943e6836539bea6573ade01c84ef9ee1e360df9c233493f04b`。首次入口检查使用旧 media-recreate 镜像，结果如下；本节后半为已交付的证书修正。
 

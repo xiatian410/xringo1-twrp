@@ -1330,6 +1330,21 @@
       "scope": "One-run host original TWinstall_zip/signature/A-B command/fork/pipe -> explicit QEMU bridge/current linker -> original ARM64 sideload main/ApplyPayload/DownloadAction/FileFetcher. Stock OS4 ZIP signature accepted;4933 operations/payload hash/42 final hashes pass; actual engine exits63 at ordinary-file block-readonly, original parent INSTALL_ERROR1/wait16128, protocol/progress/cleanup/reap pass. INSTALLATION FAILED; no SnapshotManager/postinstall mount/program/slot/merge. No production change/build.",
       "installation_result": "FAILED",
       "engine_returncode": 63
+    },
+    {
+      "name": "stock-os4-zip-model-finish",
+      "status": "PASS",
+      "cases": 1,
+      "assertions": 21,
+      "failures": 0,
+      "local_report_sha256": "6409d23df8bcb4a5cca26cf607dea01e3214975040d0c5a7c7f3c1495edd63bd",
+      "installation_result": "MODEL_SUCCESS",
+      "engine_returncode": 0,
+      "parent_result": "INSTALL_SUCCESS=0",
+      "operations": 4933,
+      "partition_hashes": 42,
+      "full_ota_install": false,
+      "scope": "One-run original host ZIP signature/A-B/fork/pipe -> QEMU/current linker -> intact ARM64 engine4933 operations/payload hash/42 hashes -> exact stock postinstall Recovery guard with actual ARM64 shell/getprop -> actual SnapshotManager FinishedSnapshotWrites state Unverified -> modeled slot B. Engine0/wait0/parent INSTALL_SUCCESS0; MODEL_SUCCESS only. Block-readonly/mount/allocation/HAL/slot/proc/cleanup/GUI remain explicit models; no actual snapshot creation/kernel mapping/reboot/merge/full OTA. No production change/build."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",

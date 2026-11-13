@@ -37,7 +37,9 @@ def sha(path):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--join-zip',action='store_true',help='Run host original ZIP parent, with its actual argv/pipe passed to this ARM64 engine')
+    parser.add_argument('--model-finish',action='store_true',help='Explicit mount/readonly/slot model, original stock script and actual SnapshotManager completion; requires --join-zip')
     args=parser.parse_args()
+    if args.model_finish and not args.join_zip:parser.error('--model-finish requires --join-zip')
     index = json.loads((ROOT/'simulation-report.json').read_text())
     image = Path(index['image'])
     assert sha(image) == index['image_sha256']
@@ -98,6 +100,9 @@ extern "C" int __wrap_mount(const char*,const char*,const char*,unsigned long,co
 }
 extern "C" int __wrap_umount(const char*) { assert(false);return -1; }
 '''
+    if args.model_finish:
+        from ota_engine_finish_model import extend
+        adapter=extend(adapter,sources)
     parent = ROOT/'logs/engine-entry-work'
     parent.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='run-', dir=parent) as temp:
@@ -108,6 +113,9 @@ extern "C" int __wrap_umount(const char*) { assert(false);return -1; }
         compile_cmd[compile_cmd.index('-o')+1] = str(work/'adapter.o')
         compile_cmd[compile_cmd.index('-MF')+1] = str(work/'adapter.d')
         compile_cmd[-1] = str(fixture)
+        if args.model_finish:
+            includes=json.loads((ROOT/'logs/ota-snapshot-postinstall.json').read_text())['compile_template']
+            compile_cmd[1:1]=['-I'+str(ROOT/'tests')]+[a for a in includes if a.startswith('-I') and a not in compile_cmd]
         build(compile_cmd)
         for n in shlex.split((work/'adapter.d').read_text().replace('\\\n', ' ').split(':',1)[1]):
             p = ANDROID/n
@@ -125,6 +133,9 @@ extern "C" int __wrap_umount(const char*) { assert(false);return -1; }
         link_cmd[pos:pos+1] = [str(work/'adapter.o'), *original_objects]
         link_cmd[link_cmd.index('-o')+1] = str(work/'engine')
         link_cmd += ['-Wl,--wrap=mount', '-Wl,--wrap=umount']
+        if args.model_finish:
+            from ota_engine_finish_model import RO_SYMBOL,MOUNT_SYMBOL,UNMOUNT_SYMBOL,IS_MOUNT_SYMBOL
+            link_cmd += ['-Wl,--wrap='+s for s in [RO_SYMBOL,MOUNT_SYMBOL,UNMOUNT_SYMBOL,IS_MOUNT_SYMBOL,'execv','fsync']]
         build(link_cmd)
         elf = (work/'engine').read_bytes()
         assert elf[:6] == b'\x7fELF\x02\x01' and elf[18:20] == b'\xb7\0'
@@ -152,12 +163,19 @@ extern "C" int __wrap_umount(const char*) { assert(false);return -1; }
         os.link(source,jail/'work/source.zip')
         shutil.copyfile(qemu,jail/'qemu');(jail/'qemu').chmod(0o755)
         shutil.copyfile(work/'engine',jail/'engine');(jail/'engine').chmod(0o755)
+        if args.model_finish:
+            from ota_engine_finish_model import stage
+            model=stage(jail,sources,deps)
+            # Original Subprocess closes inherited descriptors up to RLIMIT.
+            # Bound only this isolated engine process, never the user's shell.
+            model['rlimit_nofile']=256
+        else:model=None
         if args.join_zip:
             from zip_engine_join import run_joined
             return run_joined(jail, dict(sources=sources,dependencies=deps,
                 image_sha256=sha(image),image_entries=entries,adapter_sha256=hashlib.sha256(adapter.encode()).hexdigest(),
                 fixture_elf_machine=183,fixture_sha256=sha(work/'engine'),
-                compile_command=compile_cmd,link_command=link_cmd))
+                compile_command=compile_cmd,link_command=link_cmd,finish_model=model))
         def isolate():
             os.chroot(jail);os.chdir('/')
         command=['/qemu','-L','/android','-E','LD_LIBRARY_PATH=/android/system/lib64',
