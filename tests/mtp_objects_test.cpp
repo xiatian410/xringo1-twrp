@@ -105,7 +105,57 @@ int main(int argc,char** argv){
  auto session=make_unique<Session>();auto& s=*session;
  auto* one=s.add(0x10001,"/one");s.add(0x20001,"/two");s.start();s.open();
  auto a=find(s.db,0x10001,"a.txt"),dir=find(s.db,0x10001,"dir");REQUIRE(a&&dir);
- if(test.starts_with("staging-replaced-")){
+ if(test.starts_with("directory-final-")){
+  // There is no protocol notification for a completed directory tree. Exercise
+  // the existing explicit SendObjectInfo retry after a real child upload, and
+  // ensure CloseSession does not silently restore an earlier directory date.
+  const auto kind=test.substr(16);
+  const bool nested=kind=="nested";
+  const string path=nested?"/one/dir/new-dir":"/one/new-dir";
+  const uint32_t parent=nested?dir:0xffffffff;
+  auto data=info("new-dir",0,MTP_FORMAT_ASSOCIATION,"19700101T000000Z");
+  auto r=s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,parent},&data);
+  REQUIRE(r.code==MTP_RESPONSE_OK);const auto h=word(r.response,20);
+  struct stat initial{},after{};REQUIRE(stat(path.c_str(),&initial)==0&&initial.st_mtime==0);
+  data=info("child.txt",3);
+  REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,h},&data).code==MTP_RESPONSE_OK);
+  Bytes content{'o','k','!'};
+  REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&content).code==MTP_RESPONSE_OK);
+  REQUIRE(stat(path.c_str(),&after)==0&&after.st_mtime>0);
+  const auto child=find(s.db,0x10001,"child.txt",h);REQUIRE(child);
+  if(kind=="close"){
+   REQUIRE(s.call(MTP_OPERATION_CLOSE_SESSION).code==MTP_RESPONSE_OK);s.open();
+   struct stat reopened{};REQUIRE(stat(path.c_str(),&reopened)==0);
+   REQUIRE(reopened.st_mtim.tv_sec==after.st_mtim.tv_sec&&reopened.st_mtim.tv_nsec==after.st_mtim.tv_nsec);
+  }else if(kind=="readonly"){
+   r=s.call(MTP_OPERATION_GET_OBJECT_PROP_DESC,{MTP_PROPERTY_DATE_MODIFIED,MTP_FORMAT_ASSOCIATION});
+   // Descriptor payload: uint16 property, uint16 type, uint8 GetSet.
+   REQUIRE(r.code==MTP_RESPONSE_OK&&r.data.size()>16&&r.data[16]==0);
+   data.clear();str(data,"19700101T000000Z");
+   REQUIRE(s.call(MTP_OPERATION_SET_OBJECT_PROP_VALUE,{h,MTP_PROPERTY_DATE_MODIFIED},&data).code==MTP_RESPONSE_OBJECT_PROP_NOT_SUPPORTED);
+   struct stat unchanged{};REQUIRE(stat(path.c_str(),&unchanged)==0);
+   REQUIRE(unchanged.st_mtim.tv_sec==after.st_mtim.tv_sec&&unchanged.st_mtim.tv_nsec==after.st_mtim.tv_nsec);
+  }else{
+   data=info("new-dir",0,MTP_FORMAT_ASSOCIATION,"19700101T000000Z");
+   if(kind=="retry"){
+    directory_timestamp_fault=true;
+    REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,parent},&data).code==MTP_RESPONSE_GENERAL_ERROR);
+    directory_timestamp_fault=false;
+    REQUIRE(stat(path.c_str(),&after)==0&&after.st_mtime>0&&readfile(path+"/child.txt")=="ok!");
+   }
+   r=s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,parent},&data);
+   REQUIRE(r.code==MTP_RESPONSE_OK&&word(r.response,20)==h);
+   REQUIRE(stat(path.c_str(),&after)==0&&after.st_mtime==0&&after.st_mtim.tv_nsec==0);
+   REQUIRE(after.st_dev==initial.st_dev&&after.st_ino==initial.st_ino);
+   REQUIRE(s.call(MTP_OPERATION_CLOSE_SESSION).code==MTP_RESPONSE_OK);s.open();
+   REQUIRE(stat(path.c_str(),&after)==0&&after.st_mtime==0);
+  }
+  REQUIRE(readfile(path+"/child.txt")=="ok!"&&find(s.db,0x10001,"child.txt",h)==child);
+  MtpObjectInfo actual(h);
+  REQUIRE(s.db.getObjectInfo(h,actual)==MTP_RESPONSE_OK&&actual.mDateModified==after.st_mtime);
+  cout<<"child_upload=1 explicit_directory_retry="<<(kind!="close"&&kind!="readonly")
+      <<" automatic_close_replay=0 handles_and_content_preserved=1"<<endl;
+ }else if(test.starts_with("staging-replaced-")){
   auto data=info("a.txt",3);
   REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
   write_fault=3;fail_unlink=true;Bytes partial{'b','a','d'};

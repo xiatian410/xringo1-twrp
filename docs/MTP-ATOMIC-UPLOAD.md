@@ -40,6 +40,23 @@ python3 scripts/audit_mtp_upload_time_delivery.py
 
 首次接收失败夹具未排空剩余 bulk 数据，后续重试失败，报告保留在本地 `logs/mtp-upload-time-first-attempt.json`。最终该项使用 payload 已完整进入初始缓冲后的接收失败，不将 USB 替身调整当作真实端点恢复修正。
 
+<a id="directory-finalization"></a>
+
+## 子文件上传后的目录时间：现有协议路径
+
+目录创建时设置的修改时间会被随后创建子文件更新。当前 server 没有“整棵目录上传完成”的协议通知；`CloseSession` 也不表示主机希望恢复哪一次目录日期。数据库将 `DateModified` 描述为只读，`SetObjectPropValue` 返回不支持；所对照的 Android `MtpDatabase.java` 同样只实现文件名 setter。因此，本批不增加在断开或会话结束时自动重放旧时间的行为，避免覆盖后续修改。
+
+现有可用路径是：主机完成子文件上传后，对同一父目录和目录名再次发送带日期的 `SendObjectInfo`。0059 已允许接纳已有目录并设置时间，不需要 `SendObject` 数据阶段。这个路径要求客户端主动发送，不能保证 Windows 或其他客户端会采用它，也不把它当作通用属性 setter。
+
+`tests/mtp_objects_test.py` 的五个新增场景执行生产 server / packet / database / storage：根下目录、嵌套目录、设置时间失败后的重试、会话关闭不重放、日期属性只读。每项先通过协议实际上传子文件，确认目录时间已改变；显式重发场景再验证 epoch 0、目录 inode、目录与子文件 handle、文件内容、数据库日期及重新打开会话后的结果。五项通过，启用 ASan / UBSan。本地报告为 `logs/mtp-directory-finalization.json`。
+
+这是现有行为的定向证据与实现决定，没有生产修改或新构建。报告来源中与现有镜像构建清单重叠的 17 份 MTP 文件哈希相同；构建清单并未覆盖全部 MTP 文件，不能将此称为完整库内容审计。主机私有 chroot 使用普通文件、inotify 和线程；USB、属性与日志是替身，未执行 ARM64 MTP、实际端点或 Windows 客户端。
+
+```bash
+# 已执行；相关输入与实现未变时复用，不例行重跑其他 MTP 套件。
+python3 tests/mtp_objects_test.py --cases directory-final-root directory-final-nested directory-final-retry directory-final-close directory-final-readonly --report logs/mtp-directory-finalization.json
+```
+
 <a id="directory-metadata"></a>
 
 ## 目录上传时间与完成状态（0059）
@@ -100,6 +117,6 @@ python3 scripts/audit_mtp_staging_identity.py
 上述数量对应各次补丁的输入与源码，不表示重跑后仍应得到同一数量。旧实现对照及定向交付审计还依赖本地备份、镜像和历史报告；公开 checkout 不具备全部依赖。
 
 - 临时文件只在所属 storage 生命周期内登记；进程退出、unlink 失败或重启后可能留下残留。跨重启归属及回收尚未实现，不能按通用隐藏前缀删除用户文件。
-- 目录日期只在 `SendObjectInfo` 阶段应用。之后创建子文件会更新父目录时间，尚未实现整棵树传输完成后重放目录日期。
+- 目录日期在 `SendObjectInfo` 阶段应用；子文件上传后显式重发可恢复，见[目录收尾路径](#directory-finalization)。没有整棵树完成通知或自动日期重放，真实客户端是否发送收尾请求仍未验证。
 - 主机文件 I/O、线程与数据库执行不等于真实 FunctionFS、Android 挂载 / SELinux、Windows、完整媒体属性或断电持久性验收。
 - 取消夹具的 USB peer 会显式丢弃余量；控制请求与 bulk 恢复边界见[控制生命周期](MTP-CONTROL-ADAPTATION.md)。外部并发 rename、父目录替换和真实存储仍有未覆盖边界。

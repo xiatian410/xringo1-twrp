@@ -13,6 +13,14 @@
   },
   "checks": [
     {
+      "name": "mtp-directory-finalization",
+      "status": "PASS",
+      "cases": 5,
+      "failures": 0,
+      "local_report_sha256": "f094282f7518cde7fef6a592348da0aa099c6ef6f57677bcba65e705eb4167ab",
+      "scope": "Five production host MTP packet cases: real child upload then explicit directory SendObjectInfo retry (root/nested/error), no CloseSession timestamp replay, DateModified read-only. Real ordinary files/inotify/threads with ASan/UBSan; USB/properties/logging fixtures. No production change/build, ARM64 MTP or Windows/client behavior proof."
+    },
+    {
       "name": "archive-special-restore",
       "status": "PASS",
       "cases": 89,

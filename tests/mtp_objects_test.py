@@ -27,6 +27,7 @@ CASES += ['directory-time-'+case for case in ['epoch-zero','offset','pre-epoch',
 CASES += ['staging-cleanup-retry', 'staging-cleanup-new']
 CASES += ['staging-replaced-'+kind for kind in ['file', 'directory', 'symlink', 'removed', 'modified']]
 CASES += ['media-format-'+case for case in ['inventory','rename','upload','filter']]
+CASES += ['directory-final-'+case for case in ['root','nested','retry','close','readonly']]
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 
 def main():

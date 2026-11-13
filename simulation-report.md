@@ -4,6 +4,8 @@
 
 ## 当前候选
 
+最新定向证据：MTP 子文件上传后，显式重发目录信息可恢复目录时间；根下 / 嵌套 / 故障重试 / 会话关闭 / 只读属性五项通过。生产代码与镜像未变，不新增自动日期重放；真实客户端是否发送收尾请求未验证。见[目录收尾范围](docs/MTP-ATOMIC-UPLOAD.md#directory-finalization)。
+
 | 项目 | 值 |
 | --- | --- |
 | 文件 | `recovery-dijun-unified-special-file-errors.img` |

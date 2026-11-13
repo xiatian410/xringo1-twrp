@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "a99c30ed69fce74bef7f5066d44e95235f0768c163002f309ec7a05d9044897a",
+    "sha256": "c1817206acd39087438bc925a2ee9f6add2f14c2f5797269b2ec38b58b1a18f9",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -96,7 +96,7 @@
     "mode": "0o644"
   },
   "docs/MTP-ATOMIC-UPLOAD.md": {
-    "sha256": "284e0f0e9482c7a7d0824261e606bb36b59a9c5773a8cfc4bacab5402e6fb203",
+    "sha256": "ca81892c961e5cea0e2ecd462795044e1739bbc3bdadec62fd19d72ef6e358a4",
     "mode": "0o644"
   },
   "docs/MTP-CONTROL-ADAPTATION.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "bba070edbf47459b7325185462516c2ec9a5d0982b989911e1ce7e398fc6ca3c",
+    "sha256": "8b2c651f52e3556c623e514905d239fcbe843b6541a4832f27e2125b2b3adfdd",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1768,11 +1768,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "25d088dcf519a15366ee799e16b1408e6214ef0b8152e6fea34a4f2fe3a3f717",
+    "sha256": "03521b7b06621258ff4299bdf5225babee7032d9e91097af1d62950940670f13",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "615eb9154f542509c2b2cf2d2ea13ce989e4a4aacb905f7c9ad3e7e1b4ffd03b",
+    "sha256": "1887baa35fe6a1c440f36fba3b97317990179b273fc2fe12078fe05ba9d222d0",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2232,11 +2232,11 @@
     "mode": "0o644"
   },
   "tests/mtp_objects_test.cpp": {
-    "sha256": "482cdcd3e72c5d02a2ed8042048b11a6681ef7cf14af5bdd99cdf46dcb6a88c6",
+    "sha256": "ad27be6341f4805974dd7b8ff31e70008e8331de880ebfa6f2ccfe8c52015688",
     "mode": "0o644"
   },
   "tests/mtp_objects_test.py": {
-    "sha256": "2fa2222cf6780de0ed6cdda54a084d2658b2071d0c87ba3ce1c5c211ca30a98c",
+    "sha256": "8c77531fbe4685beab65898a6cc3ead4102e359baec579fa867030aa42d226bc",
     "mode": "0o644"
   },
   "tests/mtp_receiver_test.cpp": {
