@@ -13,7 +13,11 @@
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批证据：ext4 标签初始化
+## 本批证据：分区工具页面与后台接续
+
+分区选项、确认 / 文件系统选择、原工具 worker、进度页与返回详情在同次主机回放中接通，十项通过。涵盖修复 / 扩容 / 格式转换成功失败、未选择、启动被拒后重试、确认前返回与重复进入。manager、详情和显示提交有明确替身，未执行真实分区操作或完整 GUI 主循环；没有发现生产缺陷，没有新补丁或构建。镜像与 809 份生产来源不变，范围见[分区工具页面接续](docs/PARTITION-ACTIONS.md#tool-page-worker-lifecycle)。
+
+## 已有证据：ext4 标签初始化
 
 扩展既有工具接续，实际执行当前镜像 ARM64 e2fsdroid：`/data` 与 System 根标签经独立 debugfs 读回确认，Android 分离规则选择及缺失 / 无效规则的失败返回五项通过；共用测试工具的原六项场景回归通过。首次夹具漏复制镜像已有的分离规则，失败保留，没有据此修改生产代码。镜像及 809 来源不变，无新增构建；真实挂载 / 加密 / 完整 GUI 生命周期仍未完成。范围与结果见[文件系统标签初始化](docs/FILESYSTEM-TOOLS-EXECUTION.md#postformat-selinux)。
 
@@ -29,11 +33,11 @@
 
 这是模型生命周期修正和接续证据，无生产修改或新镜像。源LP/DM视图/readonly/挂载/HAL/槽位/proc等仍为明确模型，scratch/daemon关闭；未证明实机启动合并。已完成的整包不再例行重复。
 
-## 整包接入真实分配：数据及收尾通过，退出仍失败
+## 历史：整包接入真实分配后的模型退出失败
 
 同次原始 4.0.4 完整 ZIP 运行已移除预置分配状态与独立 COW 创建，执行真实控制器 PreparePartitionsForUpdate / SnapshotManager 初始化十份 COW，再由原 controller writer 执行全部4933操作、payload哈希与42最终分区哈希；原厂脚本 Recovery 分支、真实完成状态及模型槽位接续。约876秒后，在成功回调 / 完成标记后进程SIGSEGV，实际退出1，父安装器INSTALL_ERROR，**本次安装为FAILED**。
 
-精确保存的同一适配器另做两项分配后退出探针：进程静态 controller 在main返回后复现SIGSEGV，main结束前释放则退出0，定位为模型生命周期问题，尚无生产缺陷证据。保留完整失败报告，不重跑完整payload来隐藏失败。无生产修改或新镜像；下一步修正模型所有权。真实内核映射 / 挂载 / HAL / 槽位 / scratch / daemon / 启动合并仍有替身，见[完整运行范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-failure)。
+精确保存的同一适配器另做两项分配后退出探针：进程静态 controller 在main返回后复现SIGSEGV，main结束前释放则退出0，定位为模型生命周期问题，尚无生产缺陷证据。后续已修正模型所有权并取得上文成功结果；固定路径 runner 当时覆盖了旧失败原始报告，只保留旧摘要、适配器与文字结论，不能声称旧原始报告完整留存。此后 runner 已拒绝覆盖既有运行输出。真实内核映射 / 挂载 / HAL / 槽位 / scratch / daemon / 启动合并仍有替身，见[历史失败与保存限制](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-failure)。
 
 ## 分配到 payload 片段的交接证据
 

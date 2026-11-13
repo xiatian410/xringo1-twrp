@@ -46,7 +46,7 @@
 - [OS4 首个正式版：OS4.0.4.0.XODCNXM](https://bkt-sgp-miui-ota-update-alisgp.oss-ap-southeast-1.aliyuncs.com/OS4.0.4.0.XODCNXM/dijun-ota_full-OS4.0.4.0.XODCNXM-user-17.0-b0ce732f48.zip)。
 - OS4 旧样本本地包：`dijun-ota_full-OS4.0.0.19.XODCNXM-user-17.0-aa6a58e947.zip`。
 
-2026-11-11 对四个远程链接的 HTTP HEAD 检查均返回 200，并声明支持字节范围请求。原始响应记录在 本地 `logs/firmware-source-head-20261111.json`。随后已范围提取六份 OTA 元数据、payload manifest 与启动/模块分区，并校验 metadata hash、操作数据 hash（存在时）及完整分区 SHA-256。完整远程 ZIP 尚未下载，ETag 不能当作其 MD5；其余分区获取状态以每份 `firmware/samples/<sample>/inventory.json` 为准。
+2026-11-11 对四个远程链接的 HTTP HEAD 检查均返回 200，并声明支持字节范围请求。原始响应记录在 本地 `logs/firmware-source-head-20261111.json`。随后已范围提取六份 OTA 元数据、payload manifest 与启动/模块分区，并校验 metadata hash、操作数据 hash（存在时）及完整分区 SHA-256。后续 OS4.0.4 完整 ZIP 已获取（7,883,598,024 字节，SHA-256 `a1dcfecccf4397943e6836539bea6573ade01c84ef9ee1e360df9c233493f04b`），[原包安装软件模型已成功](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success)，不等同实机刷入 / 启动合并验收。其他样本获取状态以各自 `firmware/samples/<sample>/inventory.json` 为准，ETag 不当作 MD5。
 
 后续先获取 OTA 元数据、payload manifest 和关键分区；必要时完整下载。记录文件大小、SHA-256、提取工具版本、分区哈希和校验结果。范围提取须正确处理 ZIP/ZIP64、payload 操作类型与数据区偏移；未知操作类型必须报错，禁止静默输出不完整分区。
 

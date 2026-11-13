@@ -16,7 +16,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "c38e8117585b752aec4c5bb76aa2535f97a99f2521eae8f7c301f8dbd8aa322f",
+    "sha256": "021ecffd635133f047ef320a7185d1956ac623054437f1aa643a6965f02e93ee",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "29c2875441beb4f0018762e41f36df08e21f1c1d0c8b8237c9e6978afe7c7d90",
+    "sha256": "07865b56b93f31137d98b4ca087e5772514f21dae72cff69cec82b7870a3783a",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -124,7 +124,7 @@
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
-    "sha256": "b799498a2148392f1ef91cdb70317c7f55ee7c9538834ada1d51898f2182187a",
+    "sha256": "49b52815c4f29d02ed8bed3c29049be949763fc12fd8d6fe79569e106230753c",
     "mode": "0o644"
   },
   "docs/PROFILE-LINKER-ARM64.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "5230559f10374fb0c1e19e11773b6227cb2316c56ebc626ba1b42d918cfe3f55",
+    "sha256": "ef3abf5077ad3468c1740100f4656410394db00889e786d0c5ad2076562918f2",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1480,7 +1480,7 @@
     "mode": "0o644"
   },
   "scripts/check_documentation.py": {
-    "sha256": "6b6e304747372ae975ca517bd6471e9fb5f916d5fc692bcc17cb8f3750387f3f",
+    "sha256": "ff4718bbeaa384c961deb59ec93650a75330e477f2bdc9e3f38d13429c0ef907",
     "mode": "0o644"
   },
   "scripts/check_public_tree.py": {
@@ -1708,11 +1708,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "faf83f4d75214f366b387ba5299d17e76a727f1cd91da0b87869e7ee5a0110b0",
+    "sha256": "0cd88986b48f3dbd29689ddf8c85e5b9e76bb642353e37505199673200960f79",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "90903e1c79847b5e88b07718cf1d98aa53a15f3eea39509a74e17d877160d041",
+    "sha256": "c19f46bfba9036b79d099b0a8ffa292413ad6e9f6cf30ce3df3fcfd9b73cd9af",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2437,6 +2437,14 @@
   },
   "tests/partition_operation_path_test.py": {
     "sha256": "750fa367c96e4a36896f61f13e45761170f16331e76fce4bd09791dd094d436d",
+    "mode": "0o644"
+  },
+  "tests/partition_tool_pages_test.cpp": {
+    "sha256": "33080c003f9745e76c8395964dfa8c1ae3850421dfa83e382f8f326cfbcf65cf",
+    "mode": "0o644"
+  },
+  "tests/partition_tool_pages_test.py": {
+    "sha256": "b354ba99d8c58b659a813a72fefbc8787f8561858fecd9fbb902d2e41fae2d37",
     "mode": "0o644"
   },
   "tests/policy_access.c": {

@@ -21,6 +21,17 @@ NV 集合为 nvram、proinfo、nvdata、nvcfg、protect_f、protect_s，含 `/mn
 
 本地证据：`logs/partition-actions-delivery.json`、`nv-partition-actions.json`、`install-target-interaction.json`、`partition-actions-image-chain.json`、`partition-actions-repair-chain.json`、`partition-actions-mount.json`。公开仓库仅发布源码、配置、补丁、测试及摘要，不上传镜像、编译产物或原始日志。
 
+<a id="tool-page-worker-lifecycle"></a>
+## 分区工具页面与后台接续
+
+`tests/partition_tool_pages_test.py` 补齐此前分开验证的页面与 worker 交接：原分区选项 builder / 点击回调 → 确认或选择文件系统 → 原工具后台线程 → 原进度页状态更新 → 返回分区详情。真实 LVGL 指针点击与滑块输入、page_host / scaffold、PUSH / POP、操作锁、后台 start / run / status / acknowledge 均参与执行；路由器由夹具接到这些原始页面，返回逻辑只提取 PARTITION_OPTIONS、CHANGE_FS、TOOL_CONFIRM、TOOL_PROGRESS 四个相关分支。
+
+十个场景通过：修复、扩容、格式转换各自成功与失败，格式未选择、启动被拒后重试、确认前返回，以及格式页完成后再次进入。检查目标 / 格式传递、运行时拒绝返回与第二任务、DONE / FAILED 文案和按钮、返回后清空旧 view 并重新取详情。格式化失败的 manager 替身保留已改变的文件系统类型，用于确认页面不会显示虚假的回滚状态；这不是实际格式化证据。
+
+本地报告 `logs/partition-tool-pages.json` 保存输出、编译命令、源码及 LVGL 依赖指纹。首次编译的定义提取 / include 问题，以及第二次运行中重复进入时错误要求累计调用数为零的问题，均属测试夹具；修正后十项通过，未发现需要修改的生产缺陷。只新增接续证据，没有生产补丁或新镜像。
+
+**范围限制：** PartitionManager 操作与详情提供者、设置、字体、console 读取和显示提交为明确替身。没有运行 mkfs / fsck、完整 GUI 主循环、内核挂载或 fscrypt，不将此测试与独立的[ARM64 工具证据](FILESYSTEM-TOOLS-EXECUTION.md)拼称一次完整文件系统生命周期。相关源码与输入未变时复用本结果，不追加等价回放。
+
 ## 嵌套分区操作路径
 
 以下保留 0029 的核心路径修正记录。它与后续 GUI 的 NV 操作限制分属不同层次，不能据核心能够查找分区推断普通界面允许清除 NV。
