@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-partial-write.img",
-  "image_sha256": "1de91973f369797d92b5aad05047723d3bb90d8e8ff179614229f1b6bc715dbc",
-  "image_status": "Clean installclean + make -j$(nproc); patch0099 MTP partial edit validation/short-write handling/response count. 824 sources/six profiles; objects160 pass; old10/11 fail. Hardware unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-reboot-storage-guard.img",
+  "image_sha256": "fb3035146cc80d240804a1d47c6d528c441a1983fae27cbe410c78176e14f81b",
+  "image_status": "Clean installclean + make -j$(nproc); patch0100 rejects reboot/slot entry while storage transaction busy and preserves pending sideload reboot until idle. 825 sources/six profiles. Entry guard only, no synchronous-call cancellation or shutdown reservation. Hardware unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1933,7 +1933,7 @@
   "not_yet_completed": [
     "OS4 stable automatic ordinary-report startup candidate is built; 9 private policy cases and ramdisk delivery audit pass. Prior manual raw0 user capture observed215 Linux input events. Automatic candidate controller response/event delivery, GUI and wake remain unverified.",
     "Security services: original six-profile ARM64 relocation18, missing-library6 and undefined-symbol6 covered; actual default namespace fields and config removal/marker12 controls now covered in private chroot (42-case suite). Real init/mount namespace/APEX/property/proc runtime, service initialization/Binder/TEE/key operations and synthetic crypto volumes remain open.",
-    "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
+    "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U. Patch0100 now rejects reboot/slot entry while storage busy and retains pending sideload action until idle; synchronous provider cancellation and a reservation through final reboot remain unimplemented.",
     "MTP patch0099 partial edit packet validation/write retries/response count covered (objects160; old10/11 failures); edits remain in-place, no rollback or complete error-stream drain. MTP patch0098 session gate/close edit cleanup covered (objects149/transfers48; old22/23 failures); remaining media metadata and real client directory-finalization behavior (five post-child explicit SendObjectInfo retry/close/readonly cases covered; no automatic tree completion replay; prior file/date/completion evidence retained), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
     "Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix. Patch0095 now preserves application user.* binary/empty xattrs with bounded multiblock PAX and errors; existing Android references excluded. libtar64/GNU readback and codec104 pass, old10/14 and20/20fail. Arbitrary privileged namespaces/ACL, live concurrent consistency and complete manager/GUI/powerloss remain outside scope. Patch0096 now bounds ordinary/split extraction to selected root and rejects observed traversal/symlink/shared-inode hazards; libtar79/codec116 pass, old11/15 and12/12 fail. Concurrent ancestor replacement and bind-mount isolation remain open; not complete archive sandboxing. Patch0097 propagates char/block mknod failures before applying metadata to existing files: libtar89/codec124 pass, old8/10 and8/8 fail. mknod is intercepted; no actual device node creation or target kernel success verified.",
     "Full filesystem GUI/manager/tool format/write/repair lifecycle, real mounts/fscrypt, concurrent changes and I/O/power-loss cleanup remain pending. Ten original partition-tool page/worker/return-detail cases now cover that handoff with an explicit manager fixture; they do not join the independent ARM64 tool runs into one full lifecycle. Existing deletion/media/conversion/mount/persist/Android Secure/startup media fixes and ext4 labeling evidence are reused. FormatData/WipeEncryption/metadata partition routing/backend run14 cases now cover terminal errors/order with explicit formatter/mount/mapper/merge/hook fixtures. No full GUI/start/thread, mkfs or crypto lifecycle; no production change/build, do not repeat unchanged.",
@@ -4036,6 +4036,30 @@
       "evidence": "logs/format-data-chain.json",
       "evidence_sha256": "7b239d52e453dee85cb719f07cd81992a151d14bbd5d07a23609f940e63490bd",
       "scope": "Execute production FormatData/WipeEncryption/metadata routing/backend run.\n\nMounts, formatter, device mapper, pending-merge policy, device hooks and UI are\nexplicit fixtures. No mkfs, device, keys, real mounts, GUI/start/thread or rollback.\n Fourteen cases verify actual stage ordering, crypto/media fields, metadata-partition error propagation and backend DONE/FAILED. Synchronous run; start/thread and full GUI are not executed. Default device hooks return true; injected hook failures are fixtures. No production change or build."
+    },
+    {
+      "name": "reboot-storage",
+      "status": "PASS",
+      "count": 21,
+      "evidence": "logs/reboot-storage.json",
+      "evidence_sha256": "2ca3dc4063907fe81eaa0228989e215a8d1d01500801b2fbf733c7fedd2cef5a",
+      "scope": "Original reboot/slot backend with real recursive storage mutex and owner threads: nonblocking busy rejection, no side effects, idle retry. Original sideload core/private processes/GUI poll preserves pending request until idle. HAL/partition/DataManager/USB/sync/final reboot are fixtures. No Binder/TEE cancellation, shutdown reservation, full ARM64 GUI or hardware proof."
+    },
+    {
+      "name": "reboot-storage-negative",
+      "status": "FAIL",
+      "count": 21,
+      "evidence": "logs/reboot-storage-negative.json",
+      "evidence_sha256": "e2122c1ad8650dae37fbb76792864522218ba44a01d77615c6f882664d93097e",
+      "scope": "Original reboot/slot backend with real recursive storage mutex and owner threads: nonblocking busy rejection, no side effects, idle retry. Original sideload core/private processes/GUI poll preserves pending request until idle. HAL/partition/DataManager/USB/sync/final reboot are fixtures. No Binder/TEE cancellation, shutdown reservation, full ARM64 GUI or hardware proof."
+    },
+    {
+      "name": "reboot-storage-sideload",
+      "status": "PASS",
+      "count": 20,
+      "evidence": "logs/reboot-storage-sideload.json",
+      "evidence_sha256": "a0eaca1c6560e6df8fccf85fcac1f904383032db304ac86bf90b7c9871b45a89",
+      "scope": "Original reboot/slot backend with real recursive storage mutex and owner threads: nonblocking busy rejection, no side effects, idle retry. Original sideload core/private processes/GUI poll preserves pending request until idle. HAL/partition/DataManager/USB/sync/final reboot are fixtures. No Binder/TEE cancellation, shutdown reservation, full ARM64 GUI or hardware proof."
     }
   ],
   "source_review_followups": [
@@ -4374,10 +4398,10 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/mtp-partial-delivery-audit.json",
-    "scope": "Host production MTP server/packet/database/storage with ordinary files/inotify/threads and ASan/UBSan: SendPartialObject validates initial packet type/code/transaction/declared length before writes, retries short writes/EINTR, rejects zero/error writes, clears inbound response data and returns total bytes. USB/properties/logging fixtures; no ARM64 MTP/Windows/full endpoint drain, durable commit or rollback. Edits remain in-place.",
-    "hardware": "unverified",
-    "evidence_sha256": "4591cc91c73fb1de07759dc4f21c9829aa0359717a5c405ff48cdd15155e2d34"
+    "evidence": "logs/reboot-storage-delivery-audit.json",
+    "evidence_sha256": "cceef916f5ede885f61ca95780fbc5398ac57da2834dd662f571a88eaad30971",
+    "scope": "Original reboot/slot backend with real recursive storage mutex and owner threads: nonblocking busy rejection, no side effects, idle retry. Original sideload core/private processes/GUI poll preserves pending request until idle. HAL/partition/DataManager/USB/sync/final reboot are fixtures. No Binder/TEE cancellation, shutdown reservation, full ARM64 GUI or hardware proof.",
+    "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
     "date": "2026-11-12",
@@ -5436,5 +5460,12 @@
     "pipeline_cases": 62,
     "old_restore_failures": 4,
     "old_pipeline_failures": 8
+  },
+  "reboot_storage_guard": {
+    "patch": "0100",
+    "scope": "Original reboot/slot backend with real recursive storage mutex and owner threads: nonblocking busy rejection, no side effects, idle retry. Original sideload core/private processes/GUI poll preserves pending request until idle. HAL/partition/DataManager/USB/sync/final reboot are fixtures. No Binder/TEE cancellation, shutdown reservation, full ARM64 GUI or hardware proof.",
+    "document": "docs/MULTIUSER-ADAPTATION.md#storage-reboot-guard",
+    "production_changes": true,
+    "new_build": true
   }
 }

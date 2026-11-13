@@ -1,0 +1,41 @@
+--- a/gui2/backend/twrp_reboot_backend.cpp
++++ b/gui2/backend/twrp_reboot_backend.cpp
+@@ -10,6 +10,7 @@
+ #include "data.hpp"
+ #include "twcommon.h"
+ #include "twrp_operation.h"
++#include "twrp_operation_executor.h"
+ #include "partitions.hpp"
+ #include "twrp_functions.hpp"
+ #include "variables.h"
+@@ -40,6 +41,10 @@
+ 
+ // GUIAction::setbootslot
+ bool twrp_reboot_backend::set_active_slot(boot_slot slot) {
++  // Decryption may still be inside a synchronous key-service call after the
++  // user leaves its page. Never block the UI or change slots under that work.
++  std::unique_lock transaction(twrp_operation_executor::instance().mutex(), std::try_to_lock);
++  if (!transaction.owns_lock()) return false;
+   const std::string arg = slot == boot_slot::A ? "A" : "B";
+   operation_start("Set Boot Slot");
+   if (PartitionManager.FindPartitionByPath("/vendor")) {
+@@ -97,6 +102,8 @@
+ 
+ // GUIAction::reboot
+ bool twrp_reboot_backend::request_reboot(reboot_target target) {
++  std::unique_lock transaction(twrp_operation_executor::instance().mutex(), std::try_to_lock);
++  if (!transaction.owns_lock()) return false;
+   const char* argument = reboot_argument(target);
+   if (argument == nullptr || !is_supported(target)) return false;
+ 
+@@ -105,6 +112,10 @@
+ }
+ 
+ bool twrp_reboot_backend::take_external_reboot() {
++  // Leave the pending action in the sideload core until storage is idle.
++  // request_reboot() acquires the same recursive mutex during the handoff.
++  std::unique_lock transaction(twrp_operation_executor::instance().mutex(), std::try_to_lock);
++  if (!transaction.owns_lock()) return false;
+   Device::BuiltinAction action;
+   if (!TakeMiniAdbdRebootAction(&action)) return false;
+   reboot_target target;

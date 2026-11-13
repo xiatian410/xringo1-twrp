@@ -32,7 +32,7 @@ def main():
  code=code.replace('// FIXED','#define FIXED_CORE 1').replace('// CORE_HEADER','\n'.join(x for x in header.read_text().splitlines() if not x.startswith('#include')))
  code=code.replace('// CORE',core.read_text()[core.read_text().index('using CommandFunction'):]).replace('// BACKEND_HEADER','\n'.join(x for x in (SRC/'gui2/backend/twrp_sideload_backend.h').read_text().splitlines() if not x.startswith('#include')))
  code=code.replace('// BACKEND',backend.read_text()[backend.read_text().index('namespace gui2_backend'):])
- code=code.replace('// REBOOT_HEADER','#include "twrp_reboot_backend.h"')
+ code=code.replace('// REBOOT_HEADER','#include "twrp_operation_executor.h"\n#include "twrp_reboot_backend.h"')
  rmethods='\n'.join(method(reboot.read_text(),s) for s in ['bool twrp_reboot_backend::is_supported(', 'const char* twrp_reboot_backend::reboot_argument(', 'bool twrp_reboot_backend::request_reboot('])
  rmethods+='\ntwrp_reboot_backend::twrp_reboot_backend() = default;\n'
  if args.before:rmethods+='bool twrp_reboot_backend::take_external_reboot(){return false;}'
@@ -43,13 +43,13 @@ def main():
  branch=method(ors.read_text(),'else if (strcmp(command, "sideload") == 0)');code=code.replace('// ORS_BRANCH',branch[branch.index('{')+1:-1])
  code=code.replace('static int script_sideload(){','static int property_set(const char*,const char*);\nstatic int script_sideload(){')
  if args.before:code=code.replace('static int syncs=0,','bool TakeMiniAdbdRebootAction(Device::BuiltinAction*){return false;}\nstatic int syncs=0,')
- cases=['system','bootloader','fastboot','recovery','ors-system','ors-bootloader','ors-fastboot','ors-recovery','rescue','ack-fail','restore-fail','startup-gate','background-gate','worker-gate','unsupported-target','write-fail','wrong-token','pending-blocks-session','cancel-pending']
+ cases=['system','bootloader','fastboot','recovery','ors-system','ors-bootloader','ors-fastboot','ors-recovery','rescue','ack-fail','restore-fail','startup-gate','background-gate','worker-gate','unsupported-target','write-fail','wrong-token','pending-blocks-session','cancel-pending','storage-gate']
  # cancelled-token lifetime and completion cancellation are exercised directly
  # below using the core; GUI normal destructor must not cancel a finished job.
  rows=[]
  with tempfile.TemporaryDirectory(prefix='sideload-reboot-') as tmp:
   p=Path(tmp);(p/'test.cpp').write_text(code);exe=p/'test'
-  cmd=[str(clang),'-std=c++23','-stdlib=libc++','-O1','-g','-D__unused=__attribute__((unused))','-I'+str(SRC/'minadbd/include'),'-I'+str(SRC/'gui2/backend'),'-I'+str(android/'system/libbase/include'),'-I'+str(android/'system/logging/liblog/include'),str(p/'test.cpp'),'-L'+str(host),'-Wl,-rpath,'+str(host),'-Wl,--wrap=socketpair','-lbase','-llog','-lpthread','-o',str(exe)]
+  cmd=[str(clang),'-std=c++23','-stdlib=libc++','-O1','-g','-D__unused=__attribute__((unused))','-I'+str(SRC),'-I'+str(SRC/'minadbd/include'),'-I'+str(SRC/'gui2/backend'),'-I'+str(android/'system/libbase/include'),'-I'+str(android/'system/logging/liblog/include'),str(p/'test.cpp'),str(SRC/'twrp_operation_executor.cpp'),'-L'+str(host),'-Wl,-rpath,'+str(host),'-Wl,--wrap=socketpair','-lbase','-llog','-lpthread','-o',str(exe)]
   subprocess.run(cmd,check=True);deps={str(clang):sha(clang)}
   for line in subprocess.check_output(['ldd',str(exe)],text=True).splitlines():
    match=re.search(r'(/[^\s()]+)',line)
@@ -57,7 +57,7 @@ def main():
   for name in cases:
    run=subprocess.run([str(exe),name],capture_output=True,text=True,timeout=12);row=dict(case=name,status='PASS' if run.returncode==0 else 'FAIL',exit=run.returncode,output=run.stdout+run.stderr);rows.append(row);print(row['status'],name,flush=True)
    if run.returncode:print(row['output'][-1200:],flush=True)
- bound=[*paths.values(),header,rheader,SRC/'gui2/backend/reboot_backend.h',SRC/'twrp.cpp',ROOT/'tests/sideload_lifecycle_test.cpp',Path(__file__).resolve(),ROOT/'tests/sideload_reboot_test.cpp']
+ bound=[*paths.values(),header,rheader,SRC/'gui2/backend/reboot_backend.h',SRC/'twrp_operation_executor.h',SRC/'twrp_operation_executor.cpp',SRC/'twrp.cpp',ROOT/'tests/sideload_lifecycle_test.cpp',Path(__file__).resolve(),ROOT/'tests/sideload_reboot_test.cpp']
  result=dict(status='PASS' if all(r['status']=='PASS' for r in rows) else 'FAIL',scope=__doc__,cases=rows,sources={str(p):sha(p) for p in bound},binary_dependencies=deps)
  destination=args.report
  if args.before and destination==ROOT/'logs/sideload-reboot.json':

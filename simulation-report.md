@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-mtp-partial-write.img` |
-| SHA-256 | `1de91973f369797d92b5aad05047723d3bb90d8e8ff179614229f1b6bc715dbc` |
-| 生产来源绑定 | 824 份 |
+| 文件 | `recovery-dijun-unified-reboot-storage-guard.img` |
+| SHA-256 | `fb3035146cc80d240804a1d47c6d528c441a1983fae27cbe410c78176e14f81b` |
+| 生产来源绑定 | 825 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：MTP 分段编辑写入
+## 本批生产修正：存储忙时的重启与槽位入口
+
+0100 在重启请求和切换槽位入口非阻塞尝试存储事务锁：其他线程持锁时立即返回失败，不等待、卸载分区或修改重启参数。侧载待处理重启在取得锁后才领取，忙时保留，下一轮空闲轮询可正常交接。原 backend / 真实 mutex 与线程21项通过，旧实现9项忙时检查失败；侧载原核心与轮询20项通过。清理构建后825来源、六profile封装核对通过。
+
+这是入口冲突修正：未实现同步 Binder / TEE 安全取消，也没有在请求返回到最终重启间保留停止新任务的预约。HAL、分区、DataManager、USB和最终重启为测试替身，不代表完整ARM64 GUI或设备验收。详见[多用户与重启边界](docs/MULTIUSER-ADAPTATION.md#storage-reboot-guard)。完整卡刷包证据继续复用，无重复执行。
+
+## 沿用的 MTP 分段编辑写入
 
 0099 在首次写文件前校验数据报文的类型、操作码、事务及声明长度，避免超长报文导致剩余长度下溢；短写和 EINTR 重试，零写与永久错误返回失败。成功响应返回总接收字节数，错误路径清空入站数据，避免将其作为响应发送。对象160项通过；同夹具旧实现新增11项中10项失败，空写控制通过。最终清理构建、824来源与六profile封装核对通过，详见[分段编辑写入](docs/MTP-CONTROL-ADAPTATION.md#partial-edit-write)。
 

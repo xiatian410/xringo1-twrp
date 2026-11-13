@@ -1,5 +1,15 @@
 # 多用户发现与解锁入口
 
+<a id="storage-reboot-guard"></a>
+## 存储忙时的重启与槽位入口
+
+离开解密页后，provider 仍可能处于同步调用中并持有存储事务锁；原重启 / 槽位入口没有检查这把锁。补丁0100对两个入口使用非阻塞try-lock：其他线程持锁时返回false，不阻塞界面，不执行sync、参数写入、vendor卸载或槽位修改。侧载重启交接先取得同一递归锁，再领取待处理动作，避免忙时消耗请求；空闲后下一次GUI轮询继续处理。
+
+`tests/reboot_storage_test.py`用原backend方法、真实递归锁和持锁线程执行21项检查；旧实现同夹具9项忙时检查失败，12项空闲 / 控制通过。`tests/sideload_reboot_test.py`原核心 / 私有进程 / 原轮询20项通过，新增忙时保留→释放锁→下一轮交接场景。HAL / 分区 / DataManager / USB / sync和最终重启是替身；没有操作设备或执行真实TEE调用。交付审计为本地`logs/reboot-storage-delivery-audit.json`。
+
+此修改只提供入口冲突保护。不会中断已经进入Binder / TEE的调用；也未在request_reboot返回到最终Reboot之间保留停止新任务的预约。安全取消、完整关闭串行化、父资料协议及真实CE驱逐仍未完成，不因本次检查通过关闭整组目标。必要检查通过后不重复该项。
+
+
 
 2026-11-12 CE失败与缓存接续（0050）：已经独立选择用户，不代表provider失败时未安装过密钥。原始vold Decrypt_CE_storage顺序为unlock→prepare；前一步成功、后一步失败会返回false，但s_ce_policies仍有该用户。原始fscrypt_unlock_ce_storage遇已有policy会直接返回true，不重新读取凭据或安装。Recovery现只在该次provider返回false时请求fscrypt_lock_ce_storage(user_id)，不发布解密成功；驱逐失败记录用户ID与固定错误信息，不输出凭据，也不伪装硬件清理成功。
 

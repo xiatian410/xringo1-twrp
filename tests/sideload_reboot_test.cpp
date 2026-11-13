@@ -63,6 +63,19 @@ int main(int argc,char**argv){
   struct Running:gui2_backend::sideload_backend{bool start(bool,bool)override{return false;}void cancel()override{}gui2_backend::sideload_status status()override{return {gui2_backend::sideload_state::RUNNING};}void acknowledge()override{}} b;
   sideload=&b;poll_external_reboot();CHECK(!reboot_requested);sideload=nullptr;
  }
+ if(scenario=="storage-gate"){
+  std::mutex gate;std::condition_variable cv;bool held=false,release=false;
+  std::thread owner([&]{
+   std::unique_lock storage(twrp_operation_executor::instance().mutex());
+   std::unique_lock lock(gate);held=true;cv.notify_all();cv.wait(lock,[&]{return release;});
+  });
+  {std::unique_lock lock(gate);cv.wait(lock,[&]{return held;});}
+  auto started=std::chrono::steady_clock::now();poll_external_reboot();
+  CHECK(std::chrono::steady_clock::now()-started<std::chrono::milliseconds(250));
+  CHECK(!reboot_requested&&syncs==0&&DataManager::GetStrValue("tw_reboot_arg").empty());
+  {std::lock_guard lock(gate);release=true;}cv.notify_all();owner.join();
+  // The next ordinary GUI poll must consume the original pending action.
+ }
  poll_external_reboot();
  bool expected=!rejected&&scenario!="unsupported-target"&&scenario!="write-fail"&&scenario!="cancel-pending"&&scenario!="cancelled-before-return";
  CHECK(reboot_requested==expected);CHECK(gui2_loop_should_exit(nullptr)==expected);CHECK(!actual_reboots);
