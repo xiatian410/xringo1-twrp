@@ -49,6 +49,7 @@ cases += ['path-'+name for name in ['dotdot','nested-dotdot','symlink-parent','s
 cases += ['special-'+kind+'-'+fault for kind in ['char','block'] for fault in ['denied','full','exists','pipeline']]
 cases += ['special-fifo-success','special-fifo-exists']
 cases += ['append-read-'+n for n in ['size-0','size-1','size-511','size-512','size-513','size-1024','short','interrupted','eof-511','eof-512','eof-513','io-error']]
+cases += ['append-key-'+n for n in ['enokey','enokey-empty','revoked','denied','symlink','hardlink']]
 cases = args.cases or cases
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 with tempfile.TemporaryDirectory(prefix='dijun-archive-', dir='/tmp') as tmp:
@@ -64,7 +65,7 @@ with tempfile.TemporaryDirectory(prefix='dijun-archive-', dir='/tmp') as tmp:
            '-I'+str(ANDROID/'system/vold'), '-I'+str(ANDROID/'system/core/libcutils/include'),
            *[str(args.source/n) for n in names], str(args.source/'strlcpy.c'),
            str(ROOT/'tests/archive_restore_test.c'),
-           '-Wl,--wrap=read', '-Wl,--wrap=write', '-Wl,--wrap=close', '-Wl,--wrap=setxattr', '-Wl,--wrap=mknod',
+           '-Wl,--wrap=open64', '-Wl,--wrap=read', '-Wl,--wrap=write', '-Wl,--wrap=close', '-Wl,--wrap=setxattr', '-Wl,--wrap=mknod',
            '-Wl,--wrap=llistxattr', '-Wl,--wrap=lgetxattr', '-Wl,--wrap=lsetxattr', '-Wl,--wrap=lseek64', '-Wl,--wrap=ftruncate64', '-Wl,--wrap=lgetfilecon',
            '-Wl,--wrap=lsetfilecon', '-Wl,--wrap=getxattr', '-l:libselinux.so.1', '-o', str(tmp/'test')]
     subprocess.run(cmd,check=True)

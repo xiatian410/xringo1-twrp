@@ -8,20 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-backup-source-read.img` |
-| SHA-256 | `cade589fd46dbb5f6d117b2728d4fef42e37ff82b950e32dee477559a6342bd0` |
-| 生产来源绑定 | 832 份 |
+| 文件 | `recovery-dijun-unified-backup-missing-key.img` |
+| SHA-256 | `5d9c07a65c4a643e59f799d5ca478d9959bef2e944f26b513c85c28c262d3ecd` |
+| 生产来源绑定 | 833 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：备份源文件读取完整性
+## 本批生产修正：缺密钥文件不得静默漏备份
 
-0105修正libtar最后一块只检查read返回负数、未检查读足的问题。源文件在头部stat后缩短时，旧实现会把未读足部分的残留缓冲写入归档并返回成功。现在逐块读足记录的长度，短读及EINTR重试，提前EOF返回EIO，读取错误传回备份父进程，不发布.info成功信息。没有提供并发源文件快照一致性。
+0106移除libtar的多余打开探测：此前遇到ENOKEY会直接跳过条目并返回成功，可能发布缺文件的备份。现在普通文件（含空文件）由实际内容读取函数打开，缺密钥/密钥撤销/权限错误传回父进程且不发布.info；符号链接与硬链接只归档元数据，不再因目标打开失败而漏掉。
 
-既有ASan/UBSan套件：libtar101项、完整tar/pigz/OAES/fork编码链140项通过；同组旧实现新增12项有5项失败，编码链新增16项有12项失败。覆盖0/1/511/512/513/1024字节、17字节短读、EINTR、真实源文件截短和读取EIO，四种编码模式均核对成功内容往返或父进程失败。清理构建后832来源、六profile和镜像封装核对通过。真实fscrypt、manager/GUI、ARM64编码和断电仍未验证。
+现有ASan/UBSan套件libtar107、完整tar/pigz/OAES/fork编码链152项通过；旧实现新增六项中四项失败，编码链十二项中四项失败。打开错误在私有指定源路径注入；核对原errno、父进程失败和链接恢复inode/内容，不代表实际fscrypt/TEE验证。清理构建后833生产来源与六profile核对通过。完整manager/GUI、ARM64 codec、并发源一致性和断电仍未验证。
 
-详细范围见[备份源读取](docs/BACKUP-SESSION-ADAPTATION.md#source-read-completion)。MTP0104和4.0.4整包模拟沿用对应既有证据，本批不重复执行。
+详见[源密钥失败](docs/BACKUP-SESSION-ADAPTATION.md#source-key-failure)。此前源短读、MTP和完整4.0.4 OTA模型按各自来源复用，本批不重新运行这些独立套件。
 
 ## 沿用的槽位切换前 Vendor 卸载失败
 

@@ -28,6 +28,7 @@ CASES += [kind+'-path'+suffix for kind in ['plain','gzip','aes','both'] for suff
 CASES += [kind+'-path-symlink'+suffix for kind in ['plain','aes'] for suffix in ['', '-split']]
 CASES += [kind+'-special-'+node for kind in ['plain','gzip','aes','both'] for node in ['char','block']]
 CASES += [kind+'-source-read-'+fault for kind in ['plain','gzip','aes','both'] for fault in ['eof','short','interrupted','io-error']]
+CASES += [kind+'-source-key-'+fault for kind in ['plain','gzip','aes','both'] for fault in ['enokey','revoked','denied']]
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source',type=Path,default=SRC)

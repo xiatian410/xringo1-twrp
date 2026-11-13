@@ -1,6 +1,7 @@
 /* Executes the production libtar sources; fixtures never accept disk paths. */
 #include <internal.h>
 #include <assert.h>
+#include <stdarg.h>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -40,6 +41,19 @@ void bytes_to_hex(const uint8_t *p, size_t n, char *r) {
 
 static const char *fault;
 static unsigned fault_calls;
+int __real_open64(const char*,int,...);
+int __wrap_open64(const char *path,int flags,...) {
+    mode_t mode=0;
+    if(flags&O_CREAT){va_list ap;va_start(ap,flags);mode=va_arg(ap,int);va_end(ap);}
+    if(fault && !strncmp(fault,"append-key-",11) &&
+       (!strcmp(path,"input/payload")||!strcmp(path,"input/link")||!strcmp(path,"input/alias"))) {
+        ++fault_calls;
+        errno=!strcmp(fault,"append-key-revoked")?EKEYREVOKED:!strcmp(fault,"append-key-denied")?EACCES:ENOKEY;
+        return -1;
+    }
+    return __real_open64(path,flags,mode);
+}
+
 ssize_t __real_read(int,void*,size_t);
 static int append_source_fd(int fd) {
     struct stat a,b;
@@ -317,6 +331,21 @@ int main(int argc,char **argv) {
     CHECK(access(".fixture",F_OK)==0);
     CHECK(mkdir("input",0700)==0); CHECK(mkdir("restore",0700)==0);
     const char *c=argv[1];
+    if(!strncmp(c,"append-key-",11)) {
+        putfile("input/payload",strstr(c,"empty")?0:513);
+        TAR *t=writer();
+        const int symlink_case=strstr(c,"symlink")!=NULL,hardlink_case=strstr(c,"hardlink")!=NULL;
+        if(hardlink_case){CHECK(link("input/payload","input/alias")==0);CHECK(tar_append_file(t,"input/payload","payload")==0);}
+        if(symlink_case)CHECK(symlink("missing-target","input/link")==0);
+        fault=c;
+        int result=tar_append_file(t,symlink_case?"input/link":hardlink_case?"input/alias":"input/payload",symlink_case?"link":hardlink_case?"alias":"payload"),saved=errno;
+        fault=NULL;
+        if(!symlink_case&&!hardlink_case){CHECK(result==-1&&fault_calls>0);CHECK(saved==(strstr(c,"revoked")?EKEYREVOKED:strstr(c,"denied")?EACCES:ENOKEY));CHECK(tar_close(t)==0);puts("PASS inaccessible source rejects backup with original errno");return 0;}
+        CHECK(result==0);finish(t);CHECK(restore("restore")==0);
+        if(hardlink_case){struct stat a,b;CHECK(stat("restore/payload",&a)==0&&stat("restore/alias",&b)==0&&a.st_ino==b.st_ino);compare("input/payload","restore/alias");}
+        else {char target[64];ssize_t n=readlink("restore/link",target,sizeof(target));CHECK(n==14&&!memcmp(target,"missing-target",14));}
+        puts("PASS link metadata archived without opening its target");return 0;
+    }
     if(!strncmp(c,"append-read-",12)) {
         size_t size=513;
         if(strstr(c,"size-"))size=strtoul(strstr(c,"size-")+5,NULL,10);

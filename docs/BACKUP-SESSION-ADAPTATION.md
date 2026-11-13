@@ -1,5 +1,24 @@
 # 备份会话、目录管理与摘要发布
 
+<a id="source-key-failure"></a>
+
+## 源文件缺密钥时不得跳过成功（0106）
+
+此前`tar_append_file`对所有条目先做一次多余的open探测。遇到ENOKEY直接返回0，既不写该条目也不报告失败；普通文件（包括空文件）会被静默漏备份。对链接做同样探测还会因目标不可打开而漏掉本来无需读取目标内容的符号链接/硬链接。
+
+0106移除这次探测。普通文件仍由原`tar_append_regfile`实际打开读取，ENOKEY/EKEYREVOKED/EACCES按失败传回，父进程不发布.info；链接保留原readlink/已归档inode记录与header，恢复链接元数据。此修正不会解锁文件或补齐缺失密钥，备份失败的部分输出不能视为完整归档。
+
+libtar107项、完整tar/pigz/OAES/fork编码链152项通过。同组旧源码新增六项有四项失败：有内容/空文件ENOKEY静默漏备份，以及链接探测导致漏条目；撤销密钥/权限拒绝原本就能失败，是保留控制。编码链四模式各覆盖ENOKEY/EKEYREVOKED/EACCES，旧4/12失败。普通文件核对原errno和父进程失败/无data.info，符号链接核对恢复后的悬空目标，硬链接核对相同inode与内容。相关报告为`logs/archive-key-restore.json`、`logs/archive-key-negative.json`、`logs/archive-key-pipeline.json`、`logs/archive-key-pipeline-negative.json`、`logs/archive-key-delivery-audit.json`。
+
+打开错误仅在私有夹具指定源路径注入，不代表真实fscrypt/TEE；没有全manager/GUI、ARM64 codec、并发源快照或断电验证。必要回归通过即收尾，不为相同实现重复这组检查。
+
+```bash
+# 已执行，来源和输入不变时复用。
+python3 tests/archive_restore_test.py --report logs/archive-key-restore.json
+python3 tests/archive_pipeline_test.py --report logs/archive-key-pipeline.json
+python3 scripts/audit_archive_key_delivery.py
+```
+
 <a id="source-read-completion"></a>
 
 ## 源文件读取完整性（0105）

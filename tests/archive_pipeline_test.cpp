@@ -86,10 +86,15 @@ extern "C" int __wrap_setxattr(const char* path,const char* name,const void* val
 static bool directory_fixture=false;
 static string directory_fault;
 static constexpr time_t root_time=1600000000, child_time=1600000100;
+static string source_key_fault;
 extern "C" int __real_open(const char*,int,...);
 extern "C" int __wrap_open(const char* path,int flags,...){
  mode_t mode=0;
  if(flags&O_CREAT){va_list ap;va_start(ap,flags);mode=va_arg(ap,int);va_end(ap);}
+ if(!source_key_fault.empty() && string(path)=="/src/dir/file0" && (flags&O_ACCMODE)==O_RDONLY) {
+  int marker=__real_open("/backup/source-key-injected",O_CREAT|O_WRONLY,0600);CHECK(marker>=0);CHECK(close(marker)==0);
+  errno=source_key_fault=="revoked"?EKEYREVOKED:source_key_fault=="denied"?EACCES:ENOKEY;return -1;
+ }
  if(directory_fixture&&(flags&O_DIRECTORY)&&(flags&O_NOFOLLOW)&&
     fs::path(path).lexically_normal()=="/src/dir"&&
     (directory_fault=="symlink"||directory_fault=="replace")){
@@ -340,7 +345,13 @@ int main(int argc,char** argv){
  tar.use_compression=compressed;tar.use_encryption=encrypted;tar.userdata_encryption=mixed;
  if(application_xattrs&&scenario.ends_with("-read-error"))application_xattr_fault="read-error";
  if(auto at=scenario.find("-source-read-");at!=string::npos)source_read_fault=scenario.substr(at+13);
+ if(auto at=scenario.find("-source-key-");at!=string::npos)source_key_fault=scenario.substr(at+12);
  BackupProcess process;int result=tar.createTarFork(&process);
+ if(!source_key_fault.empty()) {
+  CHECK(fs::exists("/backup/source-key-injected"));CHECK(result!=0);CHECK(!fs::exists("/backup/data.info"));
+  puts("PASS inaccessible source failure reaches backup parent; no info publication");return 0;
+ }
+
  if(!source_read_fault.empty()) {
   CHECK(fs::exists("/backup/source-read-injected"));
   if(source_read_fault=="eof" || source_read_fault=="io-error") {
