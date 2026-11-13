@@ -64,11 +64,11 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "cdd328709365474bd1d3400eb27b18f31e2f1ade4723cf7dae41d70bd85b7985",
+    "sha256": "e12b6a3949e6ed37e548e619ec3cad8d36d8fa465a23a774460386f87bd596d3",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
-    "sha256": "aa641a3fd6b7774009c93c5da1fd459b89bf6b26314485f625a59f3f53a088f0",
+    "sha256": "d11e3d8bed1ec7f59438a946d74e65b43a709c368e631f2dd3f6d268166c14d2",
     "mode": "0o644"
   },
   "docs/FIRMWARE.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "6afcfe445d200f713d55c905f6730210bc4aca48eee533b38518a2bdf3ef2859",
+    "sha256": "5b41010f41ae863cd8071f348affeeb2615e74f13187d4f4f9d85bfa64aa7ae5",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1784,11 +1784,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "f4f7263ca60c6bb7fef6189685eebd0f707f703995741865e55e713c2b326514",
+    "sha256": "507a872ad34d834b6b2eb64233256263bae60e68c0d1e62cc85c5d5ad05a3103",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "544dd9cc0439e8e7361a23e55cbeddc8f9b18f88c71c97e82d5e5c844792d882",
+    "sha256": "04bac93fc29509a5c864adce4fb2fb102f6033f25ad749351d147845244269db",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -1905,6 +1905,14 @@
   },
   "tests/fixtures/devicefix-force-feedback.cpp": {
     "sha256": "55c9dc30606f4b674453115b82c2600bbb3623973694ac2dd8dbfda3c59c1990",
+    "mode": "0o644"
+  },
+  "tests/format_data_chain_test.cpp": {
+    "sha256": "db5491fe792d61227c7a6675488bdebe6b37cabaed96d779da68bc9598ed0899",
+    "mode": "0o644"
+  },
+  "tests/format_data_chain_test.py": {
+    "sha256": "21df0e9b66b9afb364034bf5d3a61ed51a29089fa6aa4b62ad40c124f39e0466",
     "mode": "0o644"
   },
   "tests/format_tool_chain_test.cpp": {

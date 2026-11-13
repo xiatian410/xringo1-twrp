@@ -1,5 +1,21 @@
 # 当前镜像文件系统工具实际执行
 
+<a id="format-data-terminal"></a>
+## 格式化 Data 的错误到后台结果接续
+
+既有格式转换工具检查没有执行 `FormatData → WipeEncryption`。为确定 metadata 清除失败是否可能误报成功，新增一次有限检查：执行生产 `FormatData`、`WipeEncryption`、最长路径查找、`WipeByPath` 及清除 backend 的 `wipe / run / report_item`。使用本设备启用的 crypto / dmctl、禁用 APEX 条件；格式化工具、挂载、mapper、合并检查、属性、hook 和呈现均是显式替身，没有格式化文件或设备。
+
+14 场景通过，核对调用顺序、失败后未调用的阶段、状态字段、后台 DONE / FAILED 与完成项计数：FBE / legacy 成功、缺少 Data、前置 hook 拒绝、块设备不存在、卸载拒绝及强制卸载成功、合并检查拒绝、mapper 删除成功 / 拒绝、格式化失败、metadata 密钥目录所属分区清除失败、后置 hook 失败和无密钥目录。metadata 清除或后置 hook 失败均发布 FAILED，不运行成功脚本；合并拒绝不进入格式化。格式化失败仍保留原实现的挂载 / MTP 重登记尝试，不将该调用视为成功登记。
+
+当前设备没有自定义 `TARGET_RECOVERY_TWRP_LIB`，默认 hook 返回成功；测试中的 hook 拒绝仅证明虚拟接口失败会被传回，不代表设备真实存在该故障。测试同步调用原 `run`，没有执行 worker start/thread、完整 GUI、原 `CheckPendingMerges`、实际 mkfs、TEE/fscrypt 或真实挂载。格式化之后的 metadata 清除失败不会恢复旧 Data，这条接续不提供回滚。
+
+本地 `logs/format-data-chain.json` 绑定运行时来源并保存各场景调用顺序，ASan / UBSan 通过。没有发现生产缺陷、没有新补丁或构建；当前镜像及824份生产来源未变。该命名接续缺口到此收尾，不能把它与独立 ARM64 工具结果拼接为完整格式化验收。
+
+```bash
+# 已执行；相关实现与输入未变时复用结果。
+python3 tests/format_data_chain_test.py
+```
+
 <a id="postformat-selinux"></a>
 ## ext4 格式化后的实际标签初始化
 

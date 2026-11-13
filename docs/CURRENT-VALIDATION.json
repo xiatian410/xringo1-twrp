@@ -13,6 +13,14 @@
   },
   "checks": [
     {
+      "name": "format-data-chain",
+      "status": "PASS",
+      "cases": 14,
+      "failures": 0,
+      "local_report_sha256": "7b239d52e453dee85cb719f07cd81992a151d14bbd5d07a23609f940e63490bd",
+      "scope": "Execute production FormatData/WipeEncryption/metadata routing/backend run.\n\nMounts, formatter, device mapper, pending-merge policy, device hooks and UI are\nexplicit fixtures. No mkfs, device, keys, real mounts, GUI/start/thread or rollback.\n Fourteen cases verify actual stage ordering, crypto/media fields, metadata-partition error propagation and backend DONE/FAILED. Synchronous run; start/thread and full GUI are not executed. Default device hooks return true; injected hook failures are fixtures. No production change or build."
+    },
+    {
       "name": "mtp-partial-objects",
       "status": "PASS",
       "cases": 160,

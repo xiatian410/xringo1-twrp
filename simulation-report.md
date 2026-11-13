@@ -27,6 +27,12 @@
 
 测试执行主机生产server/database/storage及普通文件，USB/属性/日志为替身；不代表ARM64 MTP、Windows或完整真实端点验收。本批未重跑整包OTA与已解决功能。
 
+## 新增证据：Data 格式化错误到后台终态
+
+针对 metadata 密钥分区清除失败是否误报成功这一缺口，执行原 `FormatData → WipeEncryption → WipeByPath → wipe/run`，14项成功和拒绝场景通过。核对阶段顺序、格式化后的状态及后台结果；metadata清除或后置hook失败发布FAILED，不执行成功脚本，合并检查拒绝不进入格式化。工具、挂载、mapper、合并检查及hook为明确替身，同步调用run，没有完整GUI/start/thread或真实加密格式化，详见[Data结果接续](docs/FILESYSTEM-TOOLS-EXECUTION.md#format-data-terminal)。
+
+没有发现生产缺陷，没有新补丁或构建；当前0099镜像、SHA-256及824份生产来源不变。既有ARM64工具证据独立保留，不拼接成完整生命周期验收；此项有限检查到此收尾。
+
 ## 沿用的特殊文件创建失败传播
 
 0097 修正字符/块节点创建失败后仍返回成功的问题。原实现会继续向已有普通文件应用归档权限和时间；现在保留创建错误并停止，错误传到codec/fork恢复父进程。libtar89项及codec124项通过；旧实现新增场景分别8/10与8/8失败，FIFO成功/失败控制正常。已清理构建并核对六profile及来源，范围见[特殊文件错误](docs/BACKUP-DATA-PATHS.md#special-file-errors)。
