@@ -1,0 +1,32 @@
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -1238,7 +1238,6 @@
+     if (!hasStorage())
+         return MTP_RESPONSE_GENERAL_ERROR;
+     MtpResponseCode result = MTP_RESPONSE_OK;
+-    mode_t mask;
+     int ret, initialData;
+     bool isCanceled = false;
+     struct stat sstat = {};
+@@ -1308,14 +1307,13 @@
+         goto done;
+     }
+     temporary_name = temporary.substr(temporary.find_last_of('/') + 1);
+-    fchown(mfr.fd, getuid(), FILE_GROUP);
+-    // set permissions
+-    mask = umask(0);
+-    fchmod(mfr.fd, FILE_PERM);
+-    umask(mask);
+-
+-    ret = 0;
+-    for (size_t written = 0; written < static_cast<size_t>(initialData);) {
++    // Metadata setup is part of the upload transaction. Do not receive or
++    // publish a file whose requested owner/group or mode could not be set.
++    // fchmod applies an exact mode; changing the process-wide umask is neither
++    // necessary nor safe while other threads may create files.
++    ret = fchown(mfr.fd, getuid(), FILE_GROUP);
++    if (ret == 0) ret = fchmod(mfr.fd, FILE_PERM);
++    for (size_t written = 0; ret >= 0 && written < static_cast<size_t>(initialData);) {
+         const ssize_t count = write(mfr.fd, mData.getData() + written, initialData - written);
+         if (count < 0 && errno == EINTR) continue;
+         if (count <= 0) {

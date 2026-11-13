@@ -46,7 +46,8 @@ CASES += PARENT_IDENTITY_CASES
 CREATE_PARENT_CASES = ['staging-create-parent-'+kind+'-'+mode for kind in ['new','overwrite']
                        for mode in ['directory','symlink']]
 CREATE_RANDOM_CASES = ['staging-create-random-'+kind for kind in ['eintr','short','error','zero','collision','exhausted']]
-CASES += CREATE_PARENT_CASES + CREATE_RANDOM_CASES
+PERMISSION_CASES = ['upload-permissions-'+kind+'-'+fault for kind in ['new','overwrite'] for fault in ['success','chown','chmod']]
+CASES += CREATE_PARENT_CASES + CREATE_RANDOM_CASES + PERMISSION_CASES
 STREAM_CASES = ['stream-boundary-'+op+'-'+kind for op in ['new','overwrite','partial']
                 for kind in ['short-length','long-length','zero-length','wrong-type',
                              'wrong-code','wrong-transaction','short-header','stale-cancel','oversized']]
@@ -110,7 +111,7 @@ template<class T> inline std::string Trim(const T& v){std::string s(v);auto a=s.
                   AOSP/'system/core/libusbhost/include',AOSP/'system/core/libcutils/include']
         cmd=['g++','-std=c++23','-O1','-g','-pthread','-DMTP_DEVICE','-fno-pie','-no-pie',
              '-fsanitize=address,undefined','-fno-sanitize-recover=all','-fno-omit-frame-pointer',
-             '-include','unistd.h','-include','ctime','-include','cstring','-include','climits','-include','cstdint','-include','chrono','-include','cstdarg','-Wl,--wrap=unlink','-Wl,--wrap=unlinkat','-Wl,--wrap=write','-Wl,--wrap=fsync','-Wl,--wrap=mkdir','-Wl,--wrap=rename','-Wl,--wrap=renameat','-Wl,--wrap=openat','-Wl,--wrap=getrandom','-Wl,--wrap=mkstemp','-Wl,--wrap=close','-Wl,--wrap=futimens','-Wl,--wrap=open',*[f'-I{p}' for p in includes],
+             '-include','unistd.h','-include','ctime','-include','cstring','-include','climits','-include','cstdint','-include','chrono','-include','cstdarg','-Wl,--wrap=unlink','-Wl,--wrap=unlinkat','-Wl,--wrap=write','-Wl,--wrap=fsync','-Wl,--wrap=mkdir','-Wl,--wrap=rename','-Wl,--wrap=renameat','-Wl,--wrap=openat','-Wl,--wrap=getrandom','-Wl,--wrap=mkstemp','-Wl,--wrap=close','-Wl,--wrap=futimens','-Wl,--wrap=fchown','-Wl,--wrap=fchmod','-Wl,--wrap=open',*[f'-I{p}' for p in includes],
              '-Wl,--wrap=pwrite',*[str(stage/n) for n in names],str(ROOT/'tests/mtp_objects_test.cpp'),'-o',str(tmp/'test')]
         subprocess.run(cmd,check=True)
         results=[]

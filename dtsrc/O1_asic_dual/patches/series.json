@@ -446,6 +446,10 @@
         {
           "file": "0120-sideload-reboot-handoff-retry.patch",
           "sha256": "d041485aaa5c26b85853b9e703f38a737158d37a8ed540f7b14530283c37f1ec"
+        },
+        {
+          "file": "0121-mtp-upload-permission-errors.patch",
+          "sha256": "1b72eee4958dded330a7e6addc665df86f9e269644567ce85cf52349da56a8d2"
         }
       ],
       "result_files": {
@@ -502,7 +506,7 @@
         "oaes/oaes.cpp": "306acbfddd40512ba8c0ad0b7ad8afc86533425625e6a875f95d0a3ae4e1e356",
         "oaes/oaes.hpp": "256c988afbd924a12db4bdaa4c9c35475dda92b53676cf7693f64e36de0ed3c4",
         "mtp/IMtpDatabase.h": "fc1882a4836fe013c6871b5ff6be7cccadcf370b132ab58755d17dadb5a96c71",
-        "mtp/MtpServer.cpp": "8240ea89f445ef11077c4b2e19b1e87527921a296165885ae642962ea446028e",
+        "mtp/MtpServer.cpp": "d447d7e791603e7c14d731f9e51a0f6f2a728d9d3159e1c9a8c19ecd11a4fd41",
         "mtp/MtpServer.h": "8ee134a2913fe80785e6255c13bd2e270135ea69469e6f1a24211d5d2d144e4c",
         "mtp/twrp/TwrpMtpDatabase.cpp": "bf3de21de83287eb857cd9c723acd2dfb6ff47dac5ccf38e49c26958f402fa22",
         "mtp/twrp/TwrpMtpDatabase.hpp": "fa4c2eeddfe32c8c936d6669a40c8528ce7de2086296a8c9ea2430171e64bc0c",

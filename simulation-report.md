@@ -8,14 +8,22 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-reboot-handoff.img` |
-| SHA-256 | `4babf3a9b5a5ce609920459f1719c5e666c54e88d7944378962cd55fd0847fd9` |
-| 生产来源绑定 | 849 份 |
+| 文件 | `recovery-dijun-unified-mtp-upload-permissions.img` |
+| SHA-256 | `fd8c2bc6e59b2311aaa0d03b2e9f816838127ae133852cde1857cfeeb28bb64c` |
+| 生产来源绑定 | 850 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：侧载重启交接失败可重试
+## 本批生产修正：上传权限设置失败不再发布成功
+
+0121检查MTP上传临时文件的fchown/fchmod结果，失败时停止接收和发布，关闭并清理本次临时文件，保留已有目标；删除不必要的全局umask切换。此前这两个系统调用失败仍可能返回成功并覆盖目标。
+
+原server/database/storage及真实私有文件/inotify/线程在ASan/UBSan下263项通过，新增六项包含新建/覆盖的正常权限、属主设置失败、权限设置失败以及后续重试。同夹具旧实现四项错误均返回OK并发布新内容。清理构建绑定850来源与六profile，交付核对为`python3 scripts/audit_mtp_upload_permissions.py`。
+
+USB/属性为替身，权限错误在系统调用边界注入；不代表ARM64 MTP、Windows或大数据流失败后的USB恢复已通过。临时名称检查后竞争及跨重启回收仍未完成。详见[上传权限](docs/MTP-ATOMIC-UPLOAD.md#upload-permissions)。未变OTA及其他功能复用证据。
+
+## 沿用的侧载重启交接重试
 
 0120让待处理的minadbd重启请求仅在GUI成功接收后被消费；目标写入失败或能力暂不可用时保留原请求及取消归属，后续可重试。此前先取走请求再发布目标，失败后请求丢失。
 

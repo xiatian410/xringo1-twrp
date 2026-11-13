@@ -21,6 +21,17 @@ extern "C" int __real_mkdir(const char*,mode_t);
 extern "C" int __wrap_mkdir(const char* p,mode_t m){if(fail_mkdir&&string(p)=="/one/new-dir"){errno=EACCES;return -1;}return __real_mkdir(p,m);}
 atomic_bool fail_unlink=false;atomic_int write_fault=0;
 bool upload_fd(int fd);
+atomic_int upload_permission_fault=0,upload_chown_calls=0,upload_chmod_calls=0;
+extern "C" int __real_fchown(int,uid_t,gid_t);
+extern "C" int __real_fchmod(int,mode_t);
+extern "C" int __wrap_fchown(int fd,uid_t uid,gid_t gid){
+ if(upload_fd(fd)){++upload_chown_calls;if(upload_permission_fault==1){errno=EPERM;return -1;}}
+ return __real_fchown(fd,uid,gid);
+}
+extern "C" int __wrap_fchmod(int fd,mode_t mode){
+ if(upload_fd(fd)){++upload_chmod_calls;if(upload_permission_fault==2){errno=EIO;return -1;}}
+ return __real_fchmod(fd,mode);
+}
 atomic_int timestamp_calls=0;
 atomic_bool timestamp_fault=false;
 atomic_bool directory_timestamp_fault=false,directory_close_fault=false;
@@ -612,6 +623,32 @@ int main(int argc,char** argv){
   data=info("retry.txt",3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
   Bytes payload{'o','k','!'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&payload).code==MTP_RESPONSE_OK);
   REQUIRE(stat("/one/retry.txt",&st)==0&&st.st_mtime>=before&&readfile("/one/retry.txt")=="ok!");
+ }else if(test.starts_with("upload-permissions-")){
+  const bool replacing=test.starts_with("upload-permissions-overwrite-");
+  const auto kind=test.substr(test.find_last_of('-')+1);
+  const string name=replacing?"a.txt":"new.txt",target="/one/"+name;
+  struct stat before{};if(replacing)REQUIRE(stat(target.c_str(),&before)==0);
+  auto data=info(name,3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  upload_permission_fault=kind=="chown"?1:kind=="chmod"?2:0;
+  int receives=0;receiving_probe=[&](int){++receives;};
+  Bytes content{'n','e','w'};auto r=s.call(MTP_OPERATION_SEND_OBJECT,{},&content);
+  receiving_probe={};upload_permission_fault=0;
+  cout<<"permission_result="<<r.code<<" receives="<<receives<<" target_content="<<readfile(target)<<endl;
+  REQUIRE(r.code==(kind=="success"?MTP_RESPONSE_OK:MTP_RESPONSE_GENERAL_ERROR));
+  REQUIRE(receives==(kind=="success"?1:0));
+  REQUIRE(upload_chown_calls==1&&upload_chmod_calls==(kind=="chown"?0:1));
+  if(kind=="success"){
+   struct stat st{};REQUIRE(stat(target.c_str(),&st)==0&&readfile(target)=="new");
+   REQUIRE((st.st_mode&0777)==FILE_PERM&&st.st_gid==FILE_GROUP&&st.st_uid==getuid());
+  }else if(replacing){
+   struct stat st{};REQUIRE(stat(target.c_str(),&st)==0&&readfile(target)=="alpha");
+   REQUIRE(st.st_dev==before.st_dev&&st.st_ino==before.st_ino&&st.st_mode==before.st_mode&&st.st_gid==before.st_gid);
+  }else REQUIRE(!fs::exists(target));
+  for(const auto&e:fs::directory_iterator("/one"))REQUIRE(!e.path().filename().string().starts_with(".mtp-upload-"));
+  REQUIRE(s.call(MTP_OPERATION_GET_STORAGE_IDS).code==MTP_RESPONSE_OK);
+  data=info(name,3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&content).code==MTP_RESPONSE_OK&&readfile(target)=="new");
+  cout<<"permission_failure_blocks_receive_and_publish=1 previous_target_preserved=1 staging_cleaned=1 retry=1\n";
  }else if(test.starts_with("staging-create-parent-")){
   const bool replacing=test.starts_with("staging-create-parent-overwrite-");
   const bool link=test.ends_with("symlink");

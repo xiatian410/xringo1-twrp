@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-reboot-handoff.img",
-  "image_sha256": "4babf3a9b5a5ce609920459f1719c5e666c54e88d7944378962cd55fd0847fd9",
-  "production_sources": 849,
+  "image_name": "recovery-dijun-unified-mtp-upload-permissions.img",
+  "image_sha256": "fd8c2bc6e59b2311aaa0d03b2e9f816838127ae133852cde1857cfeeb28bb64c",
+  "production_sources": 850,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2245,6 +2245,22 @@
       "failures": 0,
       "local_report_sha256": "f7de313f5ec62e00aae079001d3b8c6bc7e5b3266e0981a54da4a89d31ded87f",
       "scope": "Patch0120 consumes a pending minadbd reboot only after GUI acceptance succeeds; failed target publication or temporary unsupported capability preserves retry and token cancellation. Native original core/backend with private processes/socket/epoll: handoff23 and lifecycle33 pass; same-harness old4/4 fail. USB/properties/FUSE/MTP/DataManager/capabilities/sync/final reboot are fixtures. No actual USB/BCB/full GUI or reservation through final shutdown. Historical full OTA retained, not rerun."
+    },
+    {
+      "name": "mtp-upload-permissions-final",
+      "status": "PASS",
+      "cases": 263,
+      "failures": 0,
+      "local_report_sha256": "f1c570f78c3ad473391782030ddca725708652bec66ca891e1a3fe52d17314dd",
+      "scope": "Patch0121 propagates upload fchown/fchmod failures before receiving remaining data or publishing; normal permissions exact, failed new/overwrite preserves old destination and cleans staging, next small upload succeeds. Unnecessary process-wide umask toggle removed. Host original server/database/storage ASan/UBSan263 pass, same-harness old4/4 false-success failures (response OK and new content published). Private ordinary files/inotify/threads; USB/properties are fixtures and faults injected at syscalls. No ARM64 MTP/Windows/large-stream recovery/powerloss, complete path race isolation or cross-restart recovery. Historical full OTA reused, not rerun."
+    },
+    {
+      "name": "mtp-upload-permissions-old-final",
+      "status": "FAIL",
+      "cases": 4,
+      "failures": 4,
+      "local_report_sha256": "ceca547713509652300af8a3b7ded073ea0e6e123656a2b911937d80bbdecb07",
+      "scope": "Patch0121 propagates upload fchown/fchmod failures before receiving remaining data or publishing; normal permissions exact, failed new/overwrite preserves old destination and cleans staging, next small upload succeeds. Unnecessary process-wide umask toggle removed. Host original server/database/storage ASan/UBSan263 pass, same-harness old4/4 false-success failures (response OK and new content published). Private ordinary files/inotify/threads; USB/properties are fixtures and faults injected at syscalls. No ARM64 MTP/Windows/large-stream recovery/powerloss, complete path race isolation or cross-restart recovery. Historical full OTA reused, not rerun."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2526,6 +2542,13 @@
     "patch": "0120",
     "scope": "Patch0120 consumes a pending minadbd reboot only after GUI acceptance succeeds; failed target publication or temporary unsupported capability preserves retry and token cancellation. Native original core/backend with private processes/socket/epoll: handoff23 and lifecycle33 pass; same-harness old4/4 fail. USB/properties/FUSE/MTP/DataManager/capabilities/sync/final reboot are fixtures. No actual USB/BCB/full GUI or reservation through final shutdown. Historical full OTA retained, not rerun.",
     "document": "docs/INSTALL-CHAIN-VALIDATION.md#reboot-handoff-retry",
+    "production_changes": true,
+    "new_build": true
+  },
+  "mtp_upload_permissions": {
+    "patch": "0121",
+    "scope": "Patch0121 propagates upload fchown/fchmod failures before receiving remaining data or publishing; normal permissions exact, failed new/overwrite preserves old destination and cleans staging, next small upload succeeds. Unnecessary process-wide umask toggle removed. Host original server/database/storage ASan/UBSan263 pass, same-harness old4/4 false-success failures (response OK and new content published). Private ordinary files/inotify/threads; USB/properties are fixtures and faults injected at syscalls. No ARM64 MTP/Windows/large-stream recovery/powerloss, complete path race isolation or cross-restart recovery. Historical full OTA reused, not rerun.",
+    "document": "docs/MTP-ATOMIC-UPLOAD.md#upload-permissions",
     "production_changes": true,
     "new_build": true
   }

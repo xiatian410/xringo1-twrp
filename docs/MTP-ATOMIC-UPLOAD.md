@@ -2,6 +2,18 @@
 
 本文集中说明文件上传提交、日期解析与目录上传状态。当前交付见[交付报告](../simulation-report.md)；各补丁的历史候选与报告哈希保留在机器索引和 Git 历史中，不作为完整 USB 验收。
 
+<a id="upload-permissions"></a>
+
+## 上传属主及权限设置失败（0121）
+
+此前上传忽略临时文件的fchown和fchmod返回值，失败后仍接收数据、rename覆盖目标并返回OK。0121将这两项纳入事务，任一失败则不接收剩余数据、不发布，沿既有收尾关闭并清理本次临时文件。已有目标保持；新建目标不出现。正常设置为FILE_PERM=0664、FILE_GROUP=media_rw及当前uid。fchmod不受umask影响，因此移除多余的全局umask切换，避免影响其他线程创建文件。
+
+原生产server、database、storage与真实私有普通文件、inotify和线程在ASan/UBSan下263项通过。新增六项覆盖新建/覆盖各自的正常权限、fchown失败EPERM及fchmod失败EIO；检查响应、接收调用次数、旧目标内容/inode/权限、临时文件清理、后续查询与小文件重试。正常路径读取实际mode/uid/gid。同夹具旧实现四项错误均响应8193(OK)、调用接收并发布新内容；当前响应8194(GENERAL_ERROR)，接收未调用，原目标保留。
+
+失败在系统调用边界注入，未模拟真实SELinux或存储故障。小文件payload已进入初始缓冲，不证明尚有bulk余量时的USB恢复，也没有ARM64 MTP、Windows或断电验收。此项不解决临时名称检查后竞争、就地修改或跨重启归属。移动/复制和完整OTA未修改，沿用历史证据。
+
+本地证据为`logs/mtp-upload-permissions-final.json`及`logs/mtp-upload-permissions-old-final.json`，核对入口为`python3 scripts/audit_mtp_upload_permissions.py`。补丁维护为0121，先installclean再make -j$(nproc)清理构建，850份来源与六profile；镜像和哈希见[当前候选](../simulation-report.md)。此前257项及首次错误对照保留，最后仅增加诊断输出并调整断言顺序以明确观察旧版的成功响应，没有新增生产修改。
+
 ## 文件上传原子发布（0041）
 
 文件先接收到同目录的唯一 `.mtp-upload-*` 临时文件，接收、长度校验、文件同步和关闭均成功后才用 `rename` 发布。发布前失败只清理本次临时文件，保留已有目标；新建与覆盖使用同一流程。
