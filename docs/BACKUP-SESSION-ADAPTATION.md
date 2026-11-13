@@ -1,5 +1,15 @@
 # 备份会话、目录管理与摘要发布
 
+<a id="exclusion-union"></a>
+
+## 重复及嵌套排除容量（0112）
+
+Data初始化的ExcludeAll与后续SetupDataMedia会重复登记cache/per_boot/gsi；未解密用户媒体目录也可能与/data/media重叠。此前容量统计逐项相加，同一内容被重复扣除。0112只在容量统计的局部副本排序去重，并跳过已计量真实目录的后代；匹配要求路径组件边界，sub不覆盖submarine。原始登记列表和备份/清除匹配行为不变。lstat识别目录，链接不作为覆盖其他路径的目录，也不解析链接别名。
+
+扩展既有容量测试至19项，真实私有文件/完整exclude源码/ASan及UBSan全部通过；同夹具旧实现7/19失败。新增覆盖重复文件、重复目录、父子登记的两种顺序、三级嵌套、相似前缀兄弟目录、多用户媒体重叠及规范化后重复路径。4097字节文件原先可被计成8194或12291，现在只计一次；保留原11项文件/链接/取消检查。既有普通/gzip/AES/组合与分卷八项往返通过，不重复无关套件。
+
+本地报告`logs/exclusion-union.json`、`logs/exclusion-union-old.json`、`logs/exclusion-union-codec.json`；交付审计`python3 scripts/audit_exclusion_union.py`绑定0112与清理构建、840来源和六profile。容量仍为逻辑字节估计；I/O错误、路径别名/并发替换、分配块及完整manager/GUI仍有边界。此项不解释现场DRM等待，不重跑未改OTA或已解决功能。
+
 <a id="exclusion-capacity"></a>
 
 ## 排除项容量（0110）

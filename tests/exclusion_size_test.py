@@ -76,7 +76,10 @@ int main(int argc, char** argv) {
         subprocess.run(command, check=True)
         for name in ['ordinary', 'absolute-file', 'absolute-directory', 'file-link',
                      'directory-link', 'dangling-link', 'relative-file',
-                     'relative-directory', 'trailing-slashes', 'missing', 'cancelled']:
+                     'relative-directory', 'trailing-slashes', 'missing', 'cancelled',
+                     'duplicate-file', 'duplicate-directory', 'nested-parent-first',
+                     'nested-child-first', 'nested-three-levels', 'sibling-prefix',
+                     'media-user-overlap', 'normalized-duplicate']:
             root = work / name
             root.mkdir()
             (root / 'keep').write_bytes(b'keep123')
@@ -116,6 +119,31 @@ int main(int argc, char** argv) {
             if name == 'cancelled':
                 options = ['a:' + str(root / 'adb'), 'cancel']
                 scanned = 0
+            union_paths = {
+                'duplicate-file': ['adb/ksu/modules.img'] * 2,
+                'duplicate-directory': ['adb'] * 2,
+                'nested-parent-first': ['adb', 'adb/ksu/modules.img'],
+                'nested-child-first': ['adb/ksu/modules.img', 'adb'],
+                'nested-three-levels': ['adb/ksu/modules.img', 'adb/ksu', 'adb'],
+                'sibling-prefix': ['sub', 'submarine'],
+                'media-user-overlap': ['media/10', 'media', 'media/11'],
+                'normalized-duplicate': ['adb/', 'adb///'],
+            }.get(name)
+            if union_paths:
+                if name == 'sibling-prefix':
+                    (root / 'submarine').mkdir()
+                    (root / 'submarine/extra').write_bytes(b'E' * 29)
+                if name == 'media-user-overlap':
+                    for uid in ['10', '11']:
+                        (root / 'media' / uid).mkdir(parents=True)
+                        (root / 'media' / uid / 'file').write_bytes(b'U' * int(uid))
+                inventory = {str(p): p.lstat().st_size for p in root.rglob('*')
+                             if p.is_symlink() or p.is_file()}
+                normalized = [str(root / p.rstrip('/')) for p in union_paths]
+                excluded = sum(size for p, size in inventory.items()
+                               if any(p == e or p.startswith(e + '/') for e in normalized))
+                scanned = sum(inventory.values()) - excluded
+                options = ['a:' + str(root) + '/' + p for p in union_paths]
             before = {str(p): sha(p) for p in root.rglob('*') if not p.is_symlink() and p.is_file()}
             run = subprocess.run([str(work / 'test'), str(root), str(scanned), str(excluded), *options],
                                  capture_output=True, text=True, timeout=10)

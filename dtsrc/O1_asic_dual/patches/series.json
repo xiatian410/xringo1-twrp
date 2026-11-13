@@ -410,6 +410,10 @@
         {
           "file": "0111-mtp-stream-data-boundary.patch",
           "sha256": "47e3519d3c94b576f2d08897feaa6bbdb0440689471c964cc33dc6e09ed7969f"
+        },
+        {
+          "file": "0112-backup-exclusion-union.patch",
+          "sha256": "b7668323bc8362412412fcd72984e78e405f3b0fc0fab2b75faf927d19753c66"
         }
       ],
       "result_files": {
@@ -518,7 +522,7 @@
         "libtar/wrapper.c": "5451d5d6b4f1b8102277e188a435e4a64b64d1554c9731267c5088e88b97f9be",
         "mtp/MtpRequestPacket.cpp": "9e143dbd31fd424728e753e7383de0957aced6415f166b6b1dd9b5e1fdcdbd3e",
         "mtp/MtpDataPacket.cpp": "fe7d542a6ddf5fc40be0ab7ee4c74f8abfb6240846d72390c2f1bca4b0805f0d",
-        "exclude.cpp": "fb39641b04b31ca9525a495285c9defa535ea13f2acc149fc32d1bf4db7bd3dc"
+        "exclude.cpp": "01a5cc1515ea8ea03c8f008e087c72aff0125d3c3077f309b46bb75f4df7e963"
       }
     },
     "system/sepolicy": {

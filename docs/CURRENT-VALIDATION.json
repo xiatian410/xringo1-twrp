@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-stream-boundary.img",
-  "image_sha256": "39f88015131bf0ddb3c79d7eef862b4f023d6d518facf2a4ebcc4996ec07ea09",
-  "production_sources": 839,
+  "image_name": "recovery-dijun-unified-exclusion-union.img",
+  "image_sha256": "279135fa22715a32bdbce529319baca2c75067c010cedacb1b96c0a7b75cd432",
+  "production_sources": 840,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2021,6 +2021,30 @@
       "failures": 27,
       "local_report_sha256": "b50dc3eb41e10f17ca1690d979f9c1931b7c99c1c53281cbda0a86913538ce00",
       "scope": "Patch0111 validates streaming SendObject/SendPartialObject container length/type/code/transaction and initial byte bound before writes. Malformed protocol retires connection before response/tail command, resetSession releases pending handles/edit fds. Host production MTP/files/inotify/threads ASan/UBSan229 pass; same-harness old27/31 fail; empty and large/unknown header controls covered. USB/properties/logging are fixtures; large controls stop at transport error, no full large transfer/ARM64 MTP/Windows/actual USB/client reconnect/persistent staging recovery proof."
+    },
+    {
+      "name": "exclusion-union",
+      "status": "PASS",
+      "cases": 19,
+      "failures": 0,
+      "local_report_sha256": "d61de1ab85c15371a1d067a01abe5fa4ff14f519d9f1fe800b74aab1cb240db1",
+      "scope": "Patch0112 measures the union of duplicate/nested absolute capacity exclusions using a sorted unique local copy and component-boundary coverage by lstat directories. Original exclusion policy remains unchanged. Whole source/private host files ASan/UBSan19 pass, old7/19 fail; tar/pigz/OAES roundtrip8 pass. Logical estimate only; I/O errors, aliases/concurrent replacement, allocation and full manager/GUI remain open. Does not resolve DRM refresh stall or validate latest-image OTA."
+    },
+    {
+      "name": "exclusion-union-old",
+      "status": "FAIL",
+      "cases": 19,
+      "failures": 7,
+      "local_report_sha256": "d9a65ac17992fea7595cba6dff58ad93878df826776d54743aebe668a972793b",
+      "scope": "Patch0112 measures the union of duplicate/nested absolute capacity exclusions using a sorted unique local copy and component-boundary coverage by lstat directories. Original exclusion policy remains unchanged. Whole source/private host files ASan/UBSan19 pass, old7/19 fail; tar/pigz/OAES roundtrip8 pass. Logical estimate only; I/O errors, aliases/concurrent replacement, allocation and full manager/GUI remain open. Does not resolve DRM refresh stall or validate latest-image OTA."
+    },
+    {
+      "name": "exclusion-union-codec",
+      "status": "PASS",
+      "cases": 8,
+      "failures": 0,
+      "local_report_sha256": "4c34d85e0fdd8a6ae568f206c4196e861912dd5535b5029781964e4ee1dac3be",
+      "scope": "Patch0112 measures the union of duplicate/nested absolute capacity exclusions using a sorted unique local copy and component-boundary coverage by lstat directories. Original exclusion policy remains unchanged. Whole source/private host files ASan/UBSan19 pass, old7/19 fail; tar/pigz/OAES roundtrip8 pass. Logical estimate only; I/O errors, aliases/concurrent replacement, allocation and full manager/GUI remain open. Does not resolve DRM refresh stall or validate latest-image OTA."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2273,6 +2297,13 @@
     "patch": "0111",
     "scope": "Patch0111 validates streaming SendObject/SendPartialObject container length/type/code/transaction and initial byte bound before writes. Malformed protocol retires connection before response/tail command, resetSession releases pending handles/edit fds. Host production MTP/files/inotify/threads ASan/UBSan229 pass; same-harness old27/31 fail; empty and large/unknown header controls covered. USB/properties/logging are fixtures; large controls stop at transport error, no full large transfer/ARM64 MTP/Windows/actual USB/client reconnect/persistent staging recovery proof.",
     "document": "docs/MTP-CONTROL-ADAPTATION.md#streaming-data-boundary",
+    "production_changes": true,
+    "new_build": true
+  },
+  "backup_exclusion_union": {
+    "patch": "0112",
+    "scope": "Patch0112 measures the union of duplicate/nested absolute capacity exclusions using a sorted unique local copy and component-boundary coverage by lstat directories. Original exclusion policy remains unchanged. Whole source/private host files ASan/UBSan19 pass, old7/19 fail; tar/pigz/OAES roundtrip8 pass. Logical estimate only; I/O errors, aliases/concurrent replacement, allocation and full manager/GUI remain open. Does not resolve DRM refresh stall or validate latest-image OTA.",
+    "document": "docs/BACKUP-SESSION-ADAPTATION.md#exclusion-union",
     "production_changes": true,
     "new_build": true
   }

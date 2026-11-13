@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-mtp-stream-boundary.img` |
-| SHA-256 | `39f88015131bf0ddb3c79d7eef862b4f023d6d518facf2a4ebcc4996ec07ea09` |
-| 生产来源绑定 | 839 份 |
+| 文件 | `recovery-dijun-unified-exclusion-union.img` |
+| SHA-256 | `279135fa22715a32bdbce529319baca2c75067c010cedacb1b96c0a7b75cd432` |
+| 生产来源绑定 | 840 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：MTP上传数据头与连接收尾
+## 本批生产修正：重叠排除容量只扣一次
+
+0112修正Data初始化重复登记及父子排除目录重复扣除容量：在局部列表去重，已计量目录覆盖的子路径不再累加，按路径组件边界区分相似前缀；原备份/清除排除策略不变。真实私有文件/完整exclude源码在ASan/UBSan下19项通过；同夹具旧实现7/19失败，相关codec八项往返通过。清理构建后840来源及六profile核对通过。
+
+详见[重叠排除计量](docs/BACKUP-SESSION-ADAPTATION.md#exclusion-union)。这仍是逻辑字节估计，I/O错误、路径别名和并发源一致性等边界保留，不解释此前DRM刷新等待。不重复完整OTA或已解决功能。
+
+## 沿用的MTP上传数据头与连接收尾
 
 0111补齐SendObject/SendPartialObject数据头的声明长度校验，用64位加法处理32位长度饱和；类型/操作/事务错、短头、超额初始payload等协议错误在写入前拒绝，终止连接后由resetSession释放登记与编辑fd，不解析不可信尾部命令。正常I/O错误与取消仍按原路径处理，不把协议错误混作取消。
 

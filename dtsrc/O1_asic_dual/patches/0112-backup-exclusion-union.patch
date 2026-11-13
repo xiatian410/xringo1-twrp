@@ -1,0 +1,39 @@
+--- a/exclude.cpp
++++ b/exclude.cpp
+@@ -23,6 +23,7 @@
+ #include <sys/stat.h>
+ #include <dirent.h>
+ #include <errno.h>
++#include <algorithm>
+ #include <string>
+ #include <vector>
+ #include "exclude.hpp"
+@@ -127,9 +128,26 @@
+ 
+ uint64_t TWExclude::Get_Exclusions_Folder_Size(const std::atomic<bool>* cancel) {
+ 	uint64_t dusize = 0;
+-	for (size_t i = 0; i < absolutedir.size() && (!cancel || !cancel->load()); i++) {
+-		string exclude_dir = absolutedir[i];
++	// Setup and per-user exclusions can overlap. Measure their union instead
++	// of subtracting a repeated directory or its descendants multiple times.
++	auto paths = absolutedir;
++	std::sort(paths.begin(), paths.end());
++	paths.erase(std::unique(paths.begin(), paths.end()), paths.end());
++	vector<string> measured_dirs;
++	for (const auto& exclude_dir : paths) {
++		if (cancel && cancel->load()) break;
++		bool covered = false;
++		for (const auto& parent : measured_dirs) {
++			if (exclude_dir.starts_with(parent == "/" ? parent : parent + "/")) {
++				covered = true;
++				break;
++			}
++		}
++		if (covered) continue;
+ 		dusize += _Get_Folder_Size(exclude_dir, cancel);
++		struct stat st{};
++		if (lstat(exclude_dir.c_str(), &st) == 0 && S_ISDIR(st.st_mode))
++			measured_dirs.push_back(exclude_dir);
+ 	}
+ 	return dusize;
+ }
