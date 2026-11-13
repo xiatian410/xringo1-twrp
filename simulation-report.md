@@ -6,16 +6,18 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-media-recreate.img` |
-| SHA-256 | `cca13c246a7828aa81c707e63789491586e925b7b050d1440146e549f0e2988d` |
-| 生产来源绑定 | 807 份 |
+| 文件 | `recovery-dijun-unified-stock-ota-trust.img` |
+| SHA-256 | `f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931` |
+| 生产来源绑定 | 808 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
 ## 后续执行证据
 
-原始 `OS4.0.4.0.XODCNXM` 完整 ZIP 补测发现：**当前镜像开启 ZIP 签名验证时会拒绝该包**，现有三张证书均无法验证整包签名。诊断环境单独使用包内证书后签名可通过；关闭可选验证时原安装器可正确生成 A/B 命令。四项检查通过指符合这些预期（包含拒绝），不表示四次安装成功；子进程只核对原包 offset / headers / CrAU，不安装 payload。普通 ZIP 36 项回归通过，807 生产来源仍匹配；本批是新证据，无生产修正、证书变更或重编。历史完整 payload 执行属于较早 snapshot-map 镜像，不能与当前入口测试拼成完整 OTA 验收，见[范围与结果](docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip)。
+原始 `OS4.0.4.0.XODCNXM` 完整 ZIP 在旧 media-recreate 候选开启验证时被拒绝。本批生产修正为补齐固定小米 OTA 公钥：从六份哈希固定的原厂 recovery 提取，六份证书完全一致；保留原有三张证书，不修改运行时验证逻辑。清理构建后，原始完整 ZIP 开启签名验证通过，移除仅该公钥后拒绝，设备不匹配也拒绝；五项入口检查及普通 ZIP 36 项回归通过。808 来源、六 profile 和封装核对通过，与旧镜像相比仅构建属性、ramdisk 摘要与 otacerts.zip 改变。生产二进制未变。交付核对见本地 `logs/stock-ota-trust-delivery.json`。
+
+这修正了原厂签名支持，**不表示完整卡刷通过**：入口子进程只核对原包 offset / headers / CrAU，不安装 payload。历史完整 payload 执行属于较早 snapshot-map 镜像，不能与当前入口测试拼成完整 OTA 验收，见[范围与结果](docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip)。
 
 容量刷新新增原 `gui2_loop_tick` / app 主循环接续证据：正常结束、建页前结束与人为提交等待三场景通过。等待期间 worker DONE 不会使阻塞中的 GUI 继续轮询，解除后下一轮更新完成；不证明现场 DRM 长期等待。扫描、提交及设备服务有明确替身，现场根因仍未解决。无生产修改或重编，不重复同类夹具，见[范围](docs/REFRESH-STUCK-INVESTIGATION.md#gui-loop)。
 

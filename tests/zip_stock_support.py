@@ -31,11 +31,12 @@ def sha(path):
 class Stock:
     names=['stock-current-trust','stock-package-cert-diagnostic','stock-ab-dispatch','stock-device-mismatch']
 
-    def __init__(self, work):
+    def __init__(self, work, image=None):
         self.work=work
         self.index=json.loads((ROOT/'simulation-report.json').read_text())
-        self.image=Path(self.index['image'])
-        assert sha(self.image)==self.index['image_sha256']
+        self.image=Path(image or self.index['image'])
+        if image is None:
+            assert sha(self.image)==self.index['image_sha256']
         self.source=ROOT/'firmware/samples/os4-stable/original-ota.zip'
         self.reference=json.loads((ROOT/'logs/ota-stock-stable-payload.json').read_text())
         self.source_hash=sha(self.source)
@@ -45,6 +46,17 @@ class Stock:
         with zipfile.ZipFile(self.source) as z:
             self.properties=z.read('payload_properties.txt')
             self.package_cert=z.read('META-INF/com/android/otacert')
+        with zipfile.ZipFile(io.BytesIO(self.certs)) as z:
+            delivered={name:z.read(name) for name in z.namelist()}
+        self.trusts_package=self.package_cert in delivered.values()
+        self.names=type(self).names.copy()
+        if self.trusts_package:
+            self.names.append('stock-without-oem')
+        b=io.BytesIO()
+        with zipfile.ZipFile(b,'w') as z:
+            for name,data in delivered.items():
+                if data!=self.package_cert:z.writestr(name,data)
+        self.without_oem=b.getvalue()
         b=io.BytesIO()
         with zipfile.ZipFile(b,'w') as z:z.writestr('diagnostic.x509.pem',self.package_cert)
         self.diagnostic_certs=b.getvalue()
@@ -62,9 +74,8 @@ struct twrpRepacker {void Flash_Current_Twrp(){assert(false);}};
 static int fixture_mount(const char*,const char*,const char*,unsigned long,const void*){++mount_calls;return 0;}
 static int fixture_umount(const char*){++unmount_calls;return 0;}
 ''')
-        text=text.replace('value=key=="verify"?', 'value=key=="verify"?')
         a=text.index('    value=key=="verify"?');b=text.index('\n  }',a)
-        text=text[:a]+'''    value=key=="verify"?(scenario=="stock-current-trust"||scenario=="stock-package-cert-diagnostic"):0;'''+text[b:]
+        text=text[:a]+'''    value=key=="verify"?(scenario=="stock-current-trust"||scenario=="stock-package-cert-diagnostic"||scenario=="stock-without-oem"):0;'''+text[b:]
         text=text.replace('bool UnmountByPath(const string&,bool) {assert(scenario=="unmount-denied");return false;}', '''bool UnmountByPath(const string&,bool) {return true;}
   bool MountByPath(const string&,bool){return true;}
   bool IsMountedByPath(const string&){return false;}
@@ -129,17 +140,19 @@ int main(int argc,char**argv){
             os.link(self.source,jail/'packages/test.zip')
             (jail/'packages/properties').write_bytes(self.properties)
             certs=self.diagnostic_certs if name=='stock-package-cert-diagnostic' else self.certs
+            if name=='stock-without-oem':certs=self.without_oem
             (jail/'system/etc/security/otacerts.zip').write_bytes(certs)
-            expected=name in ['stock-package-cert-diagnostic','stock-ab-dispatch']
+            expected=name in ['stock-package-cert-diagnostic','stock-ab-dispatch'] or (name=='stock-current-trust' and self.trusts_package)
             run=subprocess.run(['chroot',str(jail),'/test',name,str(int(expected))],capture_output=True,text=True,timeout=180)
             cases.append(dict(name=name,status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,
                 expected_install_success=expected,engine_entered=(jail/'packages/engine-entered.txt').exists(),
-                trust='package certificate ONLY as diagnostic' if name=='stock-package-cert-diagnostic' else 'unchanged delivered certificates',
-                signature_enabled=name in ['stock-current-trust','stock-package-cert-diagnostic'],output=run.stdout+run.stderr))
+                trust='package certificate ONLY as diagnostic' if name=='stock-package-cert-diagnostic' else 'delivered certificates minus OEM key' if name=='stock-without-oem' else 'unchanged delivered certificates',
+                signature_enabled=name in ['stock-current-trust','stock-package-cert-diagnostic','stock-without-oem'],output=run.stdout+run.stderr))
             print(name,cases[-1]['status'],flush=True)
             if run.returncode:print(cases[-1]['output'][-2500:],flush=True)
         return dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL',scope=__doc__,
             image=str(self.image),image_sha256=sha(self.image),source_zip_sha256=self.source_hash,source_zip_bytes=self.source.stat().st_size,
             delivered_cert_zip_sha256=hashlib.sha256(self.certs).hexdigest(),package_cert_sha256=hashlib.sha256(self.package_cert).hexdigest(),
+            delivered_trusts_package_certificate=self.trusts_package,
             cases=cases,sources={str(p):sha(p) for p in [*sources,Path(__file__),ROOT/'scripts/firmware_facts.py',ROOT/'scripts/acquire_firmware.py']},
             binary_dependencies=dependencies,compile_command=command,full_payload_installed=False,production_trust_changed=False)

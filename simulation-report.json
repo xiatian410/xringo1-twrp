@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-media-recreate.img",
-  "image_sha256": "cca13c246a7828aa81c707e63789491586e925b7b050d1440146e549f0e2988d",
-  "image_status": "Clean installclean + make -j$(nproc); patch0086 guards offline format helpers against retained mounts.804 production sources/six unchanged profiles; goal in progress.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-stock-ota-trust.img",
+  "image_sha256": "f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931",
+  "image_status": "Clean installclean + make -j$(nproc); fixed OEM OTA public certificate from six hash-pinned stock recovery images. Original OS4.0.4 ZIP whole-file signature accepted.808 sources/six unchanged profiles; full OTA unproven.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance. A/B command preparation now has21-case native coverage with real ZIP and harmless engine; not payload application. VABC Init/replace/ZERO/checkpoint/Finished/Close and original snapshot reader -> materialized-file -> original asynchronous target verifier now execute10 ARM64 cases. Short input is rejected with error15; full DeltaPerformer/signed payload/SnapshotManager/snapuserd/merge remain open. Patch0065 now propagates partition finish/close errors through intact ARM64 DeltaPerformer Write (8 cases, 3 pre-fix failures); parsed manifest and writer I/O are explicit boundaries. Full payload authentication/mapping/install lifecycle remains open. Synthetic CrAU/protobuf/data streaming now runs13 ARM64 cases through original ParseManifest/InstallPlan/factory/VABC/VerifyPayload/target verifier without private-state seeding. Device mapping remains FileControl; recovery signature verification remains existing compile-time bypass, framing marker is not valid signature. Stock authenticated OTA, SnapshotManager/snapuserd and complete installer lifecycle remain open. Actual SnapshotManager FinishedSnapshotWrites state-file lifecycle16cases now covered; real mapping/merge/payload-to-finalization integration still open. Original PostinstallRunnerAction -> controller -> actual SnapshotManager completion/recreated-controller retries6cases covered with mounted-token/HAL/slot/hardware boundaries; full real payload/mapping/postinstall-script chain remains open. Actual ARM64 harmless postinstall program with original parent/Subprocess/process reaper9cases now covered, including mandatory/optional exits and cancellation. Original otapreopt/mount/namespace/payload integration remains open. Both exact OS4 stock otapreopt recovery guards executed with delivered ARM64 shell/getprop8cases, no ART calls. Real property area/mount/namespace/parent-to-stock-script integration still open. Current-image original OS4.0.4 ZIP entry now tested: optional whole-file signature verification with unchanged delivered trust REJECTS the package; diagnostic package-cert acceptance does not change production trust. Signature-off reaches only an A/B argument checker, not real update_engine. Historical full stock payload execution is separate and does not establish current full ZIP installation."
+    "Full-page GUI routes, stock OTA updater/AB payload/update_engine and actual USB/FUSE sideload remain open. Genuine harmless ARM64 updater fixtures now execute20 cases via host production ZIP chain and explicit QEMU exec bridge/current-image linker/libc, with native36 regression; not full ARM64 recovery or target init namespace. Separate sideload package chain27 uses native minadbd stand-in and property/FUSE/mount/cache/USB doubles. No physical or GUI acceptance. A/B command preparation now has21-case native coverage with real ZIP and harmless engine; not payload application. VABC Init/replace/ZERO/checkpoint/Finished/Close and original snapshot reader -> materialized-file -> original asynchronous target verifier now execute10 ARM64 cases. Short input is rejected with error15; full DeltaPerformer/signed payload/SnapshotManager/snapuserd/merge remain open. Patch0065 now propagates partition finish/close errors through intact ARM64 DeltaPerformer Write (8 cases, 3 pre-fix failures); parsed manifest and writer I/O are explicit boundaries. Full payload authentication/mapping/install lifecycle remains open. Synthetic CrAU/protobuf/data streaming now runs13 ARM64 cases through original ParseManifest/InstallPlan/factory/VABC/VerifyPayload/target verifier without private-state seeding. Device mapping remains FileControl; recovery signature verification remains existing compile-time bypass, framing marker is not valid signature. Stock authenticated OTA, SnapshotManager/snapuserd and complete installer lifecycle remain open. Actual SnapshotManager FinishedSnapshotWrites state-file lifecycle16cases now covered; real mapping/merge/payload-to-finalization integration still open. Original PostinstallRunnerAction -> controller -> actual SnapshotManager completion/recreated-controller retries6cases covered with mounted-token/HAL/slot/hardware boundaries; full real payload/mapping/postinstall-script chain remains open. Actual ARM64 harmless postinstall program with original parent/Subprocess/process reaper9cases now covered, including mandatory/optional exits and cancellation. Original otapreopt/mount/namespace/payload integration remains open. Both exact OS4 stock otapreopt recovery guards executed with delivered ARM64 shell/getprop8cases, no ART calls. Real property area/mount/namespace/parent-to-stock-script integration still open. Current stock-ota-trust image now accepts the original OS4.0.4 whole-file ZIP signature using the fixed OEM public certificate from six pinned stock recoveries; removing that key rejects. Five host entry checks stop at a harmless argument checker. Full original ZIP-to-real-engine/snapshot lifecycle remains open."
   ],
   "hardware_unverified": [
     "motor output",
@@ -3603,6 +3603,22 @@
       "evidence": "logs/zip-stock-host-regression.json",
       "evidence_sha256": "3c8af4484ccdf93a87dad771acd4e9a116c15bd493f277ad8dfbed658169afb1",
       "scope": "Native ZIP regression after adding stock OS4 mode; host fixtures, not real OTA."
+    },
+    {
+      "name": "stock-os4-zip-fixed-trust",
+      "result": "pass",
+      "count": 5,
+      "evidence": "logs/zip-stock-os4-fixed.json",
+      "evidence_sha256": "b93cb45b4c3f1eea7639b28a62f84dc2722851ec68c9506ca044c68202653567",
+      "scope": "Fixed build-time OEM public certificate from six pinned stock recoveries. Current delivered trust accepts original OS4.0.4 ZIP signature; removing only OEM certificate rejects. Device mismatch still rejects. Host installer engine is parameter checker only; no payload application/full OTA. Native ZIP36 regression; no hardware."
+    },
+    {
+      "name": "stock-ota-trust-native-regression",
+      "result": "pass",
+      "count": 36,
+      "evidence": "logs/zip-stock-trust-host-regression.json",
+      "evidence_sha256": "82b7852271b087b01fa0d0109b5973d789b8e15d0c57a053d8bf1614a5cab9c4",
+      "scope": "Native ZIP36 regression after stock-image option; not actual OTA."
     }
   ],
   "source_review_followups": [
@@ -3918,8 +3934,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/format-mounted-delivery.json",
-    "scope": "Patch0086 guards six offline format helpers with IsMounted after Unmount; retained mount rejects formatter before writes/type change; same-format rm-rf bypass stays intact. 15 mount outcomes and optional USE_EXT4 retained branch pass; old seven format selections plus one optional branch fail.25 dispatch,6 actual ARM64 file format/repair and9 repair mount regressions pass. Mount/unmount/device/commands are explicit fixtures for selection tests; no real mount/full GUI/fscrypt/power loss. Clean804/six profiles unchanged.",
+    "evidence": "logs/stock-ota-trust-delivery.json",
+    "scope": "Fixed build-time OEM public certificate from six pinned stock recoveries. Current delivered trust accepts original OS4.0.4 ZIP signature; removing only OEM certificate rejects. Device mismatch still rejects. Host installer engine is parameter checker only; no payload application/full OTA. Native ZIP36 regression; no hardware.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -4490,6 +4506,24 @@
       "full_ota_install": false
     },
     "stock_os4_zip_entry": {
+      "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
+      "report": "logs/zip-stock-os4-fixed.json",
+      "report_sha256": "b93cb45b4c3f1eea7639b28a62f84dc2722851ec68c9506ca044c68202653567",
+      "cases": 5,
+      "image_sha256": "f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931",
+      "source_zip_sha256": "a1dcfecccf4397943e6836539bea6573ade01c84ef9ee1e360df9c233493f04b",
+      "source_zip_bytes": 7883598024,
+      "unchanged_trust_signature_result": "ACCEPTED with fixed OEM build certificate",
+      "without_oem_certificate_result": "REJECTED",
+      "signature_disabled_result": "A/B argument checker reached; no payload install",
+      "full_ota_install": false,
+      "production_trust_changed": true,
+      "runtime_trust_import": false,
+      "production_changes": true,
+      "new_build": true,
+      "scope": "Fixed build-time OEM public certificate from six pinned stock recoveries. Current delivered trust accepts original OS4.0.4 ZIP signature; removing only OEM certificate rejects. Device mismatch still rejects. Host installer engine is parameter checker only; no payload application/full OTA. Native ZIP36 regression; no hardware."
+    },
+    "stock_os4_zip_entry_history": {
       "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
       "report": "logs/zip-stock-os4.json",
       "report_sha256": "eba1d51c33fb187a375a16750d7445c0ad352e4cdf78928ab7fb06e60b28574c",

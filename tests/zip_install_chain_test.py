@@ -28,6 +28,7 @@ def main():
     ap.add_argument('--report',type=Path,default=ROOT/'logs/zip-install-chain.json')
     ap.add_argument('--arm64',action='store_true',help='Execute genuine target ELF through explicit QEMU exec boundary')
     ap.add_argument('--stock-os4',action='store_true',help='Original OS4 stable ZIP, delivered trust and A/B dispatch; harmless child only')
+    ap.add_argument('--image',type=Path,help='Image for stock OS4 entry checks (default: current indexed image)')
     args=ap.parse_args();android=SRC.parents[1]
     if args.stock_os4 and args.arm64:ap.error('Select one execution scope')
     clang=android/'prebuilts/clang/host/linux-x86/clang-r547379/bin/clang++'
@@ -78,7 +79,7 @@ def main():
                    'updater-badprogress','target-link-failure','target-missing-lib','target-signal','target-partial-failure']
         if args.stock_os4:
             from zip_stock_support import Stock
-            stock=Stock(work)
+            stock=Stock(work,args.image)
             names=stock.names
         inserted='\n'.join(bodies)
         if target:inserted=BRIDGE+inserted+'\n#undef execve\n#undef waitpid\n'

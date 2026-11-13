@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+python3 "$(dirname -- "$0")/prepare_stock_ota_certificate.py"
 python3 "$(dirname -- "$0")/sync_device_tree.py" --sync
 cd /root/AAA/twrp
 if ! command -v python >/dev/null 2>&1; then

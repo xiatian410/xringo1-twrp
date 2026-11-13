@@ -28,6 +28,7 @@ Android 仓库 revision 见 [pinned.xml](../manifests/pinned.xml)。平台修改
 
    工具逐项校验路径、大小和 SHA-256；不会下载资源或恢复私钥。
 3. 自行准备配置引用的本地 `dtsrc/O1_asic_dual/security/releasekey.pk8` 与 `releasekey.x509.pem`。密钥不进入公开同步。
+4. 六份原厂 `recovery.img` 就位后，运行 `python3 scripts/prepare_stock_ota_certificate.py`。脚本核对固定镜像哈希，确认六份 recovery 的 OTA 公钥证书完全相同，再生成本地 `security/xiaomi-ota.x509.pem`。不需要小米私钥，不从待安装 ZIP 动态导入证书；构建脚本也会执行此步骤。
 
 ## 同步和构建
 

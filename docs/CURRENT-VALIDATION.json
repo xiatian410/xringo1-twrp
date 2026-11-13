@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-media-recreate.img",
-  "image_sha256": "cca13c246a7828aa81c707e63789491586e925b7b050d1440146e549f0e2988d",
-  "production_sources": 807,
+  "image_name": "recovery-dijun-unified-stock-ota-trust.img",
+  "image_sha256": "f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931",
+  "production_sources": 808,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -1294,29 +1294,46 @@
       "failures": 0,
       "local_report_sha256": "3c8af4484ccdf93a87dad771acd4e9a116c15bd493f277ad8dfbed658169afb1",
       "scope": "Native ZIP regression after adding stock OS4 mode; host fixtures, not real OTA."
+    },
+    {
+      "name": "stock-os4-zip-fixed-trust",
+      "status": "PASS",
+      "cases": 5,
+      "failures": 0,
+      "local_report_sha256": "b93cb45b4c3f1eea7639b28a62f84dc2722851ec68c9506ca044c68202653567",
+      "scope": "Fixed build-time OEM public certificate from six pinned stock recoveries. Current delivered trust accepts original OS4.0.4 ZIP signature; removing only OEM certificate rejects. Device mismatch still rejects. Host installer engine is parameter checker only; no payload application/full OTA. Native ZIP36 regression; no hardware."
+    },
+    {
+      "name": "stock-ota-trust-native-regression",
+      "status": "PASS",
+      "cases": 36,
+      "failures": 0,
+      "local_report_sha256": "82b7852271b087b01fa0d0109b5973d789b8e15d0c57a053d8bf1614a5cab9c4",
+      "scope": "Native ZIP36 regression after stock-image option; not actual OTA."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
   "current_batch_groups": [
-    4
+    12
   ],
-  "current_batch_document": "docs/MTP-CONTROL-ADAPTATION.md#bulk-completion-error",
-  "current_batch_groups_scope": "Patch0082: native waitEvents returns immediately with original errno when io_getevents fails; no negative-to-unsigned event-array iteration. Real host AIO/pipes/files + one-shot completion fault. EIO/EAGAIN old ASan stack overflow, fixed safe -1; EINTR real retry control; native/compat transport regression. Properties/logging substituted; no physical UDC/Windows, live transfer recovery or full cancel/reset.",
+  "current_batch_document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
+  "current_batch_groups_scope": "Fixed build-time OEM public certificate from six pinned stock recoveries. Current delivered trust accepts original OS4.0.4 ZIP signature; removing only OEM certificate rejects. Device mismatch still rejects. Host installer engine is parameter checker only; no payload application/full OTA. Native ZIP36 regression; no hardware.",
   "stock_os4_zip_entry": {
     "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
-    "report": "logs/zip-stock-os4.json",
-    "report_sha256": "eba1d51c33fb187a375a16750d7445c0ad352e4cdf78928ab7fb06e60b28574c",
-    "cases": 4,
-    "image_sha256": "cca13c246a7828aa81c707e63789491586e925b7b050d1440146e549f0e2988d",
+    "report": "logs/zip-stock-os4-fixed.json",
+    "report_sha256": "b93cb45b4c3f1eea7639b28a62f84dc2722851ec68c9506ca044c68202653567",
+    "cases": 5,
+    "image_sha256": "f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931",
     "source_zip_sha256": "a1dcfecccf4397943e6836539bea6573ade01c84ef9ee1e360df9c233493f04b",
     "source_zip_bytes": 7883598024,
-    "unchanged_trust_signature_result": "REJECTED",
-    "diagnostic_package_certificate_result": "signature accepted; engine only checks parameters",
+    "unchanged_trust_signature_result": "ACCEPTED with fixed OEM build certificate",
+    "without_oem_certificate_result": "REJECTED",
     "signature_disabled_result": "A/B argument checker reached; no payload install",
     "full_ota_install": false,
-    "production_trust_changed": false,
-    "production_changes": false,
-    "new_build": false,
-    "scope": "Original OS4.0.4 full ZIP on current host installer. Signature ON with unchanged delivered trust rejects; package-cert acceptance is diagnostic only. Signature OFF reaches harmless A/B argv/offset/header/CrAU checker, NOT payload installation. Wrong-device metadata rejects. No production or trust change; not complete OTA."
+    "production_trust_changed": true,
+    "runtime_trust_import": false,
+    "production_changes": true,
+    "new_build": true,
+    "scope": "Fixed build-time OEM public certificate from six pinned stock recoveries. Current delivered trust accepts original OS4.0.4 ZIP signature; removing only OEM certificate rejects. Device mismatch still rejects. Host installer engine is parameter checker only; no payload application/full OTA. Native ZIP36 regression; no hardware."
   }
 }

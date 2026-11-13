@@ -28,11 +28,11 @@
     "mode": "0o644"
   },
   "FEATURE-USAGE.md": {
-    "sha256": "f4c96ccf84355e297f9390e501ba9eba93d8a2d74160460a576fbb1b628130ba",
+    "sha256": "7cf47fc429d332b4205cf83a61c85950b47628696894d1b36cb7f653ca8f0c77",
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "6f706d383110955434ab58abce5d81f136426182ee5abdcc0277bd35108b763e",
+    "sha256": "4030351af24457f84e2b92977d12e088ea25e25e98b42681fc8a8caeb6ff89c9",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -48,7 +48,7 @@
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
-    "sha256": "7ca3db50fc4628687e91affbd2b77c675eccf9b3034cc4e49a6e68be142f88b3",
+    "sha256": "450ae6df40bdc49c799d8ac4c1cafdb01af07d85fbea7fc302e90dab132d84f9",
     "mode": "0o644"
   },
   "docs/BACKUP-DATA-PATHS.md": {
@@ -60,11 +60,11 @@
     "mode": "0o644"
   },
   "docs/BUILDING.md": {
-    "sha256": "e00ff7db7850aedcab79296e6a3c2d004a3c3a8cc11d88ff7e4f57928ba5391c",
+    "sha256": "38d978e93567098d34a33ad03e2a10d5b8e4cf9a3b155f75c4ebad6a3c08043a",
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "201612ade4e183466dd604e0f42f85a9736276cb1ebb85708d4ecc6af7d312d5",
+    "sha256": "669723cda3fb465df7b142dbdf0af0f2e0d61f32608c718bf8dba4217ac35fa8",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -80,7 +80,7 @@
     "mode": "0o644"
   },
   "docs/INSTALL-CHAIN-VALIDATION.md": {
-    "sha256": "4727f0adc64912ccad2f759404ebe3aa39e19471beb76715a646863b3517830a",
+    "sha256": "a8faa7a980554cd88e37cf9889bdbb0af6876cf9cc5e12007243921c1db0e23c",
     "mode": "0o644"
   },
   "docs/MODULE-STATE-ADAPTATION.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "073fd49af1a9e90e67b7a7a5dddc470c0bc90be305bfbe7fe641e1e87b57c9af",
+    "sha256": "c683193ac34f8cd5cc4a7ebcc62c69a3b22e7173b2794d290666a3f9d5b1b506",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -360,7 +360,7 @@
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/device.mk": {
-    "sha256": "d6a40cd40ffdbf4064f525ff502212cad41aaf6782d01cac8d5fa0a4bfcb4dfd",
+    "sha256": "5c7b4627d923c605a14c43dc1ad70a1e0137c48ff4ba3c2ea0b4280ba4137b32",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/gen_loadrecovery.py": {
@@ -1363,6 +1363,10 @@
     "sha256": "3c4519ba23ef483ba1650788470fb3b25a20268c8b4cec9396f367bc772c593e",
     "mode": "0o644"
   },
+  "scripts/audit_stock_ota_trust_delivery.py": {
+    "sha256": "38ad46bbfcc24d4e26c92e3f41336bfe6594d78cc10c340fa4c02e5e57d8e3e7",
+    "mode": "0o644"
+  },
   "scripts/audit_temperature_ui_delivery.py": {
     "sha256": "ecb254cabee2c1f5f4a54c15edf64a82ac26ffc625d15884a1e652e4e50c5dfc",
     "mode": "0o644"
@@ -1504,7 +1508,7 @@
     "mode": "0o644"
   },
   "scripts/compile_recovery.sh": {
-    "sha256": "bf2c976f6f148d9e03c3f51678469d39ac90fe83b424d7cb9f0af2c4f5de1bc9",
+    "sha256": "176d75d0dc918115a3679fd7afd5203fa255bfe53134aeeac0d6960ba950857f",
     "mode": "0o644"
   },
   "scripts/crypto_inventory.py": {
@@ -1577,6 +1581,10 @@
   },
   "scripts/prepare_f2fs_reader.py": {
     "sha256": "7d15144007b4c84ecf222e21735aad5157e925c44fe2292e149837c034a0e9fc",
+    "mode": "0o644"
+  },
+  "scripts/prepare_stock_ota_certificate.py": {
+    "sha256": "c0c3e6f7bafb40e960d415e57c912da030ae6cfac787ac96cb71bb773b0b679d",
     "mode": "0o644"
   },
   "scripts/record_build_sources.py": {
@@ -1672,11 +1680,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "758b1bb2ede81c6e01a4789a62b5a4edd5a2843d16226e0c2979deead77e7af7",
+    "sha256": "3d827279a7d6232662312ca3fe3c934a329a280688b7253d65e531e60cb28012",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "ff776e7cf242f856d618a8ff7e6bc78cc5e8516d7ea827764b7dcac25812bc6f",
+    "sha256": "fc90a69dff4ea69e5ce37690e52432eba11dee8f111a20932d307f7a90ad01d7",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2744,7 +2752,7 @@
     "mode": "0o644"
   },
   "tests/zip_install_chain_test.py": {
-    "sha256": "2c0490960d64acf6fd61aba9b98d1d665686a47e88a7fed652d677db3cf05db5",
+    "sha256": "6f131ce0317d767ecaa693b3e0c430e52d766d2c0304d5aa9570aff093bc723e",
     "mode": "0o644"
   },
   "tests/zip_install_fixture.cpp": {
@@ -2764,7 +2772,7 @@
     "mode": "0o644"
   },
   "tests/zip_stock_support.py": {
-    "sha256": "181a81aa85eaff28ebe9707e91f23dced82c66dfd054af3ad905cb477d26d0db",
+    "sha256": "d965cd9fb1f4846cc1c0a51df2ac543a6a46f77c48957a01420223314641af65",
     "mode": "0o644"
   },
   "tests/zip_updater_fixture.cpp": {

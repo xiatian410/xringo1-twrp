@@ -3,7 +3,7 @@
 <a id="stock-os4-zip"></a>
 ## 原始 OS4.0.4 完整包：入口已测，完整卡刷未通过
 
-2026-11-13，使用用户提供的 `OS4.0.4.0.XODCNXM` 原始完整 ZIP，大小 7,883,598,024 字节，SHA-256 `a1dcfecccf4397943e6836539bea6573ade01c84ef9ee1e360df9c233493f04b`。当前 media-recreate 镜像及其 807 生产来源绑定保持不变。
+2026-11-13，使用用户提供的 `OS4.0.4.0.XODCNXM` 原始完整 ZIP，大小 7,883,598,024 字节，SHA-256 `a1dcfecccf4397943e6836539bea6573ade01c84ef9ee1e360df9c233493f04b`。首次入口检查使用旧 media-recreate 镜像，结果如下；本节后半为已交付的证书修正。
 
 `tests/zip_install_chain_test.py --stock-os4` 执行主机编译的原 `TWinstall_zip`、ZIP 映射、整包签名验证、原 A/B metadata 检查与命令构造，以及 fork / pipe / wait。私有 chroot 中只访问普通文件，挂载、属性、GUI 和更新引擎为明确替身。
 
@@ -18,7 +18,22 @@
 
 此前完整 payload 独立执行已覆盖 42 个分区、4933 个操作及全部最终分区哈希，但基于旧 snapshot-map 镜像。不能把历史 payload 执行与这次替身更新器接起来，宣称当前完整 ZIP 安装成功。真实 ZIP → update_engine → SnapshotManager / postinstall → 槽位与合并仍未贯通。详见 [完整 payload 记录](OTA-OPERATION-COW.md)。
 
-本批仅补齐原始 ZIP 入口证据并暴露签名信任限制，不修改生产证书、不自动关闭验证、不生成新镜像。后续应先明确原厂签名信任支持方案，再接续真实引擎，复用已完成的独立 payload 证据。
+首次入口检查只暴露签名限制，没有修改生产信任。随后对六份原厂 recovery 逐一核对：其 OTA 信任库都含同一张小米证书，SHA-256 为 `ff85d8bc50e4eed4c5f54734b20003e845a8ee5f206bfe717335ad594dd01a5e`，与这份包中的证书相同。原厂 recovery 的完整哈希亦匹配各自 payload manifest 分区记录。该来源支持加入固定 OEM 公钥，而非运行时信任安装包自带证书。
+
+设备树 `device.mk` 为 `twrp_dijun` 增加 `PRODUCT_EXTRA_RECOVERY_KEYS` 的 `security/xiaomi-ota`；原三张证书保留。`scripts/prepare_stock_ota_certificate.py` 只从六份固定哈希本地原厂 recovery 提取，任一哈希或证书不匹配就停止；不读取待安装 ZIP，不需要 OEM 私钥。证书字节保留本地，公开脚本与哈希；构建准备见[构建指南](BUILDING.md)。这是设备树构建配置修正，没有平台源码修改或新增平台补丁。
+
+`installclean` 后 `make -j$(nproc)`（30 并发）生成 `recovery-dijun-unified-stock-ota-trust.img`，SHA-256 `f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931`。808 生产来源、六份 profile、封装和当前证书内容核对通过；与上一镜像相比仅构建属性、ramdisk 摘要与 `otacerts.zip` 改变，Recovery / 库二进制一致。
+
+修正后五项检查通过：当前镜像固定信任库开启验证可接受原始 4.0.4 整包；移除仅小米公钥则拒绝；诊断证书可接受；关闭可选验证仍生成正确命令；设备不匹配仍拒绝。报告为 `logs/zip-stock-os4-fixed.json`，普通 ZIP 36 项回归为 `logs/zip-stock-trust-host-regression.json`。这里“接受”只指签名与入口到参数核对程序，不是完成 payload 安装。报告的 `production_trust_changed=false` 表示测试运行没有改写交付镜像；本次构建配置确实增加了一张固定公钥。
+
+```bash
+python3 scripts/prepare_stock_ota_certificate.py
+bash scripts/compile_recovery.sh
+python3 tests/zip_install_chain_test.py --stock-os4 --image imgs/built/recovery-dijun-unified-stock-ota-trust.img --report logs/zip-stock-os4-fixed.json
+python3 scripts/audit_stock_ota_trust_delivery.py
+```
+
+本批签名支持已修正，不再例行重复证书检查。后续接续真实更新引擎，复用独立 payload 证据；完整 OTA 仍未验收。
 
 ---
 

@@ -36,6 +36,12 @@ PRODUCT_PROPERTY_OVERRIDES += persist.sys.fuse.passthrough.enable=true
 PRODUCT_EXTRA_RECOVERY_KEYS += \
     $(DEVICE_PATH)/security/releasekey
 
+# Fixed OEM key, extracted from six hash-pinned stock recovery images by
+# scripts/prepare_stock_ota_certificate.py. Never import trust from an install ZIP.
+ifeq ($(TARGET_PRODUCT),twrp_dijun)
+PRODUCT_EXTRA_RECOVERY_KEYS += $(DEVICE_PATH)/security/xiaomi-ota
+endif
+
 # Required modules (vendor boot modules + odm files via prebuilt, task_profiles)
 PRODUCT_PACKAGES += \
     task_profiles_recovery
