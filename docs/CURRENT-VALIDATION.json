@@ -1,11 +1,25 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-snapshot-cow-init.img",
-  "image_sha256": "cc73c3cb1335bc6059a079047da87d044ba7dd1033104458d741a8f995908f8b",
+  "image_name": "recovery-dijun-unified-ordinary-reports.img",
+  "image_sha256": "aee7856e90ba4f5861bdc918d4da0b585b7de4fd337a64138204c9f526d3b300",
   "production_sources": 809,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
+  "touch_startup_policy": {
+    "status": "candidate-built-hardware-unverified",
+    "policy_cases": 9,
+    "image_delivery_audit": "PASS",
+    "scope": "After Synaptics is live and Xiaomi input is registered, wait 2 seconds, request ordinary touch reports, and check the software cache. This does not prove controller acknowledgement or event delivery. Prior manual raw0 user capture observed 215 Linux input events; this automatic-startup candidate has no corresponding hardware observation."
+  },
   "checks": [
+    {
+      "name": "os4-touch-ordinary-report-startup-policy",
+      "status": "PASS",
+      "cases": 9,
+      "failures": 0,
+      "image_delivery_audit": "PASS",
+      "scope": "Private filesystem policy fixtures and clean-image packaging audit. Request/cache readback verified; controller acknowledgement and touch-event delivery are not tested."
+    },
     {
       "name": "nv-mount-policy",
       "status": "PASS",

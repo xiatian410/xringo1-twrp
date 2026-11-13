@@ -48,7 +48,7 @@
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
-    "sha256": "d5f60919399c00e2ab1fba55fc5ba8cba1da1057f1574fb342d5a12c4689e173",
+    "sha256": "edb9e3d577436841d5320dcc4a72b323a3f1ba172bef35aaaa8bbde8499a1d5f",
     "mode": "0o644"
   },
   "docs/BACKUP-DATA-PATHS.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "e7b74a901dfabab5643930186547c87115fd13498d9c7aee3f70e5c65c9dc919",
+    "sha256": "ab7af3dec7ed9b6f1fcc94da239fe7175d9dd561b4f39d064ff21bc94e652f4f",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -116,7 +116,7 @@
     "mode": "0o644"
   },
   "docs/OS4-TOUCH-FAILURE.md": {
-    "sha256": "596a7a5dcb08f47822e91a5f02f5afa8f248eefa6734bcbc5afe789480d9d065",
+    "sha256": "33fcb12577a2afd9d6ce150bc56448c15bec33516294977a2510b75130c3828c",
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "3c5c60e633905af41b7d34605c3dc6b336236696f931b098bed928c0d4addd20",
+    "sha256": "aa248b413935e85174b65b462bbc99af0349ec616e4352519024e4b9e3dcb81f",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1423,6 +1423,10 @@
     "sha256": "2012dbec137706a62b486333b9af1deba263b7c55b92e418c4de0e6d7aca3148",
     "mode": "0o644"
   },
+  "scripts/audit_touch_ordinary_reports_delivery.py": {
+    "sha256": "692c2b5b7ce892a8138b9d474a55cd5f288eb4a072bf7a558be37e17d0e44b31",
+    "mode": "0o644"
+  },
   "scripts/audit_touch_raw_off_observation.py": {
     "sha256": "de89bb11770edd849ce8d6a72fd12cf721ccac78a3463bf12d3c510ed577c17d",
     "mode": "0o644"
@@ -1708,11 +1712,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "323e095b2d4f138a7552bdfbc8d0b2493c6df57e9616be0bffaf2ee01b7eca32",
+    "sha256": "b06045d7a38b6736afb38839f03ef7a3386e5b8af591f89aadddaa07755efc5d",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "c19f46bfba9036b79d099b0a8ffa292413ad6e9f6cf30ce3df3fcfd9b73cd9af",
+    "sha256": "c66d9e5cc2019ad10400bc02dc0d33cfc6fedba50cc24c9cb5f6b93ee958c370",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {

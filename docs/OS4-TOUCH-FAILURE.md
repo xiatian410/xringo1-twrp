@@ -1,5 +1,11 @@
 # OS4 正式版无法触摸：反馈、离线排查与顺序修正候选
 
+## 当前候选状态（2026-11-13）
+
+当前本地交付候选已更新为 `recovery-dijun-unified-ordinary-reports.img`，SHA-256 `aee7856e90ba4f5861bdc918d4da0b585b7de4fd337a64138204c9f526d3b300`。相较较早的 touch-priority 候选，运行时在 Synaptics 模块 live 且 Xiaomi input 已注册后等待2秒，再写 `enable_touch_raw=0` 并核对软件缓存。9项私有文件策略用例通过，镜像内脚本与调用打包审计通过，构建绑定809项来源、六个 profile。
+
+这只证明有界请求被发出以及软件缓存读回为0，不证明控制器接受、普通报告实际发送或 Recovery 收到坐标。用户提供的既有手动 raw0 观察仍是215条 input 事件；它不是这个自动启动候选的测试结果。驱动延迟任务参数为50 jiffies，但目标内核 `HZ` 和实际启动时序没有由此候选测量，2秒是有限等待策略。不要将本候选称为已修复触摸。
+
 ## OS4.0.4 现场日志补充
 
 ### 第四批：关闭raw后真实坐标恢复，已构建启动策略候选
@@ -8,7 +14,7 @@
 
 新维护脚本`profiles/runtime/dijun-touch-reports.sh`等待模块live与Xiaomi input注册后，经原厂节点请求raw0；runtime modules阶段用6秒timeout调用，属性只发布requested/request_failed，不发布ready。原厂wrapper初始`.data+0x400`为1，不随Synaptics内部raw0自动更新，因此此前读值推断被收窄。另确认mode1004会排队250jiffies的syna_tmd_signal_work，后者可开启raw1；未证明现场触发该路径。没有添加循环重置、固件刷新或盲目改模块。
 
-新镜像`recovery-dijun-unified-ordinary-reports.img`SHA256 `0d6b65d3a2e526c95220fd3cffdf6b9021c977c1a028d3055b199091da005bd5`，104857600字节。installclean后make -j$(nproc)构建成功；独立包装检查确认脚本字节和调用均进入镜像，708来源清单为本次构建后立即记录。7项私有文件脚本检查覆盖raw1、缓存0仍发请求、延迟input、无input、module coming、写失败、读回不符；不执行内核/sysfs回调。全profile回归与同镜像回归单独报告；新镜像尚未上机，不把手动切换结论转移为自动修复已完成。
+该阶段的早期候选 SHA256 为 `0d6b65d3a2e526c95220fd3cffdf6b9021c977c1a028d3055b199091da005bd5`，有7项私有文件策略检查及708项来源；它已被上文809项来源的新候选取代。早期检查同样不执行内核/sysfs回调，不能作为控制器接受请求或触摸已修复的证据。
 
 ### 第三批 v1 debug：已定位 raw 报告模式不匹配
 
@@ -26,7 +32,7 @@
 
 新启动日志明确使用 `syna_tcm_v1_detect`，CRC/extra RC 关闭；应用固件 build4463140匹配、免刷新成功、后台 input 注册完成。初始化中的 fw-version/IC-mode “power off”警告发生于 connect 尚未完成阶段，不能单独认定运行时断电。前述 v2 模拟仍只是独立覆盖，不能用来说明本次 v1 故障。新机器记录为 [动作关联观察](../logs/touch-action-runtime-observation.json)，可用 `python3 scripts/audit_touch_action_observation.py` 复现。
 
-同日志记录震动 A1芯片、43 RAM波形、probe自检上传/start worker完成；这不是电机或GUI请求成功证明，但后续需按 A1/43 波形分析，不能套 B2 q拒绝/合成5波形结论。
+同日志还保留当时的震动芯片观察；用户随后确认 OS4 震动已正常。该事项已解决并退出例行检查，不再按旧记录重复分析。
 
 用户的组合 PowerShell 命令失败是 native argument 传递丢失正则引号，`|spi_dma_irq` 被 shell 当管道，`touch-window.txt` 不用于计数判断。后续改为推送脚本，避开复杂 native quoting。[v1 debug采集入口](../scripts/collect-touch-v1-debug.ps1)与[设备脚本](../scripts/collect-touch-v1-debug.sh)临时将原厂日志等级设为`3 4`，采8秒事件并流式保存10秒dmesg，结束恢复原值；原厂wrapper store的第二参数>3调用Synaptics日志回调，仅设debug_log_flag，v1读路径会打印4字节报文头。没有reset/raw/report模式写入。脚本只做主机语法检查，未在Windows或设备执行；断电/SIGKILL无法保证trap执行，不宣称实际报文已取得。
 

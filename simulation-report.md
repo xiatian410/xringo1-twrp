@@ -6,12 +6,18 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-snapshot-cow-init.img` |
-| SHA-256 | `cc73c3cb1335bc6059a079047da87d044ba7dd1033104458d741a8f995908f8b` |
+| 文件 | `recovery-dijun-unified-ordinary-reports.img` |
+| SHA-256 | `aee7856e90ba4f5861bdc918d4da0b585b7de4fd337a64138204c9f526d3b300` |
 | 生产来源绑定 | 809 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
+
+## 当前候选：OS4 普通触摸报告启动策略
+
+当前候选在 Synaptics 模块进入 live、Xiaomi input 注册后等待2秒，再请求 `enable_touch_raw=0` 并核对软件缓存读回。9项私有文件策略用例和镜像打包审计通过；候选绑定809项生产来源与六个 profile。等待2秒是有限启动策略，不代表目标设备时序已测量，也不代表控制器确认切换。
+
+用户此前手动写 raw0 后观察到215条 Linux input 事件。当前自动启动候选没有新的硬件运行证据，不能据缓存读回或策略测试宣称触摸已修复。OS4震动由用户确认正常，退出例行检查；设置在 backup-manifest 基线正常，也不重复诊断。
 
 ## 本批证据：分区工具页面与后台接续
 
@@ -21,7 +27,7 @@
 
 扩展既有工具接续，实际执行当前镜像 ARM64 e2fsdroid：`/data` 与 System 根标签经独立 debugfs 读回确认，Android 分离规则选择及缺失 / 无效规则的失败返回五项通过；共用测试工具的原六项场景回归通过。首次夹具漏复制镜像已有的分离规则，失败保留，没有据此修改生产代码。镜像及 809 来源不变，无新增构建；真实挂载 / 加密 / 完整 GUI 生命周期仍未完成。范围与结果见[文件系统标签初始化](docs/FILESYSTEM-TOOLS-EXECUTION.md#postformat-selinux)。
 
-## 0090 当前交付：COW 初始化失败不再崩溃
+## 历史交付：0090 COW 初始化失败不再崩溃
 
 真实 ARM64 快照初始化测试发现：COW 头部 `fsync` 返回 I/O 错误后，`CreateCowWriter` 返回空指针，旧 SnapshotManager 仍调用 `Finalize` 并触发 SIGSEGV。0090 补齐空判断，返回原有错误路径并执行清理。新候选已按要求清理构建，809 来源与六 profile 封装核对通过。
 

@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
-  "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-snapshot-cow-init.img",
-  "image_sha256": "cc73c3cb1335bc6059a079047da87d044ba7dd1033104458d741a8f995908f8b",
-  "image_status": "Clean installclean + make -j$(nproc); patch0090 rejects null COW writer after initialization failure, preserving error cleanup instead of crashing.809 sources/six unchanged profiles; full OTA unproven.",
+  "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-ordinary-reports.img",
+  "image_sha256": "aee7856e90ba4f5861bdc918d4da0b585b7de4fd337a64138204c9f526d3b300",
+  "image_status": "Clean installclean + make -j$(nproc); bounded startup request for ordinary touch reports after module/input readiness. 809 sources/six profiles; request/cache readback do not prove controller acknowledgement or event delivery.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1931,7 +1931,7 @@
     }
   ],
   "not_yet_completed": [
-    "OS4 stable automatic ordinary-report startup/GUI/resume; manual raw0 intervention restores215 real input events. New touch/settings image untested.",
+    "OS4 stable automatic ordinary-report startup candidate is built; 9 private policy cases and ramdisk delivery audit pass. Prior manual raw0 user capture observed215 Linux input events. Automatic candidate controller response/event delivery, GUI and wake remain unverified.",
     "Security services: original six-profile ARM64 relocation18, missing-library6 and undefined-symbol6 covered; actual default namespace fields and config removal/marker12 controls now covered in private chroot (42-case suite). Real init/mount namespace/APEX/property/proc runtime, service initialization/Binder/TEE/key operations and synthetic crypto volumes remain open.",
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
     "MTP remaining media metadata and final post-child directory date semantics (file epoch0/timestamp-error publication and directory SendObjectInfo time/completion16 cases covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
@@ -1945,14 +1945,28 @@
     "One original OS4.0.4 full ZIP file-model run now joins real controller preparation/SnapshotManager initialization10 COWs, original writer4933 ops/payload hash/42 hashes, stock Recovery script, real Unverified publication, modeled slot/unmap and scoped Cleanup; engine0/wait0/parent INSTALL_SUCCESS0.24checks/881sec; no seeded allocation. Model lifecycle fixed, no production change/build. Real source LP/kernel maps/readonly/mount/HAL/slot/scratch/daemon/boot/merge, full ARM64 Recovery/GUI and actual USB/FUSE sideload remain unverified. Do not repeat this full run without relevant changes. Earlier failed raw report was overwritten by fixed-path runner; previous digest and documented outcome retained, not raw bytes."
   ],
   "hardware_unverified": [
-    "motor output",
     "MiTEE/RPMB/wrapped-key actual decryption",
     "Windows USB enumeration",
     "touch wake latency",
     "power consumption",
-    "OS4 stable physical touch (user reports failure)"
+    "OS4 stable physical touch for the current automatic-startup candidate (user reports the earlier image failed)"
   ],
   "additional_checks": [
+    {
+      "name": "os4-touch-ordinary-report-startup-policy",
+      "grade": "S2/S3",
+      "result": "pass",
+      "count": 9,
+      "evidence": "logs/touch-report-policy-test.json",
+      "evidence_sha256": "ebb213ea6c7cf317b24ce1bd8d9b2bcf2f886fa4f8a93f813dfd554e555f4e9f",
+      "image": "imgs/built/recovery-dijun-unified-ordinary-reports.img",
+      "image_sha256": "aee7856e90ba4f5861bdc918d4da0b585b7de4fd337a64138204c9f526d3b300",
+      "production_sources": 809,
+      "profiles": 6,
+      "delivery_audit": "logs/touch-ordinary-reports-delivery.json",
+      "delivery_audit_sha256": "711aae7ad34c5b8b7dfa03774827a4fd65af034282e4d5764f7e66529112cb98",
+      "scope": "Private filesystem fixtures exercise the shipped wait, readiness checks, raw0 request and software-cache readback. Clean built-image audit confirms script and runtime invocation are packaged. No kernel sysfs callback, SPI acknowledgement, controller report, Linux event, GUI or hardware execution."
+    },
     {
       "name": "per-sample-crypto-ELF",
       "grade": "S1",
