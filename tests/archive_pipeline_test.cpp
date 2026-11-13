@@ -40,6 +40,8 @@ namespace fs=std::filesystem;
 #define CHECK(x) do{if(!(x)){fprintf(stderr,"FAIL %d: %s errno=%d\n",__LINE__,#x,errno);exit(1);}}while(0)
 // Faults are armed after the initial size estimate. Track directory identity,
 // not descriptor numbers, and keep real open/read/close operations otherwise.
+static string type_fault;
+static bool type_injected=false;
 static string walk_fault;
 static bool walk_encrypted=false,walk_mixed=false,walk_injected=false;
 struct WalkDirectory { string path; unsigned scan; unsigned entries=0; };
@@ -59,7 +61,7 @@ static bool walk_selected(const WalkDirectory& item){
  return item.scan==(walk_encrypted&&!walk_mixed?2U:1U);
 }
 extern "C" DIR* __wrap_opendir(const char* path){
- if(walk_fault.empty())return __real_opendir(path);
+ if(walk_fault.empty()&&type_fault.empty())return __real_opendir(path);
  string name=fs::path(path).lexically_normal();
  WalkDirectory item{name,++walk_scans[name]};
  if(walk_selected(item)&&walk_fault=="nested-open"){
@@ -75,6 +77,12 @@ extern "C" struct dirent* __wrap_readdir(DIR* d){
  }
  auto* entry=__real_readdir(d);
  if(it!=walk_dirs.end()&&entry&&strcmp(entry->d_name,".")&&strcmp(entry->d_name,".."))++it->second.entries;
+ if(it!=walk_dirs.end()&&entry&&!type_fault.empty()&&strcmp(entry->d_name,".")&&strcmp(entry->d_name,"..")){
+  bool selected=type_fault.starts_with("top-")?it->second.path=="/src":walk_selected(it->second);
+  if(selected&&type_fault.find("unknown")!=string::npos){
+   entry->d_type=DT_UNKNOWN;walk_mark("unknown");
+  }
+ }
  // POSIX leaves errno unchanged on normal EOF. Force a stale errno on each
  // successful read: callers must clear it for the next read, not just once.
  if(it!=walk_dirs.end()&&entry&&walk_fault=="stale-errno"){walk_injected=true;walk_mark("injected");errno=EIO;}
@@ -86,6 +94,20 @@ extern "C" int __wrap_closedir(DIR* d){
  int result=__real_closedir(d);
  if(fail){CHECK(result==0);walk_injected=true;walk_mark("injected");errno=EIO;return -1;}return result;
 }
+extern "C" int __real_lstat(const char*,struct stat*);
+extern "C" int __real_stat(const char*,struct stat*);
+static bool inject_type_stat(const char* path){
+ if(type_fault.empty()||type_injected||type_fault.find("stat-")==string::npos)return false;
+ string target=type_fault.starts_with("top-")?"/src/top":(walk_mixed?"/src/app/package":"/src/dir/file0");
+ if(string(path)!=target)return false;
+ for(const auto& [d,item]:walk_dirs){
+  bool selected=type_fault.starts_with("top-first")?item.path=="/src"&&item.scan==1:
+   type_fault.starts_with("top-second")?item.path=="/src"&&item.scan==2:walk_selected(item);
+  if(selected){type_injected=true;walk_mark("stat-injected");errno=type_fault.ends_with("missing")?ENOENT:EIO;return true;}
+ }return false;
+}
+extern "C" int __wrap_lstat(const char* path,struct stat* st){if(inject_type_stat(path))return -1;return __real_lstat(path,st);}
+extern "C" int __wrap_stat(const char* path,struct stat* st){if(inject_type_stat(path))return -1;return __real_stat(path,st);}
 static bool security_fixture=false;
 static string security_fault;
 static bool special_fixture=false;
@@ -384,6 +406,11 @@ int main(int argc,char** argv){
   CHECK(lsetxattr("/src/dir/file0","user.fixture_empty","",0,0)==0);
   CHECK(lsetxattr("/src/dir","user.fixture_blob",blob.data(),blob.size(),0)==0);
  }
+ if(scenario.find("-types-")!=string::npos){
+  write_file("/src/top","top-level");contents["top"]="top-level";CHECK(chmod("/src/top",0640)==0);
+  CHECK(symlink("missing-target","/src/dangling")==0);CHECK(symlink("dir","/src/alias")==0);
+  fs::create_directory("/src/excluded");write_file("/src/excluded/skip","excluded-content");
+ }
  if(no_codec)fs::remove("/bin/pigz");
  if(scenario=="aes-random-missing")fs::remove("/dev/urandom");
  if(scenario=="both-random-short")fs::resize_file("/dev/urandom",7);
@@ -396,7 +423,17 @@ int main(int argc,char** argv){
  if(auto at=scenario.find("-source-read-");at!=string::npos)source_read_fault=scenario.substr(at+13);
  if(auto at=scenario.find("-source-key-");at!=string::npos)source_key_fault=scenario.substr(at+12);
  if(auto at=scenario.find("-walk-");at!=string::npos){walk_fault=scenario.substr(at+6);walk_encrypted=encrypted;walk_mixed=mixed;}
+ if(auto at=scenario.find("-types-");at!=string::npos){type_fault=scenario.substr(at+7);walk_encrypted=encrypted;walk_mixed=mixed;exclude.add_absolute_dir("/src/excluded");}
  BackupProcess process;int result=tar.createTarFork(&process);
+ if(!type_fault.empty()){
+  CHECK(fs::exists("/backup/walk-close")&&fs::file_size("/backup/walk-open")==fs::file_size("/backup/walk-close"));
+  if(type_fault.find("stat-")!=string::npos){
+   CHECK(fs::exists("/backup/walk-stat-injected"));CHECK(result!=0);CHECK(!fs::exists("/backup/data.info"));
+   puts("PASS source classification stat failure reaches backup parent; directories closed; no info publication");return 0;
+  }
+  CHECK(fs::exists("/backup/walk-unknown"));type_fault.clear();
+ }
+
  if(!walk_fault.empty()){
   CHECK(fs::exists("/backup/walk-injected"));
   CHECK(fs::exists("/backup/walk-close")&&fs::file_size("/backup/walk-open")==fs::file_size("/backup/walk-close"));
@@ -507,5 +544,10 @@ int main(int argc,char** argv){
   CHECK(st.st_blocks*512<65536);printf("PASS codec sparse restored_blocks=%ld\n",st.st_blocks);
  }
  if(!contents.empty()){CHECK(fs::is_symlink("/src/link"));CHECK(fs::read_symlink("/src/link")=="dir/file0");char x[16]{};CHECK(getxattr("/src/dir","user.default",x,sizeof x)==0);}
+ if(scenario.find("-types-")!=string::npos){
+  CHECK(fs::is_symlink("/src/dangling")&&fs::read_symlink("/src/dangling")=="missing-target");
+  CHECK(fs::is_symlink("/src/alias")&&fs::read_symlink("/src/alias")=="dir");CHECK(!fs::exists("/src/excluded"));
+  puts("PASS unknown dirent types preserve files/directories/links; exclusion retained");
+ }
  puts("PASS byte/mode/symlink/xattr roundtrip");return 0;
 }

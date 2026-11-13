@@ -1,0 +1,99 @@
+--- a/twrpTar.cpp
++++ b/twrpTar.cpp
+@@ -242,9 +242,17 @@
+ 			while ((de = readDirectory(d, &read_error)) != nullptr) {
+ 				FileName = tardir + "/" + de->d_name;
+ 
+-				if (de->d_type == DT_BLK || de->d_type == DT_CHR || backup_exclusions->check_skip_dirs(FileName))
++				if (backup_exclusions->check_skip_dirs(FileName))
+ 					continue;
+-				if (de->d_type == DT_DIR) {
++				// d_type may be DT_UNKNOWN. lstat also preserves links without
++				// following their targets, and failures must not use stale size.
++				if (lstat(FileName.c_str(), &st) != 0) {
++					const int error = errno;
++					gui2_console::log_error("error_opening_strerr", FileName, strerror(error));
++					closeDirectory(d, error);
++					exit_child(-1);
++				}
++				if (S_ISDIR(st.st_mode)) {
+ 					item_len = strlen(de->d_name);
+ 					if (userdata_encryption && ((item_len >= 3 && strncmp(de->d_name, "app", 3) == 0) || (item_len >= 6 && strncmp(de->d_name, "dalvik", 6) == 0))) {
+ 						TarItem.fn = FileName;
+@@ -262,8 +270,7 @@
+ 					} else {
+ 						encrypt_size += backup_exclusions->Get_Folder_Size(FileName);
+ 					}
+-				} else if (de->d_type == DT_REG) {
+-					stat(FileName.c_str(), &st);
++				} else if (S_ISREG(st.st_mode)) {
+ 					encrypt_size += (unsigned long long)(st.st_size);
+ 				}
+ 			}
+@@ -293,9 +300,17 @@
+ 			while ((de = readDirectory(d, &read_error)) != nullptr) {
+ 				FileName = tardir + "/" + de->d_name;
+ 
+-				if (de->d_type == DT_BLK || de->d_type == DT_CHR || backup_exclusions->check_skip_dirs(FileName))
++				if (backup_exclusions->check_skip_dirs(FileName))
+ 					continue;
+-				if (de->d_type == DT_DIR) {
++				// d_type may be DT_UNKNOWN. lstat also preserves links without
++				// following their targets, and failures must not use stale size.
++				if (lstat(FileName.c_str(), &st) != 0) {
++					const int error = errno;
++					gui2_console::log_error("error_opening_strerr", FileName, strerror(error));
++					closeDirectory(d, error);
++					exit_child(-1);
++				}
++				if (S_ISDIR(st.st_mode)) {
+ 					item_len = strlen(de->d_name);
+ 					if (userdata_encryption && ((item_len >= 3 && strncmp(de->d_name, "app", 3) == 0) || (item_len >= 6 && strncmp(de->d_name, "dalvik", 6) == 0))) {
+ 						// Do nothing, we added these to RegularList earlier
+@@ -315,9 +330,8 @@
+ 						}
+ 						file_count += (unsigned long long)(ret);
+ 					}
+-				} else if (de->d_type == DT_REG || de->d_type == DT_LNK) {
+-					stat(FileName.c_str(), &st);
+-					if (de->d_type == DT_REG)
++				} else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
++					if (S_ISREG(st.st_mode))
+ 						Archive_Current_Size += (unsigned long long)(st.st_size);
+ 					TarItem.fn = FileName;
+ 					TarItem.thread_id = enc_thread_id;
+@@ -780,11 +794,19 @@
+ 	while ((de = readDirectory(d, &read_error)) != NULL) {
+ 		FileName = Path + "/" + de->d_name;
+ 
+-		if (de->d_type == DT_BLK || de->d_type == DT_CHR || backup_exclusions->check_skip_dirs(FileName))
++		if (backup_exclusions->check_skip_dirs(FileName))
+ 			continue;
++		// d_type may be DT_UNKNOWN. lstat also preserves links without
++		// following their targets, and failures must not use stale size.
++		if (lstat(FileName.c_str(), &st) != 0) {
++			const int error = errno;
++			gui2_console::log_error("error_opening_strerr", FileName, strerror(error));
++			closeDirectory(d, error);
++			return -1;
++		}
+ 		TarItem.fn = FileName;
+ 		TarItem.thread_id = *thread_id;
+-		if (de->d_type == DT_DIR) {
++		if (S_ISDIR(st.st_mode)) {
+ 			TarList->push_back(TarItem);
+ 			ret = Generate_TarList(FileName, TarList, Target_Size, thread_id);
+ 			if (ret < 0) {
+@@ -792,10 +814,9 @@
+ 				return -1;
+ 			}
+ 			file_count += ret;
+-		} else if (de->d_type == DT_REG || de->d_type == DT_LNK) {
+-			stat(FileName.c_str(), &st);
++		} else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
+ 			TarList->push_back(TarItem);
+-			if (de->d_type == DT_REG) {
++			if (S_ISREG(st.st_mode)) {
+ 				file_count++;
+ 				Archive_Current_Size += st.st_size;
+ 			}

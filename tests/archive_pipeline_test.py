@@ -33,6 +33,9 @@ WALK_CASES = [kind+'-walk-'+fault for kind in ['plain','gzip','aes','both','mixe
 WALK_CASES += [kind+'-walk-'+phase+'-'+fault for kind in ['aes','both','mixed'] for phase in ['top-first','top-second'] for fault in ['read','close']]
 WALK_CASES += [kind+'-walk-nested-close' for kind in ['plain','gzip','aes','both','mixed']]
 CASES += WALK_CASES
+TYPE_CASES = [kind+'-types-'+fault for kind in ['plain','gzip','aes','both','mixed'] for fault in ['nested-unknown','top-unknown','nested-stat-io','nested-stat-missing']]
+TYPE_CASES += [kind+'-types-'+phase+'-stat-'+error for kind in ['aes','both','mixed'] for phase in ['top-first','top-second'] for error in ['io','missing']]
+CASES += TYPE_CASES
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source',type=Path,default=SRC)
@@ -83,7 +86,7 @@ def main():
   crypto=ANDROID/'out/soong/.intermediates/external/boringssl/libcrypto/linux_glibc_x86_64_static/libcrypto.a'
   cpp=['twrpTar.cpp','tarWrite.cpp','exclude.cpp','infomanager.cpp','oaes/oaes.cpp','test.cpp']
   cmd=['g++','-std=c++23',*common,'-no-pie',*[str(stage/n) for n in cpp],*[str(p) for p in objects],str(crypto),
-   '-Wl,--wrap=opendir','-Wl,--wrap=readdir','-Wl,--wrap=closedir','-Wl,--wrap=read','-Wl,--wrap=mknod','-Wl,--wrap=llistxattr','-Wl,--wrap=lsetxattr','-Wl,--wrap=open','-Wl,--wrap=futimens','-Wl,--wrap=lgetfilecon','-Wl,--wrap=lsetfilecon','-Wl,--wrap=getxattr','-Wl,--wrap=setxattr',
+   '-Wl,--wrap=stat','-Wl,--wrap=lstat','-Wl,--wrap=opendir','-Wl,--wrap=readdir','-Wl,--wrap=closedir','-Wl,--wrap=read','-Wl,--wrap=mknod','-Wl,--wrap=llistxattr','-Wl,--wrap=lsetxattr','-Wl,--wrap=open','-Wl,--wrap=futimens','-Wl,--wrap=lgetfilecon','-Wl,--wrap=lsetfilecon','-Wl,--wrap=getxattr','-Wl,--wrap=setxattr',
    '-l:libselinux.so.1','-lz','-o',str(tmp/'test')]
   subprocess.run(cmd,check=True);commands.append(cmd)
   pigz=tmp/'pigz';cmd=['gcc','-O2','-static','-DNOZOPFLI',*[str(SRC/'pigz'/n) for n in ['pigz.c','yarn.c','try.c']],'-pthread','-lz','-lm','-o',str(pigz)]

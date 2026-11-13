@@ -1,5 +1,21 @@
 # 备份会话、目录管理与摘要发布
 
+<a id="source-type-classification"></a>
+
+## 源类型与属性读取（0108）
+
+普通递归列表及加密路径两次顶层扫描此前仅按dirent.d_type判断；文件系统允许返回DT_UNKNOWN，此时条目不进入文件/目录列表。对普通文件的stat也未检查返回值，可能沿用旧st_size。0108在排除项检查后使用检查返回值的lstat分类与计量，未知d_type仍能识别真实类型；链接保留自身类型，不跟随目录链接或悬空目标。属性错误立即失败并关闭目录，最终父进程不发布data.info。没有为消失的文件忽略错误。
+
+在现有tar/pigz/OAES/fork套件增加32场景：普通/gzip/AES/混合编码与userdata_encryption路径，顶层/嵌套DT_UNKNOWN、嵌套属性EIO/ENOENT、加密两次顶层属性失败。当前216项通过；旧源码同32项全部失败。DT_UNKNOWN仅在readdir边界修改返回类型，真实文件/目录/链接/归档与恢复仍执行；stat故障限私有源路径与指定扫描阶段，容量预估及实际归档读取不注入。成功要求内容/权限/链接/排除往返，失败要求父进程错误、无.info和目录open/close计数相等。
+
+本地报告`logs/archive-types-pipeline.json`、`logs/archive-types-negative.json`及`logs/archive-types-delivery-audit.json`。libtar未改，沿用0107的独立111项证据；完整编码回归包含该库。容量预估仍是近似值，未覆盖真实fscrypt/ARM64 codec、属性检查后的并发替换、挂载根/完整manager/GUI或断电。不把此修正称为源文件快照一致性保证。
+
+```bash
+# 已执行；相关来源与输入不变时复用。
+python3 tests/archive_pipeline_test.py --report logs/archive-types-pipeline.json
+python3 scripts/audit_archive_walk_delivery.py --source-types
+```
+
 <a id="directory-enumeration-errors"></a>
 
 ## 目录读取失败必须终止备份（0107）

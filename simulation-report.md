@@ -8,14 +8,21 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-backup-directory-errors.img` |
-| SHA-256 | `5e50303cb26915912c082ee852cb1e6ba0f01baa0823fa763ef8b225526fc301` |
-| 生产来源绑定 | 834 份 |
+| 文件 | `recovery-dijun-unified-backup-source-types.img` |
+| SHA-256 | `9ccac23647e936a1f954ebf4a796ce909ab635f895a6fd83c2518117b955db16` |
+| 生产来源绑定 | 835 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：目录读取失败不得发布成功备份
+## 本批生产修正：未知目录条目类型与属性读取失败
+
+0108将普通递归及加密路径的两次顶层收集改为检查lstat后的类型/大小。DT_UNKNOWN不再静默漏文件或目录；符号链接不跟随目标，属性读取EIO/ENOENT立即传回父进程且不发布data.info。排除项先于属性访问，现有设备节点/特殊类型筛选保持。
+
+扩展现有ASan/UBSan编解码链至216项全部通过；同夹具旧源码新增32项全部失败。成功往返检查文件内容/权限、目录、悬空及目录链接、排除路径；错误检查父失败和目录关闭。清理构建后835来源及六profile核对通过。目录类型及属性故障在私有文件夹具注入；容量估计、完整源一致性/manager/GUI、ARM64 codec和断电仍未完成。详见[源类型分类](docs/BACKUP-SESSION-ADAPTATION.md#source-type-classification)。沿用完整OTA与其他未改路径证据，不例行重跑。
+
+## 沿用的目录读取错误修正
+
 
 0107区分目录读取结束与错误，每次读取前清除errno；普通递归、加密两次顶层扫描和libtar递归均传播读取/关闭失败，递归失败关闭上层目录。父进程拒绝部分结果且不发布data.info，正常EOF不受前一操作残留errno影响。
 

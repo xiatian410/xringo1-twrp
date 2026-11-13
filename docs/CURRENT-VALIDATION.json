@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-backup-directory-errors.img",
-  "image_sha256": "5e50303cb26915912c082ee852cb1e6ba0f01baa0823fa763ef8b225526fc301",
-  "production_sources": 834,
+  "image_name": "recovery-dijun-unified-backup-source-types.img",
+  "image_sha256": "9ccac23647e936a1f954ebf4a796ce909ab635f895a6fd83c2518117b955db16",
+  "production_sources": 835,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -1925,6 +1925,22 @@
       "failures": 21,
       "local_report_sha256": "385a3f3452da24cf7af1ca75c30b0067123e3105addf1c5383a029629ec28d72",
       "scope": "Host original libtar/tar/pigz/OAES/fork with ASan/UBSan, private files and injected directory open/read/close errors. Per-read errno reset distinguishes EOF; recursive directories close on failure; parent rejects partial backups without info publication.111 libtar/184 codec pass; old3/4 and21/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/source consistency/power-loss proof; size estimation and DT_UNKNOWN unchanged."
+    },
+    {
+      "name": "archive-types-pipeline",
+      "status": "PASS",
+      "cases": 216,
+      "failures": 0,
+      "local_report_sha256": "0e3d2af08bb50651894cc35ab6850b8016202bceaf8ffea23a4143452b183a05",
+      "scope": "Host original tar/pigz/OAES/fork with ASan/UBSan, private files and injected dirent DT_UNKNOWN/source stat EIO/ENOENT. Checked lstat classifies files/directories/links without following link targets, excludes skipped paths before metadata access, propagates source metadata errors without info publication.216 codec cases pass; previous32/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/concurrent identity/power-loss proof; size estimation remains approximate."
+    },
+    {
+      "name": "archive-types-negative",
+      "status": "FAIL",
+      "cases": 32,
+      "failures": 32,
+      "local_report_sha256": "3727bb6748dd8d99cdd915d6b379a6020c8a10b85134147535d8e01d46431ce3",
+      "scope": "Host original tar/pigz/OAES/fork with ASan/UBSan, private files and injected dirent DT_UNKNOWN/source stat EIO/ENOENT. Checked lstat classifies files/directories/links without following link targets, excludes skipped paths before metadata access, propagates source metadata errors without info publication.216 codec cases pass; previous32/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/concurrent identity/power-loss proof; size estimation remains approximate."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2156,6 +2172,13 @@
     "patch": "0107",
     "scope": "Host original libtar/tar/pigz/OAES/fork with ASan/UBSan, private files and injected directory open/read/close errors. Per-read errno reset distinguishes EOF; recursive directories close on failure; parent rejects partial backups without info publication.111 libtar/184 codec pass; old3/4 and21/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/source consistency/power-loss proof; size estimation and DT_UNKNOWN unchanged.",
     "document": "docs/BACKUP-SESSION-ADAPTATION.md#directory-enumeration-errors",
+    "production_changes": true,
+    "new_build": true
+  },
+  "archive_source_types": {
+    "patch": "0108",
+    "scope": "Host original tar/pigz/OAES/fork with ASan/UBSan, private files and injected dirent DT_UNKNOWN/source stat EIO/ENOENT. Checked lstat classifies files/directories/links without following link targets, excludes skipped paths before metadata access, propagates source metadata errors without info publication.216 codec cases pass; previous32/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/concurrent identity/power-loss proof; size estimation remains approximate.",
+    "document": "docs/BACKUP-SESSION-ADAPTATION.md#source-type-classification",
     "production_changes": true,
     "new_build": true
   }
