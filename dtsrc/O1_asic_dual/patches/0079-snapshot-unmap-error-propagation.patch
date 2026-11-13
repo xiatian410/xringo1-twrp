@@ -1,0 +1,60 @@
+diff --git a/aosp/dynamic_partition_control_android.cc b/aosp/dynamic_partition_control_android.cc
+--- a/aosp/dynamic_partition_control_android.cc
++++ b/aosp/dynamic_partition_control_android.cc
+@@ -329,9 +329,11 @@
+ }
+ 
+ bool DynamicPartitionControlAndroid::UnmapAllPartitions() {
+-  GetSnapshotManager()->UnmapAllSnapshots();
+-  if (mapped_devices_.empty()) {
+-    return false;
++  // Metadata can be unavailable in recovery or snapshots disabled entirely.
++  // Still attempt every tracked logical mapping after a snapshot failure.
++  bool success = true;
++  if (ExpectMetadataMounted()) {
++    success = GetSnapshotManager()->UnmapAllSnapshots();
+   }
+   // UnmapPartitionOnDeviceMapper removes objects from mapped_devices_, hence
+   // a copy is needed for the loop.
+@@ -345,9 +347,9 @@
+                });
+   LOG(INFO) << "Destroying [" << Join(mapped, ", ") << "] from device mapper";
+   for (const auto& device_name : mapped) {
+-    ignore_result(UnmapPartitionOnDeviceMapper(device_name));
+-  }
+-  return true;
++    success &= UnmapPartitionOnDeviceMapper(device_name);
++  }
++  return success;
+ }
+ 
+ void DynamicPartitionControlAndroid::Cleanup() {
+diff --git a/payload_consumer/filesystem_verifier_action.cc b/payload_consumer/filesystem_verifier_action.cc
+--- a/payload_consumer/filesystem_verifier_action.cc
++++ b/payload_consumer/filesystem_verifier_action.cc
+@@ -145,7 +145,12 @@
+       dynamic_control_->UpdateUsesSnapshotCompression()) {
+     LOG(INFO) << "Not writing verity and VABC is enabled, unmapping all "
+                  "partitions";
+-    dynamic_control_->UnmapAllPartitions();
++    if (!dynamic_control_->UnmapAllPartitions()) {
++      LOG(ERROR) << "Failed to unmap snapshot partitions after verification";
++      if (code == ErrorCode::kSuccess) {
++        code = ErrorCode::kFilesystemVerifierError;
++      }
++    }
+   }
+ 
+   if (cancelled_)
+@@ -193,7 +198,10 @@
+     // that we will see the most up to date data from partitions, call Unmap()
+     // then Map() to re-spin daemon.
+     if (install_plan_.write_verity) {
+-      dynamic_control_->UnmapAllPartitions();
++      if (!dynamic_control_->UnmapAllPartitions()) {
++        LOG(ERROR) << "Failed to unmap snapshot partitions before remapping";
++        return false;
++      }
+       if (!dynamic_control_->MapAllPartitions()) {
+         LOG(ERROR) << "Failed to remap snapshot partitions for verification";
+         dynamic_control_->UnmapAllPartitions();

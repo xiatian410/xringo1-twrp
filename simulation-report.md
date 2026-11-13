@@ -6,14 +6,16 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-snapshot-cancel.img` |
-| SHA-256 | `9f9ff19483402f3c4b4081ea79e966d2791605492678c52a1d6676b80c0345df` |
-| 生产来源绑定 | 794 份 |
+| 文件 | `recovery-dijun-unified-snapshot-unmap.img` |
+| SHA-256 | `a37e758364c5755f9823ec37d559b4ebeb50349771e80a7bea2738d6aae3fa00` |
+| 生产来源绑定 | 796 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
 ## 本次候选包含的修正
+
+- **0079**：解除映射结果汇总到控制器与校验器，失败阻止重映射及成功上报；空集合成功，metadata 不可用不调用 snapshot，原哈希错误保留。校验器9 / 控制器8通过，旧2 / 6失败；取消10 / postinstall6必要回归通过。清理构建796来源 / 六profile；仅更新器二进制变化，实际映射及完整安装仍未覆盖。见[范围](docs/OTA-OPERATION-COW.md#snapshot-unmap)。
 
 - **0078**：快照必要清理失败向 CancelUpdate / 原始 ResetUpdate 返回失败，防止取消误成功。实际 ARM64 十场景通过、旧六场景误成功；共享代码收尾十六项 / postinstall 六项回归通过，清理构建794来源 / 六profile。实际映射、快照删除与合并仍未覆盖，不表示完整 OTA。见[范围](docs/OTA-OPERATION-COW.md#snapshot-cancel)。
 

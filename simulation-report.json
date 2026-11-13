@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-snapshot-cancel.img",
-  "image_sha256": "9f9ff19483402f3c4b4081ea79e966d2791605492678c52a1d6676b80c0345df",
-  "image_status": "Clean installclean + make -j$(nproc) build; patch0078 cancellation cleanup failures propagate. 794 production source bindings / six profiles; full goal in progress.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-snapshot-unmap.img",
+  "image_sha256": "a37e758364c5755f9823ec37d559b4ebeb50349771e80a7bea2738d6aae3fa00",
+  "image_status": "Clean installclean + make -j$(nproc) build; patch0079 unmap errors aggregate and gate verifier remap/success.796 production sources/six profiles; full goal in progress.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -3187,6 +3187,54 @@
       "evidence": "logs/ota-snapshot-cancel-postinstall-regression.json",
       "evidence_sha256": "67904e68a6ab55a7d46886870ba516245019f2c304e7d88c6085c3293371b950",
       "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries."
+    },
+    {
+      "name": "snapshot-unmap-verifier-0079",
+      "result": "pass",
+      "count": 9,
+      "evidence": "logs/ota-snapshot-unmap-verifier.json",
+      "evidence_sha256": "53188bfc3ec845c9f79b5cc3fc93f03816546f7a285350541cf93bea2937f66c",
+      "scope": "Run original asynchronous ARM64 filesystem verifier with map/unmap failures.\n\nWhole production TU; original ActionProcessor and hashing, explicit FileControl\nmap result boundary, ordinary file only. No SnapshotManager or real mapping.\n"
+    },
+    {
+      "name": "snapshot-unmap-verifier-before-0079",
+      "result": "expected-failure",
+      "count": 9,
+      "evidence": "logs/ota-snapshot-unmap-verifier-before.json",
+      "evidence_sha256": "ac3d4efa2666e4f6d3d89e4e2a793e36414da2c07314ef9c71283b68e2c33f07",
+      "scope": "Run original asynchronous ARM64 filesystem verifier with map/unmap failures.\n\nWhole production TU; original ActionProcessor and hashing, explicit FileControl\nmap result boundary, ordinary file only. No SnapshotManager or real mapping.\n"
+    },
+    {
+      "name": "snapshot-unmap-controller-0079",
+      "result": "pass",
+      "count": 8,
+      "evidence": "logs/ota-unmap-control.json",
+      "evidence_sha256": "6ffaf2a5c56a75f94f904c4838d7aa2d486d4319821661a5b0043cd8762f01e4",
+      "scope": "Run original ARM64 controller unmap aggregation with explicit mapping boundaries.\n\nWhole production controller TU with original tracked-device iteration. Snapshot\nunmap result, logical unmap effects and metadata token are explicit doubles.\nNo actual SnapshotManager, device mapper, mount, full verifier or installation.\n"
+    },
+    {
+      "name": "snapshot-unmap-controller-before-0079",
+      "result": "expected-failure",
+      "count": 8,
+      "evidence": "logs/ota-unmap-control-before.json",
+      "evidence_sha256": "ce723150ef2153c8a0f5443ffa0b85d7fd4488e914ce8abdfe903a29b4ce8f63",
+      "scope": "Run original ARM64 controller unmap aggregation with explicit mapping boundaries.\n\nWhole production controller TU with original tracked-device iteration. Snapshot\nunmap result, logical unmap effects and metadata token are explicit doubles.\nNo actual SnapshotManager, device mapper, mount, full verifier or installation.\n"
+    },
+    {
+      "name": "snapshot-unmap-cancel-regression",
+      "result": "pass",
+      "count": 10,
+      "evidence": "logs/ota-snapshot-unmap-cancel-regression.json",
+      "evidence_sha256": "77073546df0519bc23c18c2e6aae6f0b6a584f1bdf2dc2d5e2ac8122279a1f83",
+      "scope": "Actual ARM64 SnapshotManager CancelUpdate / cleanup / state-file error propagation, including original DynamicPartitionControlAndroid ResetUpdate and persisted-state retry. Deny-all hardware and no snapshot mappings; None-state publication and Initiated missing-directory cases. Metadata mount token and merge HAL result are explicit boundaries. Not full install, merge or image deletion."
+    },
+    {
+      "name": "snapshot-unmap-postinstall-regression",
+      "result": "pass",
+      "count": 6,
+      "evidence": "logs/ota-snapshot-unmap-postinstall-regression.json",
+      "evidence_sha256": "34e08fb70a2bcdfdc33ddd3b21882bc59a88f700842eb9553e0e892658a4829a",
+      "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries."
     }
   ],
   "source_review_followups": [
@@ -3502,8 +3550,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/snapshot-cancel-delivery.json",
-    "scope": "Patch0078 propagates RemoveAllUpdateState failure through CancelUpdate and original ResetUpdate. Actual ARM64 cancellation10, old6 false-success cases; completion16/postinstall6 regressions. Clean build794 sources/six profiles. No real mappings, snapshot deletion, merge or full OTA.",
+    "evidence": "logs/snapshot-unmap-delivery.json",
+    "scope": "Patch0079: controller aggregates snapshot/logical unmap errors, gates snapshot calls on metadata availability, empty cleanup succeeds; verifier rejects remap and success on unmap failure, preserving hash errors. ARM64 verifier9/controller8, old2/6 failures; cancellation10/postinstall6 regressions. Clean build796 sources/six profiles; real mappings/merge/full install pending.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -3965,6 +4013,21 @@
       "actual_snapshot_deletion": false,
       "full_ota_install": false,
       "transaction_rollback": false
+    },
+    "snapshot_unmapping": {
+      "document": "docs/OTA-OPERATION-COW.md#snapshot-unmap",
+      "patch": "0079-snapshot-unmap-error-propagation.patch",
+      "verifier": "logs/ota-snapshot-unmap-verifier.json",
+      "controller": "logs/ota-unmap-control.json",
+      "verifier_cases": 9,
+      "controller_cases": 8,
+      "old_failures": [
+        2,
+        6
+      ],
+      "actual_mapping": false,
+      "snapshot_manager_executed": false,
+      "full_ota_install": false
     }
   },
   "os4_haptics_user_confirmation": {

@@ -436,12 +436,17 @@
         {
           "file": "0066-snapshot-map-verification-errors.patch",
           "sha256": "7d380bf8ec942574af08786e4843d65be5e238a875e1784014af347bd3559ff2"
+        },
+        {
+          "file": "0079-snapshot-unmap-error-propagation.patch",
+          "sha256": "7dbda8fc7a087ec78d7861d7f43b30901c6b9d31f602fb5c17a861c046791e27"
         }
       ],
       "result_files": {
         "aosp/sideload_main.cc": "5a6621e7c30f02c6335d2b12de982d957ada5ad170d8b23719a9c18b08f0cfc0",
         "payload_consumer/delta_performer.cc": "27dae8d768409874f614a10e14253297fecf5219a1430ed7aee1949ee42d0a9f",
-        "payload_consumer/filesystem_verifier_action.cc": "1506811dc8a7ee1e611fbe2aa3f28f07a5444d78af7a1407adf78ea090b609c3"
+        "payload_consumer/filesystem_verifier_action.cc": "a5c76e72f7cf846f2a006823a518910a5c279cba7e402c54c41ac24cacf2439e",
+        "aosp/dynamic_partition_control_android.cc": "15a0f1337b6b77671c97785727297a0c5b9439ea9a5e059b520fb0f1edce583e"
       }
     },
     "system/core": {

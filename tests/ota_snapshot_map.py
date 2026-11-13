@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run original asynchronous ARM64 filesystem verifier with map failures.
+"""Run original asynchronous ARM64 filesystem verifier with map/unmap failures.
 
 Whole production TU; original ActionProcessor and hashing, explicit FileControl
 map result boundary, ordinary file only. No SnapshotManager or real mapping.
@@ -89,7 +89,7 @@ def main():
         def isolate():
             os.chroot(jail); os.chdir('/')
         cases = []
-        for name in ['success', 'initial-fail', 'initial-fail-missing-path', 'remap-success', 'remap-fail', 'hash-mismatch']:
+        for name in ['success', 'initial-fail', 'initial-fail-missing-path', 'remap-success', 'remap-fail', 'hash-mismatch', 'cleanup-fail', 'remap-unmap-fail', 'hash-mismatch-unmap-fail']:
             result = subprocess.run(['/qemu', '-L', '/android', '-E', 'LD_LIBRARY_PATH=/android/system/lib64',
                 '/android/system/bin/linker64', '/test', name], preexec_fn=isolate,
                 capture_output=True, text=True, timeout=20)

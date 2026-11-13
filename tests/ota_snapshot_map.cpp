@@ -34,6 +34,7 @@ class FileControl final : public DynamicPartitionControlInterface {
  public:
     bool deny_open = false;
     bool map_ok = true;
+    bool unmap_ok = true;
     unsigned opens = 0, maps = 0, unmaps = 0;
     FeatureFlag GetVirtualAbCompressionXorFeatureFlag() override {
         return FeatureFlag(FeatureFlag::Value::NONE);
@@ -60,7 +61,7 @@ class FileControl final : public DynamicPartitionControlInterface {
         assert(name == "system" && slot == 1); return true;
     }
     bool MapAllPartitions() override { ++maps; return map_ok; }
-    bool UnmapAllPartitions() override { ++unmaps; return true; }
+    bool UnmapAllPartitions() override { ++unmaps; return unmap_ok; }
 #define NOFLAG(name) FeatureFlag name() override { assert(false); return FeatureFlag(FeatureFlag::Value::NONE); }
     NOFLAG(GetDynamicPartitionsFeatureFlag)
     NOFLAG(GetVirtualAbFeatureFlag)
@@ -110,6 +111,7 @@ int main(int argc, char** argv) {
     const std::string mode = argv[1];
     FileControl control;
     control.map_ok = mode != "initial-fail" && mode != "initial-fail-missing-path" && mode != "remap-fail";
+    control.unmap_ok = mode != "cleanup-fail" && mode != "remap-unmap-fail" && mode != "hash-mismatch-unmap-fail";
     InstallPlan plan;
     plan.target_slot = 1;
     // With write_verity requested but no tree/FEC, original code enters its
@@ -121,7 +123,7 @@ int main(int argc, char** argv) {
     std::vector<char> data(4096, 'A');
     store("/work/view.bin", data);
     assert(HashCalculator::RawHashOfBytes(data.data(), data.size(), &part.target_hash));
-    if (mode == "hash-mismatch") part.target_hash[0] ^= 1;
+    if (mode.starts_with("hash-mismatch")) part.target_hash[0] ^= 1;
     brillo::BaseMessageLoop loop; loop.SetAsCurrent();
     ActionProcessor processor; Done delegate; processor.set_delegate(&delegate);
     auto feed = std::make_unique<Feed>(); feed->plan = plan;
@@ -131,9 +133,10 @@ int main(int argc, char** argv) {
     processor.StartProcessing(); if (!delegate.completed) loop.Run();
     printf("mode=%s code=%d map=%u unmap=%u\n", mode.c_str(), int(delegate.result), control.maps, control.unmaps);
     fflush(stdout);
-    const auto wanted = !control.map_ok ? ErrorCode::kFilesystemVerifierError :
-        mode == "hash-mismatch" ? ErrorCode::kNewRootfsVerificationError : ErrorCode::kSuccess;
+    const auto wanted = mode.starts_with("hash-mismatch") ? ErrorCode::kNewRootfsVerificationError :
+        !control.map_ok || !control.unmap_ok ? ErrorCode::kFilesystemVerifierError : ErrorCode::kSuccess;
     assert(delegate.completed && !processor.IsRunning() && delegate.result == wanted);
-    assert(control.maps == 1 && control.unmaps == (mode == "remap-fail" ? 2u : 1u) && control.opens == 0);
+    assert(control.maps == (mode == "remap-unmap-fail" ? 0u : 1u));
+    assert(control.unmaps == (mode == "remap-fail" ? 2u : 1u) && control.opens == 0);
     puts("PASS");
 }

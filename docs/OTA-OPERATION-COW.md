@@ -335,3 +335,39 @@ python3 scripts/audit_snapshot_cancel_delivery.py
 旧源码对照使用 `--cancel --snapshot-source logs/snapshot-cancel-before/snapshot.cpp --report logs/ota-snapshot-cancel-before.json`，预期六项失败。原始报告、旧源码和编译产物仅保存在本地。
 
 候选 `recovery-dijun-unified-snapshot-cancel.img`，SHA-256 `9f9ff19483402f3c4b4081ea79e966d2791605492678c52a1d6676b80c0345df`。已执行 `installclean` 和 `make -j$(nproc)`（30 并发），794 份生产来源 / 六份 profile。相对0077只有 init、fastbootd、Recovery、update_engine_sideload 四个可执行文件及构建属性 / ramdisk 摘要变化；profile 和 GUI 库不变。当前交付统一见[验证报告](../simulation-report.md)。
+
+<a id="snapshot-unmap"></a>
+
+## 解除映射失败与重映射门控（0079）
+
+原控制器 `UnmapAllPartitions()` 忽略 `UnmapAllSnapshots()` 与逐项逻辑解除的结果，有映射时即使清理失败也返回 true；集合为空又直接返回 false。非 Virtual A/B 或 Recovery 没有 metadata token 时也调用 snapshot stub。与此同时，原校验器在启动新的 snapuserd 映射前忽略解除结果，校验成功后的清理失败也不影响成功上报。代码本身要求先解除旧映射，才能保证新映射看到最新 COW 数据；不能把这些错误当作无关清理日志。
+
+0079 维护两层行为：
+
+- 控制器仅在 `ExpectMetadataMounted()` 成立时调用 snapshot 清理，随后不短路地尝试所有受管理的逻辑映射并汇总结果。失败的逻辑映射继续留在受管理集合，保留原 `_ota` 源映射排除规则；已无目标映射且清理无错时成功。
+- 校验器重映射前解除失败立即返回 `kFilesystemVerifierError`（47），不调用 Map；校验结束解除失败将原 success 改为同一错误。已有哈希错误 15 等保持原值；取消路径仍遵循原有不发送 ActionComplete 的契约。启动 Map 已失败时的回收继续作为失败路径，不会转为成功。
+
+### 有限验证
+
+实际 AArch64 生产 TU、原 ActionProcessor 和哈希执行，分区内容为私有普通文件；mapper 返回、snapshot 解除、逻辑解除及 metadata 挂载 token 是明确替身，不调用真实块设备。
+
+| 范围 | 结果 |
+| --- | --- |
+| 校验器原六场景，加清理失败、重映射前解除失败及哈希失败同时清理失败 | 9 项通过；旧版 2 项误成功 |
+| 原控制器循环，快照 / 逻辑 / 同时失败，空集合，仅源映射，非 VAB 和 metadata 缺失 | 8 项通过；旧版 6 项不符合结果或调用边界 |
+| 共享控制器的实际取消 / ResetUpdate 回归 | 10 项通过 |
+| PostinstallRunnerAction / 控制器 / 状态发布重试回归 | 6 项通过 |
+
+旧控制器的六失败包括空集合误失败、两项不应调用 snapshot 的场景，不能称为六个误成功。首次控制器夹具用了缺少生成 protobuf 路径的编译模板，编译失败日志仅留本地；改用原控制器 ninja 编译参数后再执行，不把夹具编译问题算为生产缺陷。
+
+```bash
+python3 tests/ota_snapshot_map.py --report logs/ota-snapshot-unmap-verifier.json
+python3 tests/ota_unmap_control.py
+python3 tests/ota_snapshot_finish.py --cancel --report logs/ota-snapshot-unmap-cancel-regression.json
+python3 tests/ota_snapshot_finish.py --postinstall --report logs/ota-snapshot-unmap-postinstall-regression.json
+python3 scripts/audit_snapshot_unmap_delivery.py
+```
+
+两个主检查的 `--source` 可指定本地保存的完整旧 TU，独立报告路径见机器索引。两份完整原厂 payload 不重跑：仅复用未变执行器源码的原证据；本次变化的校验器与控制器按上表执行，不宣称原完整测试已自动证明新版本整链。
+
+候选 `recovery-dijun-unified-snapshot-unmap.img`，SHA-256 `a37e758364c5755f9823ec37d559b4ebeb50349771e80a7bea2738d6aae3fa00`。已执行 `installclean` 与 `make -j$(nproc)`，30 并发，796 份生产来源 / 六份 profile。相对0078只有 `system/bin/update_engine_sideload`、构建属性和 ramdisk 摘要变化。实际 mapper、snapuserd、快照删除 / 合并、完整安装和断电仍待维护；本批没有操作手机或物理块设备。
