@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-format-unmounted.img",
-  "image_sha256": "2b100b9a54291eabf99a36db29b7919fc0aa1fa9afbd14800cea1493f7ff9b3c",
-  "production_sources": 804,
+  "image_name": "recovery-dijun-unified-format-postprocess.img",
+  "image_sha256": "99e76c07767724d3175ebd1e3997caf37995c09a172b4025fd316d20b47e76bd",
+  "production_sources": 805,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -1182,6 +1182,38 @@
       "failures": 0,
       "local_report_sha256": "86a0c12e55ea27e0c4a854921bfbe64e1c52f48fb327950ae43837f62e034f2a",
       "scope": "Patch0086 guards six offline format helpers with IsMounted after Unmount; retained mount rejects formatter before writes/type change; same-format rm-rf bypass stays intact. 15 mount outcomes and optional USE_EXT4 retained branch pass; old seven format selections plus one optional branch fail.25 dispatch,6 actual ARM64 file format/repair and9 repair mount regressions pass. Mount/unmount/device/commands are explicit fixtures for selection tests; no real mount/full GUI/fscrypt/power loss. Clean804/six profiles unchanged."
+    },
+    {
+      "name": "format-persist-negative",
+      "status": "FAIL",
+      "cases": 18,
+      "failures": 15,
+      "local_report_sha256": "59290d7f6776f85d0b64c168293413a3252254da719e4c4bb163c54f778b3514",
+      "scope": "Patch0087 records new ext type immediately after successful mkfs. Persist temporary mount/delete/unmount failures propagate; e2fsdroid never runs while still mounted.18 original helper/manager/backend cases pass, old15 fail;25 format dispatch and6 actual ARM64 ordinary-file format/repair regressions pass. Mount/device/SELinux/deletion boundaries are explicit fixtures; no physical persist, real mounts/full GUI/fscrypt validation."
+    },
+    {
+      "name": "format-persist-current",
+      "status": "PASS",
+      "cases": 18,
+      "failures": 0,
+      "local_report_sha256": "5b225b027e18e3a4cd1bdd3780f8f2eae3b497687065ed38313b40e5655fb1b6",
+      "scope": "Patch0087 records new ext type immediately after successful mkfs. Persist temporary mount/delete/unmount failures propagate; e2fsdroid never runs while still mounted.18 original helper/manager/backend cases pass, old15 fail;25 format dispatch and6 actual ARM64 ordinary-file format/repair regressions pass. Mount/device/SELinux/deletion boundaries are explicit fixtures; no physical persist, real mounts/full GUI/fscrypt validation."
+    },
+    {
+      "name": "format-persist-transition-regression",
+      "status": "PASS",
+      "cases": 25,
+      "failures": 0,
+      "local_report_sha256": "c846d3a6278d9b16afdf02ebad9d3fbfa52f26cfc48fc47fd4ffa79aaa46fd5f",
+      "scope": "Patch0087 records new ext type immediately after successful mkfs. Persist temporary mount/delete/unmount failures propagate; e2fsdroid never runs while still mounted.18 original helper/manager/backend cases pass, old15 fail;25 format dispatch and6 actual ARM64 ordinary-file format/repair regressions pass. Mount/device/SELinux/deletion boundaries are explicit fixtures; no physical persist, real mounts/full GUI/fscrypt validation."
+    },
+    {
+      "name": "format-persist-tool-regression",
+      "status": "PASS",
+      "cases": 6,
+      "failures": 0,
+      "local_report_sha256": "adefcf32b8863a39e6e5ff6a4623c203595182e25444c9aa9891125b2202009b",
+      "scope": "Patch0087 records new ext type immediately after successful mkfs. Persist temporary mount/delete/unmount failures propagate; e2fsdroid never runs while still mounted.18 original helper/manager/backend cases pass, old15 fail;25 format dispatch and6 actual ARM64 ordinary-file format/repair regressions pass. Mount/device/SELinux/deletion boundaries are explicit fixtures; no physical persist, real mounts/full GUI/fscrypt validation."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",

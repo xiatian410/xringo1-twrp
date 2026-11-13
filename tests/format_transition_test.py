@@ -16,7 +16,7 @@ from nested_partition_path_test import ROOT,SRC,method
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--before',action='store_true')
-    p.add_argument('--source',type=Path);p.add_argument('--mounted',action='store_true');p.add_argument('--builtin-ext4',action='store_true');p.add_argument('--report',type=Path);a=p.parse_args()
+    p.add_argument('--source',type=Path);p.add_argument('--mounted',action='store_true');p.add_argument('--persist',action='store_true');p.add_argument('--builtin-ext4',action='store_true');p.add_argument('--report',type=Path);a=p.parse_args()
     partition=a.source or (ROOT/'logs/format-transition-before/partition.cpp' if a.before else SRC/'partition.cpp')
     selected={partition:['bool TWPartition::Wipe(const std::string&', 'bool TWPartition::WipeExtfs(', 'bool TWPartition::WipeExt4()', 'bool TWPartition::WipeFat()', 'bool TWPartition::WipeExfat()', 'bool TWPartition::WipeF2fs()', 'bool TWPartition::WipeNtfs()'],SRC/'partitionmanager.cpp':['bool TWPartitionManager::MatchesPath(', 'TWPartition* TWPartitionManager::FindPartitionByPath(', 'int TWPartitionManager::WipeByPath(const std::string& Path,'],SRC/'gui2/backend/twrp_tools_backend.cpp':['int changefilesystem(']}
     bodies=[method(path.read_text(),sig) for path,sigs in selected.items() for sig in sigs]
@@ -32,6 +32,8 @@ def main():
         if a.mounted:
             names=[fs+'-'+state for fs in ['ext','ext2','ext3','fat','exfat','f2fs','ntfs'] for state in ['retained','mounted']]+['same-rmrf-retained']
         if a.builtin_ext4: names=['ext-retained']
+        if a.persist:
+            names=[fs+'-persist-'+state for fs in ['ext','ext2','ext3'] for state in ['success','mount-error','delete-error','unmount-error','retained','label-error']]
         for name in names:
             run=subprocess.run([str(binary),name],capture_output=True,text=True,timeout=10)
             cases.append(dict(name=name,status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,stdout=run.stdout,stderr=run.stderr));print(name,cases[-1]['status'],flush=True)

@@ -212,3 +212,21 @@ python3 scripts/audit_f2fs_readback.py
 准备脚本将源码和编译文件只留在本地 `tools/f2fs-host`，不覆盖已有构建目录；没有将host读取器作为Recovery补丁，也未安装替换系统文件。首次libtool包装器/共享库构建路径问题已修正为明确禁用共享libf2fs后复制ELF，最终脚本从新目录实际执行并通过。原Debian二进制对照依赖本地已提取包，使用`--stock-reader`和单独`--report`保存。
 
 本批只有验证及host工具维护，生产候选、793来源及六profile不变，没有重编Recovery。结果 `logs/f2fs-readback.json` 和定向核对 `logs/f2fs-readback-audit.json`。不重复此前六种转换场景；父manager/GUI、真实挂载/fscrypt、F2FS目录通用查找及断电边界仍未完成。
+
+<a id="persist-postformat"></a>
+
+## persist 格式化后的临时挂载与错误返回（0087）
+
+`WipeExtfs` 在 mke2fs 成功后，按 SELinux 配置选择执行 e2fsdroid。persist 分支会临时挂载新文件系统、删除 lost+found，再卸载后进行离线标记。原实现忽略三个步骤的结果，且到最后才更新文件系统类型，可能以旧类型挂载、在挂载失败后删除宿主目录，或在仍挂载时执行离线工具。
+
+0087 在 mkfs 成功后立即记录新类型；挂载失败立即返回，删除失败也会尝试卸载，卸载失败或仍挂载均拒绝继续 e2fsdroid。后处理失败返回失败，但已完成格式化的新类型保留，不承诺数据回滚。未找到 SELinux context 时仍沿用既有跳过标签的策略，本批未改变该策略。普通 GUI 的 NV / persist 策略不变，内部 core 路径不因此扩大访问范围。
+
+扩展现有格式转换夹具，而非新增等价套件：ext2 / ext3 / ext4 各覆盖成功、挂载失败、删除失败、卸载失败、卸载请求成功但仍挂载、标签查找失败，共 18 场景。检查实际生产 Wipe / helper / manager / backend 返回值、命令顺序、新类型、清理尝试及最终挂载状态。旧实现 15 项失败，修正后全部通过；25 项原格式转换与六项同镜像 ARM64 工具回归通过。
+
+```bash
+python3 tests/format_transition_test.py --persist --report logs/format-persist-current.json
+python3 tests/format_tool_chain_test.py --report logs/format-persist-tool-regression.json
+python3 scripts/audit_format_persist_delivery.py
+```
+
+挂载、设备、容量、SELinux 和目录删除是显式故障边界；没有操作实际 persist、物理块设备或真实挂载。ARM64 工具回归只在私有普通文件上运行。and-sec / media 目录重建、完整 GUI / fscrypt 生命周期仍未完成，本批不据此关闭完整文件系统目标。最终 installclean / 30 并发构建，805 来源绑定；候选哈希集中见[交付报告](../simulation-report.md)。

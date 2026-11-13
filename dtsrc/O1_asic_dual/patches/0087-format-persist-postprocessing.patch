@@ -1,0 +1,43 @@
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -2104,6 +2104,10 @@
+     return false;
+   }
+ 
++  // mkfs has already replaced the filesystem, even if a later step fails.
++  // Temporary Mount() must probe/use the new format, not the previous one.
++  current_file_system_ = file_system;
++
+   // e2fsdroid presence was already checked at the top of this function.
+   const std::string file_contexts_entry = (mount_point_ == "/system_root" ? "/" : mount_point_);
+   char* secontext = nullptr;
+@@ -2114,9 +2118,18 @@
+     freecon(secontext);
+     // Execute e2fsdroid to initialize selinux context
+     if (mount_point_ == TW_PERSIST_ROOT) {
+-      Mount(true);
+-      TWFunc::RemoveDir(TW_PERSIST_ROOT "/lost+found", false);
+-      Unmount(true);
++      if (!Mount(true)) return false;
++      const int removed = TWFunc::RemoveDir(TW_PERSIST_ROOT "/lost+found", false);
++      // Release our temporary mount even when directory removal failed.
++      const bool unmounted = Unmount(true);
++      if (!unmounted || IsMounted()) {
++        gui2_console::log_error("fail_unmount", mount_point_, strerror(EBUSY));
++        return false;
++      }
++      if (removed != 0) {
++        gui2_console::log_error("unable_to_wipe", display_name_);
++        return false;
++      }
+     }
+     cmd = std::format("e2fsdroid -e -S /file_contexts -a {} {}", file_contexts_entry, actual_block_device_);
+     LOGINFO("e2fsdroid command: %s\n", cmd.c_str());
+@@ -2127,7 +2140,6 @@
+     }
+   }
+ 
+-  current_file_system_ = file_system;
+   RecreateAndSecFolder();
+   gui2_console::info("done");
+   return true;

@@ -6,9 +6,9 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-format-unmounted.img` |
-| SHA-256 | `2b100b9a54291eabf99a36db29b7919fc0aa1fa9afbd14800cea1493f7ff9b3c` |
-| 生产来源绑定 | 804 份 |
+| 文件 | `recovery-dijun-unified-format-postprocess.img` |
+| SHA-256 | `99e76c07767724d3175ebd1e3997caf37995c09a172b4025fd316d20b47e76bd` |
+| 生产来源绑定 | 805 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
@@ -23,7 +23,11 @@ scratch保存后，在目标写入前/一块后/ordered块全写后及header提�
 
 实际 client Connect/query、server、SnapshotHandlerManager、ReadWorker 与 replace/zero MergeWorker 已接续八场景。真实COW压缩数据/零块读取、64 KiB合并内容与未改尾部逐字节核对，写入/同步故障均保持失败；容量查询和dm-user端点为明确替身。没有发现新增生产缺陷，不重编0080镜像。该检查点未包含COPY/XOR/RA；后续有序合并见上文，进程退出后的局部续合并见上文，硬件断电、内核映射和完整OTA仍待完成，见[范围](docs/OTA-OPERATION-COW.md#snapuserd-handler)。
 
-## 0086 交付时的定向验证
+## 0087 交付时的定向验证
+
+ext 格式化成功后立即记录新文件系统类型，避免后续临时挂载沿用旧类型；persist 后处理明确检查挂载、目录删除及卸载结果，仍挂载时拒绝执行离线 e2fsdroid。清理失败仍尝试卸载，失败不能伪装为格式化回滚。18 项原 helper / manager / backend 定向场景通过，旧实现 15 项失败；25 项格式转换及同镜像 ARM64 格式化 / 修复六项回归通过。挂载、设备、SELinux 与删除为明确替身，工具仅操作普通临时文件，不是设备 persist / 实际挂载或完整 GUI 验收。清理构建 805 来源、六 profile 不变，交付核对 `logs/format-persist-delivery.json` 通过。见[后处理范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#persist-postformat)。
+
+## 0086 交付时的定向验证（历史）
 
 六个离线格式化 helper 补齐卸载后仍挂载拒绝，避免保留 System 的成功返回导致 mkfs 误执行。十五个选择 / 挂载场景及可选 USE_EXT4 保留挂载分支通过，旧七个格式选择加内建分支一个场景失败；既有二十五项格式转换、同镜像 ARM64 格式化修复六项、原 Unmount / 修复九项回归通过。同格式 rm-rf 保持原分派。挂载观测与命令为明确替身，非实机或完整生命周期验收。804 来源清理构建、六份 profile 不变，仅 Recovery 主程序、构建属性和摘要变化，`logs/format-mounted-delivery.json` 审计通过。见[格式化前置条件](docs/FILESYSTEM-TOOLS-EXECUTION.md#format-mounted-guards)。
 
@@ -55,6 +59,7 @@ scratch保存后，在目标写入前/一块后/ordered块全写后及header提�
 
 ## 本次候选包含的修正
 
+- **0087**：ext 格式化成功立即保留真实新类型；persist 临时挂载 / 删除 / 卸载失败传回调用者，仍挂载时不运行 e2fsdroid。
 - **0086**：离线格式化 helpers 拒绝卸载请求后仍保持挂载的目标，同格式 rm-rf 分派保留。
 - **0085**：离线 Repair 确认卸载后的实际状态，阻止保留 System 挂载时继续运行 fsck / Resize。
 - **0084**：兼容多批发送先等待读取收尾，再返回先前 USB 错误，避免后续磁盘错误覆盖。

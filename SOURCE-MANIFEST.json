@@ -32,7 +32,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "b361550538384ce172a278bb58dffc758c46526496bdfaec98dfc7f50e3b6114",
+    "sha256": "27f68093d492c48ee60b561c870c040a58a0ef977a74ce780a5893c755b724fe",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -64,11 +64,11 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "c9a0c1b74b033518a94c2fc860238ed74f3057b20fe3eb27db071fd5d7b04d53",
+    "sha256": "59f51a04ef7c716acb80ca86c8ae66b659cf9568da6671a8bbfd50502ef75740",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
-    "sha256": "0ebf0f213f11164caeb9544fed2e869fc49d16ecbaebc5327d773e3bf6176e1c",
+    "sha256": "ade56d4a4946bdc11d0c2f149380c9359564e5accc6171c366bbb71ffede954a",
     "mode": "0o644"
   },
   "docs/FIRMWARE.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "9abfb6a39afce3e8511339d4295a506f26e7090e28475c04e96a47b65e91de40",
+    "sha256": "2ddf1afb17b6d7dd71177ec90903c4c004d134d654cef7732673784f27a26f7d",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -619,8 +619,12 @@
     "sha256": "0b898cc6f81ddcef5bb90dc196ed6fb27a5e723c333028f4cea36452f3da7f44",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0087-format-persist-postprocessing.patch": {
+    "sha256": "894b359929c31ebf443ed84a18e4903ffd8e55d96d4ecf572b2f56147a7c8749",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "887733499a46e3fe2e347a2e2c63f6af26419b7a1e7b975640b40c904b26070b",
+    "sha256": "e68146db4fa509a0c05b1337853e90dba769d495c2752314922be0642d0bebd5",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -1033,6 +1037,10 @@
   },
   "scripts/audit_format_mounted_delivery.py": {
     "sha256": "35dc7de59c0af56c4612727f55cda1daf621dad4e1c00b27c89cb8d29f6eb179",
+    "mode": "0o644"
+  },
+  "scripts/audit_format_persist_delivery.py": {
+    "sha256": "0470883b19d7d38e69ccd31659356dc2800ef55833f72048568916f113dc5d8e",
     "mode": "0o644"
   },
   "scripts/audit_format_tool_chain.py": {
@@ -1648,11 +1656,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "044cc871855a80bc6c4da4a674e0aea0f816dd54a6aedde5948716c22d91618c",
+    "sha256": "9f96e490c01647718d79e6a22fa219be22a8ccf1cf0cd969f9829cdf28037889",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "88f0a97658167f9eda57de403c00cfa700c3c4316185732ee25ba52cdd9e51a5",
+    "sha256": "f5f93e66ca49edffc9178ae187c1e03caec01e6f586bb3574ab81b757cb10bbf",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -1780,11 +1788,11 @@
     "mode": "0o644"
   },
   "tests/format_transition_test.cpp": {
-    "sha256": "bc8e1c2e5b21031eb54c9054c8910c156f086366c4cf7ba9bd2374d1b5991ab2",
+    "sha256": "18cc905524cdb11f26a524838cc46b79cd3169ec142a931c93c8c30674719dbe",
     "mode": "0o644"
   },
   "tests/format_transition_test.py": {
-    "sha256": "f8ed661b4cce91b7a5a459872de6e360dd0e85495983a36c63489b276af46a03",
+    "sha256": "b6519eef7ec835970ff22b0f072d118f509970fb4329f4eafe017c0e974c2e11",
     "mode": "0o644"
   },
   "tests/haptics-emulator-dependencies.json": {

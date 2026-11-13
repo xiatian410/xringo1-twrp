@@ -1,8 +1,8 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-format-unmounted.img",
-  "image_sha256": "2b100b9a54291eabf99a36db29b7919fc0aa1fa9afbd14800cea1493f7ff9b3c",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-format-postprocess.img",
+  "image_sha256": "99e76c07767724d3175ebd1e3997caf37995c09a172b4025fd316d20b47e76bd",
   "image_status": "Clean installclean + make -j$(nproc); patch0086 guards offline format helpers against retained mounts.804 production sources/six unchanged profiles; goal in progress.",
   "checks": [
     {
@@ -1936,7 +1936,7 @@
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
     "MTP remaining media metadata and final post-child directory date semantics (file epoch0/timestamp-error publication and directory SendObjectInfo time/completion16 cases covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
     "backup/restore real archive codec/GUI and sparse-hole/progress behavior, actual filesystem power-loss durability and content authenticity; new-backup completion manifests and restore rejection are covered by17 helper,55 RunBackup and56 RunRestore host cases but do not prove sudden power-loss behavior",
-    "full GUI/PartitionManager write/format/repair lifecycle and I/O faults; current-image tools17 historical cases, e2fsck result146 assertions and current-image wrapper/lookup/Repair/ExecCmd/ARM64 checker7 joined cases covered with explicit unmount/device/presentation fixtures; real mounts/full GUI still pending; patch0073 covers RemoveDir + WipeRmrf/AndSec/DataCache -> manager -> backend LIST/run terminal result with real private permission failures; patch0074 executes media-preserving recursion and real exclusion matching through manager/backend13 cases; full Wipe dispatch, GUI/format lifecycle, concurrent writers and power-loss remain pending; patch0075 covers Dalvik mount/query/delete failures and internal-media root retention through backend16 cases, inode/user xattr marker is not actual fscrypt proof; full GUI/format/repair, real mounts/MTP and I/O lifecycle remain pending; patch0076 covers requested format dispatch/rmrf override/missing tools/result state25 fixture cases; actual target formatter -> readback -> repair -> full GUI/mount lifecycle still pending; actual current-image ARM64 ext4/F2FS formatter + original caller/ExecCmd/Repair chain6 now covered on regular files, ext4 independent payload readback and F2FS populated structural check; full mounts/GUI/fscrypt/SELinux and independent F2FS content readback still pending",
+    "full GUI/PartitionManager write/format/repair lifecycle and I/O faults; current-image tools17 historical cases, e2fsck result146 assertions and current-image wrapper/lookup/Repair/ExecCmd/ARM64 checker7 joined cases covered with explicit unmount/device/presentation fixtures; real mounts/full GUI still pending; patch0073 covers RemoveDir + WipeRmrf/AndSec/DataCache -> manager -> backend LIST/run terminal result with real private permission failures; patch0074 executes media-preserving recursion and real exclusion matching through manager/backend13 cases; full Wipe dispatch, GUI/format lifecycle, concurrent writers and power-loss remain pending; patch0075 covers Dalvik mount/query/delete failures and internal-media root retention through backend16 cases, inode/user xattr marker is not actual fscrypt proof; full GUI/format/repair, real mounts/MTP and I/O lifecycle remain pending; patch0076 covers requested format dispatch/rmrf override/missing tools/result state25 fixture cases; actual target formatter -> readback -> repair -> full GUI/mount lifecycle still pending; actual current-image ARM64 ext4/F2FS formatter + original caller/ExecCmd/Repair chain6 now covered on regular files, ext4 independent payload readback and F2FS populated structural check; full mounts/GUI/fscrypt/SELinux and independent F2FS content readback still pending; patch0087 covers ext post-format type and persist temporary mount/delete/unmount failures, full and-sec/media recreation remains pending",
     "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
     "video target ARM64 codec/display-shadow sampling integration, real storage/codec fault behavior, hour-scale stability and seek/index performance (bounded12.5s multi-cluster/keyframe correctness covered), GUI player rendering and full-resolution performance; host frames/queue/failure recovery plus independent FFmpeg native decode and72 short input seeks covered",
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
@@ -3491,6 +3491,38 @@
       "evidence": "logs/format-mounted-repair-regression.json",
       "evidence_sha256": "86a0c12e55ea27e0c4a854921bfbe64e1c52f48fb327950ae43837f62e034f2a",
       "scope": "Patch0086 guards six offline format helpers with IsMounted after Unmount; retained mount rejects formatter before writes/type change; same-format rm-rf bypass stays intact. 15 mount outcomes and optional USE_EXT4 retained branch pass; old seven format selections plus one optional branch fail.25 dispatch,6 actual ARM64 file format/repair and9 repair mount regressions pass. Mount/unmount/device/commands are explicit fixtures for selection tests; no real mount/full GUI/fscrypt/power loss. Clean804/six profiles unchanged."
+    },
+    {
+      "name": "format-persist-negative",
+      "result": "expected-failure",
+      "count": 18,
+      "evidence": "logs/format-persist-negative.json",
+      "evidence_sha256": "59290d7f6776f85d0b64c168293413a3252254da719e4c4bb163c54f778b3514",
+      "scope": "Patch0087 records new ext type immediately after successful mkfs. Persist temporary mount/delete/unmount failures propagate; e2fsdroid never runs while still mounted.18 original helper/manager/backend cases pass, old15 fail;25 format dispatch and6 actual ARM64 ordinary-file format/repair regressions pass. Mount/device/SELinux/deletion boundaries are explicit fixtures; no physical persist, real mounts/full GUI/fscrypt validation."
+    },
+    {
+      "name": "format-persist-current",
+      "result": "pass",
+      "count": 18,
+      "evidence": "logs/format-persist-current.json",
+      "evidence_sha256": "5b225b027e18e3a4cd1bdd3780f8f2eae3b497687065ed38313b40e5655fb1b6",
+      "scope": "Patch0087 records new ext type immediately after successful mkfs. Persist temporary mount/delete/unmount failures propagate; e2fsdroid never runs while still mounted.18 original helper/manager/backend cases pass, old15 fail;25 format dispatch and6 actual ARM64 ordinary-file format/repair regressions pass. Mount/device/SELinux/deletion boundaries are explicit fixtures; no physical persist, real mounts/full GUI/fscrypt validation."
+    },
+    {
+      "name": "format-persist-transition-regression",
+      "result": "pass",
+      "count": 25,
+      "evidence": "logs/format-persist-transition-regression.json",
+      "evidence_sha256": "c846d3a6278d9b16afdf02ebad9d3fbfa52f26cfc48fc47fd4ffa79aaa46fd5f",
+      "scope": "Patch0087 records new ext type immediately after successful mkfs. Persist temporary mount/delete/unmount failures propagate; e2fsdroid never runs while still mounted.18 original helper/manager/backend cases pass, old15 fail;25 format dispatch and6 actual ARM64 ordinary-file format/repair regressions pass. Mount/device/SELinux/deletion boundaries are explicit fixtures; no physical persist, real mounts/full GUI/fscrypt validation."
+    },
+    {
+      "name": "format-persist-tool-regression",
+      "result": "pass",
+      "count": 6,
+      "evidence": "logs/format-persist-tool-regression.json",
+      "evidence_sha256": "adefcf32b8863a39e6e5ff6a4623c203595182e25444c9aa9891125b2202009b",
+      "scope": "Patch0087 records new ext type immediately after successful mkfs. Persist temporary mount/delete/unmount failures propagate; e2fsdroid never runs while still mounted.18 original helper/manager/backend cases pass, old15 fail;25 format dispatch and6 actual ARM64 ordinary-file format/repair regressions pass. Mount/device/SELinux/deletion boundaries are explicit fixtures; no physical persist, real mounts/full GUI/fscrypt validation."
     }
   ],
   "source_review_followups": [
@@ -4567,5 +4599,11 @@
   "format_mounted_guards": {
     "patch": "0086-offline-format-mount-guards.patch",
     "scope": "Patch0086 guards six offline format helpers with IsMounted after Unmount; retained mount rejects formatter before writes/type change; same-format rm-rf bypass stays intact. 15 mount outcomes and optional USE_EXT4 retained branch pass; old seven format selections plus one optional branch fail.25 dispatch,6 actual ARM64 file format/repair and9 repair mount regressions pass. Mount/unmount/device/commands are explicit fixtures for selection tests; no real mount/full GUI/fscrypt/power loss. Clean804/six profiles unchanged."
+  },
+  "format_persist_postprocessing": {
+    "patch": "0087-format-persist-postprocessing.patch",
+    "scope": "Patch0087 records new ext type immediately after successful mkfs. Persist temporary mount/delete/unmount failures propagate; e2fsdroid never runs while still mounted.18 original helper/manager/backend cases pass, old15 fail;25 format dispatch and6 actual ARM64 ordinary-file format/repair regressions pass. Mount/device/SELinux/deletion boundaries are explicit fixtures; no physical persist, real mounts/full GUI/fscrypt validation.",
+    "evidence": "logs/format-persist-delivery.json",
+    "evidence_sha256": "ac5e7ec03559d6ff15bef9cf688c4c4863b23f7c9ae4feee380a3ebaf21e5b9a"
   }
 }

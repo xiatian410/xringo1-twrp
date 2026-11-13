@@ -32,7 +32,7 @@
 
 ## 验证与交付
 
-当前 0086 交付补齐离线格式化 helpers 的实际挂载状态检查；实现、有限检查和边界见[格式化前置条件](docs/FILESYSTEM-TOOLS-EXECUTION.md#format-mounted-guards)，候选哈希只在交付报告维护。
+当前 0087 交付修正 ext 格式化后的新类型记录与 persist 临时挂载 / 清理错误返回；实现、有限检查和边界见[格式化后处理](docs/FILESYSTEM-TOOLS-EXECUTION.md#persist-postformat)，候选哈希只在交付报告维护。
 
 1. 明确本批缺陷、改变的生产行为和必要检查范围。
 2. 优先使用真实生产方法；替代设备、HAL、属性、挂载等边界必须写明。能复用的结果不为刷新日期重跑。

@@ -314,6 +314,10 @@
         {
           "file": "0086-offline-format-mount-guards.patch",
           "sha256": "0b898cc6f81ddcef5bb90dc196ed6fb27a5e723c333028f4cea36452f3da7f44"
+        },
+        {
+          "file": "0087-format-persist-postprocessing.patch",
+          "sha256": "894b359929c31ebf443ed84a18e4903ffd8e55d96d4ecf572b2f56147a7c8749"
         }
       ],
       "result_files": {
@@ -321,7 +325,7 @@
         "etc/init/keystore2.rc": "aa28727dfc718c059b926215f1fcfa9917132265dc01fbd329dcb928a783768e",
         "gui2/app/screen_actions.cpp": "188556ece804fedc23d4d9c2214418de89f49caa4560405dc41e9bcfd5577da1",
         "gui2/gui2_input.cpp": "3504c83906edf8192d0ff717d35a6f6c38770282cba8fd56ec24ebcd55dbe625",
-        "partition.cpp": "cd6f8ac5d48ef41352df3e2b0f1cede59051b58ddc74a076159820810f1eabf9",
+        "partition.cpp": "29dfe4b5998e40147fa71e06b50cefb8987b5928ef92d627971f4335c5a1356f",
         "twrpminui/force_feedback.cpp": "f7bdb5f50e5ef9d0ecd2ab161fa8f6143292c1207f064147a2db94b080d86f41",
         "twrpminui/graphics_drm.cpp": "61611757cc147b2f925ed52c6f73334acd7ae11d7fa3954d720cbeb8d47d0447",
         "mtp/MtpFfsHandle.cpp": "e7c9043094d9b7852ad9926cf04a5058d5eb8f83e524796c72de531fb662af79",
