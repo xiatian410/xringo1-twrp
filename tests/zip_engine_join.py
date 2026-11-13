@@ -20,7 +20,8 @@ def run_joined(jail, engine):
     import zip_stock_support
     import zip_install_chain_test
     model=engine.get('finish_model')
-    prefix='zip-engine-model-finish' if model else 'zip-engine-joined'
+    allocated=bool(model and model.get('actual_allocation'))
+    prefix='zip-engine-allocated-finish' if allocated else 'zip-engine-model-finish' if model else 'zip-engine-joined'
 
     class Joined(Stock):
         def fixture(self, text):
@@ -116,22 +117,34 @@ static pid_t observed_waitpid(pid_t p,int*status,int flags){
                     manager_state='MODEL actual FinishedSnapshotWrites result=1 state=2 merges=1' in output,
                     model_slot=(jail/'work/model-active-slot').is_file() and (jail/'work/model-active-slot').read_text()=='1',
                     actual_state_persisted=(jail/'work/meta/state').is_file(),
-                    actual_boot_marker=(jail/'work/meta/snapshot-boot').read_text()=='_a')
+                    actual_boot_marker=(jail/'work/meta/snapshot-boot').is_file() and (jail/'work/meta/snapshot-boot').read_text()=='_a')
+            if allocated:
+                checks.update(actual_allocation='MODEL actual controller allocation initialized=10 state=1 seeded=0' in output,
+                    no_seeded_allocation='MODEL allocation metadata seeded' not in output,
+                    actual_unmapping='MODEL actual snapshot unmapping active=0' in output)
+            waits=re.findall(r'engine_wait_status=(\d+)',output)
+            engine_exit=os.waitstatus_to_exitcode(int(waits[-1])) if waits else None
             report=dict(status='PASS' if all(checks.values()) else 'FAIL',scope=__doc__,checks=checks,
                 image=str(self.image),image_sha256=sha(self.image),source_zip_sha256=self.source_hash,
                 source_zip_bytes=self.source.stat().st_size,delivered_cert_zip_sha256=hashlib.sha256(self.certs).hexdigest(),
                 sources={str(p):sha(p) for p in [*sources,Path(__file__),ROOT/'tests/zip_stock_support.py',ROOT/'scripts/firmware_facts.py',ROOT/'scripts/acquire_firmware.py']},
                 binary_dependencies=dependencies,compile_command=command,engine=engine,
                 stdout_sha256=sha(stdout),stderr_sha256=sha(stderr),inventory_sha256=sha(inventory),
-                partition_hashes=dict(rows),installation_result='MODEL_SUCCESS' if model else 'FAILED',engine_returncode=0 if model else 63,
-                original_zip_installer_joined=True,signature_enabled=True,full_payload_installed=True,
+                partition_hashes=dict(rows),installation_result='MODEL_SUCCESS' if model and all(checks.values()) else 'FAILED',engine_returncode=engine_exit,
+                original_zip_installer_joined=True,signature_enabled=True,full_payload_installed=checks['payload_complete'] and checks['final_hashes'],
                 full_ota_install=False,production_trust_changed=False,postinstall_mount_reached=False,
                 snapshot_manager_executed=bool(model),slot_switched=False,hardware_testing=False)
             if model:
                 report.update(scope=__doc__+'\nModel finish mode: block-readonly/mount/allocation/HAL/slot are explicit models; exact stock script, actual getprop and SnapshotManager state publication run. Model success is NOT full OTA/hardware acceptance.',
                     postinstall_mount_reached=True,postinstall_mount_is_model=True,postinstall_program_executed=True,
                     slot_model_updated=True,physical_slot_switched=False,
-                    metadata_state_sha256=sha(jail/'work/meta/state'))
+                    metadata_state_sha256=sha(jail/'work/meta/state') if (jail/'work/meta/state').is_file() else None)
+            if allocated:
+                report.update(actual_snapshot_allocation=True,actual_controller_preparation=True,
+                    actual_controller_cow_writer=True,allocation_metadata_seeded=False,
+                    synthetic_source_layout=True,file_mapping_model=True,
+                    scratch_and_daemon_disabled_for_test=True,actual_kernel_mapping=False,
+                    scope=__doc__+'\nAllocated model: actual PreparePartitionsForUpdate/SnapshotManager initializes10 COWs, original controller OpenCowWriter and all stock payload operations/hash verification/postinstall/completion execute in one run. Synthetic source LP, independent file DM views, readonly/mount/HAL/slot/proc/cleanup/GUI remain models; scratch/daemon disabled. Not full device OTA.')
             (ROOT/'logs'/(prefix+'.json')).write_text(json.dumps(report,indent=2)+'\n')
             print(report['status'],'ZIP parent -> actual ARM64 engine;',report['installation_result'],'checks',checks,flush=True)
             return report

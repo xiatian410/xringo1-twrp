@@ -19,6 +19,12 @@
 
 正常、路径查询失败、头部同步失败三项定向检查通过；使用同一夹具和镜像库、替换为旧 SnapshotManager 的负向检查仅同步失败项崩溃。正常项真实初始化并解析十份空 COW，发布目标 LP，重建 manager 后持久化 Unverified 状态；两种失败均清除临时映射 / 状态、保持 Initiated，不误报完成。内核映射由独立稀疏普通文件代替，源 LP 为合成 32 GiB，HAL / kernel / ImageManager 为明确边界；测试模式关闭 scratch 和 daemon 启动。**没有重跑整包，不代表真实映射 / 挂载 / 槽位 / 重启合并验收。** 见[初始化与故障范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization)，本地交付核对 `logs/snapshot-cow-init-delivery.json`。
 
+## 整包接入真实分配：数据及收尾通过，退出仍失败
+
+同次原始 4.0.4 完整 ZIP 运行已移除预置分配状态与独立 COW 创建，执行真实控制器 PreparePartitionsForUpdate / SnapshotManager 初始化十份 COW，再由原 controller writer 执行全部4933操作、payload哈希与42最终分区哈希；原厂脚本 Recovery 分支、真实完成状态及模型槽位接续。约876秒后，在成功回调 / 完成标记后进程SIGSEGV，实际退出1，父安装器INSTALL_ERROR，**本次安装为FAILED**。
+
+精确保存的同一适配器另做两项分配后退出探针：进程静态 controller 在main返回后复现SIGSEGV，main结束前释放则退出0，定位为模型生命周期问题，尚无生产缺陷证据。保留完整失败报告，不重跑完整payload来隐藏失败。无生产修改或新镜像；下一步修正模型所有权。真实内核映射 / 挂载 / HAL / 槽位 / scratch / daemon / 启动合并仍有替身，见[完整运行范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-failure)。
+
 ## 分配到 payload 片段的交接证据
 
 同一执行中，真实 SnapshotManager 创建的 COW 已交给原 `DynamicPartitionControlAndroid::OpenCowWriter → OpenSnapshotWriter → VABCPartitionWriter`，执行原始 4.0.4 `mi_ext` 前两条操作（REPLACE_XZ / REPLACE），4 MiB 读回与独立原厂分区切片一致。重新创建 manager / controller / writer 后从 label1 续写通过；损坏头部时 Init 拒绝，显式卸载映射后保持 Initiated，不发布完成。共三项通过，见[交接边界](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-payload-handoff)。

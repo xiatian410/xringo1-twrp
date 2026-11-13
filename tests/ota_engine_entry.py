@@ -38,7 +38,9 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--join-zip',action='store_true',help='Run host original ZIP parent, with its actual argv/pipe passed to this ARM64 engine')
     parser.add_argument('--model-finish',action='store_true',help='Explicit mount/readonly/slot model, original stock script and actual SnapshotManager completion; requires --join-zip')
+    parser.add_argument('--allocate-snapshots',action='store_true',help='Replace seeded allocation/COW creation with actual controller/SnapshotManager; requires --model-finish')
     args=parser.parse_args()
+    if args.allocate_snapshots and not args.model_finish:parser.error('--allocate-snapshots requires --model-finish')
     if args.model_finish and not args.join_zip:parser.error('--model-finish requires --join-zip')
     index = json.loads((ROOT/'simulation-report.json').read_text())
     image = Path(index['image'])
@@ -101,12 +103,18 @@ extern "C" int __wrap_mount(const char*,const char*,const char*,unsigned long,co
 extern "C" int __wrap_umount(const char*) { assert(false);return -1; }
 '''
     if args.model_finish:
-        from ota_engine_finish_model import extend
+        if args.allocate_snapshots:
+            from ota_engine_allocated_model import extend
+        else:
+            from ota_engine_finish_model import extend
         adapter=extend(adapter,sources)
     parent = ROOT/'logs/engine-entry-work'
     parent.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='run-', dir=parent) as temp:
         work = Path(temp)
+        if args.allocate_snapshots:
+            from ota_engine_allocated_model import prepare
+            prepare(work,sources)
         fixture = work/'adapter.cpp'
         fixture.write_text(adapter)
         compile_cmd = reference['compile_command'].copy()
@@ -114,12 +122,13 @@ extern "C" int __wrap_umount(const char*) { assert(false);return -1; }
         compile_cmd[compile_cmd.index('-MF')+1] = str(work/'adapter.d')
         compile_cmd[-1] = str(fixture)
         if args.model_finish:
+            compile_cmd.insert(1,'-I'+str(work))
             includes=json.loads((ROOT/'logs/ota-snapshot-postinstall.json').read_text())['compile_template']
             compile_cmd[1:1]=['-I'+str(ROOT/'tests')]+[a for a in includes if a.startswith('-I') and a not in compile_cmd]
         build(compile_cmd)
         for n in shlex.split((work/'adapter.d').read_text().replace('\\\n', ' ').split(':',1)[1]):
             p = ANDROID/n
-            if p.is_file() and p != fixture:
+            if p.is_file() and not p.is_relative_to(work):
                 sources[str(p)] = sha(p)
         rsp = ANDROID/'out/soong/.intermediates/system/update_engine/update_engine_sideload/android_recovery_arm64_armv8-a/unstripped/update_engine_sideload.rsp'
         inputs = shlex.split(rsp.read_text())
@@ -136,6 +145,10 @@ extern "C" int __wrap_umount(const char*) { assert(false);return -1; }
         if args.model_finish:
             from ota_engine_finish_model import RO_SYMBOL,MOUNT_SYMBOL,UNMOUNT_SYMBOL,IS_MOUNT_SYMBOL
             link_cmd += ['-Wl,--wrap='+s for s in [RO_SYMBOL,MOUNT_SYMBOL,UNMOUNT_SYMBOL,IS_MOUNT_SYMBOL,'execv','fsync']]
+        if args.allocate_snapshots:
+            from ota_snapshot_payload_handoff import BASE_SYMBOL,REALPATH_SYMBOL
+            kernel_symbol='_ZN7android2dm12DeviceMapper15GetTargetByNameERKNSt3__112basic_stringIcNS2_11char_traitsIcEENS2_9allocatorIcEEEEPNS0_16DmTargetTypeInfoE'
+            link_cmd += ['-Wl,--wrap='+s for s in [BASE_SYMBOL,REALPATH_SYMBOL,kernel_symbol]]
         build(link_cmd)
         elf = (work/'engine').read_bytes()
         assert elf[:6] == b'\x7fELF\x02\x01' and elf[18:20] == b'\xb7\0'
@@ -169,6 +182,7 @@ extern "C" int __wrap_umount(const char*) { assert(false);return -1; }
             # Original Subprocess closes inherited descriptors up to RLIMIT.
             # Bound only this isolated engine process, never the user's shell.
             model['rlimit_nofile']=256
+            model['actual_allocation']=args.allocate_snapshots
         else:model=None
         if args.join_zip:
             from zip_engine_join import run_joined

@@ -1393,14 +1393,30 @@
       "failures": 0,
       "local_report_sha256": "1d13df087caf60a50b5b75926a991d0d796a50d094e4a83ed560906c9596fd4e",
       "scope": "Actual ARM64 SnapshotManager creates10 COWs from stock OS4.0.4 manifest on synthetic32GiB LP; original DynamicPartitionControlAndroid OpenCowWriter/OpenSnapshotWriter/VABC writes exact mi_ext operations0(REPLACE_XZ) and1(REPLACE). Four MiB readback matches independently sliced hash-verified stock partition. New writer/controller/manager resumes at label1 using persisted mappings; corrupt header rejects Init and explicit unmap leaves Initiated, no completion. Three cases pass. DM base/COW views, base CreateLogicalPartition/Realpath and HAL/kernel are explicit file boundaries; scratch/daemon disabled. Not full payload/partition/OTA, physical mapping/mount/slot/merge. No production change/build."
+    },
+    {
+      "name": "stock-os4-allocated-full-zip",
+      "status": "FAIL",
+      "cases": 1,
+      "failures": 1,
+      "local_report_sha256": "df7b543952271ddf2e5cbd68fb483534ea465fa0a559690f7f9eacbaccc37a44",
+      "scope": "Preserved one-run original OS4.0.4 full ZIP: signature/host parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager allocation10 COWs -> original controller writer/all4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified state then modeled slot. No seeded allocation. Engine subsequently SIGSEGV/exits1 after success callbacks; parent correctly INSTALL_ERROR. INSTALLATION FAILED. Exact-adapter allocation-only probe reproduces crash with process-static controller, exits0 with scoped reset; model lifetime issue, not proven production defect. Synthetic32GiB LP/independent file mappings/readonly/mount/HAL/slot/proc/cleanup/GUI remain models, scratch/daemon disabled. No production changes/build; no full payload replay to hide failure."
+    },
+    {
+      "name": "allocated-model-exit-probe",
+      "status": "PASS",
+      "cases": 2,
+      "failures": 0,
+      "local_report_sha256": "7dbee9d443ea9f7755ea0486e7a0326777309f81ed2878059785d60f72f3fbfe",
+      "scope": "Preserved one-run original OS4.0.4 full ZIP: signature/host parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager allocation10 COWs -> original controller writer/all4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified state then modeled slot. No seeded allocation. Engine subsequently SIGSEGV/exits1 after success callbacks; parent correctly INSTALL_ERROR. INSTALLATION FAILED. Exact-adapter allocation-only probe reproduces crash with process-static controller, exits0 with scoped reset; model lifetime issue, not proven production defect. Synthetic32GiB LP/independent file mappings/readonly/mount/HAL/slot/proc/cleanup/GUI remain models, scratch/daemon disabled. No production changes/build; no full payload replay to hide failure."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
   "current_batch_groups": [
     12
   ],
-  "current_batch_document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-payload-handoff",
-  "current_batch_groups_scope": "Actual ARM64 SnapshotManager creates10 COWs from stock OS4.0.4 manifest on synthetic32GiB LP; original DynamicPartitionControlAndroid OpenCowWriter/OpenSnapshotWriter/VABC writes exact mi_ext operations0(REPLACE_XZ) and1(REPLACE). Four MiB readback matches independently sliced hash-verified stock partition. New writer/controller/manager resumes at label1 using persisted mappings; corrupt header rejects Init and explicit unmap leaves Initiated, no completion. Three cases pass. DM base/COW views, base CreateLogicalPartition/Realpath and HAL/kernel are explicit file boundaries; scratch/daemon disabled. Not full payload/partition/OTA, physical mapping/mount/slot/merge. No production change/build.",
+  "current_batch_document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-failure",
+  "current_batch_groups_scope": "Preserved one-run original OS4.0.4 full ZIP: signature/host parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager allocation10 COWs -> original controller writer/all4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified state then modeled slot. No seeded allocation. Engine subsequently SIGSEGV/exits1 after success callbacks; parent correctly INSTALL_ERROR. INSTALLATION FAILED. Exact-adapter allocation-only probe reproduces crash with process-static controller, exits0 with scoped reset; model lifetime issue, not proven production defect. Synthetic32GiB LP/independent file mappings/readonly/mount/HAL/slot/proc/cleanup/GUI remain models, scratch/daemon disabled. No production changes/build; no full payload replay to hide failure.",
   "stock_os4_zip_entry": {
     "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
     "report": "logs/zip-stock-os4-fixed.json",
@@ -1505,5 +1521,30 @@
     "production_changes": false,
     "new_build": false,
     "scope": "Actual ARM64 SnapshotManager creates10 COWs from stock OS4.0.4 manifest on synthetic32GiB LP; original DynamicPartitionControlAndroid OpenCowWriter/OpenSnapshotWriter/VABC writes exact mi_ext operations0(REPLACE_XZ) and1(REPLACE). Four MiB readback matches independently sliced hash-verified stock partition. New writer/controller/manager resumes at label1 using persisted mappings; corrupt header rejects Init and explicit unmap leaves Initiated, no completion. Three cases pass. DM base/COW views, base CreateLogicalPartition/Realpath and HAL/kernel are explicit file boundaries; scratch/daemon disabled. Not full payload/partition/OTA, physical mapping/mount/slot/merge. No production change/build."
+  },
+  "stock_allocated_zip_failure": {
+    "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-failure",
+    "report": "logs/zip-engine-allocated-finish.json",
+    "report_sha256": "df7b543952271ddf2e5cbd68fb483534ea465fa0a559690f7f9eacbaccc37a44",
+    "audit": "logs/zip-engine-allocated-finish-audit.json",
+    "exit_probe": "logs/ota-allocated-exit-probe.json",
+    "exit_probe_sha256": "7dbee9d443ea9f7755ea0486e7a0326777309f81ed2878059785d60f72f3fbfe",
+    "image_sha256": "cc73c3cb1335bc6059a079047da87d044ba7dd1033104458d741a8f995908f8b",
+    "operations": 4933,
+    "partition_hashes": 42,
+    "engine_returncode": 1,
+    "parent_result": "INSTALL_ERROR=1",
+    "installation_result": "FAILED",
+    "actual_snapshot_allocation": true,
+    "actual_controller_preparation": true,
+    "actual_controller_cow_writer": true,
+    "allocation_metadata_seeded": false,
+    "model_lifetime_defect": true,
+    "synthetic_source_layout": true,
+    "actual_kernel_mapping": false,
+    "full_ota_install": false,
+    "production_changes": false,
+    "new_build": false,
+    "scope": "Preserved one-run original OS4.0.4 full ZIP: signature/host parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager allocation10 COWs -> original controller writer/all4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified state then modeled slot. No seeded allocation. Engine subsequently SIGSEGV/exits1 after success callbacks; parent correctly INSTALL_ERROR. INSTALLATION FAILED. Exact-adapter allocation-only probe reproduces crash with process-static controller, exits0 with scoped reset; model lifetime issue, not proven production defect. Synthetic32GiB LP/independent file mappings/readonly/mount/HAL/slot/proc/cleanup/GUI remain models, scratch/daemon disabled. No production changes/build; no full payload replay to hide failure."
   }
 }

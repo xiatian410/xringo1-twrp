@@ -48,6 +48,24 @@ python3 tests/ota_snapshot_payload_handoff.py
 python3 scripts/audit_snapshot_payload_handoff.py
 ```
 
+<a id="stock-zip-allocated-failure"></a>
+## 完整包接入真实快照分配：成功回调后退出失败，尚未安装成功
+
+`--join-zip --model-finish --allocate-snapshots` 使用原始 OS4.0.4完整ZIP和当前0090镜像，在同次执行中替换旧模型的预置快照状态及自行创建COW。原控制器 `PreparePartitionsForUpdate → SnapshotManager::BeginUpdate / CreateUpdateSnapshots` 初始化十份COW、发布目标LP；原controller OpenCowWriter / OpenSnapshotWriter供给原ARM64引擎全部4933操作。十份COW分别在初始化和写入时映射，随后原reader物化快照视图，42最终分区哈希全部匹配manifest，payload哈希通过。
+
+原厂postinstall Recovery保护分支、真实FinishUpdate / FinishedSnapshotWrites发布Unverified、模型槽位、显式卸载映射都执行成功；日志已有 `Update successfully applied, waiting to reboot`。但成功回调后进程SIGSEGV，QEMU实际退出1、原父安装器wait256 / INSTALL_ERROR=1。**完整运行报告状态FAIL / installation_result FAILED**，不得用内部动作成功宣称父安装成功。约876秒执行记录保留在本地 `logs/zip-engine-allocated-finish.json/.stdout/.stderr`。
+
+随后保存精确生成适配器及include，只执行真实快照分配后退出，不写payload：进程静态controller模式在main返回后复现SIGSEGV；相同二进制的scoped模式在main结束前reset控制器则退出0。两项差分探针由 `tests/ota_allocated_exit_probe.py/.cpp` 执行，报告 `logs/ota-allocated-exit-probe.json`。这将故障定位到新模型的对象生命周期，**没有证明生产镜像有该退出缺陷**；尚未修正完整模型所有权或重复完整运行。独立review核对已覆盖数据和状态，不将失败报告改记为成功。
+
+剩余替身：合成32GiB源LP（目标尺寸代替真实源布局）、独立持久稀疏base/COW文件视图、内核能力/DM及realpath边界、元数据已挂载token、AVB无效果边界、readonly / postinstall挂载 / HAL / 槽位 / proc / 旧更新清理 / GUI。测试模式关闭scratch和daemon；没有真实kernel map、挂载、启动或合并。旧整包模型成功报告属于预置分配版本，保留为历史，不能覆盖本次FAILED。
+
+```bash
+# 完整运行已执行且保留失败；不要例行重复十五分钟payload。
+python3 tests/ota_engine_entry.py --join-zip --model-finish --allocate-snapshots
+python3 tests/ota_allocated_exit_probe.py
+python3 scripts/audit_zip_engine_join.py --model-finish --allocate-snapshots --review-exit-failure
+```
+
 <a id="stock-zip-model-finish"></a>
 ## 原始 OS4.0.4 完整包：模型内安装链成功，完整设备安装尚未验收
 

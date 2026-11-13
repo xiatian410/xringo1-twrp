@@ -16,7 +16,7 @@
 | 优先事项 | 已知情况 | 下一步与边界 |
 | --- | --- | --- |
 | 容量刷新页面停留 | 现场后台约 5.15 秒完成；原 GUI tick / 主循环接续已核对，提交等待会延迟 DONE 呈现，但现场根因未定位 | 后续只追提交等待与实际呈现的新证据；不重复扫描 / DONE 夹具，不根据模拟等待修改 DRM，不要求重复触发采集。见[主循环范围](REFRESH-STUCK-INVESTIGATION.md#gui-loop) |
-| OTA / A/B 安装入口与快照生命周期 | 原始 4.0.4 ZIP 模型内接续成功；原 manifest / 合成 LP 分配及控制器回退已有证据；0090 修复 COW 初始化失败空指针崩溃，初始化三项覆盖十份空 COW 与失败清理；另已接通原控制器 / VABC 写入两条真实操作及检查点续写 | 真实源 LP / 内核映射、完整分配到全量 payload 接续、scratch / snapuserd 启动、挂载 / Boot HAL / 槽位 / 启动合并仍未贯通。输入与相关源码未变时不重跑完整包。见[模型范围](INSTALL-CHAIN-VALIDATION.md#stock-zip-model-finish)、[控制器回退](INSTALL-CHAIN-VALIDATION.md#stock-snapshot-preparation)、[COW 初始化](INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization)及[OTA 范围](OTA-OPERATION-COW.md) |
+| OTA / A/B 安装入口与快照生命周期 | 原始 4.0.4 整包已在同次运行接入真实控制器 / 十份 COW 分配、4933 操作 / 42 哈希、脚本与完成状态；成功回调后模型静态对象退出崩溃，父安装器正确报失败。分配后退出探针已定位模型生命周期 | 修正模型 controller 所有权，再按必要性确认完整运行；不把本次失败改记成功。真实源 LP / 内核映射 / 挂载 / HAL / scratch / daemon / 槽位 / 启动合并仍未贯通。见[完整运行与退出失败](INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-failure) |
 | 文件系统完整生命周期 | 清除错误传播、媒体保留、格式转换和 ARM64 工具接续已维护 | persist / and-sec 后处理与非 FBE 启动媒体目录恢复已由 0087–0089 收尾；接续可选内建 ext4 后处理及 GUI / 加密与 I/O 故障收尾，不重复已通过的命令和内容检查。见[文件系统说明](FILESYSTEM-TOOLS-EXECUTION.md) |
 | 其他具体缺陷 | 触摸自动启动、安全服务、多用户、备份恢复和 USB 集成仍有缺口 | 按下表剩余边界及新证据排序，每批明确实现决定和结束条件，不启动全量重复审计 |
 
