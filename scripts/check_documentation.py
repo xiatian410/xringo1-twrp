@@ -10,9 +10,9 @@ from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 ENTRY_POINTS = (
-    'README.md', 'CONTRIBUTING.md', 'ADAPTATION-GOALS.md', 'BUILD-AND-TEST.md',
+    'README.md', 'CONTRIBUTING.md', 'ADAPTATION-GOALS.md', 'docs/BUILDING.md',
     'MAINTENANCE.md', 'FEATURE-USAGE.md', 'compatibility-matrix.md',
-    'simulation-report.md', 'FIRMWARE-MAP.md', 'docs/README.md', 'docs/WORK-QUEUE.md',
+    'simulation-report.md', 'docs/FIRMWARE.md', 'docs/README.md', 'docs/WORK-QUEUE.md',
     'dtsrc/O1_asic_dual/README.md',
     'docs/STATUS-ADAPTATION.md', 'docs/SETTINGS-ADAPTATION.md',
     'docs/FILESYSTEM-TOOLS-EXECUTION.md', 'docs/INSTALL-CHAIN-VALIDATION.md',
@@ -21,7 +21,6 @@ ENTRY_POINTS = (
     'docs/MTP-ATOMIC-UPLOAD.md', 'docs/MTP-CONTROL-ADAPTATION.md',
     'docs/MTP-ADAPTATION.md', 'docs/MTP-OBJECTS-ADAPTATION.md',
     'docs/BACKUP-SESSION-ADAPTATION.md', 'docs/BACKUP-DATA-PATHS.md',
-    'docs/firmware-compatibility.md',
     'docs/PROFILE-SELECTION.md', 'docs/HAPTICS-ADAPTATION.md',
     'docs/OPERATION-FEEDBACK-ADAPTATION.md', 'docs/archive/README.md',
 )

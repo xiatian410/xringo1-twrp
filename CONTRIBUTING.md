@@ -18,7 +18,7 @@
 
 文本使用 UTF-8、LF 换行和文件末尾换行，去掉行尾空白；编辑器约定见 [.editorconfig](.editorconfig)。Markdown 使用单一一级标题、连续标题层级与相对链接，列表及代码块前后留空行。不要批量格式化固定补丁或历史证据；[.gitattributes](.gitattributes) 保留补丁原始字节，避免改变已绑定的 SHA-256。
 
-公开 checkout 缺少构建 blob 与本地资源，准备方式见 [构建指南](BUILD-AND-TEST.md)。最终镜像构建必须先 `installclean`，再使用 `make -j$(nproc)`。
+公开 checkout 缺少构建 blob 与本地资源，准备方式见 [构建指南](docs/BUILDING.md)。最终镜像构建必须先 `installclean`，再使用 `make -j$(nproc)`。
 
 ## 发布约定
 

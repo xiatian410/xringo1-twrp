@@ -23,24 +23,16 @@
     "sha256": "2e69a9e2e61adf4fdf016dbe08e7d775177bc8691e05701f2217d39b8d78db7f",
     "mode": "0o644"
   },
-  "BUILD-AND-TEST.md": {
-    "sha256": "ea90be260cae4eb430169cfda042f70c416a99069e66f6ca190861c6104c8f48",
-    "mode": "0o644"
-  },
   "CONTRIBUTING.md": {
-    "sha256": "83322e5b68e9d236868e5d341b315818f41bd0f7d1b0ef12bbf19d3c73e52f89",
+    "sha256": "4e2c636443f378c258c490c3d428376c1de6943880e9c1147f5270a296ee6455",
     "mode": "0o644"
   },
   "FEATURE-USAGE.md": {
     "sha256": "9499b7151c7713a4444ddd3caf7b35e2280fa1f13a57657533785c0bed82d595",
     "mode": "0o644"
   },
-  "FIRMWARE-MAP.md": {
-    "sha256": "7d9ad89ce2d8e43ac40e83f8c346580c3e0b0842a9010027ea402fc85be112a6",
-    "mode": "0o644"
-  },
   "MAINTENANCE.md": {
-    "sha256": "3b3d0287ff0a8981c420c54cc671d8a9190505fed9a1fe3bdf61b8ad43a2e7b4",
+    "sha256": "b361550538384ce172a278bb58dffc758c46526496bdfaec98dfc7f50e3b6114",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -52,11 +44,11 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "5505a5355c194cef5ce40c06a6b268ddc3aeb9f63c681592527095914b6194e5",
+    "sha256": "44c9ea213aebda3256b897c592bac398a3981632ef112858aeec440eab97c2fe",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
-    "sha256": "356ab3244a485b311a7156e50c1e8697a2f1111580f24037d4eb3267a2dafc8c",
+    "sha256": "7ca3db50fc4628687e91affbd2b77c675eccf9b3034cc4e49a6e68be142f88b3",
     "mode": "0o644"
   },
   "docs/BACKUP-DATA-PATHS.md": {
@@ -67,12 +59,20 @@
     "sha256": "96d3b5d1181f9930710bad0d2c4978049f34cfb19b063e2d571ab4ef8c72b28f",
     "mode": "0o644"
   },
+  "docs/BUILDING.md": {
+    "sha256": "e00ff7db7850aedcab79296e6a3c2d004a3c3a8cc11d88ff7e4f57928ba5391c",
+    "mode": "0o644"
+  },
   "docs/CURRENT-VALIDATION.json": {
     "sha256": "c9a0c1b74b033518a94c2fc860238ed74f3057b20fe3eb27db071fd5d7b04d53",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
     "sha256": "0ebf0f213f11164caeb9544fed2e869fc49d16ecbaebc5327d773e3bf6176e1c",
+    "mode": "0o644"
+  },
+  "docs/FIRMWARE.md": {
+    "sha256": "d3296beef45eb399f04d02a249e035540ac636e6b5b34f26fa64c43d1976c453",
     "mode": "0o644"
   },
   "docs/HAPTICS-ADAPTATION.md": {
@@ -136,7 +136,7 @@
     "mode": "0o644"
   },
   "docs/README.md": {
-    "sha256": "b1e1a845f10ba9396952a17420583ecabb5d4543481b8d06b976607b002a92e3",
+    "sha256": "bb993dedbc7eca7d2dc4e50dc15edfe7f47281226baf91c3fdb88b42ccbd081b",
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "6c1da9a78a96c5bcdd4ee436eae505a160e8427f56fe6ef2ee13727513754829",
+    "sha256": "9abfb6a39afce3e8511339d4295a506f26e7090e28475c04e96a47b65e91de40",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -229,10 +229,6 @@
   },
   "docs/crypto-compatibility.json": {
     "sha256": "295dcca3d17d1ae715808c02de7401e0002d4340531e1f1f784f61b8e09e7595",
-    "mode": "0o644"
-  },
-  "docs/firmware-compatibility.md": {
-    "sha256": "ccac8153f12baa6f368b7804fd0a2ef57cdcd756e640a843b2d95c91837096cd",
     "mode": "0o644"
   },
   "docs/system-resource-inventory.json": {
@@ -360,7 +356,7 @@
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/README.md": {
-    "sha256": "aef133d7d9f3e971d4004e9a14989d4afd4ce736f121692be967e808ddd04352",
+    "sha256": "6b8e3f153f2d41f837863904744334302de4d9e2bf3063886514d6d9d6bbd724",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/device.mk": {
@@ -1432,7 +1428,7 @@
     "mode": "0o644"
   },
   "scripts/check_documentation.py": {
-    "sha256": "68719c72b231c89493223d8c730e4070318a9973f59b99211f26577d652c824b",
+    "sha256": "6b6e304747372ae975ca517bd6471e9fb5f916d5fc692bcc17cb8f3750387f3f",
     "mode": "0o644"
   },
   "scripts/check_public_tree.py": {
@@ -1441,10 +1437,6 @@
   },
   "scripts/check_vermagic.py": {
     "sha256": "6079663f88d4607ec168200ba77555596060dc9afedc6f39d344916b9b0138cb",
-    "mode": "0o644"
-  },
-  "scripts/check_versions.py": {
-    "sha256": "133bfc7a5969979173c311e11d0026e6640b9853139def31ac622aee66cf7c72",
     "mode": "0o644"
   },
   "scripts/collect-haptics-state.ps1": {
@@ -1480,7 +1472,7 @@
     "mode": "0o644"
   },
   "scripts/compare_firmware.py": {
-    "sha256": "8a652dd1e8417aa36dd7c5498f9e29ab812cb1120d5302aeb0a4e01a0676fd8b",
+    "sha256": "3d9853438191748b251bed2a30b09ddcaef6e3f74ac2b3e2794df3e15cbcac8c",
     "mode": "0o644"
   },
   "scripts/compare_os4_stable.py": {
@@ -1620,7 +1612,7 @@
     "mode": "0o644"
   },
   "scripts/sync_github.py": {
-    "sha256": "cc8cfc73cef2d145fef541fa121b69f4f0d018f7b0221f85b17777075973450c",
+    "sha256": "0026bfb5686a3d1e6dc977b0fcff3d8207bb80ab4fd0b60a899842579b48735f",
     "mode": "0o644"
   },
   "scripts/unpack_ramdisk.py": {
@@ -1633,10 +1625,6 @@
   },
   "scripts/verify_haptics_power_topology.py": {
     "sha256": "bb43e379b818b80d96c15943800e07714abbbd37b50d9b0d9024f4ebfc8ce866",
-    "mode": "0o644"
-  },
-  "scripts/verify_img.py": {
-    "sha256": "4fd0fd71f643a4b15802ba9a25ae7560bf2a51cc05e31584c48f3a6f926d06fc",
     "mode": "0o644"
   },
   "scripts/verify_profile_init.py": {

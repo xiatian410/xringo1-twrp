@@ -101,7 +101,7 @@ def main():
     out = ROOT / 'docs'
     out.mkdir(exist_ok=True)
     (out / 'firmware-compatibility.json').write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
-    rows = ['# 固件兼容性分析（离线阶段）', '',
+    rows = [
             '这是固件证据与静态冲突报告，不是单镜像兼容完成声明。'
             '完整导出符号、运行时选择、解密组合及功能模拟尚在补齐。', '',
             '| 样本 | 包内 Android / SDK | 内核 release | 去重模块数 | recovery |',
@@ -122,8 +122,17 @@ def main():
              '机器报告保留每个冲突的符号名与两个 CRC，并检查原厂模块之间可解析的导入/导出关系。'
              '缺失的内核导出表明确记为 unresolved，不能据此声称全依赖通过。', '',
              '包内身份以每份 `analysis/facts.json` 为准。尤其 OS3 末版下载名与包内 `16OS3.1.260921…` 不同。', '',
-             '来源：[获取清单](../firmware-inventory.json)。逐符号机器报告约 17 MB，留在本地，不随源码发布。准备原厂样本后，运行 `python3 scripts/compare_firmware.py` 可重新生成 `docs/firmware-compatibility.json` 与本页；生成脚本见 [compare_firmware.py](../scripts/compare_firmware.py)。', '']
-    (out / 'firmware-compatibility.md').write_text('\n'.join(rows))
+             '来源：[获取清单](../firmware-inventory.json)。逐符号机器报告约 17 MB，留在本地，不随源码发布。准备原厂样本后，运行 `python3 scripts/compare_firmware.py` 可重新生成本节及本地 `docs/firmware-compatibility.json`；生成脚本见 [compare_firmware.py](../scripts/compare_firmware.py)。', '']
+    # Keep the source/map prose intact when regenerating the ABI tables.
+    document = out / 'FIRMWARE.md'
+    begin = '<!-- BEGIN GENERATED COMPATIBILITY -->'
+    end = '<!-- END GENERATED COMPATIBILITY -->'
+    content = document.read_text()
+    if content.count(begin) != 1 or content.count(end) != 1:
+        raise ValueError('FIRMWARE.md must contain exactly one compatibility section')
+    prefix, remainder = content.split(begin, 1)
+    _, suffix = remainder.split(end, 1)
+    document.write_text(prefix + begin + '\n\n' + '\n'.join(rows).strip() + '\n\n' + end + suffix)
     for sample, s in report['samples'].items():
         print(sample, s['unique_module_count'], 'modules,', len(s['module_links']['conflicts']), 'module-link CRC conflicts,',
               s['module_links']['unresolved_symbols_count'], 'kernel/other exports unresolved')

@@ -17,20 +17,8 @@
 | --- | --- | --- |
 | 容量刷新页面停留 | 现场后台约 5.15 秒完成；原 GUI tick / 主循环接续已核对，提交等待会延迟 DONE 呈现，但现场根因未定位 | 后续只追提交等待与实际呈现的新证据；不重复扫描 / DONE 夹具，不根据模拟等待修改 DRM，不要求重复触发采集。见[主循环范围](REFRESH-STUCK-INVESTIGATION.md#gui-loop) |
 | OTA / A/B 快照生命周期 | 两份完整 OS4 payload 已离线执行；快照错误传播、snapuserd EOF 崩溃已修正，读取、合并及指定进程退出点恢复已有证据 | 接续多窗口或 SnapshotManager 到实际服务端的流程。真实 init / 内核映射、硬件断电与任意撕裂未验证；不重跑已覆盖退出点。见[OTA 实现与证据](OTA-OPERATION-COW.md) |
-| 文件系统完整生命周期 | 清除错误传播、媒体保留、格式转换和 ARM64 工具接续已维护 | 处理完整挂载 / GUI / 加密与 I/O 故障收尾，不重复已通过的命令和内容检查。见[文件系统说明](FILESYSTEM-TOOLS-EXECUTION.md) |
+| 文件系统完整生命周期 | 清除错误传播、媒体保留、格式转换和 ARM64 工具接续已维护 | 接续格式化后临时挂载 / 标签 / 目录重建，以及 GUI / 加密与 I/O 故障收尾，不重复已通过的命令和内容检查。见[文件系统说明](FILESYSTEM-TOOLS-EXECUTION.md) |
 | 其他具体缺陷 | 触摸自动启动、安全服务、多用户、备份恢复和 USB 集成仍有缺口 | 按下表剩余边界及新证据排序，每批明确实现决定和结束条件，不启动全量重复审计 |
-
-MTP 临时文件删除失败导致同对象覆盖无法重试已由 0081 修正并清理构建交付；对象 116 项 / 移动复制 48 项、旧覆盖失败对照通过。该问题收尾，不重复同类重试夹具；跨重启归属及清理仍待实现，不能按通用前缀删除用户文件。见[上传重试](MTP-ATOMIC-UPLOAD.md#staging-retry)。
-
-原生 MTP bulk 完成队列报错后负值转无符号导致的栈越界已由 0082 修正；旧 EIO / EAGAIN 两项 ASan 越界、修正三项及原生 / 兼容往返回归已核对并清理构建交付。该错误分支收尾，不新增等价故障夹具；完整 bulk / 控制请求 / server 取消与 Reset 接续仍未完成。见[完成队列错误](MTP-CONTROL-ADAPTATION.md#bulk-completion-error)。
-
-MTP 单批发送的负磁盘读取与尾批 USB 错误误报成功已由 0083 修正；八项通过、旧六项失败，相关正常传输和完成队列回归通过并清理构建交付。本项收尾，不重复单批夹具；后续多批首错误修正见下文，完整 server / Reset / USB 集成仍未完成。见[发送失败传播](MTP-ADAPTATION.md#send-errors)。
-
-0084 修正兼容多批发送的后续磁盘错误覆盖先前 USB 错误；指定第二次读取重叠调度和两种模式多批内容往返六项通过，旧双故障一项失败，单批八项回归通过。已清理构建并收尾，不重复相同调度；真实 FunctionFS outstanding 取消与完整 server / Reset 仍未完成。见[多批发送](MTP-ADAPTATION.md#pipeline-first-error)。
-
-0085 阻止保留 System 挂载设置使离线 Repair / Resize 在仍挂载时误执行。原 Unmount 分支与修复 / manager / backend 九场景通过，旧两项失败；146 返回码断言、ARM64 修复七项及格式化修复六项回归通过，已清理构建收尾。不重复保留挂载夹具；其他入口及完整真实挂载 / GUI / fscrypt 生命周期仍未完成。见[挂载前置检查](FILESYSTEM-TOOLS-EXECUTION.md#repair-mounted-guard)。
-
-0086 补齐六个离线格式化 helper 的保留挂载拒绝；十五项格式 / 挂载场景及 USE_EXT4 分支通过，旧七个格式选择和内建一个场景失败，25 项转换 / ARM64 格式修复六项 / 原卸载修复九项回归通过，已清理构建收尾。不重复等价格式夹具；格式化后临时挂载 / 标签 / 目录重建与完整 GUI / fscrypt 仍未闭环。见[格式化前置条件](FILESYSTEM-TOOLS-EXECUTION.md#format-mounted-guards)。
 
 ## 已维护事项的入口
 
@@ -42,6 +30,7 @@ MTP 单批发送的负磁盘读取与尾批 USB 错误误报成功已由 0083 �
 | OTG / UFS 误识别、存储选择 | [挂载与存储](MOUNT-LIST-EXPLANATION.md) |
 | 温度避让摄像头、状态显示 | [状态与 RTC](STATUS-ADAPTATION.md) |
 | 加载页 XRING O1 名称 | [阶段交付记录](archive/BOUNDED-MAINTENANCE.md) |
+| 离线格式化 / 修复挂载检查 | [文件系统工具](FILESYSTEM-TOOLS-EXECUTION.md) |
 | 备份目录重命名 / 删除、摘要发布 | [备份会话](BACKUP-SESSION-ADAPTATION.md) |
 | 日志导出错误传播、页面日志生命周期 | [操作反馈](OPERATION-FEEDBACK-ADAPTATION.md) |
 | MTP 日期、原子上传、格式与会话 | [上传](MTP-ATOMIC-UPLOAD.md) · [对象](MTP-OBJECTS-ADAPTATION.md) · [控制与事件](MTP-CONTROL-ADAPTATION.md) |

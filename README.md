@@ -2,25 +2,30 @@
 
 [![Source and patch integrity](https://github.com/xiatian410/xringo1-twrp/actions/workflows/source-check.yml/badge.svg)](https://github.com/xiatian410/xringo1-twrp/actions/workflows/source-check.yml)
 
-基于 **TWRP / YARP** 的 Xiaomi 15S Pro（`dijun` / **XRING O1**）Recovery 适配工程，公开维护设备树、固定平台补丁、构建脚本和离线验证源码。
+基于 TWRP / YARP 的 **Xiaomi 15S Pro** Recovery 适配工程，设备代号 **`dijun`**，平台 **XRING O1**。
 
-目标是使用同一镜像优先覆盖 **HyperOS 3 / 4**，在兼容条件允许时扩展到已收录的 HyperOS 2 样本。六份固件 profile 按组件身份选择模块和安全服务；收录样本不代表该版本全部功能已经验收。
+本仓库维护设备树、固定版本的平台补丁、构建工具和离线验证源码。目标是以同一 Recovery 镜像优先适配 **HyperOS 3 / 4**，并在兼容条件允许时覆盖已收录的 HyperOS 2 样本。
 
-[项目状态](#项目状态) · [快速开始](#快速开始) · [目录结构](#目录结构) · [文档](#文档) · [参与贡献](#参与贡献)
+[当前状态](#当前状态) · [快速开始](#快速开始) · [构建](#构建) · [文档](#文档) · [贡献](#贡献)
 
-## 项目状态
+## 当前状态
 
-**开发中，完整适配尚未完成。** 当前候选、SHA-256 和验证范围见[交付报告](simulation-report.md)，版本范围见[兼容矩阵](compatibility-matrix.md)，未解决问题统一维护在[工作队列](docs/WORK-QUEUE.md)。
+**项目仍在开发，尚未完成全部适配。** 六份固件 profile 已纳入统一候选，按组件身份选择模块与安全服务；这不代表各系统版本的全部功能已经验收。
 
-已维护 OTG / UFS 识别、刷入目标选择、NV 界面限制、加载页名称、温度避让及部分文件系统、MTP、OTA 错误处理。用户已确认 OS4 震动正常、backup-manifest 基线设置正常；自动触摸启动、容量刷新页面停留及完整 OTA / 快照生命周期等仍有未完成边界。
+| 项目 | 说明 |
+| --- | --- |
+| 设备 | Xiaomi 15S Pro（`dijun`） |
+| 平台 | XRING O1（设备树目录：`O1_asic`） |
+| 优先范围 | HyperOS 3 / 4；HyperOS 2 作为兼容扩展 |
+| 镜像布局 | Recovery 不携带内核，沿用匹配系统的 boot / vendor_boot |
+| 当前候选与 SHA-256 | [交付报告](simulation-report.md) |
+| 未完成事项 | [工作队列](docs/WORK-QUEUE.md) |
 
-CI 检查公开源码、补丁和文档完整性。构建成功与离线测试通过均不代替设备功能验收。
+版本范围见[兼容矩阵](compatibility-matrix.md)，页面入口与限制见[功能说明](FEATURE-USAGE.md)。CI 检查公开源码和补丁完整性；构建成功与离线验证通过不代替设备功能验收。
 
 ## 快速开始
 
-### 获取源码
-
-需要 Git 和 Python 3；以下检查不需要原厂固件：
+安装 Git 和 Python 3，然后获取并检查公开源码：
 
 ```bash
 git clone https://github.com/xiatian410/xringo1-twrp.git
@@ -29,52 +34,56 @@ python3 scripts/check_public_tree.py
 python3 scripts/check_documentation.py
 ```
 
-### 构建镜像
+这些检查不需要原厂固件。完整构建所需的专有资源、Android 源码和本地签名密钥需另行准备。
 
-本仓库是适配工程，完整构建还需要固定 revision 的 Android 源码、匹配原厂资源、本地签名密钥和规定的工作区目录。先完成[构建指南](BUILD-AND-TEST.md)中的准备步骤，再在完整工作区执行：
+## 构建
+
+先按[构建指南](docs/BUILDING.md)准备固定 revision 的 Android 源码、匹配资源和工作区目录，再执行：
 
 ```bash
 bash scripts/compile_recovery.sh
 ```
 
-脚本同步维护设备树，执行 `installclean`，然后使用 `make -j$(nproc) recoveryimage` 构建。镜像与编译文件仅保留在本地，不随源码上传。
+脚本同步维护设备树，执行 `installclean`，然后以 `make -j$(nproc) recoveryimage` 构建。平台基线、补丁顺序和摘要由 [series.json](dtsrc/O1_asic_dual/patches/series.json) 固定。
+
+镜像和编译产物仅保留在本地，本仓库不提供二进制下载。
 
 ## 目录结构
 
 ```text
 .
-├── .github/workflows/   # 公开源码 CI
-├── docs/               # 技术主题、验证摘要和工作队列
+├── .github/workflows/   # 源码与文档 CI
+├── docs/               # 构建、固件、技术说明和工作队列
 │   └── archive/        # 历史调查与阶段记录
-├── dtsrc/O1_asic_dual/  # 维护设备树、固件 profile 和固定补丁
+├── dtsrc/O1_asic_dual/  # 维护设备树、profile 和固定补丁
 ├── manifests/          # Android 源码 revision 清单
-├── scripts/            # 资源提取、构建、同步与核验
+├── scripts/            # 提取、构建、同步与核验工具
 ├── tests/              # 离线测试源码和合成夹具
 └── tools/              # 诊断采集工具源码
 ```
 
-平台基线、补丁顺序及摘要见 [series.json](dtsrc/O1_asic_dual/patches/series.json)。
-
 ## 文档
 
-| 主题 | 入口 |
+| 需要了解 | 文档 |
 | --- | --- |
-| 使用与兼容性 | [功能说明](FEATURE-USAGE.md) · [兼容矩阵](compatibility-matrix.md) |
-| 构建与固件 | [构建指南](BUILD-AND-TEST.md) · [固件映射](FIRMWARE-MAP.md) |
-| 交付与待办 | [交付报告](simulation-report.md) · [工作队列](docs/WORK-QUEUE.md) |
-| 技术实现与历史记录 | [技术文档索引](docs/README.md) |
-| 目标与维护 | [适配规范](ADAPTATION-GOALS.md) · [维护指南](MAINTENANCE.md) |
+| 使用入口与已知限制 | [功能说明](FEATURE-USAGE.md) · [兼容矩阵](compatibility-matrix.md) |
+| 构建与固件准备 | [构建指南](docs/BUILDING.md) · [固件来源与 ABI 比较](docs/FIRMWARE.md) |
+| 当前交付与下一步 | [交付报告](simulation-report.md) · [工作队列](docs/WORK-QUEUE.md) |
+| 功能实现与验证方法 | [技术文档索引](docs/README.md) |
+| 目标、验收与维护流程 | [适配规范](ADAPTATION-GOALS.md) · [维护指南](MAINTENANCE.md) |
 
-公开清单 [SOURCE-MANIFEST.json](SOURCE-MANIFEST.json) 记录文件摘要和权限；[PRIVATE-ASSETS.json](PRIVATE-ASSETS.json) 只记录需自行准备的资源元数据；[CURRENT-VALIDATION.json](docs/CURRENT-VALIDATION.json) 汇总验证范围。
+公开源码清单 [SOURCE-MANIFEST.json](SOURCE-MANIFEST.json) 记录文件摘要和权限；[PRIVATE-ASSETS.json](PRIVATE-ASSETS.json) 记录需自行准备的资源元数据；[验证摘要](docs/CURRENT-VALIDATION.json) 记录离线覆盖范围。
 
-原厂 blob、完整 OTA、镜像、编译文件、私钥、原始设备日志和缓存不公开。技术文档中的 `logs/`、`imgs/`、`firmware/` 是完整工作区的本地路径，不是下载链接。部分验证还依赖 Android 构建树、LVGL 或 QEMU；本工程的离线维护不操作手机或物理块设备。
+原厂 blob、完整 OTA、镜像、编译文件、私钥、原始设备日志和缓存不公开。技术文档中的 `logs/`、`imgs/`、`firmware/` 路径属于完整本地工作区，不是下载链接。部分验证依赖 Android 构建树、LVGL 或 QEMU，具体前提见对应主题文档。
 
-## 参与贡献
+## 贡献
 
-通过 [GitHub Issues](https://github.com/xiatian410/xringo1-twrp/issues) 反馈固件版本、Recovery 候选、复现步骤以及预期和实际结果，公开日志前移除个人信息与密钥。
+请通过 [Issues](https://github.com/xiatian410/xringo1-twrp/issues) 提供固件版本、Recovery 候选及哈希、复现步骤、预期与实际结果，公开日志前移除个人信息和密钥。
 
-提交与文本格式遵循[贡献指南](CONTRIBUTING.md)。维护者每批修改按[同步流程](MAINTENANCE.md#github-同步)更新仓库，历史版本通过 Git 追溯。
+提交与格式约定见[贡献指南](CONTRIBUTING.md)。维护者按[同步流程](MAINTENANCE.md#github-同步)发布每批源码与文档修改，历史实现通过 Git 追溯。当前代理维护仅进行离线操作，不连接手机或操作物理块设备。
 
 ## 致谢与许可
 
-感谢 Team Win、[TWRP-Test/android_bootable_recovery](https://github.com/TWRP-Test/android_bootable_recovery) 和 AOSP。各文件保留原版权及许可，参见 [NOTICE](NOTICE) 与文件声明；本仓库不以单一新许可覆盖全部上游代码。
+感谢 Team Win、[TWRP-Test/android_bootable_recovery](https://github.com/TWRP-Test/android_bootable_recovery) 和 AOSP。
+
+各文件保留原版权及许可，详见 [NOTICE](NOTICE) 和文件声明。本仓库不以单一新许可覆盖全部上游代码。

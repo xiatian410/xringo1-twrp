@@ -13,13 +13,13 @@
 | `dtsrc/O1_asic_dual` | 唯一维护设备树 |
 | `/root/AAA/twrp/device/xiaomi/O1_asic` | 同步生成的设备树 |
 
-Android 仓库 revision 见 [pinned.xml](manifests/pinned.xml)。平台修改基线和补丁顺序见 [series.json](dtsrc/O1_asic_dual/patches/series.json)，不要用浮动分支代替固定 commit。
+Android 仓库 revision 见 [pinned.xml](../manifests/pinned.xml)。平台修改基线和补丁顺序见 [series.json](../dtsrc/O1_asic_dual/patches/series.json)，不要用浮动分支代替固定 commit。
 
 其他依赖由所执行脚本决定，包括 Python 3、Android 构建工具以及部分检查需要的 LZ4、QEMU、LVGL、ffmpeg 等；公开源码 CI 不要求这些完整依赖。
 
 ## 准备资源
 
-1. 按 [固件映射](FIRMWARE-MAP.md) 获取对应样本，使用 [维护流程](MAINTENANCE.md) 提取并校验关键分区与组件。
+1. 按 [固件映射](FIRMWARE.md) 获取对应样本，使用 [维护流程](../MAINTENANCE.md) 提取并校验关键分区与组件。
 2. 恢复公开快照中 `PRIVATE-ASSETS.json` 列出的资源。已有匹配本地资源树时可执行：
 
    ```bash
@@ -64,6 +64,6 @@ python3 scripts/check_public_tree.py
 python3 scripts/check_documentation.py
 ```
 
-完整工作区中的功能检查按改动影响选择，具体命令见各技术文档与 `tests/` 脚本帮助；不默认全量重跑。当前交付的验证摘要见 [simulation-report.md](simulation-report.md)。
+完整工作区中的功能检查按改动影响选择，具体命令见各技术文档与 `tests/` 脚本帮助；不默认全量重跑。当前交付的验证摘要见 [simulation-report.md](../simulation-report.md)。
 
 清理构建成功仅证明构建完成。还需记录补丁、来源、镜像 SHA-256 和封装检查，明确模拟替身、真实执行与未验证边界。本指南不包含刷机或 AVB 修改步骤。

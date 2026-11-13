@@ -4,6 +4,13 @@
 
 当前状态以 [验证报告](../simulation-report.md) 和 [工作队列](WORK-QUEUE.md) 为准。震动已解决，其旧调查只供追溯，不进入例行检查。
 
+## 使用与构建
+
+- [功能入口与限制](../FEATURE-USAGE.md)
+- [构建指南](BUILDING.md)
+- [固件来源、组件映射与 ABI 比较](FIRMWARE.md)
+- [版本兼容状态](../compatibility-matrix.md)
+
 ## 安装、分区与存储
 
 - [OTA payload、VABC / COW 与最终校验](OTA-OPERATION-COW.md)
@@ -19,7 +26,6 @@
 - [OS4 正式版无法触摸：反馈、离线排查与顺序修正候选](OS4-TOUCH-FAILURE.md)
 - [安全服务组合、依赖与 ARM64 运行时](PROFILE-LINKER-ARM64.md)
 - [多用户发现与解锁入口](MULTIUSER-ADAPTATION.md)
-- [固件兼容性分析（离线阶段）](firmware-compatibility.md)
 
 ## 备份与恢复
 

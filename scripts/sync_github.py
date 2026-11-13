@@ -30,7 +30,7 @@ def digest(data):return hashlib.sha256(data).hexdigest()
 def candidates():
     for name in ['AGENTS.md', 'README.md', 'CONTRIBUTING.md', '.gitignore', '.editorconfig', '.gitattributes',
                  'ADAPTATION-GOALS.md', 'MAINTENANCE.md',
-                 'FEATURE-USAGE.md', 'BUILD-AND-TEST.md', 'FIRMWARE-MAP.md', 'compatibility-matrix.md',
+                 'FEATURE-USAGE.md', 'compatibility-matrix.md',
                  'simulation-report.md', 'simulation-report.json', 'firmware-inventory.json', 'NOTICE']:
         path=ROOT/name
         if path.is_file():yield path

@@ -11,7 +11,7 @@
 
 ## 固件增补
 
-1. 从 [固件映射](FIRMWARE-MAP.md) 与 [固件清单](firmware-inventory.json) 确认样本来源。新版本独立建档，不只按 HyperOS 大版本或内核主次版本归类。
+1. 从 [固件映射](docs/FIRMWARE.md) 与 [固件清单](firmware-inventory.json) 确认样本来源。新版本独立建档，不只按 HyperOS 大版本或内核主次版本归类。
 2. 使用 `scripts/acquire_firmware.py --help` 查看提取参数。记录 OTA 身份、payload metadata、分区 SHA-256 和提取组件来源。HTTP ETag 不等于完整 ZIP 哈希。
 3. 比较内核 release、模块 vermagic / CRC、fstab、TEE / TA / HAL、私有库和系统身份。只允许经字节或兼容性证明的资源去重。
 4. 维护 `dtsrc/O1_asic_dual/profiles/` 中的选择规则和资源。未知、冲突或缺失组合必须明确失败，不能混装组件。
@@ -28,7 +28,7 @@
 - `python3 scripts/sync_device_tree.py` 先检查；确认后使用 `--sync` 同步。脚本拒绝覆盖未列入维护系列的源码修改。
 - 不在构建输出、临时目录或手工重打包产物中单独保留修正。
 
-构建步骤见 [构建指南](BUILD-AND-TEST.md)。不新增自定义 first-stage 模块列表来覆盖原厂 vendor_boot 的加载所有权。
+构建步骤见 [构建指南](docs/BUILDING.md)。不新增自定义 first-stage 模块列表来覆盖原厂 vendor_boot 的加载所有权。
 
 ## 验证与交付
 
@@ -72,12 +72,11 @@ python3 scripts/sync_github.py --push --message "说明实际修改"
 - 不在多个入口复制逐轮进度、镜像哈希或检查数量；后续变更更新所属主题。
 - 同一主题的短文合并为小节，使用稳定锚点；同步修正文档索引和工具引用，不保留重复跳转文件。归档编解码、元数据恢复和原始镜像复制统一在[备份数据路径](docs/BACKUP-DATA-PATHS.md)维护，ADB sideload 统一在[安装链](docs/INSTALL-CHAIN-VALIDATION.md#sideload)维护。
 - 删除无引用、依赖早期固定路径或已撤销模块清单的一次性查看脚本；通用提取、构建、测试及其依赖保留。
-- 已清理六份无维护引用的早期镜像 / 模块诊断脚本：`dbg_tail.py`、`dump_hdr.py`、`find_literal.py`、`cmp_imgs.py`、`find_avb.py`、`prove_identical.py`。旧实现可从 Git 历史追溯；现行核验使用构建指南和主题文档列出的工具。
-- 另已移除无维护引用的旧候选重打包脚本 `build_halfix.py`、`build_keystorefix.py`，以及依赖固定旧样本 / 临时目录的 `vb_inventory.py`、`touch_stack.py`。现行交付只走源码构建；通用镜像解析、固件比较与被其他脚本依赖的 helper 保留。
 - 工作队列只保留当前问题、下一步和主题链接，逐轮检查与历史数字留在技术记录。文本格式遵循 `.editorconfig`，固定补丁保持原字节，不以全仓格式化方式整理仓库。
 - 保留独立实现说明、可复现脚本、构建所需 JSON、固定补丁及许可；不按文件大小或近期是否使用来删除依赖。
 - 已解决调查不作为当前队列。无独立价值的重复记录可删除，既有公开版本从 Git 历史追溯，不改写提交历史。
 - 历史报告的来源哈希保留原值；文档整理不伪装成新验证或功能修复。
+- 构建指南统一在 `docs/BUILDING.md`，固件来源与 ABI 比较统一在 `docs/FIRMWARE.md`。已移除无引用的 `verify_img.py` 旧镜像打印工具和 `check_versions.py` 字节搜索工具；模块事实使用 `firmware_facts.py`、`abi_check.py` 和 `compare_firmware.py` 解析 ELF 版本节。
 - 逐符号固件比较 `docs/firmware-compatibility.json` 仅留本地，公开保留结论与生成工具；其他构建资源清单按依赖保留。
 
 公开同步会检查文件清单、补丁摘要、Python / JSON 语法及文档导航。纯文档整理只做相关检查，不触发功能回归或镜像重编。

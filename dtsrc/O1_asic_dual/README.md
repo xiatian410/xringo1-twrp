@@ -9,7 +9,7 @@
 - [目标与验收规范](../../ADAPTATION-GOALS.md)
 - [版本与功能状态](../../compatibility-matrix.md)
 - [当前交付](../../simulation-report.md)
-- [固件档案](../../FIRMWARE-MAP.md)
+- [固件档案](../../docs/FIRMWARE.md)
 
 OS4 震动用户已确认正常，不再例行调查。历史模拟不代替新候选的设备验收。
 
@@ -32,4 +32,4 @@ bash scripts/compile_recovery.sh
 
 需先准备完整 Android 源码、私有资源及本地构建密钥。构建脚本同步设备树，执行 `installclean`，再使用 `make -j$(nproc) recoveryimage`。
 
-完整前提见 [构建指南](../../BUILD-AND-TEST.md)，新增固件和补丁流程见 [维护指南](../../MAINTENANCE.md)。编译镜像、原厂 blob、私钥和原始设备日志不上传公开仓库。
+完整前提见 [构建指南](../../docs/BUILDING.md)，新增固件和补丁流程见 [维护指南](../../MAINTENANCE.md)。编译镜像、原厂 blob、私钥和原始设备日志不上传公开仓库。
