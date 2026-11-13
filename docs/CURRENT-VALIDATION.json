@@ -354,6 +354,15 @@
       "scope": "Real LVGL image confirmation page, pointer hit testing and original target callback.\n\nDestination navigation is recorded, not executed. Metrics/fonts and hardware are\nhost fixtures; this does not prove Android touch, persistence or destination pages.\n"
     },
     {
+      "name": "install-target-confirmation-chain",
+      "grade": "S2",
+      "result": "pass",
+      "count": 25,
+      "evidence": "local logs/install-target-confirmation-chain.json",
+      "evidence_sha256": "0c4c3462d932821576feeb5ec450f71a983ef65439e31b27b5c35c45f445698a",
+      "scope": "Original LVGL target page/router/host and swipe slider execute through install_confirmed. Twenty valid gestures pass the exact image path, selected mount point and both-slot flag to observed start_image and route to INSTALL_PROGRESS; five drag-outs cancel. Backend writes, worker/manager and device I/O are not executed here; existing independent image worker evidence is reused."
+    },
+    {
       "name": "partition-actions-image-chain",
       "status": "PASS",
       "cases": 40,

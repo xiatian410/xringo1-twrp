@@ -26,7 +26,7 @@
 
 | 事项 | 文档 |
 | --- | --- |
-| 刷入目标、NV 界面限制 | [分区操作](PARTITION-ACTIONS.md)：补充真实 router/page_host 路由与返回生命周期回归 |
+| 刷入目标、NV 界面限制 | [分区操作](PARTITION-ACTIONS.md)：目标点击、确认滑块、`start_image` 参数与进度页路由已接合验证；manager 和实际写入仍按独立链路记录 |
 | OTG / UFS 误识别、存储选择 | [挂载与存储](MOUNT-LIST-EXPLANATION.md) |
 | 温度避让摄像头、状态显示 | [状态与 RTC](STATUS-ADAPTATION.md) |
 | 加载页 XRING O1 名称 | [阶段交付记录](archive/BOUNDED-MAINTENANCE.md) |

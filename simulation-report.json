@@ -1959,6 +1959,15 @@
     "image_rebuilt": false,
     "scope": "Original LVGL image target page and callback with real page_router/page_host REPLACE to confirm, POP to install entry, and PUSH back to confirmation. Selected target styling is checked after rebuild; drag-out cancels. Install source, manager, device discovery, block I/O and hardware input remain fixtures."
   },
+  "install_target_confirmation_chain": {
+    "evidence": "logs/install-target-confirmation-chain.json",
+    "evidence_sha256": "0c4c3462d932821576feeb5ec450f71a983ef65439e31b27b5c35c45f445698a",
+    "count": 25,
+    "result": "pass",
+    "production_changes": false,
+    "image_rebuilt": false,
+    "scope": "Original target page and page_router/page_host plus actual LVGL swipe-slider widget and extracted install_confirmed callback. For each of five targets, four valid tap locations select the target, a full slider gesture passes the exact image path/target/both-slot flag to an observed install_backend::start_image, and the router enters INSTALL_PROGRESS; one drag-out gesture cancels. Backend worker/manager, writes, device input, fonts and hardware remain fixtures; independent image worker suite is reused, not rerun."
+  },
   "additional_checks": [
     {
       "name": "os4-touch-ordinary-report-startup-policy",

@@ -74,7 +74,8 @@ int main(int argc,char**argv){
         (temp/'image-targets.inc').write_text('static std::vector<gui2_backend::image_target> install_targets={'+
             ','.join('{'+json.dumps(n)+','+json.dumps(p)+',true}' for p,n in rows)+'};\n')
         gui = (SRC/'gui2.cpp').read_text()
-        (temp/'callback.inc').write_text(extract(gui, 'install_target_event_cb'))
+        (temp/'callback.inc').write_text('\n'.join(
+            extract(gui, name) for name in ['install_target_event_cb', 'install_confirmed']))
         artwork = SRC/'image/ic_arrow_right.svg'
         assert artwork.is_file()
         (temp/'gui2_svg_assets.h').write_bytes(subprocess.check_output(
@@ -95,7 +96,8 @@ int main(int argc,char**argv){
                                   stdout=result.stdout,stderr=result.stderr))
                 print(index,mode,'PASS' if result.returncode==0 else 'FAIL',result.stdout+result.stderr,flush=True)
     files=sources+[flags,SRC.parent/'fstab/fstab_parser.cpp',SRC.parent/'fstab/fstab_parser.hpp',SRC/'image/ic_slider_arrow.svg',SRC/'gui2.cpp',artwork,SRC/'generate_svg_header.py',
-                   ROOT/'tests/install_target_interaction_test.cpp',ROOT/'tests/install_target_interaction_test.py']
+                   ROOT/'tests/install_target_interaction_test.cpp',ROOT/'tests/install_target_interaction_test.py',
+                   SRC/'backend/install_backend.h']
     # Headers participating in the host compilation are bound separately from LVGL.
     files += sorted({h for p in sources for h in p.parent.glob('*.h')})
     report=dict(status='PASS' if all(c['returncode']==0 for c in cases) else 'FAIL',

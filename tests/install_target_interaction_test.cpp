@@ -12,19 +12,43 @@
 #include "pages/install_confirm_page.h"
 #include "i18n/i18n.h"
 #include "components/swipe_slider.h"
+#include "backend/install_backend.h"
 using page_kind=gui2_pages::page_id;
 using page_transition=gui2_core::page_transition;
 using gui2_core::accept_click;
 #include "image-targets.inc"
 namespace gui2_i18n { extern const language_pack kEnglish; }
 static std::vector<int> target_indices=[] {std::vector<int> v;for(size_t i=0;i<install_targets.size();++i)v.push_back(i);return v;}();
-static struct {std::string install_target_mount;} page_state;
 static gui2_shell::page_host host;
 static gui2_pages::page_router router;
+static lv_obj_t* confirm_track=nullptr;
+static struct install_observer final : gui2_backend::install_backend {
+  std::string path, target; bool both_slots=false; int calls=0;
+  bool start_zip(const std::vector<std::string>&) override {return false;}
+  std::vector<gui2_backend::image_target> image_targets() override {return {};}
+  std::string image_target_for(const std::string&) override {return {};}
+  bool start_image(const std::string& p,const std::string& t,bool both) override {
+    path=p;target=t;both_slots=both;++calls;return true;
+  }
+  gui2_backend::install_status status() override {return {};}
+  void acknowledge() override {}
+} backend;
+static gui2_backend::install_backend* install=&backend;
+static struct {
+  std::string install_selection="/data/media/0/test.img";
+  std::string install_target_mount;
+  bool install_both_slots=true;
+  bool install_image=true;
+  std::vector<std::string> install_queue;
+  gui2_components::swipe_slider install_confirm;
+  uint64_t install_countdown_start_ms=0;
+  bool install_countdown_done=false;
+} page_state;
 static int navigations=0;
 static page_kind last_page=page_kind::HOME;
 static page_transition last_transition=page_transition::NONE;
 static void install_target_event_cb(lv_event_t* event);
+static void install_confirmed(void*);
 static void build_routed_page(const gui2_pages::page_request& request) {
   last_page=request.id; last_transition=request.transition; ++navigations;
   if(request.id==page_kind::INSTALL_CONFIRM) {
@@ -38,9 +62,13 @@ static void build_routed_page(const gui2_pages::page_request& request) {
       if(install_targets[i].mount_point==page_state.install_target_mount) options.selected_target=i;
     options.target_callback=install_target_event_cb;options.press_guard_callback=gui2_core::press_cancel_guard_cb;
     gui2_pages::build_install_confirm_page(options);
+    confirm_track=page_state.install_confirm.create(
+        host.current_page(), gui2_core::ui, gui2_core::ui.content_left, 2600,
+        gui2_core::ui.content_width, 140, "Swipe", install_confirmed, nullptr);
   } else {
-    host.build("Install", "", gui2_core::navigation_safe_area(), request.transition);
-    auto* label=lv_label_create(host.content());lv_label_set_text(label,"Install source");
+    const char* title=request.id==page_kind::INSTALL_PROGRESS ? "Install progress" : "Install";
+    host.build(title, "", gui2_core::navigation_safe_area(), request.transition);
+    auto* label=lv_label_create(host.content());lv_label_set_text(label,title);
   }
   host.settle();
 }
@@ -63,6 +91,7 @@ static void advance(unsigned ms) {
 }
 static void point(lv_point_t p, bool pressed) {
   position = p; down = pressed; lv_tick_inc(25); lv_indev_read(pointer); lv_timer_handler();
+  advance(80);
 }
 static lv_point_t center(lv_obj_t* object) {
   lv_area_t a; lv_obj_get_coords(object, &a);
@@ -106,7 +135,7 @@ int main(int argc, char** argv) {
   if(mode=="blank"){lv_area_t a;lv_obj_get_coords(card,&a);target={a.x1+4,(a.y1+a.y2)/2};}
   point(target,true);
   if(mode=="drag-out") point({0,0},true);
-  point(position,false);
+    point(position,false);
   if(mode=="drag-out") {
     assert(navigations==2 && host.current_page()==source_page);
     assert(router.current()==page_kind::INSTALL_CONFIRM);
@@ -125,6 +154,20 @@ int main(int argc, char** argv) {
     assert(router.navigate(page_kind::INSTALL_CONFIRM,nullptr,page_transition::PUSH));
     assert(router.current()==page_kind::INSTALL_CONFIRM && last_transition==page_transition::PUSH);
     assert(page_state.install_target_mount==install_targets[index].mount_point);
+    advance(500);
+    lv_area_t track_area; lv_obj_get_coords(confirm_track,&track_area);
+    lv_area_t knob_area; lv_obj_get_coords(lv_obj_get_child(confirm_track,2),&knob_area);
+    lv_point_t knob_center={(knob_area.x1+knob_area.x2)/2,(knob_area.y1+knob_area.y2)/2};
+    point(knob_center,true);
+    point({track_area.x2-60,knob_center.y},true);
+    assert(page_state.install_confirm.progress()==1000);
+    point(position,false);
+    assert(backend.calls==1);
+    assert(backend.path==page_state.install_selection);
+    assert(backend.target==install_targets[index].mount_point);
+    assert(backend.both_slots==page_state.install_both_slots);
+    assert(router.current()==page_kind::INSTALL_PROGRESS);
+    assert(last_page==page_kind::INSTALL_PROGRESS&&last_transition==page_transition::PUSH);
   }
   printf("PASS image target %d %s routes=%d destination=%d\n",index,mode.c_str(),navigations,int(router.current()));
   host.clear(); lv_deinit();
