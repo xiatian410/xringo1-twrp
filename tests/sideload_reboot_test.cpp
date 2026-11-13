@@ -5,7 +5,7 @@ namespace TWFunc {void UpdateLogFile(){++log_updates;}int TwReboot(RebootCommand
 static void fixture_sync(){++syncs;}
 // REBOOT_HEADER
 namespace gui2_backend {
-const reboot_capabilities& twrp_reboot_backend::capabilities() const {capabilities_={true,true,true,true,true,true,true,false};if(scenario=="unsupported-target")capabilities_.fastboot=false;return capabilities_;}
+const reboot_capabilities& twrp_reboot_backend::capabilities() const {capabilities_={true,true,true,true,true,true,true,false};if((scenario=="unsupported-target"||scenario=="unsupported-retry"))capabilities_.fastboot=false;return capabilities_;}
 std::string twrp_reboot_backend::active_slot()const{return {};}
 bool twrp_reboot_backend::set_active_slot(boot_slot){return false;}
 bool twrp_reboot_backend::usb_fastboot()const{return false;}
@@ -25,7 +25,7 @@ static gui2_backend::sideload_backend* sideload=nullptr;
 static void pipe_handler(int){}
 static int child_fixture(int fd){
  uint32_t command=3;if(scenario=="system"||scenario=="ors-system")command=2;
- if(scenario.find("fastboot")!=std::string::npos||scenario=="unsupported-target")command=4;
+ if(scenario.find("fastboot")!=std::string::npos||(scenario=="unsupported-target"||scenario=="unsupported-retry"))command=4;
  if(scenario=="recovery"||scenario=="ors-recovery")command=5;
  if(scenario=="rescue")command=6;
  char message[8]={'C','O','M','D',0,0,0,0};memcpy(message+4,&command,4);::write(fd,message,8);
@@ -43,9 +43,10 @@ int main(int argc,char**argv){
  scenario=argv[1];setenv("REBOOT_FIXTURE",scenario.c_str(),1);::signal(SIGPIPE,pipe_handler);
  gui2_backend::twrp_reboot_backend rebooter;reboot=&rebooter;
  bool rejected=scenario=="rescue"||scenario=="ack-fail"||scenario=="restore-fail";
- if(scenario=="cancel-pending"||scenario=="cancelled-before-return"){
-  std::atomic<bool> token=false;Device::BuiltinAction action=Device::NO_ACTION;
-  CHECK(twrp_sideload("/",&action,&token)==INSTALL_REBOOT);token=true;RequestMiniAdbdExit(&token);
+ static std::atomic<bool> token=false;
+ if(scenario=="cancel-pending"||scenario=="cancelled-before-return"||scenario=="write-cancel"){
+  Device::BuiltinAction action=Device::NO_ACTION;
+  CHECK(twrp_sideload("/",&action,&token)==INSTALL_REBOOT);if(scenario!="write-cancel"){token=true;RequestMiniAdbdExit(&token);}
  }else if(scenario.starts_with("ors-"))CHECK(script_sideload()==1);
  else {
   gui2_backend::twrp_sideload_backend backend;sideload=&backend;CHECK(backend.start(false,false));
@@ -77,7 +78,7 @@ int main(int argc,char**argv){
   // The next ordinary GUI poll must consume the original pending action.
  }
  poll_external_reboot();
- bool expected=!rejected&&scenario!="unsupported-target"&&scenario!="write-fail"&&scenario!="cancel-pending"&&scenario!="cancelled-before-return";
+ bool expected=!rejected&&scenario!="unsupported-target"&&scenario!="write-fail"&&scenario!="write-retry"&&scenario!="write-cancel"&&scenario!="unsupported-retry"&&scenario!="cancel-pending"&&scenario!="cancelled-before-return";
  CHECK(reboot_requested==expected);CHECK(gui2_loop_should_exit(nullptr)==expected);CHECK(!actual_reboots);
  if(expected){CHECK(syncs==1);std::string target="bootloader";RebootCommand command=BOOTLOADER;
   if(scenario=="system"||scenario=="ors-system"){target="system";command=SYSTEM;}
@@ -85,7 +86,20 @@ int main(int argc,char**argv){
   if(scenario=="recovery"||scenario=="ors-recovery"){target="recovery";command=RECOVERY;}
   CHECK(DataManager::GetStrValue("tw_reboot_arg")==target);Reboot();CHECK(actual_reboots==1);CHECK(reboot_argument_seen==std::to_string(command));
  }
- Device::BuiltinAction a=Device::NO_ACTION;CHECK(!TakeMiniAdbdRebootAction(&a));
+ if(scenario=="write-retry"||scenario=="unsupported-retry"){
+  const bool fast=scenario=="unsupported-retry";
+  CHECK(!reboot_requested&&actual_reboots==0);
+  scenario="handoff-recovered";poll_external_reboot();
+  CHECK(reboot_requested&&DataManager::GetStrValue("tw_reboot_arg")== (fast?"fastboot":"bootloader"));
+  Reboot();CHECK(actual_reboots==1);
+  std::cout<<"handoff_retry_preserved=1\n";
+ }else if(scenario=="write-cancel"){
+  RequestMiniAdbdExit(&token);scenario="handoff-recovered";poll_external_reboot();
+  CHECK(!reboot_requested&&actual_reboots==0);std::cout<<"handoff_cancel_preserved=1\n";
+ }
+ Device::BuiltinAction a=Device::NO_ACTION;
+ const bool pending=TakeMiniAdbdRebootAction(&a);
+ CHECK(pending==(scenario=="write-fail"||scenario=="unsupported-target"));
  CHECK(unsafe_kills==0);int status;CHECK(waitpid(-1,&status,WNOHANG)==-1&&errno==ECHILD);
  std::cout<<"failures="<<failures<<" reboots="<<actual_reboots<<" syncs="<<syncs<<" waits="<<waits<<"\n";return failures?1:0;
 }

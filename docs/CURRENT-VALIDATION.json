@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-backup-paths.img",
-  "image_sha256": "68fc2a973945cc4589856ff50381e20a13c01c476b75f6679957391ddd79a1dd",
-  "production_sources": 848,
+  "image_name": "recovery-dijun-unified-reboot-handoff.img",
+  "image_sha256": "4babf3a9b5a5ce609920459f1719c5e666c54e88d7944378962cd55fd0847fd9",
+  "production_sources": 849,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2221,6 +2221,30 @@
       "failures": 2,
       "local_report_sha256": "714721e7edb8aa3286d55381d00ec563256a0a290c67f2734351815c57b19b92",
       "scope": "Patch0119 stores single-volume entries relative to the full selected backup root, including nested /mnt/vendor/persist, with component-boundary validation and trailing separator handling; root remains dot. Split/encrypted absolute-path convention unchanged. Whole host tar/libtar/pigz/OAES private-file ASan/UBSan33 pass (paths24 + controls9); same-harness old2/10 fail, both ordinary/gzip nested single-volume cases. Android/UI/progress/fscrypt/security fixtures; no real mount/root fscrypt/manager/GUI/source concurrency/powerloss. Historical0118 and full OTA results retained, not rerun."
+    },
+    {
+      "name": "reboot-handoff-current",
+      "status": "PASS",
+      "cases": 23,
+      "failures": 0,
+      "local_report_sha256": "377939d45fc62bfce155ad7a5fe8d5b3fb5ed561daedec7fa2c92b8322eb8788",
+      "scope": "Patch0120 consumes a pending minadbd reboot only after GUI acceptance succeeds; failed target publication or temporary unsupported capability preserves retry and token cancellation. Native original core/backend with private processes/socket/epoll: handoff23 and lifecycle33 pass; same-harness old4/4 fail. USB/properties/FUSE/MTP/DataManager/capabilities/sync/final reboot are fixtures. No actual USB/BCB/full GUI or reservation through final shutdown. Historical full OTA retained, not rerun."
+    },
+    {
+      "name": "reboot-handoff-old",
+      "status": "FAIL",
+      "cases": 4,
+      "failures": 4,
+      "local_report_sha256": "589d46fedd116da04edc421c6c2b6d9134f3cd60e1910bff0d715cb5a48e7bfc",
+      "scope": "Patch0120 consumes a pending minadbd reboot only after GUI acceptance succeeds; failed target publication or temporary unsupported capability preserves retry and token cancellation. Native original core/backend with private processes/socket/epoll: handoff23 and lifecycle33 pass; same-harness old4/4 fail. USB/properties/FUSE/MTP/DataManager/capabilities/sync/final reboot are fixtures. No actual USB/BCB/full GUI or reservation through final shutdown. Historical full OTA retained, not rerun."
+    },
+    {
+      "name": "reboot-handoff-lifecycle",
+      "status": "PASS",
+      "cases": 33,
+      "failures": 0,
+      "local_report_sha256": "f7de313f5ec62e00aae079001d3b8c6bc7e5b3266e0981a54da4a89d31ded87f",
+      "scope": "Patch0120 consumes a pending minadbd reboot only after GUI acceptance succeeds; failed target publication or temporary unsupported capability preserves retry and token cancellation. Native original core/backend with private processes/socket/epoll: handoff23 and lifecycle33 pass; same-harness old4/4 fail. USB/properties/FUSE/MTP/DataManager/capabilities/sync/final reboot are fixtures. No actual USB/BCB/full GUI or reservation through final shutdown. Historical full OTA retained, not rerun."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2497,5 +2521,12 @@
     "patch": "0115",
     "document": "docs/MTP-ATOMIC-UPLOAD.md#upload-parent-directory",
     "scope": "Patch0115 pins upload parent directory before staging creation, checks visible parent identity before publish, and uses fstatat/renameat/unlinkat/fsync on the original directory fd. Original host MTP/files/inotify/threads ASan/UBSan247 pass; old6/6 new parent replacement cases fail. Existing transfer48 reused, not rerun. Path-based mkstemp pre-create race, check-to-use filename race, in-place edits, cross-restart recovery and ARM64 MTP/USB/Windows/powerloss remain unverified."
+  },
+  "sideload_reboot_handoff_retry": {
+    "patch": "0120",
+    "scope": "Patch0120 consumes a pending minadbd reboot only after GUI acceptance succeeds; failed target publication or temporary unsupported capability preserves retry and token cancellation. Native original core/backend with private processes/socket/epoll: handoff23 and lifecycle33 pass; same-harness old4/4 fail. USB/properties/FUSE/MTP/DataManager/capabilities/sync/final reboot are fixtures. No actual USB/BCB/full GUI or reservation through final shutdown. Historical full OTA retained, not rerun.",
+    "document": "docs/INSTALL-CHAIN-VALIDATION.md#reboot-handoff-retry",
+    "production_changes": true,
+    "new_build": true
   }
 }

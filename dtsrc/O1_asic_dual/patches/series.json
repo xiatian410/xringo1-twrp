@@ -442,6 +442,10 @@
         {
           "file": "0119-backup-nested-root-paths.patch",
           "sha256": "d3ba610a9c134399bac37984508dbcbff2516068f73358ea891056acb8189cc1"
+        },
+        {
+          "file": "0120-sideload-reboot-handoff-retry.patch",
+          "sha256": "d041485aaa5c26b85853b9e703f38a737158d37a8ed540f7b14530283c37f1ec"
         }
       ],
       "result_files": {
@@ -530,14 +534,14 @@
         "sysfs_device_match.hpp": "66987f6f13e174bb22ce057d022006b1eb0fe2cfa3069046c51e30f72063e941",
         "twrpinstall/twinstall.cpp": "c99be8c70dffadc4f92e0b7ce356fbcf2e9d97ec468ebee8e34c7c50c6e81b0e",
         "gui2/backend/twrp_install_backend.cpp": "20ae186a20ea7232dfe25c03522d64be5ba97eaedc6e7579b1bec92fa0ab4c1b",
-        "twrpinstall/adb_install.cpp": "1c736d722b69468144c8e30313497429f80613d3c25c29f5042ccf867e9b1665",
-        "twrpinstall/include/twinstall/adb_install.h": "839476379dd5ecba5354055ba1a048baf02422ddd18b0edd4b7654459a0ee6c5",
+        "twrpinstall/adb_install.cpp": "928520ae7805cd248a269c372c41e327fec669967db587493546c02ab87a7478",
+        "twrpinstall/include/twinstall/adb_install.h": "e6677a337acfeac973859517c97fa2ab15b46d9a49a7a64ab53142ab6f026328",
         "gui2/backend/twrp_sideload_backend.cpp": "0870b3b7d59f5be485ed17db62189108fae248b0093e8628d7fc52cb53cc8e8d",
         "gui2/backend/twrp_sideload_backend.h": "df5ef8d68dd5e6101482ba26cb944bc822c8643e0656193227956a9085a1812e",
         "openrecoveryscript.cpp": "a9b5d99e2af4266b50ceae67a487ef40fb97e7422b2015e76873f1dff0027134",
         "gui2/backend/reboot_backend.h": "49c74edd83b63ee28fc70e34ba58268df9107bc379ab9e65f2e662f3303b109d",
         "gui2/backend/twrp_reboot_backend.h": "4c6767ff062d6b0885d0b9c9bff626fdf29ddb73b1d47ce1eff135d2bb0d925a",
-        "gui2/backend/twrp_reboot_backend.cpp": "e770e730da8d83ef7ad7db7562fb74c7ef9384c6a5009d32eaa74ee96de582e1",
+        "gui2/backend/twrp_reboot_backend.cpp": "a809dfc21e28ea583238cb015bc0188c58676e10a2c2303bd8a740edc827674c",
         "gui2/backend/twrp_wipe_backend.cpp": "0cfc499ccf3e0296bbdc028eedb8e43c5f1b722edbd43a380a1106311c6c0e73",
         "gui2/backend/twrp_tools_backend.cpp": "52dfe873375bf6fb9726337872b9b6b629fd6b81193638b26d683f79401ad3a8",
         "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a",

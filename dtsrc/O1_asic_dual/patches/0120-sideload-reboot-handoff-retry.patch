@@ -1,0 +1,71 @@
+--- a/twrpinstall/adb_install.cpp
++++ b/twrpinstall/adb_install.cpp
+@@ -68,10 +68,14 @@
+ static Device::BuiltinAction pending_reboot_action = Device::NO_ACTION;
+ static const std::atomic<bool>* pending_reboot_cancellation = nullptr;
+ 
+-bool TakeMiniAdbdRebootAction(Device::BuiltinAction* action) {
++bool TakeMiniAdbdRebootAction(
++    Device::BuiltinAction* action,
++    const std::function<bool(Device::BuiltinAction)>& accept) {
+   if (action == nullptr) return false;
+   std::lock_guard<std::mutex> lock(child_mutex);
+   if (!reboot_action_pending) return false;
++  // Keep ownership/cancellation intact if the GUI cannot publish its target.
++  if (accept && !accept(pending_reboot_action)) return false;
+   *action = pending_reboot_action;
+   reboot_action_pending = false;
+   pending_reboot_action = Device::NO_ACTION;
+--- a/twrpinstall/include/twinstall/adb_install.h
++++ b/twrpinstall/include/twinstall/adb_install.h
+@@ -17,6 +17,7 @@
+ #pragma once
+ 
+ #include <atomic>
++#include <functional>
+ #include <recovery_ui/device.h>
+ 
+ // Applies a package via `adb sideload` or `adb rescue`. Returns the install result (in `enum
+@@ -28,5 +29,8 @@
+ // Requests transport shutdown for this cancellation token only. The service
+ // owner kills/reaps; stale/other sessions cannot cancel the current owner.
+ void RequestMiniAdbdExit(const std::atomic<bool>* cancelled = nullptr);
+-// Consume an acknowledged request after transport and USB cleanup have ended.
+-bool TakeMiniAdbdRebootAction(Device::BuiltinAction* action);
++// Consume only after the optional receiver accepts the request. The receiver
++// runs under the session lock and must not reenter the sideload API.
++bool TakeMiniAdbdRebootAction(
++    Device::BuiltinAction* action,
++    const std::function<bool(Device::BuiltinAction)>& accept = {});
+--- a/gui2/backend/twrp_reboot_backend.cpp
++++ b/gui2/backend/twrp_reboot_backend.cpp
+@@ -122,18 +122,17 @@
+   std::unique_lock transaction(twrp_operation_executor::instance().mutex(), std::try_to_lock);
+   if (!transaction.owns_lock()) return false;
+   Device::BuiltinAction action;
+-  if (!TakeMiniAdbdRebootAction(&action)) return false;
+-  reboot_target target;
+-  switch (action) {
+-    case Device::REBOOT: target = reboot_target::SYSTEM; break;
+-    case Device::REBOOT_BOOTLOADER: target = reboot_target::BOOTLOADER; break;
+-    case Device::REBOOT_FASTBOOT: target = reboot_target::FASTBOOT; break;
+-    case Device::REBOOT_RECOVERY: target = reboot_target::RECOVERY; break;
+-    default: return false;
+-  }
+-  if (request_reboot(target)) return true;
+-  LOGERR("Unable to hand off sideload reboot target\n");
+-  return false;
++  return TakeMiniAdbdRebootAction(&action, [this](Device::BuiltinAction pending) {
++    reboot_target target;
++    switch (pending) {
++      case Device::REBOOT: target = reboot_target::SYSTEM; break;
++      case Device::REBOOT_BOOTLOADER: target = reboot_target::BOOTLOADER; break;
++      case Device::REBOOT_FASTBOOT: target = reboot_target::FASTBOOT; break;
++      case Device::REBOOT_RECOVERY: target = reboot_target::RECOVERY; break;
++      default: return false;
++    }
++    return request_reboot(target);
++  });
+ }
+ 
+ // The fastboot page's switch, on tw_enable_fastboot.

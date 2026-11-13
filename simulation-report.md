@@ -8,14 +8,22 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-backup-paths.img` |
-| SHA-256 | `68fc2a973945cc4589856ff50381e20a13c01c476b75f6679957391ddd79a1dd` |
-| 生产来源绑定 | 848 份 |
+| 文件 | `recovery-dijun-unified-reboot-handoff.img` |
+| SHA-256 | `4babf3a9b5a5ce609920459f1719c5e666c54e88d7944378962cd55fd0847fd9` |
+| 生产来源绑定 | 849 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：嵌套挂载根的单卷路径
+## 本批生产修正：侧载重启交接失败可重试
+
+0120让待处理的minadbd重启请求仅在GUI成功接收后被消费；目标写入失败或能力暂不可用时保留原请求及取消归属，后续可重试。此前先取走请求再发布目标，失败后请求丢失。
+
+原侧载核心/GUI backend在私有主机进程、socket和epoll中23项通过，同夹具旧实现四项全部失败；相关生命周期33项通过。清理构建绑定849来源及六profile，交付核对为`python3 scripts/audit_reboot_handoff.py`，详见[重启交接重试](docs/INSTALL-CHAIN-VALIDATION.md#reboot-handoff-retry)。镜像变化仅构建属性、文件摘要及recovery程序。
+
+USB、属性、FUSE、MTP、DataManager、能力和最终重启为替身；不提供从请求到最终关机的停止新任务预约，也未验收真实USB/BCB/完整GUI。历史完整4.0.4包运行沿用，不重复整包。
+
+## 沿用的嵌套挂载根单卷路径
 
 0119将单卷条目相对完整备份根保存，修正`/mnt/vendor/persist`等嵌套目录恢复后多出`vendor/persist`子目录的问题；分卷/加密原约定不变。24项路径场景及九项相关控制通过，同夹具旧版两项失败，其他八项原本正常。清理构建绑定848来源及六profile，核对入口为`python3 scripts/audit_backup_root.py --nested-paths`。
 

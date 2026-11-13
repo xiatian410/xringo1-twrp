@@ -4,7 +4,18 @@
 
 用户提供的 **OS4.0.4.0 完整原始卡刷包已执行一次成功的普通文件安装模型**：整包验签、原安装父进程、真实 ARM64 更新引擎、十份 COW 的真实分配与初始化、全部 4933 操作、42 个分区哈希、原厂 Recovery postinstall 分支及完成状态发布在同次运行中接通；最终引擎和父进程均返回成功。结果为 `MODEL_SUCCESS`，不是设备安装验收。真实源布局、内核映射、挂载、HAL / 槽位、启动和合并仍未验证，详见[完整包成功范围](#stock-zip-allocated-success)。
 
-下文按阶段保留不同输入和范围；较早的“只核对参数”“引擎尚未接入”“预置分配”或失败结果不代表最新模型状态。相关来源未变时复用成功报告，不重复整包回放。本页整理不修改生产代码或镜像。
+下文按阶段保留不同输入和范围；较早的“只核对参数”“引擎尚未接入”“预置分配”或失败结果不代表最新模型状态。相关来源未变时复用成功报告，不重复整包回放。后续生产修正单独说明，不将历史整包结果记作新候选的全量验收。
+
+<a id="reboot-handoff-retry"></a>
+## 侧载重启请求：接收成功后才消费（0120）
+
+此前GUI先用`TakeMiniAdbdRebootAction`取走待处理请求，再调用`request_reboot`。如果`tw_reboot_arg`写入失败或目标能力暂不可用，请求已经清空，后续轮询无法重试。0120给取请求接口增加可选接收回调；回调成功才清空请求及取消归属，失败则保留。没有回调的既有调用保持直接取走行为。
+
+GUI先获取非阻塞存储锁，核心再持有侧载会话锁执行接收回调；`request_reboot`递归获取同一存储锁。回调不得重新进入侧载API。取消与接收在同一会话锁下串行化：发布失败后的取消可撤回请求，成功接收后的取消不再拥有该请求。此修正不提供请求到最终重启之间的停止新任务预约。
+
+原侧载核心和GUI backend在真实私有主机进程、socket、epoll中执行23项，包含目标写入恢复重试、能力恢复重试、失败后取消及原ACK/USB恢复门控；全部通过。同一测试程序对改前源码执行四个定向场景，均因请求丢失失败。核心API变化的相关生命周期33项通过。USB、属性、FUSE、MTP、DataManager、能力、sync和最终重启为替身，没有真实USB、BCB或完整GUI验收。
+
+候选`recovery-dijun-unified-reboot-handoff.img`，SHA-256为`4babf3a9b5a5ce609920459f1719c5e666c54e88d7944378962cd55fd0847fd9`；先installclean再make -j$(nproc)，30并发，849份来源与六profile。与0119镜像比较，仅构建属性、ramdisk摘要及recovery程序变化。证据为本地`logs/reboot-handoff-current.json`、`logs/reboot-handoff-old.json`和`logs/reboot-handoff-lifecycle.json`；交付核对入口为`python3 scripts/audit_reboot_handoff.py`。完整4.0.4包的历史成功范围不变，本批未重跑整包。
 
 <a id="stock-snapshot-initialization"></a>
 ## 当前修正：快照 COW 初始化失败空指针崩溃（0090）

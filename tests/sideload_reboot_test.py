@@ -11,17 +11,19 @@ from nested_partition_path_test import ROOT,SRC,method
 
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
- ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--before',action='store_true');ap.add_argument('--report',type=Path,default=ROOT/'logs/sideload-reboot.json');args=ap.parse_args()
+ ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--before',action='store_true');ap.add_argument('--source',type=Path,default=SRC);ap.add_argument('--cases',nargs='*');ap.add_argument('--report',type=Path,default=ROOT/'logs/sideload-reboot.json');args=ap.parse_args()
  files=['twrpinstall/adb_install.cpp','gui2/backend/twrp_sideload_backend.cpp','openrecoveryscript.cpp','gui2/backend/twrp_reboot_backend.cpp','gui2/gui2.cpp']
- paths={p:(ROOT/'logs/sideload-reboot-before'/p if args.before else SRC/p) for p in files}
+ paths={p:(ROOT/'logs/sideload-reboot-before'/p if args.before else args.source/p if (args.source/p).exists() else SRC/p) for p in files}
  core=paths[files[0]];backend=paths[files[1]];ors=paths[files[2]];reboot=paths[files[3]];gui=paths[files[4]]
  android=SRC.parents[1];clang=android/'prebuilts/clang/host/linux-x86/clang-r547379/bin/clang++';host=android/'out/host/linux-x86/lib64'
- header=SRC/'twrpinstall/include/twinstall/adb_install.h';rheader=SRC/'gui2/backend/twrp_reboot_backend.h'
+ header=args.source/'twrpinstall/include/twinstall/adb_install.h'
+ if not header.exists():header=SRC/'twrpinstall/include/twinstall/adb_install.h'
+ rheader=SRC/'gui2/backend/twrp_reboot_backend.h'
  # The old implementation lacks handoff API; test-only no-op stubs let the same
  # behavioral assertions show the missing behavior, without implementing it.
  preamble=(ROOT/'tests/sideload_lifecycle_test.cpp').read_text().split('static void pipe_handler')[0]
  preamble=preamble.replace('static std::map<std::string,int> values;','static std::map<std::string,int> values;\nstatic std::string reboot_arg;')
- preamble=preamble.replace('static void SetValue(const std::string& k,int v)', 'static int SetValue(const std::string& k,const std::string& v){if(k=="tw_reboot_arg"){if(scenario=="write-fail")return -1;reboot_arg=v;}return 0;}\n static void GetValue(const std::string& k,std::string& v){v=GetStrValue(k);}\n static void SetValue(const std::string& k,int v)')
+ preamble=preamble.replace('static void SetValue(const std::string& k,int v)', 'static int SetValue(const std::string& k,const std::string& v){if(k=="tw_reboot_arg"){if(scenario=="write-fail"||scenario=="write-retry"||scenario=="write-cancel")return -1;reboot_arg=v;}return 0;}\n static void GetValue(const std::string& k,std::string& v){v=GetStrValue(k);}\n static void SetValue(const std::string& k,int v)')
  preamble=preamble.replace('static void SetValue(const std::string& k,const char* v){SetValue(k,std::atoi(v));}', 'static int SetValue(const std::string& k,const char* v){return SetValue(k,std::string(v));}')
  preamble=preamble.replace('return std::to_string(GetIntValue(k));','return k=="tw_reboot_arg"?reboot_arg:std::to_string(GetIntValue(k));')
  preamble=preamble.replace('return !(scenario=="usb-fail"&&value=="sideload");','return !(scenario=="usb-fail"&&value=="sideload")&&!(scenario=="restore-fail"&&value=="adb");')
@@ -43,7 +45,8 @@ def main():
  branch=method(ors.read_text(),'else if (strcmp(command, "sideload") == 0)');code=code.replace('// ORS_BRANCH',branch[branch.index('{')+1:-1])
  code=code.replace('static int script_sideload(){','static int property_set(const char*,const char*);\nstatic int script_sideload(){')
  if args.before:code=code.replace('static int syncs=0,','bool TakeMiniAdbdRebootAction(Device::BuiltinAction*){return false;}\nstatic int syncs=0,')
- cases=['system','bootloader','fastboot','recovery','ors-system','ors-bootloader','ors-fastboot','ors-recovery','rescue','ack-fail','restore-fail','startup-gate','background-gate','worker-gate','unsupported-target','write-fail','wrong-token','pending-blocks-session','cancel-pending','storage-gate']
+ cases=['system','bootloader','fastboot','recovery','ors-system','ors-bootloader','ors-fastboot','ors-recovery','rescue','ack-fail','restore-fail','startup-gate','background-gate','worker-gate','unsupported-target','write-fail','wrong-token','pending-blocks-session','cancel-pending','storage-gate','write-retry','write-cancel','unsupported-retry']
+ if args.cases:cases=args.cases
  # cancelled-token lifetime and completion cancellation are exercised directly
  # below using the core; GUI normal destructor must not cancel a finished job.
  rows=[]
