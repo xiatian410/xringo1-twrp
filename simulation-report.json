@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-snapshot-unmap.img",
-  "image_sha256": "a37e758364c5755f9823ec37d559b4ebeb50349771e80a7bea2738d6aae3fa00",
-  "image_status": "Clean installclean + make -j$(nproc) build; patch0079 unmap errors aggregate and gate verifier remap/success.796 production sources/six profiles; full goal in progress.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-snapuserd-eof.img",
+  "image_sha256": "9d71ecc3bddda541b652e98d9dfd8220647d0aa94c32488ae09040085d19a210",
+  "image_status": "Clean installclean + make -j$(nproc) build; patch0080 prevents snapuserd EOF/half-close parser crash.798 production sources/six profiles; full goal in progress.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -3251,6 +3251,14 @@
       "evidence": "logs/ota-snapuserd-socket.json",
       "evidence_sha256": "1d7c70beb39cb18909e008e11402c866ccd9a0c30a140d43c8dce6d43c7ce25d",
       "scope": "Actual ARM64 SnapshotManager -> SnapuserdClient WaitForDeviceDelete over real socketpair. Peer replies success/fail/EOF/short or is closed. Mapper and image state modeled; client injected via existing test friend, no Connect/property startup/real daemon/kernel mapping. Records partial cleanup and retry after notification failure. Not full OTA."
+    },
+    {
+      "name": "actual-snapuserd-server-eof",
+      "result": "pass",
+      "count": 8,
+      "evidence": "logs/ota-snapuserd-server.json",
+      "evidence_sha256": "807106c788602ebc2147528f9596d91bf57a124a87cfc0fce7673341e2961b0a",
+      "scope": "Execute original ARM64 snapuserd Start/Run over private AF_UNIX sockets.\n\nOnly daemon main is replaced. No Initialize, block factory, snapshot handlers,\nmapper, mount, device nodes, property service or phone. Static production server\nand its libraries execute under pinned QEMU in a private chroot.\n"
     }
   ],
   "source_review_followups": [
@@ -3463,7 +3471,7 @@
   "partition_operation_paths": {
     "status": "software_fix_built_hardware_unverified",
     "patch": "dtsrc/O1_asic_dual/patches/0029-nested-partition-operations.patch",
-    "documentation": "docs/PARTITION-ACTIONS.md#\u5d4c\u5957\u5206\u533a\u64cd\u4f5c\u8def\u5f84",
+    "documentation": "docs/PARTITION-ACTIONS.md#嵌套分区操作路径",
     "scope": "Real manager routing methods, private partition doubles, no real filesystem tools, wipes, mounts or device access. Nested paths,system alias,subpartition failure propagation and cache fallback result. Underlying WipeDataCache removal error checking remains incomplete."
   },
   "filesystem_tools": {
@@ -3566,8 +3574,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/snapshot-unmap-delivery.json",
-    "scope": "Patch0079: controller aggregates snapshot/logical unmap errors, gates snapshot calls on metadata availability, empty cleanup succeeds; verifier rejects remap and success on unmap failure, preserving hash errors. ARM64 verifier9/controller8, old2/6 failures; cancellation10/postinstall6 regressions. Clean build796 sources/six profiles; real mappings/merge/full install pending.",
+    "evidence": "logs/snapuserd-eof-delivery.json",
+    "scope": "Patch0080: real ARM64 server Start/Run over private Unix sockets. Half-close recv EOF closes client regardless of POLLHUP; empty parser guarded. Eight pass; old three SIGSEGV. Clean build798 sources/six profiles, only snapuserd binary changed. No handlers/kernel mapper/full OTA.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -3917,7 +3925,7 @@
       "decision": "Do not change mapping gate based on isolated MapAllPartitions failure; actual verifier/factory gate on compression mode. Real SnapshotManager integration remains open."
     },
     "snapshot_state_publication": {
-      "document": "docs/OTA-OPERATION-COW.md#\u5feb\u7167\u72b6\u6001\u6587\u4ef6\u540c\u6b65\u5931\u8d250069",
+      "document": "docs/OTA-OPERATION-COW.md#快照状态文件同步失败0069",
       "report": "logs/ota-snapshot-finish.json",
       "report_sha256": "3fcf7d0314531b7b1e843146d242e2b498953c48844824f654466ce5861fb627",
       "before": "logs/ota-snapshot-finish-before.json",
@@ -3932,7 +3940,7 @@
       "old_missing_eintr_retries": 2
     },
     "snapshot_postinstall_retry": {
-      "document": "docs/OTA-OPERATION-COW.md#\u5b9e\u9645\u6536\u5c3e\u8c03\u7528\u94fe\u4e0e\u5931\u8d25\u540e\u91cd\u8bd5",
+      "document": "docs/OTA-OPERATION-COW.md#实际收尾调用链与失败后重试",
       "report": "logs/ota-snapshot-postinstall.json",
       "report_sha256": "70fc597e733529af2f5360a364dd8797d3986f80d8e964b1e277205752088bda",
       "review": "logs/ota-snapshot-postinstall-review.json",
@@ -3945,7 +3953,7 @@
       "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries."
     },
     "postinstall_program_lifecycle": {
-      "document": "docs/OTA-OPERATION-COW.md#postinstall-\u7a0b\u5e8f\u9000\u51fa\u4e0e\u53d6\u6d88\u63a5\u7eed",
+      "document": "docs/OTA-OPERATION-COW.md#postinstall-程序退出与取消接续",
       "report": "logs/ota-postinstall-program.json",
       "review": "logs/ota-postinstall-program-review.json",
       "report_sha256": "35f7052678683909ebfc552cf4ec99e2ba1b2d9f648d39d41082fc630b816730",
@@ -4004,7 +4012,7 @@
       "scope": "Actual ARM64 postinstall program and original PostinstallRunnerAction/Subprocess.\n\nPrivate chroot, real clone/pipes/signalfd/wait and harmless dynamic ARM64 child.\nExplicit execv QEMU bridge preserves script argv; mounts/readonly/boot/hardware\nare recorded fixtures. No devices, actual OTA scripts, snapshots or full OTA.\n"
     },
     "stock_postinstall_recovery_guard": {
-      "document": "docs/OTA-OPERATION-COW.md#os4-\u539f\u5382\u811a\u672c\u7684-recovery-\u9000\u51fa\u6761\u4ef6",
+      "document": "docs/OTA-OPERATION-COW.md#os4-原厂脚本的-recovery-退出条件",
       "report": "logs/ota-stock-postinstall.json",
       "review": "logs/ota-stock-postinstall-review.json",
       "report_sha256": "a2d10e5199d6ba70b785a1cbec677a38a55c2fd682ddad7af3d2a7de8e53a8f7",
@@ -4072,6 +4080,19 @@
       "connect_startup_tested": false,
       "no_reply_deadline_tested": false,
       "fragmented_success_tested": false,
+      "full_ota_install": false
+    },
+    "snapuserd_server_eof": {
+      "document": "docs/OTA-OPERATION-COW.md#snapuserd-eof",
+      "patch": "0080-snapuserd-half-close-eof.patch",
+      "report": "logs/ota-snapuserd-server.json",
+      "before": "logs/ota-snapuserd-server-before.json",
+      "cases": 8,
+      "old_sigsegv": 3,
+      "actual_server_start_run": true,
+      "real_unix_socket": true,
+      "actual_snapshot_handlers": false,
+      "kernel_mapping": false,
       "full_ota_install": false
     }
   },

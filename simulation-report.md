@@ -6,20 +6,22 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-snapshot-unmap.img` |
-| SHA-256 | `a37e758364c5755f9823ec37d559b4ebeb50349771e80a7bea2738d6aae3fa00` |
-| 生产来源绑定 | 796 份 |
+| 文件 | `recovery-dijun-unified-snapuserd-eof.img` |
+| SHA-256 | `9d71ecc3bddda541b652e98d9dfd8220647d0aa94c32488ae09040085d19a210` |
+| 生产来源绑定 | 798 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 后续证据补充
+## 本次定向验证
 
-当前镜像未变。实际 manager → SnapuserdClient 的 socket 接续五项已执行，成功 / 失败 / EOF / 对端关闭 / 截短回执均符合预期；对端仍是协议线程替身，未覆盖实际 daemon、启动握手、无回复期限或合法分片。未发现可据此修正的生产缺陷，不重编，见[通信边界](docs/OTA-OPERATION-COW.md#snapuserd-socket)。
+实际 ARM64 snapuserd 服务端通过公开 Start / Run 与私有 Unix socket 执行八项检查。旧源码在三种客户端半关闭情形下 SIGSEGV，0080修正后八项通过；第二客户端仍可查询并停止服务。替换的只有 daemon main，没有 snapshot handlers、内核映射或完整 OTA。见[故障与范围](docs/OTA-OPERATION-COW.md#snapuserd-eof)。
 
-原始 ARM64 SnapshotManager 设备解除顺序、部分状态与重试已接续15场景，含原控制器到实际 manager 两场景；mapper / image 状态仍为有状态替身，活跃 snapuserd、内核映射与 FIEMAP / Binder 尚未执行。本批未发现新增生产缺陷、不重编，见[清理接续范围](docs/OTA-OPERATION-COW.md#snapshot-device-cleanup)。
+最终镜像相比0079仅 snapuserd 二进制、构建属性及文件摘要变化。既有更新器、manager/client socket与设备清理结果按原范围复用，不把独立套件视为完整接续，也不重跑未变功能。
 
 ## 本次候选包含的修正
+
+- **0080**：recv EOF 不再依赖 POLLHUP，解析器拒绝空命令，避免半关闭连接使服务端访问空 vector 崩溃。实际 ARM64 server八项 / 旧三项 SIGSEGV；清理构建798来源 / 六profile，交付核对通过。
 
 - **0079**：解除映射结果汇总到控制器与校验器，失败阻止重映射及成功上报；空集合成功，metadata 不可用不调用 snapshot，原哈希错误保留。校验器9 / 控制器8通过，旧2 / 6失败；取消10 / postinstall6必要回归通过。清理构建796来源 / 六profile；仅更新器二进制变化，实际映射及完整安装仍未覆盖。见[范围](docs/OTA-OPERATION-COW.md#snapshot-unmap)。
 

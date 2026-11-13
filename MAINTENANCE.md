@@ -32,6 +32,8 @@
 
 ## 验证与交付
 
+当前0080交付为实际 snapuserd 服务端半关闭 EOF 崩溃修正；实现、有限检查与剩余边界见[OTA主题](docs/OTA-OPERATION-COW.md#snapuserd-eof)，候选哈希只在交付报告维护。
+
 1. 明确本批缺陷、改变的生产行为和必要检查范围。
 2. 优先使用真实生产方法；替代设备、HAL、属性、挂载等边界必须写明。能复用的结果不为刷新日期重跑。
 3. 生产修改完成后执行 `installclean` 和 `make -j$(nproc) recoveryimage`，核对最终二进制、ramdisk、六份 profile 及来源绑定。

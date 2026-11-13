@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-snapshot-unmap.img",
-  "image_sha256": "a37e758364c5755f9823ec37d559b4ebeb50349771e80a7bea2738d6aae3fa00",
-  "production_sources": 796,
+  "image_name": "recovery-dijun-unified-snapuserd-eof.img",
+  "image_sha256": "9d71ecc3bddda541b652e98d9dfd8220647d0aa94c32488ae09040085d19a210",
+  "production_sources": 798,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -926,12 +926,20 @@
       "failures": 0,
       "local_report_sha256": "1d7c70beb39cb18909e008e11402c866ccd9a0c30a140d43c8dce6d43c7ce25d",
       "scope": "Actual ARM64 SnapshotManager -> SnapuserdClient WaitForDeviceDelete over real socketpair. Peer replies success/fail/EOF/short or is closed. Mapper and image state modeled; client injected via existing test friend, no Connect/property startup/real daemon/kernel mapping. Records partial cleanup and retry after notification failure. Not full OTA."
+    },
+    {
+      "name": "actual-snapuserd-server-eof",
+      "status": "PASS",
+      "cases": 8,
+      "failures": 0,
+      "local_report_sha256": "807106c788602ebc2147528f9596d91bf57a124a87cfc0fce7673341e2961b0a",
+      "scope": "Execute original ARM64 snapuserd Start/Run over private AF_UNIX sockets.\n\nOnly daemon main is replaced. No Initialize, block factory, snapshot handlers,\nmapper, mount, device nodes, property service or phone. Static production server\nand its libraries execute under pinned QEMU in a private chroot.\n"
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
   "current_batch_groups": [
     12
   ],
-  "current_batch_document": "docs/OTA-OPERATION-COW.md#snapuserd-socket",
-  "current_batch_groups_scope": "Evidence only: original ARM64 manager/client over real socketpair with synthetic peer; error/partial cleanup/retry. No Connect/startup/actual daemon, kernel mapper, no-reply deadline or fragmented-success proof. Image unchanged."
+  "current_batch_document": "docs/OTA-OPERATION-COW.md#snapuserd-eof",
+  "current_batch_groups_scope": "Production patch0080 prevents server SIGSEGV on peer half-close. Actual ARM64 Start/Run, private AF_UNIX8; old3 SIGSEGV. Clean build798 sources/six profiles, only snapuserd binary changed. No snapshot handlers/kernel mapping/full OTA."
 }

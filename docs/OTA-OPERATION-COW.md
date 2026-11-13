@@ -417,3 +417,26 @@ python3 scripts/audit_snapuserd_socket.py
 ```
 
 本地报告 `logs/ota-snapuserd-socket.json` 绑定原始 client 源码、头文件、实际执行 archive、QEMU、当前镜像 linker / 共享库及夹具；不是完整 ARM64 Recovery 或实际设备运行证明。公开摘要和队列记录此边界，不把通过数量算成功能完成度。
+
+<a id="snapuserd-eof"></a>
+
+## snapuserd 客户端半关闭导致服务端崩溃
+
+补丁0080修正一个实际复现的服务端缺陷：Unix stream 客户端执行 `shutdown(SHUT_WR)` 后，`poll` 可以只报告 `POLLIN`，此时 `recv` 返回0。旧 `HandleClient` 只在空消息同时带 `POLLHUP` 时关闭连接，否则把空串交给 `Receivemsg`；`Parsemsg` 生成空 vector，随后的 `out[0]` 导致 SIGSEGV。一次异常断开可能终止服务进程，影响其他快照控制请求。
+
+现在对所有空读取都按 EOF 关闭当前连接，并在解析器访问第一个字段前检查空 vector。已读到的非空消息仍先处理；不因 peer 半关闭丢弃缓冲查询。不改协议格式，不增加没有调用方约定的收包期限。
+
+`tests/ota_snapuserd_server.py/.cpp` 使用实际 snapuserd 静态链接参数，重新编译完整原始 ARM64 server TU；仅替换 daemon main，通过公开 `Start / Run` 启动真实监听、accept、poll、recv、parse、send、连接移除和停止流程。私有 chroot 内真实 AF_UNIX socket，不替换系统调用或 poll 事件。固定 QEMU 执行 ARM64 ELF；其余生产静态库保持原样。没有调用 Initialize、创建 snapshot handler 或访问块设备；本组也没有接入 SnapshotManager。
+
+八个场景：正常查询、空连接半关闭、查询后半关闭、缓冲查询后立即半关闭、直接关闭、未知命令、参数不完整的 delete、功能查询。每项都核对第二个客户端仍能查询并正常停止服务。相同测试源码运行旧 TU 时，三种半关闭场景均以目标信号11崩溃；修正后八项通过。不是仅凭静态推断认定崩溃，也不是完整 OTA 验收。
+
+```bash
+python3 tests/ota_snapuserd_server.py
+python3 scripts/audit_snapuserd_eof_delivery.py
+```
+
+本地旧源码和失败报告保存在 `logs/snapuserd-eof-before/`、`logs/ota-snapuserd-server-before.json`；最终报告为 `logs/ota-snapuserd-server.json`、`logs/snapuserd-eof-delivery.json`。公开摘要见 `CURRENT-VALIDATION.json`。历史报告的输入哈希不改写。
+
+最终候选 `recovery-dijun-unified-snapuserd-eof.img`，SHA-256 `9d71ecc3bddda541b652e98d9dfd8220647d0aa94c32488ae09040085d19a210`。按要求先 installclean、再 `make -j$(nproc)` 30并发构建，798份来源和六profile封装通过。相比0079只有 `system/bin/snapuserd` 二进制、构建属性与ramdisk文件摘要变化；更新器及其他二进制字节不变，复用其相关既有结果，不重复完整 payload 或震动检查。
+
+**剩余边界**：真正的 handler 删除会通知 I/O 线程并 join，所需时间不能由这个无 handler 测试确定；本批不添加任意超时。原 stream 协议两端仍按单次收包处理，合法分片、完整 client/server 删除、真实 init/属性启动、内核 mapper、image 管理及合并尚未接续。未运行原始 daemon main、手机或物理块设备。整体目标继续进行中。

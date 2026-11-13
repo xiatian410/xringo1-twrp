@@ -459,11 +459,16 @@
         {
           "file": "0078-snapshot-cancel-cleanup-errors.patch",
           "sha256": "e258154722f5dea41e8520431956308363bed4aeb28fd8de1fbc9500a0dac378"
+        },
+        {
+          "file": "0080-snapuserd-half-close-eof.patch",
+          "sha256": "9590b99ac51e3712ec462dcb7d0d5365b130ab1b481dd90bb20d28b13fcc5800"
         }
       ],
       "result_files": {
         "fs_mgr/libsnapshot/utility.cpp": "744f52f9c8ee2f13b097fb3f72b23e731801a6513790db789bda19d0639cc351",
-        "fs_mgr/libsnapshot/snapshot.cpp": "99752c6d274c3ee8594fc19fb543b2c0cfcb3eb98f50cb8c22c949245a6f275c"
+        "fs_mgr/libsnapshot/snapshot.cpp": "99752c6d274c3ee8594fc19fb543b2c0cfcb3eb98f50cb8c22c949245a6f275c",
+        "fs_mgr/libsnapshot/snapuserd/user-space-merge/snapuserd_server.cpp": "e96f545e9fb150a751747b11628d259ff96fbd36c0240a7f57bce837fc930e9b"
       }
     }
   }

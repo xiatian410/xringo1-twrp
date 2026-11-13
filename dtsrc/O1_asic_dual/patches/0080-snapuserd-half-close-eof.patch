@@ -1,0 +1,26 @@
+diff --git a/fs_mgr/libsnapshot/snapuserd/user-space-merge/snapuserd_server.cpp b/fs_mgr/libsnapshot/snapuserd/user-space-merge/snapuserd_server.cpp
+index daa6372..7be2305 100644
+--- a/fs_mgr/libsnapshot/snapuserd/user-space-merge/snapuserd_server.cpp
++++ b/fs_mgr/libsnapshot/snapuserd/user-space-merge/snapuserd_server.cpp
+@@ -127,6 +127,11 @@ bool UserSnapshotServer::Receivemsg(android::base::borrowed_fd fd, const std::st
+     std::vector<std::string> out;
+     Parsemsg(str, delim, out);
+ 
++    if (out.empty()) {
++        LOG(ERROR) << "Empty snapuserd command";
++        return false;
++    }
++
+     const auto& cmd = out[0];
+     if (cmd == "init") {
+         // Message format:
+@@ -390,7 +395,8 @@ bool UserSnapshotServer::HandleClient(android::base::borrowed_fd fd, int revents
+     if (!Recv(fd, &str)) {
+         return false;
+     }
+-    if (str.empty() && (revents & POLLHUP)) {
++    // recv() == 0 is EOF even when a half-closed peer only signals POLLIN.
++    if (str.empty()) {
+         LOG(DEBUG) << "Snapuserd client disconnected";
+         return false;
+     }

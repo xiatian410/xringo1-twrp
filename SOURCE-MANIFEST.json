@@ -32,7 +32,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "2403ce1e22dca7589da7792ad66ed31bbe11da738fc933ff38ca5da1c491b5f6",
+    "sha256": "bdfcd44264767d7308fd4f0679ba44efa2815964923df4a1bbcbb96f4e27232b",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -60,7 +60,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "47dec11adeef1bdf6d90db0c661d85cbf49641855a48dc2bba43320af5fdd0c9",
+    "sha256": "1eac0a4dc54ebdc10bc894cb5bea9adc776e1fae2ae2fc00e23d6d79c2ba8a97",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -112,7 +112,7 @@
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
-    "sha256": "7adf84bac988b2c3c406b0633b645c78bbab6329ec07bb1d98648a63238c4218",
+    "sha256": "d471b093a2b12b1ada0d1f97f1e927d0e0b0af208868480f759a8657c1bd5fd9",
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
@@ -156,7 +156,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "3e1903c9bf79e3f53ef859ef661dc0db70ccdd6c4b65232e4a8b88fc8248395b",
+    "sha256": "47aadfa75b2ef03f2d0aa691292a5628be5da1ef2232256dd0e86ae75529baac",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -587,8 +587,12 @@
     "sha256": "7dbda8fc7a087ec78d7861d7f43b30901c6b9d31f602fb5c17a861c046791e27",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0080-snapuserd-half-close-eof.patch": {
+    "sha256": "9590b99ac51e3712ec462dcb7d0d5365b130ab1b481dd90bb20d28b13fcc5800",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "9d6595afe3194a0b566b6ede0b5d3ebe62d29a068b911938d9257273cf54ab98",
+    "sha256": "0e1b74f4a057dc10ef31210455efc5d2b367ab7c0dda146bf778530f9d337701",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -1263,6 +1267,10 @@
     "sha256": "e20da905224963ed2ef4fd7f97b1003fe3a9e1f3d229316a8b6248d4dd882503",
     "mode": "0o644"
   },
+  "scripts/audit_snapuserd_eof_delivery.py": {
+    "sha256": "18fd816309894e67c24bc902abfcab0f3c9c1b9188a18cb5d83ecb8674954ffc",
+    "mode": "0o644"
+  },
   "scripts/audit_snapuserd_socket.py": {
     "sha256": "59ea4f5a735dc18cf84756c9eb037152eca69a50abe33097bdb215603b0aa152",
     "mode": "0o644"
@@ -1632,11 +1640,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "07ec8d0a8157b6646c46b215dd88afce07c2a21787aa3dfb660522fc64be38ad",
+    "sha256": "053f6b8fe4803e72934f222e0fb4f745b487fe4cf327e59ac8061f8f5a70d36e",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "75d45fee0b3a035999cc936f658c63a9baf08de2e57cf52db1151c40efcd8440",
+    "sha256": "49a1899e9870ea0b7c4f00f7fc7d94f86b95502516027cc9660172b3bf02f1b3",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2245,6 +2253,14 @@
   },
   "tests/ota_snapshot_postinstall.cpp": {
     "sha256": "2bd090664a0e649c403dcfc235f6c4f8b94e7988a310b9b4f794e8e0d41701c7",
+    "mode": "0o644"
+  },
+  "tests/ota_snapuserd_server.cpp": {
+    "sha256": "ca311f87deda0f1515be843d866aa0ac40d4fb6b4fc631b0d4d7d2fe48271fe7",
+    "mode": "0o644"
+  },
+  "tests/ota_snapuserd_server.py": {
+    "sha256": "6678b2c6d612b523530c935d5b4c47dae73d5235c3ebc85614575a2495662e39",
     "mode": "0o644"
   },
   "tests/ota_snapuserd_socket.cpp": {
