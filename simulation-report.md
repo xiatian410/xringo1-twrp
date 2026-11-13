@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-mtp-session-boundary.img` |
-| SHA-256 | `4a149ab8cfdef7ad3c9380a73dfa24b168f9bc71b0333cd57411340880b62c09` |
-| 生产来源绑定 | 823 份 |
+| 文件 | `recovery-dijun-unified-mtp-partial-write.img` |
+| SHA-256 | `1de91973f369797d92b5aad05047723d3bb90d8e8ff179614229f1b6bc715dbc` |
+| 生产来源绑定 | 824 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：MTP 会话与编辑状态
+## 本批生产修正：MTP 分段编辑写入
+
+0099 在首次写文件前校验数据报文的类型、操作码、事务及声明长度，避免超长报文导致剩余长度下溢；短写和 EINTR 重试，零写与永久错误返回失败。成功响应返回总接收字节数，错误路径清空入站数据，避免将其作为响应发送。对象160项通过；同夹具旧实现新增11项中10项失败，空写控制通过。最终清理构建、824来源与六profile封装核对通过，详见[分段编辑写入](docs/MTP-CONTROL-ADAPTATION.md#partial-edit-write)。
+
+测试执行主机生产server/database/storage与普通文件，USB/属性/日志为替身；编辑就地写入，失败前已有写入不回滚。完整端点排空、持久提交、ARM64 MTP及Windows仍未验收。本批没有重复整包OTA及已解决功能。
+
+## 沿用的 MTP 会话与编辑状态
 
 0098 在统一请求入口补齐会话检查：未打开或已关闭会话时拒绝文件操作；GetDeviceInfo / OpenSession 保留。关闭会话或操作码 ResetDevice 释放编辑fd与状态，class Reset / 断开共用释放helper。数据库handle与已写内容保留，不提供回滚。对象149项、转移48项通过，同夹具旧实现22/23失败。清理构建后823来源 / 六profile核对，封装仅MTP库、构建属性及摘要变化，详见[会话边界](docs/MTP-CONTROL-ADAPTATION.md#session-file-boundary)。
 

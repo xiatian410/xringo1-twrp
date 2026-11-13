@@ -4,7 +4,27 @@
 
 本文按控制报文、活动事务匹配和 Reset 会话释放收录实现记录。各阶段的未覆盖项只代表当时边界；后续补充见对应小节，完整 USB 集成状态以工作队列为准。
 
-导航：[会话文件操作边界](#session-file-boundary) · [控制报文](#修复内容) · [活动事务取消](#transaction-cancel) · [Reset 会话释放](#reset-session) · [事件生命周期](#event-lifecycle) · [bulk 完成队列错误](#bulk-completion-error)。
+导航：[分段编辑写入](#partial-edit-write) · [会话文件操作边界](#session-file-boundary) · [控制报文](#修复内容) · [活动事务取消](#transaction-cancel) · [Reset 会话释放](#reset-session) · [事件生命周期](#event-lifecycle) · [bulk 完成队列错误](#bulk-completion-error)。
+
+<a id="partial-edit-write"></a>
+
+## 分段编辑报文校验、短写与响应计数（0099）
+
+原 `doSendPartialObject` 在检查数据报文身份及长度前就执行 `pwrite`，超出声明长度的数据既会修改文件，又会使剩余无符号长度下溢。原实现忽略短写与零写，不重试 EINTR；成功响应填入剩余长度，通常是 0。部分写入失败时，入站数据还可能残留在响应中。
+
+0099 在首次写入前校验数据类型、操作码、事务 ID、初始数据量及有符号文件偏移范围。短写继续、EINTR 重试，零写和其他错误停止；原接收阶段的取消响应保留。处理后清空入站数据，成功返回请求的总字节数并更新编辑尺寸。
+
+现有对象测试增加 11 项，包含小段、跨接收阶段大段、空段、超长数据、三种报文身份错误，以及短写、EINTR、零写、ENOSPC。测试使用真实主机生产 server / packet / database / storage、普通文件和 ASan / UBSan；仅 transport、属性、日志与指定写入故障为替身。核对响应字节数、无入站数据反射、实际文件内容、拒绝前无写入，以及 EndEdit 的 fd 释放。修正后全套160项通过；相同新增夹具在旧实现中10/11失败，空段控制通过。
+
+本地最终报告为 `logs/mtp-partial-objects.json` 与 `logs/mtp-partial-negative.json`，早期断言版本保存在带 `-initial` 的报告中。补丁为 `0099-mtp-partial-write-validation.patch`；清理构建后824份来源与六profile核对，ramdisk仅MTP库、构建属性及摘要改变。当前镜像及哈希见[交付报告](../simulation-report.md)。
+
+这是就地编辑，失败前已写的内容不回滚，也没有新增 fsync 持久提交保证。畸形报文后的完整端点排空、ARM64 MTP、实际 USB / Windows 和完整取消 / Reset 接续不在本项覆盖范围。
+
+```bash
+# 已执行；相关实现与输入未变时复用结果。
+python3 tests/mtp_objects_test.py --report logs/mtp-partial-objects.json
+python3 scripts/audit_mtp_partial_delivery.py
+```
 
 <a id="session-file-boundary"></a>
 

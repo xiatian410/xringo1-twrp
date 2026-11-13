@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-session-boundary.img",
-  "image_sha256": "4a149ab8cfdef7ad3c9380a73dfa24b168f9bc71b0333cd57411340880b62c09",
-  "production_sources": 823,
+  "image_name": "recovery-dijun-unified-mtp-partial-write.img",
+  "image_sha256": "1de91973f369797d92b5aad05047723d3bb90d8e8ff179614229f1b6bc715dbc",
+  "production_sources": 824,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -12,6 +12,22 @@
     "scope": "After Synaptics is live and Xiaomi input is registered, wait 2 seconds, request ordinary touch reports, and check the software cache. This does not prove controller acknowledgement or event delivery. Prior manual raw0 user capture observed 215 Linux input events; this automatic-startup candidate has no corresponding hardware observation."
   },
   "checks": [
+    {
+      "name": "mtp-partial-objects",
+      "status": "PASS",
+      "cases": 160,
+      "failures": 0,
+      "local_report_sha256": "9935a0d32a92e9018446bac6605d1d33f34bd56e15f30c004be90aac30f9f822",
+      "scope": "Host production MTP server/packet/database/storage with ordinary files/inotify/threads and ASan/UBSan: SendPartialObject validates initial packet type/code/transaction/declared length before writes, retries short writes/EINTR, rejects zero/error writes, clears inbound response data and returns total bytes. USB/properties/logging fixtures; no ARM64 MTP/Windows/full endpoint drain, durable commit or rollback. Edits remain in-place."
+    },
+    {
+      "name": "mtp-partial-negative",
+      "status": "FAIL",
+      "cases": 11,
+      "failures": 10,
+      "local_report_sha256": "2feae8e1a7ee78719580ddec382209bb1efd14adf11147fb67196a71033c7ed6",
+      "scope": "Host production MTP server/packet/database/storage with ordinary files/inotify/threads and ASan/UBSan: SendPartialObject validates initial packet type/code/transaction/declared length before writes, retries short writes/EINTR, rejects zero/error writes, clears inbound response data and returns total bytes. USB/properties/logging fixtures; no ARM64 MTP/Windows/full endpoint drain, durable commit or rollback. Edits remain in-place."
+    },
     {
       "name": "mtp-session-objects",
       "status": "PASS",

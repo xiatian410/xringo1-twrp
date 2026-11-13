@@ -26,6 +26,18 @@ atomic_bool directory_timestamp_fault=false,directory_close_fault=false;
 atomic_int directory_timestamp_calls=0;
 atomic_bool directory_open_fault=false;
 atomic_int edit_opens=0,edit_closes=0,edit_fd=-1;
+atomic_int edit_write_fault=0,edit_writes=0,edit_receives=0;
+extern "C" ssize_t __real_pwrite(int,const void*,size_t,off_t);
+extern "C" ssize_t __wrap_pwrite(int fd,const void* p,size_t n,off_t offset){
+ if(fd==edit_fd){
+  ++edit_writes;
+  if(edit_write_fault==1)n=min(n,size_t(2));
+  if(edit_write_fault==2){edit_write_fault=0;errno=EINTR;return -1;}
+  if(edit_write_fault==3)return 0;
+  if(edit_write_fault==4){errno=ENOSPC;return -1;}
+ }
+ return __real_pwrite(fd,p,n,offset);
+}
 extern "C" int __real_open(const char*,int,...);
 extern "C" int __wrap_open(const char*p,int flags,...){
  if(directory_open_fault&&string(p)=="/one/new-dir"&&(flags&O_DIRECTORY)){errno=EACCES;return -1;}
@@ -85,8 +97,8 @@ struct Session {
  void start(){ {lock_guard l(peer.mutex);peer.disconnected=false;}worker=thread([&]{server->run();});}
  void stop(){ {lock_guard l(peer.mutex);peer.disconnected=true;peer.cv.notify_all();}if(worker.joinable())worker.join();}
  ~Session(){stop();/* database owns storages and must stop observers before server dies */}
- Reply call(uint16_t op,initializer_list<uint32_t> params={},const Bytes* data=nullptr){
-  ++tx;unique_lock l(peer.mutex);auto first=peer.output.size();peer.input.push_back(packet(1,op,tx,words(params)));if(data)peer.input.push_back(packet(2,op,tx,*data));peer.cv.notify_all();
+ Reply call(uint16_t op,initializer_list<uint32_t> params={},const Bytes* data=nullptr,uint16_t dataType=2,uint16_t dataCode=0,int transactionDelta=0){
+  ++tx;unique_lock l(peer.mutex);auto first=peer.output.size();peer.input.push_back(packet(1,op,tx,words(params)));if(data)peer.input.push_back(packet(dataType,dataCode?dataCode:op,tx+transactionDelta,*data));peer.cv.notify_all();
   REQUIRE(peer.cv.wait_for(l,2s,[&]{for(size_t i=first;i<peer.output.size();++i){auto& b=peer.output[i];if(b.size()>=12&&(word(b,4)&0xffff)==3&&word(b,8)==tx)return true;}return false;}));
   Reply result;for(size_t i=first;i<peer.output.size();++i){auto& b=peer.output[i];if(word(b,8)!=tx)continue;if((word(b,4)&0xffff)==3){result.code=word(b,4)>>16;result.response=b;}else result.data=b;}return result;
  }
@@ -109,7 +121,34 @@ int main(int argc,char** argv){
  auto* one=s.add(0x10001,"/one");s.add(0x20001,"/two");s.start();
  if(!test.starts_with("session-unopened-"))s.open();
  auto a=find(s.db,0x10001,"a.txt"),dir=find(s.db,0x10001,"dir");REQUIRE(a&&dir);
- if(test.starts_with("session-unopened-")||test.starts_with("session-closed-")){
+ if(test.starts_with("edit-partial-")){
+  const auto kind=test.substr(13);
+  REQUIRE(s.call(MTP_OPERATION_BEGIN_EDIT_OBJECT,{a}).code==MTP_RESPONSE_OK);
+  const bool malformed=kind=="oversized"||kind.starts_with("wrong-");
+  const bool ioerror=kind=="zero-write"||kind=="write-error";
+  const uint32_t length=kind=="large"?60000:kind=="empty"?0:3;
+  Bytes data(kind=="oversized"?7:length,'N');
+  edit_write_fault=kind=="short-write"?1:kind=="eintr"?2:kind=="zero-write"?3:kind=="write-error"?4:0;
+  receiving_probe=[&](int fd){if(fd==edit_fd){++edit_receives;if(kind=="oversized"){lock_guard l(peer.mutex);peer.receive_fail=true;}}};
+  auto r=s.call(MTP_OPERATION_SEND_PARTIAL_OBJECT,{a,2,0,length},&data,
+      kind=="wrong-type"?1:2,kind=="wrong-code"?MTP_OPERATION_SEND_OBJECT:0,kind=="wrong-transaction"?1:0);
+  edit_write_fault=0;receiving_probe={};{lock_guard l(peer.mutex);peer.receive_fail=false;}
+  REQUIRE(r.data.empty());
+  if(malformed){
+   REQUIRE(r.code==MTP_RESPONSE_INVALID_PARAMETER&&readfile("/one/a.txt")=="alpha");
+   REQUIRE(edit_writes==0&&edit_receives==0);
+  }else if(ioerror){
+   REQUIRE(r.code==MTP_RESPONSE_GENERAL_ERROR&&readfile("/one/a.txt")=="alpha");
+   REQUIRE(edit_receives==0&&word(r.response,12)==0);
+  }else{
+   REQUIRE(r.code==MTP_RESPONSE_OK&&word(r.response,12)==length);
+   REQUIRE(readfile("/one/a.txt")== (length==0?"alpha":length==3?"alNNN":"al"+string(length,'N')));
+   auto metadata=s.call(MTP_OPERATION_GET_OBJECT_INFO,{a});
+   REQUIRE(metadata.code==MTP_RESPONSE_OK&&word(metadata.data,20)==max(uint32_t(5),2+length));
+  }
+  REQUIRE(s.call(MTP_OPERATION_END_EDIT_OBJECT,{a}).code==MTP_RESPONSE_OK&&edit_closes==1);
+  cout<<"partial_checked=1 malformed="<<malformed<<" ioerror="<<ioerror<<" declared="<<length<<endl;
+ }else if(test.starts_with("session-unopened-")||test.starts_with("session-closed-")){
   const auto kind=test.substr(test.starts_with("session-unopened-")?17:15);
   if(test.starts_with("session-closed-"))REQUIRE(s.call(MTP_OPERATION_CLOSE_SESSION).code==MTP_RESPONSE_OK);
   Reply r;

@@ -31,6 +31,7 @@ CASES += ['directory-final-'+case for case in ['root','nested','retry','close','
 CASES += ['session-'+phase+'-'+op for phase in ['unopened','closed'] for op in
           ['info','download','rename','delete','upload','copy','move','edit','truncate','end-edit']]
 CASES += ['session-close-edit', 'session-reset-edit', 'session-close-pending']
+CASES += ['edit-partial-'+case for case in ['small','large','empty','oversized','wrong-type','wrong-code','wrong-transaction','short-write','eintr','zero-write','write-error']]
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 
 def main():
@@ -89,7 +90,7 @@ template<class T> inline std::string Trim(const T& v){std::string s(v);auto a=s.
         cmd=['g++','-std=c++23','-O1','-g','-pthread','-DMTP_DEVICE','-fno-pie','-no-pie',
              '-fsanitize=address,undefined','-fno-sanitize-recover=all','-fno-omit-frame-pointer',
              '-include','unistd.h','-include','ctime','-include','cstring','-include','climits','-include','cstdint','-include','chrono','-include','cstdarg','-Wl,--wrap=unlink','-Wl,--wrap=unlinkat','-Wl,--wrap=write','-Wl,--wrap=fsync','-Wl,--wrap=mkdir','-Wl,--wrap=rename','-Wl,--wrap=mkstemp','-Wl,--wrap=close','-Wl,--wrap=futimens','-Wl,--wrap=open',*[f'-I{p}' for p in includes],
-             *[str(stage/n) for n in names],str(ROOT/'tests/mtp_objects_test.cpp'),'-o',str(tmp/'test')]
+             '-Wl,--wrap=pwrite',*[str(stage/n) for n in names],str(ROOT/'tests/mtp_objects_test.cpp'),'-o',str(tmp/'test')]
         subprocess.run(cmd,check=True)
         results=[]
         for case in a.cases or CASES:

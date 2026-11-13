@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-session-boundary.img",
-  "image_sha256": "4a149ab8cfdef7ad3c9380a73dfa24b168f9bc71b0333cd57411340880b62c09",
-  "image_status": "Clean installclean + make -j$(nproc); patch0098 MTP session file-command boundary/edit fd cleanup. 823 sources/six profiles; objects149/transfers48 pass; old22/23 fail. Hardware unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-partial-write.img",
+  "image_sha256": "1de91973f369797d92b5aad05047723d3bb90d8e8ff179614229f1b6bc715dbc",
+  "image_status": "Clean installclean + make -j$(nproc); patch0099 MTP partial edit validation/short-write handling/response count. 824 sources/six profiles; objects160 pass; old10/11 fail. Hardware unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1934,7 +1934,7 @@
     "OS4 stable automatic ordinary-report startup candidate is built; 9 private policy cases and ramdisk delivery audit pass. Prior manual raw0 user capture observed215 Linux input events. Automatic candidate controller response/event delivery, GUI and wake remain unverified.",
     "Security services: original six-profile ARM64 relocation18, missing-library6 and undefined-symbol6 covered; actual default namespace fields and config removal/marker12 controls now covered in private chroot (42-case suite). Real init/mount namespace/APEX/property/proc runtime, service initialization/Binder/TEE/key operations and synthetic crypto volumes remain open.",
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
-    "MTP patch0098 session gate/close edit cleanup covered (objects149/transfers48; old22/23 failures); remaining media metadata and real client directory-finalization behavior (five post-child explicit SendObjectInfo retry/close/readonly cases covered; no automatic tree completion replay; prior file/date/completion evidence retained), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
+    "MTP patch0099 partial edit packet validation/write retries/response count covered (objects160; old10/11 failures); edits remain in-place, no rollback or complete error-stream drain. MTP patch0098 session gate/close edit cleanup covered (objects149/transfers48; old22/23 failures); remaining media metadata and real client directory-finalization behavior (five post-child explicit SendObjectInfo retry/close/readonly cases covered; no automatic tree completion replay; prior file/date/completion evidence retained), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
     "Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix. Patch0095 now preserves application user.* binary/empty xattrs with bounded multiblock PAX and errors; existing Android references excluded. libtar64/GNU readback and codec104 pass, old10/14 and20/20fail. Arbitrary privileged namespaces/ACL, live concurrent consistency and complete manager/GUI/powerloss remain outside scope. Patch0096 now bounds ordinary/split extraction to selected root and rejects observed traversal/symlink/shared-inode hazards; libtar79/codec116 pass, old11/15 and12/12 fail. Concurrent ancestor replacement and bind-mount isolation remain open; not complete archive sandboxing. Patch0097 propagates char/block mknod failures before applying metadata to existing files: libtar89/codec124 pass, old8/10 and8/8 fail. mknod is intercepted; no actual device node creation or target kernel success verified.",
     "Full filesystem GUI/manager/tool format/write/repair lifecycle, real mounts/fscrypt, concurrent changes and I/O/power-loss cleanup remain pending. Ten original partition-tool page/worker/return-detail cases now cover that handoff with an explicit manager fixture; they do not join the independent ARM64 tool runs into one full lifecycle. Existing deletion/media/conversion/mount/persist/Android Secure/startup media fixes and ext4 labeling evidence are reused.",
     "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
@@ -4012,6 +4012,22 @@
       "evidence": "logs/mtp-session-transfers.json",
       "evidence_sha256": "3719fd5e0b9b59a5f6fe67a555aff57e0b754ad278e0ebb81615107d5fd947dc",
       "scope": "Host production MTP server/packet/database/storage: session-required file commands, CloseSession/ResetDevice edit fd release, pending upload cleanup/reopen. Ordinary files/inotify/threads with ASan/UBSan; USB/properties/logging fixtures. No ARM64 MTP/Windows/actual USB reset/full endpoints or rollback; session gating is not authentication."
+    },
+    {
+      "name": "mtp-partial-objects",
+      "status": "PASS",
+      "count": 160,
+      "evidence": "logs/mtp-partial-objects.json",
+      "evidence_sha256": "9935a0d32a92e9018446bac6605d1d33f34bd56e15f30c004be90aac30f9f822",
+      "scope": "Host production MTP server/packet/database/storage with ordinary files/inotify/threads and ASan/UBSan: SendPartialObject validates initial packet type/code/transaction/declared length before writes, retries short writes/EINTR, rejects zero/error writes, clears inbound response data and returns total bytes. USB/properties/logging fixtures; no ARM64 MTP/Windows/full endpoint drain, durable commit or rollback. Edits remain in-place."
+    },
+    {
+      "name": "mtp-partial-negative",
+      "status": "FAIL",
+      "count": 11,
+      "evidence": "logs/mtp-partial-negative.json",
+      "evidence_sha256": "2feae8e1a7ee78719580ddec382209bb1efd14adf11147fb67196a71033c7ed6",
+      "scope": "Host production MTP server/packet/database/storage with ordinary files/inotify/threads and ASan/UBSan: SendPartialObject validates initial packet type/code/transaction/declared length before writes, retries short writes/EINTR, rejects zero/error writes, clears inbound response data and returns total bytes. USB/properties/logging fixtures; no ARM64 MTP/Windows/full endpoint drain, durable commit or rollback. Edits remain in-place."
     }
   ],
   "source_review_followups": [
@@ -4350,10 +4366,10 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/mtp-session-delivery-audit.json",
-    "scope": "Host production MTP server/packet/database/storage: session-required file commands, CloseSession/ResetDevice edit fd release, pending upload cleanup/reopen. Ordinary files/inotify/threads with ASan/UBSan; USB/properties/logging fixtures. No ARM64 MTP/Windows/actual USB reset/full endpoints or rollback; session gating is not authentication.",
+    "evidence": "logs/mtp-partial-delivery-audit.json",
+    "scope": "Host production MTP server/packet/database/storage with ordinary files/inotify/threads and ASan/UBSan: SendPartialObject validates initial packet type/code/transaction/declared length before writes, retries short writes/EINTR, rejects zero/error writes, clears inbound response data and returns total bytes. USB/properties/logging fixtures; no ARM64 MTP/Windows/full endpoint drain, durable commit or rollback. Edits remain in-place.",
     "hardware": "unverified",
-    "evidence_sha256": "19ced77ebe6941a2e5192f74694635a070c9ee945f8db2eaee161444b5f7f3da"
+    "evidence_sha256": "4591cc91c73fb1de07759dc4f21c9829aa0359717a5c405ff48cdd15155e2d34"
   },
   "delivery_evidence_refresh": {
     "date": "2026-11-12",

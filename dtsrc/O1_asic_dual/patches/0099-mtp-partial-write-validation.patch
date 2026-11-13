@@ -1,0 +1,100 @@
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -1425,51 +1425,57 @@
+     const char* filePath = (const char *)edit->mPath;
+     ALOGV("receiving partial %s %" PRIu64 " %" PRIu32, filePath, offset, length);
+ 
+-    // read the header, and possibly some data
++    // The declared length is also the successful response count. Do not let
++    // an oversized initial packet underflow the remaining transfer length.
++    const uint32_t totalLength = length;
++    if (offset > INT64_MAX || length > static_cast<uint64_t>(INT64_MAX) - offset)
++        return MTP_RESPONSE_INVALID_PARAMETER;
++
+     int ret = mData.read(mHandle);
+     if (ret < MTP_CONTAINER_HEADER_SIZE)
+         return MTP_RESPONSE_GENERAL_ERROR;
+-    int initialData = ret - MTP_CONTAINER_HEADER_SIZE;
+-
+-    if (initialData > 0) {
+-        ret = pwrite(edit->mFD, mData.getData(), initialData, offset);
+-        offset += initialData;
+-        length -= initialData;
+-    }
+-
+-    bool isCanceled = false;
+-    if (ret < 0) {
+-        ALOGE("failed to write initial data");
+-    } else {
+-        mtp_file_range  mfr;
+-        mfr.fd = edit->mFD;
+-        mfr.offset = offset;
+-        mfr.length = length;
+-        mfr.command = 0;
+-        mfr.transaction_id = 0;
+-
+-        // transfer the file
+-        ret = mHandle->receiveFile(mfr, mfr.length == 0 &&
+-                initialData == MTP_BUFFER_SIZE - MTP_CONTAINER_HEADER_SIZE);
+-        if ((ret < 0) && (errno == ECANCELED)) {
+-            isCanceled = true;
+-        }
+-    }
++    const size_t initialData = ret - MTP_CONTAINER_HEADER_SIZE;
++    if (mData.getContainerType() != MTP_CONTAINER_TYPE_DATA ||
++        mData.getContainerCode() != MTP_OPERATION_SEND_PARTIAL_OBJECT ||
++        mData.getTransactionID() != mRequest.getTransactionID() || initialData > length) {
++        mData.reset();
++        return MTP_RESPONSE_INVALID_PARAMETER;
++    }
++
++    size_t written = 0;
++    while (written < initialData) {
++        const ssize_t count = pwrite(edit->mFD, mData.getData() + written,
++                                     initialData - written, offset + written);
++        if (count < 0 && errno == EINTR) continue;
++        if (count <= 0) {
++            mData.reset();
++            mResponse.setParameter(1, 0);
++            return MTP_RESPONSE_GENERAL_ERROR;
++        }
++        written += count;
++    }
++    offset += initialData;
++    length -= initialData;
++
++    mtp_file_range mfr{};
++    mfr.fd = edit->mFD;
++    mfr.offset = offset;
++    mfr.length = length;
++    ret = mHandle->receiveFile(mfr, mfr.length == 0 &&
++            initialData == MTP_BUFFER_SIZE - MTP_CONTAINER_HEADER_SIZE);
++    const int savedErrno = errno;
++    // Never reflect the inbound packet as an outgoing data response, even on
++    // write/transport failure. Bytes already written are not rolled back.
++    mData.reset();
+     if (ret < 0) {
+         mResponse.setParameter(1, 0);
+-        if (isCanceled)
+-            return MTP_RESPONSE_TRANSACTION_CANCELLED;
+-        else
+-            return MTP_RESPONSE_GENERAL_ERROR;
+-    }
+-
+-    // reset so we don't attempt to send this back
+-    mData.reset();
+-    mResponse.setParameter(1, length);
+-    uint64_t end = offset + length;
+-    if (end > edit->mSize) {
+-        edit->mSize = end;
+-    }
++        return savedErrno == ECANCELED ? MTP_RESPONSE_TRANSACTION_CANCELLED
++                                      : MTP_RESPONSE_GENERAL_ERROR;
++    }
++
++    mResponse.setParameter(1, totalLength);
++    const uint64_t end = offset + length;
++    if (end > edit->mSize) edit->mSize = end;
+     return MTP_RESPONSE_OK;
+ }
+ 
