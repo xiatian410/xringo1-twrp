@@ -24,7 +24,9 @@ MTP 临时文件删除失败导致同对象覆盖无法重试已由 0081 修正�
 
 原生 MTP bulk 完成队列报错后负值转无符号导致的栈越界已由 0082 修正；旧 EIO / EAGAIN 两项 ASan 越界、修正三项及原生 / 兼容往返回归已核对并清理构建交付。该错误分支收尾，不新增等价故障夹具；完整 bulk / 控制请求 / server 取消与 Reset 接续仍未完成。见[完成队列错误](MTP-CONTROL-ADAPTATION.md#bulk-completion-error)。
 
-MTP 单批发送的负磁盘读取与尾批 USB 错误误报成功已由 0083 修正；八项通过、旧六项失败，相关正常传输和完成队列回归通过并清理构建交付。本项收尾，不重复单批夹具；多批流水线取消、完整 server / Reset / USB 集成仍未完成。见[发送失败传播](MTP-ADAPTATION.md#send-errors)。
+MTP 单批发送的负磁盘读取与尾批 USB 错误误报成功已由 0083 修正；八项通过、旧六项失败，相关正常传输和完成队列回归通过并清理构建交付。本项收尾，不重复单批夹具；后续多批首错误修正见下文，完整 server / Reset / USB 集成仍未完成。见[发送失败传播](MTP-ADAPTATION.md#send-errors)。
+
+0084 修正兼容多批发送的后续磁盘错误覆盖先前 USB 错误；指定第二次读取重叠调度和两种模式多批内容往返六项通过，旧双故障一项失败，单批八项回归通过。已清理构建并收尾，不重复相同调度；真实 FunctionFS outstanding 取消与完整 server / Reset 仍未完成。见[多批发送](MTP-ADAPTATION.md#pipeline-first-error)。
 
 ## 已维护事项的入口
 

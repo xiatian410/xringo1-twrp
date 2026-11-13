@@ -16,6 +16,7 @@ parser.add_argument('--baseline', action='store_true')
 parser.add_argument('--source', type=Path, default=RECOVERY)
 parser.add_argument('--completion-errors', action='store_true')
 parser.add_argument('--send-errors', action='store_true')
+parser.add_argument('--pipeline', action='store_true')
 parser.add_argument('--report', type=Path, default=ROOT/'logs/mtp-transport-regression.json')
 args = parser.parse_args()
 with tempfile.TemporaryDirectory(prefix='dijun-mtp-') as directory:
@@ -63,7 +64,9 @@ inline bool SetProperty(const std::string& key, const std::string& value) {
     binary = temp / 'mtp-test'
     subprocess.run(cmd + [str(p) for p in files] + ['-o', str(binary)], check=True)
     cases = []
-    selected = (['send-'+kind+'-'+error for kind in ['native', 'compat']
+    selected = (['send-'+kind+'-pipeline-'+error for kind in ['native', 'compat']
+                 for error in ['success', 'usb', 'dual']] if args.pipeline else
+                ['send-'+kind+'-'+error for kind in ['native', 'compat']
                  for error in ['disk-eio', 'disk-short', 'usb-eio', 'usb-short']]
                 if args.send_errors else ['completion-eio', 'completion-eagain', 'completion-eintr']
                 if args.completion_errors else ['roundtrip'])

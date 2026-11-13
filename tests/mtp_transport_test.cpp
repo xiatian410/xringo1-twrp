@@ -4,6 +4,7 @@
 #include <atomic>
 #include <csignal>
 #include <cstring>
+#include <condition_variable>
 #include <fcntl.h>
 #include <iostream>
 #include <string>
@@ -23,6 +24,17 @@ static std::atomic<int> getevents_fault{0};
 static std::atomic<int> getevents_calls{0};
 static std::atomic<int> completion_fault{0};
 static std::atomic<int> completion_skip{0};
+static std::mutex pipeline_lock;
+static std::condition_variable pipeline_wait;
+static bool pipeline_usb_failed = false;
+static std::atomic<bool> pipeline_mode{false};
+static std::atomic<int> pipeline_reads{0}, pipeline_completed{0};
+static bool pipeline_disk_error = false;
+static void pipeline_failed() {
+    std::lock_guard<std::mutex> lock(pipeline_lock);
+    pipeline_usb_failed = true;
+    pipeline_wait.notify_all();
+}
 extern "C" int __real_io_getevents(aio_context_t,long,long,io_event*,timespec*);
 extern "C" int __wrap_io_getevents(aio_context_t ctx,long min,long max,io_event* events,timespec* timeout) {
     if (ctx == fault_context) {
@@ -34,6 +46,7 @@ extern "C" int __wrap_io_getevents(aio_context_t ctx,long min,long max,io_event*
         if (completion_skip > 0) --completion_skip;
         else if (const int error = completion_fault.exchange(0)) {
             events[0].res = error == -1 ? events[0].res - 1 : -error;
+            if (pipeline_mode) pipeline_failed();
         }
     }
     return result;
@@ -46,6 +59,20 @@ static std::atomic<int> read_fault{0};
 extern "C" ssize_t __real_pread64(int, void*, size_t, off64_t);
 extern "C" ssize_t __wrap_pread64(int fd, void* data, size_t length, off64_t offset) {
     if (fd == read_fault_fd.load()) {
+        if (pipeline_mode) {
+            const int count = ++pipeline_reads;
+            if (count == 2) {
+                std::unique_lock<std::mutex> lock(pipeline_lock);
+                if (!pipeline_wait.wait_for(lock, std::chrono::seconds(5), [] { return pipeline_usb_failed; })) {
+                    std::cerr << "FAIL: pending read did not overlap USB failure\n";
+                    std::abort();
+                }
+                ++pipeline_completed;
+                if (pipeline_disk_error) { errno = ENOSPC; return -1; }
+                return __real_pread64(fd, data, length, offset);
+            }
+            ++pipeline_completed;
+        }
         if (const int error = read_fault.exchange(0)) {
             if (error == -1) return __real_pread64(fd, data, length - 1, offset);
             errno = error; return -1;
@@ -63,6 +90,7 @@ extern "C" ssize_t __real_write(int, const void*, size_t);
 extern "C" ssize_t __wrap_write(int fd, const void* data, size_t length) {
     if (fd == fault_fd) {
         if (write_fault_after > 0) { --write_fault_after; return __real_write(fd, data, length); }
+        if (pipeline_mode) { pipeline_failed(); errno = EPIPE; return -1; }
         if (short_write) return length ? length - 1 : 0;
         errno = EIO;
         return -1;
@@ -196,6 +224,50 @@ public:
         require(!handle.mCanceled || disk, "disk cancellation only");
         std::cout << "PASS: " << mode << " result=" << result << " errno=" << saved_errno << std::endl;
     }
+    void pipeline(const std::string& path, const std::string& mode) {
+        const bool success = mode.find("success") != std::string::npos;
+        base::unique_fd file(::open(path.c_str(), O_CREAT|O_EXCL|O_RDWR, 0600));
+        require(file >= 0, "pipeline file");
+        std::vector<unsigned char> content(7*1024*1024+37);
+        for (size_t i=0; i<content.size(); ++i) content[i]=(i*17+i/251)%253;
+        require(::write(file, content.data(), content.size()) == static_cast<ssize_t>(content.size()), "pipeline content");
+        mtp_file_range range{};
+        range.fd=file; range.length=content.size(); range.command=0x1009; range.transaction_id=9;
+        require(fcntl(bulk_in,F_SETFL,O_NONBLOCK)==0,"nonblocking host reader");
+        std::atomic<bool> done{false};
+        std::vector<unsigned char> received;
+        std::thread reader([&] {
+            unsigned char bytes[65536];
+            while (true) {
+                ssize_t count=::read(bulk_in,bytes,sizeof(bytes));
+                if (count>0) { received.insert(received.end(),bytes,bytes+count); continue; }
+                if (done) break;
+                pollfd fd{bulk_in.get(),POLLIN,0}; poll(&fd,1,10);
+            }
+        });
+        if (!success) {
+            pipeline_usb_failed=false; pipeline_reads=0; pipeline_completed=0;
+            pipeline_disk_error=mode.find("dual")!=std::string::npos;
+            pipeline_mode=true; read_fault_fd=file.get();
+            if constexpr (std::is_same_v<T,MtpFfsHandle>) {
+                fault_context=handle.mCtx; completion_skip=1; completion_fault=EPIPE;
+            } else { fault_fd=handle.mBulkIn; write_fault_after=1; }
+        }
+        const int result=handle.sendFile(range), error=errno;
+        done=true; reader.join();
+        pipeline_mode=false; read_fault_fd=-1; fault_fd=-1; fault_context=0;
+        write_fault_after=-1; completion_fault=0;
+        if (success) {
+            require(result==0,"pipeline success");
+            require(received.size()==content.size()+sizeof(mtp_data_header),"pipeline total bytes");
+            require(std::equal(content.begin(),content.end(),received.begin()+sizeof(mtp_data_header)),"pipeline exact content");
+        } else {
+            require(pipeline_reads==2 && pipeline_completed==2,"pending read drained before return; no third read");
+            require(result==-1 && error==EPIPE,"first USB error retained after pending disk read");
+        }
+        std::cout<<"PASS: "<<mode<<" result="<<result<<" errno="<<error
+                 <<" reads="<<pipeline_reads<<" completed="<<pipeline_completed<<std::endl;
+    }
     void disconnected() {
         bulk_out.reset();
         char byte = 0;
@@ -231,10 +303,14 @@ int main(int argc, char** argv) {
             signal(SIGPIPE, SIG_IGN);
             if (mode.find("compat") != std::string::npos) {
                 android::MtpFfsHandleTest<android::MtpFfsCompatHandle> test;
-                test.descriptors(false); test.send_error(std::string(argv[1])+"/send-file", mode);
+                test.descriptors(false);
+                if (mode.find("pipeline")!=std::string::npos) test.pipeline(std::string(argv[1])+"/send-file",mode);
+                else test.send_error(std::string(argv[1])+"/send-file", mode);
             } else {
                 android::MtpFfsHandleTest<android::MtpFfsHandle> test;
-                test.descriptors(false); test.send_error(std::string(argv[1])+"/send-file", mode);
+                test.descriptors(false);
+                if (mode.find("pipeline")!=std::string::npos) test.pipeline(std::string(argv[1])+"/send-file",mode);
+                else test.send_error(std::string(argv[1])+"/send-file", mode);
             }
             return 0;
         }

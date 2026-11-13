@@ -6,9 +6,9 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-mtp-send-errors.img` |
-| SHA-256 | `124ce76d0a7fd51b7b12f63fb974c40fdefc80e226518811a1ec7f7d5eebc755` |
-| 生产来源绑定 | 801 份 |
+| 文件 | `recovery-dijun-unified-mtp-pipeline.img` |
+| SHA-256 | `abb4c6542e064495d0afc84ebb159391c18cb14f49b2a49e93ca7215b7898b2f` |
+| 生产来源绑定 | 802 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
@@ -23,7 +23,11 @@ scratch保存后，在目标写入前/一块后/ordered块全写后及header提�
 
 实际 client Connect/query、server、SnapshotHandlerManager、ReadWorker 与 replace/zero MergeWorker 已接续八场景。真实COW压缩数据/零块读取、64 KiB合并内容与未改尾部逐字节核对，写入/同步故障均保持失败；容量查询和dm-user端点为明确替身。没有发现新增生产缺陷，不重编0080镜像。该检查点未包含COPY/XOR/RA；后续有序合并见上文，进程退出后的局部续合并见上文，硬件断电、内核映射和完整OTA仍待完成，见[范围](docs/OTA-OPERATION-COW.md#snapuserd-handler)。
 
-## 0083 交付时的定向验证
+## 0084 交付时的定向验证
+
+兼容发送在前一批 USB 已失败、下一批排队磁盘读取再失败时保留先前 USB 错误；等待磁盘收尾的顺序不变。原生 / 兼容六个多批场景通过（含 7 MiB + 37 字节内容往返），旧兼容双故障一个场景失败，单批错误八项回归通过。802 来源清理构建，六份 profile 字节不变，仅 MTP 库、构建属性和摘要改变，审计 `logs/mtp-pipeline-delivery.json` 通过。指定重叠调度不证明完整 USB / Reset 取消，见[多批范围](docs/MTP-ADAPTATION.md#pipeline-first-error)。
+
+## 0083 交付时的定向验证（历史）
 
 修正原生负磁盘读取遗漏，以及原生 / 兼容尾批 USB 写入失败误报成功。八项定向检查通过，旧源码六项失败（含一个十秒超时）；正常传输往返与完成队列三项相关回归通过。磁盘取消保留原错误、短写明确返回 EIO；不承诺已送达数据回滚。清理构建仅改变 MTP 库、构建属性及 ramdisk 摘要，801 来源、六份 profile 不变，交付审计 `logs/mtp-send-delivery.json` 通过。只覆盖单批 body 与明确故障边界，不表示完整 USB / Reset 验收，见[发送失败范围](docs/MTP-ADAPTATION.md#send-errors)。
 
@@ -43,6 +47,7 @@ scratch保存后，在目标写入前/一块后/ordered块全写后及header提�
 
 ## 本次候选包含的修正
 
+- **0084**：兼容多批发送先等待读取收尾，再返回先前 USB 错误，避免后续磁盘错误覆盖。
 - **0083**：负磁盘读取先检查，原生 / 兼容尾批 USB 写入错误传回调用者，取消不覆盖原错误。
 - **0082**：bulk 完成队列报错立即保留 errno 返回，避免负计数导致栈数组越界。
 - **0081**：分离当前传输 handle 与遗留临时路径，修正删除失败后无法再次覆盖同对象；保留精确路径隐藏，不按前缀删除文件。

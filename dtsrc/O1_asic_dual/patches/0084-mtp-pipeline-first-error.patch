@@ -1,0 +1,16 @@
+--- a/mtp/MtpFfsCompatHandle.cpp
++++ b/mtp/MtpFfsCompatHandle.cpp
+@@ -297,6 +297,13 @@
+             // Wait for the previous read to finish
+             aio_suspend(aiol, 1, nullptr);
+             ret = aio_return(&aio);
++            // The preceding USB write may already have failed while this
++            // read was queued. Drain the read before releasing its request,
++            // but retain the first transfer error if the read also failed.
++            if (error) {
++                errno = error;
++                return -1;
++            }
+             if (ret == -1) {
+                 errno = aio_error(&aio);
+                 return -1;

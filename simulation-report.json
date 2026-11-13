@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-send-errors.img",
-  "image_sha256": "124ce76d0a7fd51b7b12f63fb974c40fdefc80e226518811a1ec7f7d5eebc755",
-  "image_status": "Clean installclean + make -j$(nproc); patch0083 propagates MTP send errors.801 production bindings/six unchanged profiles; full goal in progress.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-pipeline.img",
+  "image_sha256": "abb4c6542e064495d0afc84ebb159391c18cb14f49b2a49e93ca7215b7898b2f",
+  "image_status": "Clean installclean + make -j$(nproc); patch0084 preserves first compat pipeline error.802 source bindings/six unchanged profiles; full goal in progress.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -3371,6 +3371,30 @@
       "evidence": "logs/mtp-send-completion-regression.json",
       "evidence_sha256": "d7d8ff9b10640491c88516085982037bbe6c6b71846ce24b19cd47035994aa5f",
       "scope": "Patch0083 rejects native negative disk reads and native/compat final USB write errors; preserves original error across cancellation. Eight host send scenarios pass; old six fail (one timeout), compat disk controls pass. Real files/pipes/AIO with pread64/write and post-completion result fault injection; single body chunk only, no physical FunctionFS, full server/reset or multi-chunk cancellation proof. Clean build801; six profiles unchanged."
+    },
+    {
+      "name": "MTP-pipeline-negative",
+      "result": "expected-failure",
+      "count": 6,
+      "evidence": "logs/mtp-pipeline-negative.json",
+      "evidence_sha256": "a4a17e1f8c6eb2feac9f02d29ae4bcc59f112f17270874c1c342e7216c93ffd0",
+      "scope": "Patch0084 retains first compat USB EPIPE after draining the already queued disk read, including a later ENOSPC. Six native/compat multi-chunk scenarios pass; old compat dual fault fails. 7MiB+37 real file transfers and host reader thread, condition-variable gate at second pread64; native completion errors injected after real AIO completes. Eight single-chunk error regressions pass. No physical FunctionFS, endpoint cancellation, full server/Reset or Windows validation."
+    },
+    {
+      "name": "MTP-pipeline-current",
+      "result": "pass",
+      "count": 6,
+      "evidence": "logs/mtp-pipeline-current.json",
+      "evidence_sha256": "e7394edafa09653465a79254d9de13f54c748d0c8d6a7a028818f7b708c3ff22",
+      "scope": "Patch0084 retains first compat USB EPIPE after draining the already queued disk read, including a later ENOSPC. Six native/compat multi-chunk scenarios pass; old compat dual fault fails. 7MiB+37 real file transfers and host reader thread, condition-variable gate at second pread64; native completion errors injected after real AIO completes. Eight single-chunk error regressions pass. No physical FunctionFS, endpoint cancellation, full server/Reset or Windows validation."
+    },
+    {
+      "name": "MTP-pipeline-send-regression",
+      "result": "pass",
+      "count": 8,
+      "evidence": "logs/mtp-pipeline-send-regression.json",
+      "evidence_sha256": "1c0ec8f8a433a62a1c4937f915f87f97e8b82bb58f7b80ec4d119e631489d03a",
+      "scope": "Patch0084 retains first compat USB EPIPE after draining the already queued disk read, including a later ENOSPC. Six native/compat multi-chunk scenarios pass; old compat dual fault fails. 7MiB+37 real file transfers and host reader thread, condition-variable gate at second pread64; native completion errors injected after real AIO completes. Eight single-chunk error regressions pass. No physical FunctionFS, endpoint cancellation, full server/Reset or Windows validation."
     }
   ],
   "source_review_followups": [
@@ -3686,8 +3710,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/mtp-send-delivery.json",
-    "scope": "Patch0083 rejects native negative disk reads and native/compat final USB write errors; preserves original error across cancellation. Eight host send scenarios pass; old six fail (one timeout), compat disk controls pass. Real files/pipes/AIO with pread64/write and post-completion result fault injection; single body chunk only, no physical FunctionFS, full server/reset or multi-chunk cancellation proof. Clean build801; six profiles unchanged.",
+    "evidence": "logs/mtp-pipeline-delivery.json",
+    "scope": "Patch0084 retains first compat USB EPIPE after draining the already queued disk read, including a later ENOSPC. Six native/compat multi-chunk scenarios pass; old compat dual fault fails. 7MiB+37 real file transfers and host reader thread, condition-variable gate at second pread64; native completion errors injected after real AIO completes. Eight single-chunk error regressions pass. No physical FunctionFS, endpoint cancellation, full server/Reset or Windows validation.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -4435,5 +4459,9 @@
   "mtp_send_errors": {
     "patch": "0083-mtp-send-error-propagation.patch",
     "scope": "Patch0083 rejects native negative disk reads and native/compat final USB write errors; preserves original error across cancellation. Eight host send scenarios pass; old six fail (one timeout), compat disk controls pass. Real files/pipes/AIO with pread64/write and post-completion result fault injection; single body chunk only, no physical FunctionFS, full server/reset or multi-chunk cancellation proof. Clean build801; six profiles unchanged."
+  },
+  "mtp_pipeline": {
+    "patch": "0084-mtp-pipeline-first-error.patch",
+    "scope": "Patch0084 retains first compat USB EPIPE after draining the already queued disk read, including a later ENOSPC. Six native/compat multi-chunk scenarios pass; old compat dual fault fails. 7MiB+37 real file transfers and host reader thread, condition-variable gate at second pread64; native completion errors injected after real AIO completes. Eight single-chunk error regressions pass. No physical FunctionFS, endpoint cancellation, full server/Reset or Windows validation."
   }
 }

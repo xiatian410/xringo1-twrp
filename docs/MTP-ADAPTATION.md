@@ -27,6 +27,23 @@ python3 scripts/audit_mtp_send_delivery.py
 
 清理构建使用 `installclean` 与 `make -j$(nproc)`，801 份生产来源绑定。相对 0082 仅 MTP 库、构建属性和 ramdisk 摘要改变，六份 profile 和其他资源字节不变；交付审计见本地 `logs/mtp-send-delivery.json`。候选和哈希统一见[交付报告](../simulation-report.md)。本项完成后不重复同类单批发送夹具，完整传输生命周期仍留在工作队列中。
 
+<a id="pipeline-first-error"></a>
+## 多批发送的首个错误（0084）
+
+0083 后继续核对未覆盖的多批流水线，发现兼容模式在 USB 写入已经失败后，仍需收尾的下一批磁盘读取若再失败，会用磁盘错误覆盖先前 USB 错误。固定补丁 `patches/0084-mtp-pipeline-first-error.patch` 在 `aio_suspend` / `aio_return` 后优先返回已记录的 USB 错误。仍先等待实际读取结束，再释放栈上的 AIO 请求和缓冲区；不提前取消或跳过收尾。原生模式已有相同错误保留逻辑，此次不改变原生实现。
+
+复用传输夹具新增 `--pipeline`：原生 / 兼容各三个场景，包含 7 MiB + 37 字节的内容往返、第一批 body 的 USB EPIPE，以及 USB EPIPE 与下一批磁盘 ENOSPC 重叠。使用 host 读取线程消费管道；错误场景在第二次 `pread64` 的条件变量边界等待实际生产发送路径观察 USB 失败，再完成该磁盘读取。返回时检查两次读取均已收尾且未排第三次；正常多批数据逐字节比较。原生 USB 错误仍在真实 AIO 完成取出后修改完成记录，不等于真实端点取消或物理部分传输。
+
+```bash
+python3 tests/run_mtp_transport.py --pipeline --report logs/mtp-pipeline-current.json
+python3 tests/run_mtp_transport.py --send-errors --report logs/mtp-pipeline-send-regression.json
+python3 scripts/audit_mtp_pipeline_delivery.py
+```
+
+六场景通过，修改前同夹具仅 `send-compat-pipeline-dual` 失败，其他五个控制通过；既有八个单批错误必要回归通过。ASan / UBSan 启用，仅普通临时文件 / 管道 / host AIO。补丁按固定基线重建后以 `installclean` 和 `make -j$(nproc)` 构建；802 来源绑定、六份 profile 保持不变。相对 0083 仅 MTP 库、构建属性和摘要变化，审计 `logs/mtp-pipeline-delivery.json` 通过。现行候选见[交付报告](../simulation-report.md)。
+
+这是首错误保留与指定读取重叠调度的收尾，不证明真实 FunctionFS outstanding 请求取消、server 到完整事务 Reset 接续或 Windows。生产修正与这六个场景到此收尾，不新增等价调度来刷通过数量。
+
 ## 修正内容
 
 - 原生 AIO 和兼容路径共用描述符提交及端点准备流程。兼容路径此前直接打开端点，缺少描述符启动步骤。

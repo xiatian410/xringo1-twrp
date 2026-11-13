@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-send-errors.img",
-  "image_sha256": "124ce76d0a7fd51b7b12f63fb974c40fdefc80e226518811a1ec7f7d5eebc755",
-  "production_sources": 801,
+  "image_name": "recovery-dijun-unified-mtp-pipeline.img",
+  "image_sha256": "abb4c6542e064495d0afc84ebb159391c18cb14f49b2a49e93ca7215b7898b2f",
+  "production_sources": 802,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -1062,6 +1062,30 @@
       "failures": 0,
       "local_report_sha256": "d7d8ff9b10640491c88516085982037bbe6c6b71846ce24b19cd47035994aa5f",
       "scope": "Patch0083 rejects native negative disk reads and native/compat final USB write errors; preserves original error across cancellation. Eight host send scenarios pass; old six fail (one timeout), compat disk controls pass. Real files/pipes/AIO with pread64/write and post-completion result fault injection; single body chunk only, no physical FunctionFS, full server/reset or multi-chunk cancellation proof. Clean build801; six profiles unchanged."
+    },
+    {
+      "name": "mtp-pipeline-negative",
+      "status": "FAIL",
+      "cases": 6,
+      "failures": 1,
+      "local_report_sha256": "a4a17e1f8c6eb2feac9f02d29ae4bcc59f112f17270874c1c342e7216c93ffd0",
+      "scope": "Patch0084 retains first compat USB EPIPE after draining the already queued disk read, including a later ENOSPC. Six native/compat multi-chunk scenarios pass; old compat dual fault fails. 7MiB+37 real file transfers and host reader thread, condition-variable gate at second pread64; native completion errors injected after real AIO completes. Eight single-chunk error regressions pass. No physical FunctionFS, endpoint cancellation, full server/Reset or Windows validation."
+    },
+    {
+      "name": "mtp-pipeline-current",
+      "status": "PASS",
+      "cases": 6,
+      "failures": 0,
+      "local_report_sha256": "e7394edafa09653465a79254d9de13f54c748d0c8d6a7a028818f7b708c3ff22",
+      "scope": "Patch0084 retains first compat USB EPIPE after draining the already queued disk read, including a later ENOSPC. Six native/compat multi-chunk scenarios pass; old compat dual fault fails. 7MiB+37 real file transfers and host reader thread, condition-variable gate at second pread64; native completion errors injected after real AIO completes. Eight single-chunk error regressions pass. No physical FunctionFS, endpoint cancellation, full server/Reset or Windows validation."
+    },
+    {
+      "name": "mtp-pipeline-send-regression",
+      "status": "PASS",
+      "cases": 8,
+      "failures": 0,
+      "local_report_sha256": "1c0ec8f8a433a62a1c4937f915f87f97e8b82bb58f7b80ec4d119e631489d03a",
+      "scope": "Patch0084 retains first compat USB EPIPE after draining the already queued disk read, including a later ENOSPC. Six native/compat multi-chunk scenarios pass; old compat dual fault fails. 7MiB+37 real file transfers and host reader thread, condition-variable gate at second pread64; native completion errors injected after real AIO completes. Eight single-chunk error regressions pass. No physical FunctionFS, endpoint cancellation, full server/Reset or Windows validation."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
