@@ -73,6 +73,18 @@ python3 tests/mtp_transfers_test.py --report logs/mtp-directory-transfers.json
 python3 scripts/audit_mtp_directory_delivery.py
 ```
 
+<a id="active-staging-identity"></a>
+
+## 活跃上传路径被替换时拒绝发布（0114）
+
+上传使用打开的临时文件描述符接收数据，但旧实现随后直接按临时路径 rename 或在失败时 unlink。如果其他文件操作已移走原 inode 并重建同名文件或链接，服务器可能把外部文件发布为上传目标，或者在接收失败时删除替换文件。既有0091只处理传输结束后的遗留可见性，没有覆盖这个活跃阶段。
+
+0114在发布前以lstat核对临时路径为普通文件，且device/inode与接收文件描述符的fstat结果一致；不一致返回错误、保留原目标。失败清理也要求相同身份，保留外部替换文件。结束传输时若发现替换，退役活跃记录后重新协调父目录，让上传期间已被忽略事件的普通替换文件恢复可见。链接仍按既有规则不展示，不跟随其目标。
+
+原server/database/storage、真实私有文件及inotify/线程在ASan/UBSan下241项通过；新增十二项覆盖新建/覆盖目标、普通文件/链接/路径消失，以及接收成功/失败。旧实现同十二项有八项失败；路径消失四项本来就失败返回，作为控制保留。另有既有移动/复制48项回归。替换文件及原目标内容、移走inode的正常接收结果和替换普通文件可见性均核对。
+
+该检查不是原子路径所有权：lstat之后与rename/unlink之间仍有竞争窗口；父目录替换、原inode就地改写、inode复用不在保证内。跨重启归属/回收仍未实现，不按文件名前缀删除用户文件。USB/属性/日志为替身，没有ARM64 MTP、真实USB/Windows或断电验收。此批不重跑完整OTA或已解决功能。本地报告 `logs/mtp-active-identity.json`、`logs/mtp-active-identity-old.json`、`logs/mtp-active-identity-transfers.json`，交付核对入口 `python3 scripts/audit_mtp_active_identity.py`。
+
 <a id="staging-retry"></a>
 
 ## 临时文件删除失败后的重试（0081）

@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-backup-user-policy.img",
-  "image_sha256": "48fe187e092f6cedec048959ba5b5e6338db02bdb78eceb4f802f152dbd8cd8a",
-  "production_sources": 841,
+  "image_name": "recovery-dijun-unified-mtp-active-identity.img",
+  "image_sha256": "5ed25fa108d24ca8f90b11685466a1677fd148bb932d70e1266936950438a29a",
+  "production_sources": 842,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2061,6 +2061,30 @@
       "failures": 5,
       "local_report_sha256": "231c67df950e8d75be3291468b47751b70b45450fdbb0638df5dd86369072e4a",
       "scope": "Patch0113 keeps locked secondary-user exclusions local to each BackupTar attempt; unlock/retry does not mutate the persistent base policy. Original BackupTar/exclusion methods with real private files under ASan/UBSan8 pass, same-harness old5/8 fail. Mount/users/DataManager/console/tar boundary are fixtures; no real unlock, archive/fork/codec, manager/GUI/device or current-image OTA. Synchronous tar/Wait lifetime inspected; full lifecycle remains open."
+    },
+    {
+      "name": "mtp-active-identity",
+      "status": "PASS",
+      "cases": 241,
+      "failures": 0,
+      "local_report_sha256": "e8150313eeba5bcc61cc118f10b8476fb97dbdb8d3bf794be4baa19b4cf8e692",
+      "scope": "Patch0114 checks active staging lstat regular-file/device/inode identity against the received descriptor before publish or cleanup; rejects observed replacement and preserves destination/external file. EndSendObject reconciles replacement visibility. Host production server/database/storage/files/inotify/threads ASan/UBSan241 and transfers48 pass, old8/12 fail. USB/properties fixtures; check-to-rename/unlink race, parent replacement/in-place edits/inode reuse, cross-restart ownership/recovery, ARM64 MTP/Windows/device and full OTA remain unverified."
+    },
+    {
+      "name": "mtp-active-identity-old",
+      "status": "FAIL",
+      "cases": 12,
+      "failures": 8,
+      "local_report_sha256": "aa8a895f010f79cc758dcb5155cd1fc222f83509d5aa94fa29b5639d6cd7b521",
+      "scope": "Patch0114 checks active staging lstat regular-file/device/inode identity against the received descriptor before publish or cleanup; rejects observed replacement and preserves destination/external file. EndSendObject reconciles replacement visibility. Host production server/database/storage/files/inotify/threads ASan/UBSan241 and transfers48 pass, old8/12 fail. USB/properties fixtures; check-to-rename/unlink race, parent replacement/in-place edits/inode reuse, cross-restart ownership/recovery, ARM64 MTP/Windows/device and full OTA remain unverified."
+    },
+    {
+      "name": "mtp-active-identity-transfers",
+      "status": "PASS",
+      "cases": 48,
+      "failures": 0,
+      "local_report_sha256": "407b28c3c25cc99a23ec141f56af9a4b6c18783d5e79009131cfc048c34970b4",
+      "scope": "Patch0114 checks active staging lstat regular-file/device/inode identity against the received descriptor before publish or cleanup; rejects observed replacement and preserves destination/external file. EndSendObject reconciles replacement visibility. Host production server/database/storage/files/inotify/threads ASan/UBSan241 and transfers48 pass, old8/12 fail. USB/properties fixtures; check-to-rename/unlink race, parent replacement/in-place edits/inode reuse, cross-restart ownership/recovery, ARM64 MTP/Windows/device and full OTA remain unverified."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2327,5 +2351,10 @@
     "patch": "0113",
     "document": "docs/BACKUP-SESSION-ADAPTATION.md#user-attempt-policy",
     "scope": "Patch0113 keeps locked secondary-user exclusions local to each BackupTar attempt; unlock/retry does not mutate the persistent base policy. Original BackupTar/exclusion methods with real private files under ASan/UBSan8 pass, same-harness old5/8 fail. Mount/users/DataManager/console/tar boundary are fixtures; no real unlock, archive/fork/codec, manager/GUI/device or current-image OTA. Synchronous tar/Wait lifetime inspected; full lifecycle remains open."
+  },
+  "mtp_active_staging_identity": {
+    "patch": "0114",
+    "document": "docs/MTP-ATOMIC-UPLOAD.md#active-staging-identity",
+    "scope": "Patch0114 checks active staging lstat regular-file/device/inode identity against the received descriptor before publish or cleanup; rejects observed replacement and preserves destination/external file. EndSendObject reconciles replacement visibility. Host production server/database/storage/files/inotify/threads ASan/UBSan241 and transfers48 pass, old8/12 fail. USB/properties fixtures; check-to-rename/unlink race, parent replacement/in-place edits/inode reuse, cross-restart ownership/recovery, ARM64 MTP/Windows/device and full OTA remain unverified."
   }
 }

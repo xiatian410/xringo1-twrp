@@ -583,6 +583,35 @@ int main(int argc,char** argv){
   data=info("retry.txt",3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
   Bytes payload{'o','k','!'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&payload).code==MTP_RESPONSE_OK);
   REQUIRE(stat("/one/retry.txt",&st)==0&&st.st_mtime>=before&&readfile("/one/retry.txt")=="ok!");
+ }else if(test.starts_with("active-staging-")){
+  const bool replacing=test.starts_with("active-staging-overwrite-");
+  const bool receive_error=test.ends_with("receive-error");
+  const bool file_replacement=test.find("-file")!=string::npos;
+  const bool symlink_replacement=test.find("-symlink")!=string::npos;
+  const string name=replacing?"a.txt":"new.txt",path="/one/"+name;
+  const string old=replacing?readfile(path):"";
+  string temporary;
+  writefile("/one/user-content.txt","external-user-data");
+  receiving_probe=[&](int){
+   for(const auto&e:fs::directory_iterator("/one"))
+    if(e.path().filename().string().starts_with(".mtp-upload-"))temporary=e.path();
+   REQUIRE(!temporary.empty());
+   REQUIRE(__real_rename(temporary.c_str(),"/one/detached-upload")==0);
+   if(file_replacement)writefile(temporary,"replacement-content");
+   if(symlink_replacement)REQUIRE(symlink("/one/user-content.txt",temporary.c_str())==0);
+  };
+  auto data=info(name,60000);auto r=s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data);
+  REQUIRE(r.code==MTP_RESPONSE_OK);Bytes content(60000,'N');
+  {lock_guard l(peer.mutex);peer.receive_fail=receive_error;}
+  r=s.call(MTP_OPERATION_SEND_OBJECT,{},&content);receiving_probe={};
+  REQUIRE(r.code==MTP_RESPONSE_GENERAL_ERROR);
+  REQUIRE(replacing?readfile(path)==old:!fs::exists(path));
+  if(!receive_error)REQUIRE(readfile("/one/detached-upload")==string(60000,'N'));
+  REQUIRE(readfile("/one/user-content.txt")=="external-user-data");
+  if(file_replacement){REQUIRE(readfile(temporary)=="replacement-content");REQUIRE(until([&]{return find(s.db,0x10001,fs::path(temporary).filename())!=0;}));}
+  else if(symlink_replacement)REQUIRE(fs::is_symlink(temporary));
+  else REQUIRE(!fs::exists(temporary));
+  cout<<"replacement_preserved=1 destination_preserved=1 publication_rejected=1\n";
  }else if(test.starts_with("atomic-")){
   const bool replacing=!test.starts_with("atomic-new-");
   const string name=replacing?"a.txt":"new.txt",path="/one/"+name;

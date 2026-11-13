@@ -36,6 +36,10 @@ CASES += ['command-boundary-'+case for case in ['short-length','long-length','ze
 CASES += ['data-boundary-'+op+'-'+kind for op in ['rename','info','references','device'] for kind in ['wrong-type','wrong-code','wrong-transaction','short-length','long-length','zero-length','short-header']]
 CASES += ['data-boundary-rename-stale-cancel']
 CASES += ['data-boundary-valid-rename','data-boundary-valid-info']
+ACTIVE_IDENTITY_CASES = ['active-staging-'+kind+'-'+replacement for kind in ['new','overwrite']
+                         for replacement in ['file','symlink','missing']]
+ACTIVE_IDENTITY_CASES += [name+'-receive-error' for name in ACTIVE_IDENTITY_CASES]
+CASES += ACTIVE_IDENTITY_CASES
 STREAM_CASES = ['stream-boundary-'+op+'-'+kind for op in ['new','overwrite','partial']
                 for kind in ['short-length','long-length','zero-length','wrong-type',
                              'wrong-code','wrong-transaction','short-header','stale-cancel','oversized']]

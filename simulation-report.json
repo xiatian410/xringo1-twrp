@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-backup-user-policy.img",
-  "image_sha256": "48fe187e092f6cedec048959ba5b5e6338db02bdb78eceb4f802f152dbd8cd8a",
-  "image_status": "Clean installclean + make -j$(nproc); patch0113 isolates locked-user exclusions per backup attempt.841 sources/six profiles; policy8 pass, old5/8 fail. Hardware unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-active-identity.img",
+  "image_sha256": "5ed25fa108d24ca8f90b11685466a1677fd148bb932d70e1266936950438a29a",
+  "image_status": "Clean installclean + make -j$(nproc); patch0114 rejects observed active staging path replacement.842 sources/six profiles; objects241/transfers48 pass, old8/12 fail. Hardware unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1934,7 +1934,7 @@
     "OS4 stable automatic ordinary-report startup candidate is built; 9 private policy cases and ramdisk delivery audit pass. Prior manual raw0 user capture observed215 Linux input events. Automatic candidate controller response/event delivery, GUI and wake remain unverified.",
     "Security services: original six-profile ARM64 relocation18, missing-library6 and undefined-symbol6 covered; actual default namespace fields and config removal/marker12 controls now covered in private chroot (42-case suite). Real init/mount namespace/APEX/property/proc runtime, service initialization/Binder/TEE/key operations and synthetic crypto volumes remain open.",
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U. Patch0100 now rejects reboot/slot entry while storage busy and retains pending sideload action until idle; synchronous provider cancellation and a reservation through final reboot remain unimplemented. Patch0109 now destroys/joins GUI-owned backends and CLI before final intent/reboot, including queued work and absent hotplug; original ordering4/CLI12/entry21 pass. No admission reservation or safe synchronous cancellation; full MTP/USB shutdown remains unproven.",
-    "MTP patch0099 partial edit packet validation/write retries/response count covered (objects160; old10/11 failures); edits remain in-place, no rollback or complete error-stream drain. MTP patch0098 session gate/close edit cleanup covered (objects149/transfers48; old22/23 failures); remaining media metadata and real client directory-finalization behavior (five post-child explicit SendObjectInfo retry/close/readonly cases covered; no automatic tree completion replay; prior file/date/completion evidence retained), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session. Patch0111 now validates streaming headers and retires malformed connection before tail command (objects229/old27of31fail); real endpoint/client reconnect and persistent staging recovery remain unverified.",
+    "0114 rejects observed active staging path replacement before publish/unlink (objects241/transfers48, old8/12 fail); check-to-use/parent replacement and cross-restart recovery remain open. MTP patch0099 partial edit packet validation/write retries/response count covered (objects160; old10/11 failures); edits remain in-place, no rollback or complete error-stream drain. MTP patch0098 session gate/close edit cleanup covered (objects149/transfers48; old22/23 failures); remaining media metadata and real client directory-finalization behavior (five post-child explicit SendObjectInfo retry/close/readonly cases covered; no automatic tree completion replay; prior file/date/completion evidence retained), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session. Patch0111 now validates streaming headers and retires malformed connection before tail command (objects229/old27of31fail); real endpoint/client reconnect and persistent staging recovery remain unverified.",
     "0113 isolates per-attempt locked-user exclusions (policy8 pass, old5/8 fail); real unlock/archive/manager/GUI lifecycle remains unverified. 0108 resolves DT_UNKNOWN omission/source-stat failure (codec216 pass, old32/32 fail); capacity estimates/concurrent source identity and full lifecycle remain open. 0107 closes the directory-enumeration failure gap (libtar111/codec184 pass, old3/4 and21/32 fail); size estimation, real source consistency, security namespaces/ACL, full manager/GUI and power-loss remain open. 0106 source ENOKEY must fail backup rather than skip success; link metadata not opened (libtar107/codec152, old4/6 and4/12 failures). 0105 source short/EINTR retry and premature EOF rejection covered (libtar101/codec140, previous5/12 and12/16 failures); full concurrent source consistency remains unverified. Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix. Patch0095 now preserves application user.* binary/empty xattrs with bounded multiblock PAX and errors; existing Android references excluded. libtar64/GNU readback and codec104 pass, old10/14 and20/20fail. Arbitrary privileged namespaces/ACL, live concurrent consistency and complete manager/GUI/powerloss remain outside scope. Patch0096 now bounds ordinary/split extraction to selected root and rejects observed traversal/symlink/shared-inode hazards; libtar79/codec116 pass, old11/15 and12/12 fail. Concurrent ancestor replacement and bind-mount isolation remain open; not complete archive sandboxing. Patch0097 propagates char/block mknod failures before applying metadata to existing files: libtar89/codec124 pass, old8/10 and8/8 fail. mknod is intercepted; no actual device node creation or target kernel success verified. Patch0110 fixes exclusion sizing for files/links (capacity11/old6fail/codec8); estimates still approximate on I/O errors, overlapping exclusions and allocated-block accounting. Patch0112 now avoids duplicate/nested absolute exclusion subtraction (capacity19/old7fail/codec8); I/O errors, allocation, aliases and concurrent consistency remain open.",
     "Full filesystem GUI/manager/tool format/write/repair lifecycle, real mounts/fscrypt, concurrent changes and I/O/power-loss cleanup remain pending. Ten original partition-tool page/worker/return-detail cases now cover that handoff with an explicit manager fixture; they do not join the independent ARM64 tool runs into one full lifecycle. Existing deletion/media/conversion/mount/persist/Android Secure/startup media fixes and ext4 labeling evidence are reused. FormatData/WipeEncryption/metadata partition routing/backend run14 cases now cover terminal errors/order with explicit formatter/mount/mapper/merge/hook fixtures. No full GUI/start/thread, mkfs or crypto lifecycle; no production change/build, do not repeat unchanged.",
     "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
@@ -4372,6 +4372,30 @@
       "evidence": "logs/backup-user-policy-old.json",
       "evidence_sha256": "231c67df950e8d75be3291468b47751b70b45450fdbb0638df5dd86369072e4a",
       "scope": "Patch0113 keeps locked secondary-user exclusions local to each BackupTar attempt; unlock/retry does not mutate the persistent base policy. Original BackupTar/exclusion methods with real private files under ASan/UBSan8 pass, same-harness old5/8 fail. Mount/users/DataManager/console/tar boundary are fixtures; no real unlock, archive/fork/codec, manager/GUI/device or current-image OTA. Synchronous tar/Wait lifetime inspected; full lifecycle remains open."
+    },
+    {
+      "name": "mtp-active-identity",
+      "status": "PASS",
+      "count": 241,
+      "evidence": "logs/mtp-active-identity.json",
+      "evidence_sha256": "e8150313eeba5bcc61cc118f10b8476fb97dbdb8d3bf794be4baa19b4cf8e692",
+      "scope": "Patch0114 checks active staging lstat regular-file/device/inode identity against the received descriptor before publish or cleanup; rejects observed replacement and preserves destination/external file. EndSendObject reconciles replacement visibility. Host production server/database/storage/files/inotify/threads ASan/UBSan241 and transfers48 pass, old8/12 fail. USB/properties fixtures; check-to-rename/unlink race, parent replacement/in-place edits/inode reuse, cross-restart ownership/recovery, ARM64 MTP/Windows/device and full OTA remain unverified."
+    },
+    {
+      "name": "mtp-active-identity-old",
+      "status": "FAIL",
+      "count": 12,
+      "evidence": "logs/mtp-active-identity-old.json",
+      "evidence_sha256": "aa8a895f010f79cc758dcb5155cd1fc222f83509d5aa94fa29b5639d6cd7b521",
+      "scope": "Patch0114 checks active staging lstat regular-file/device/inode identity against the received descriptor before publish or cleanup; rejects observed replacement and preserves destination/external file. EndSendObject reconciles replacement visibility. Host production server/database/storage/files/inotify/threads ASan/UBSan241 and transfers48 pass, old8/12 fail. USB/properties fixtures; check-to-rename/unlink race, parent replacement/in-place edits/inode reuse, cross-restart ownership/recovery, ARM64 MTP/Windows/device and full OTA remain unverified."
+    },
+    {
+      "name": "mtp-active-identity-transfers",
+      "status": "PASS",
+      "count": 48,
+      "evidence": "logs/mtp-active-identity-transfers.json",
+      "evidence_sha256": "407b28c3c25cc99a23ec141f56af9a4b6c18783d5e79009131cfc048c34970b4",
+      "scope": "Patch0114 checks active staging lstat regular-file/device/inode identity against the received descriptor before publish or cleanup; rejects observed replacement and preserves destination/external file. EndSendObject reconciles replacement visibility. Host production server/database/storage/files/inotify/threads ASan/UBSan241 and transfers48 pass, old8/12 fail. USB/properties fixtures; check-to-rename/unlink race, parent replacement/in-place edits/inode reuse, cross-restart ownership/recovery, ARM64 MTP/Windows/device and full OTA remain unverified."
     }
   ],
   "source_review_followups": [
@@ -4710,8 +4734,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/backup-user-policy-delivery-audit.json",
-    "scope": "Patch0113 keeps locked secondary-user exclusions local to each BackupTar attempt; unlock/retry does not mutate the persistent base policy. Original BackupTar/exclusion methods with real private files under ASan/UBSan8 pass, same-harness old5/8 fail. Mount/users/DataManager/console/tar boundary are fixtures; no real unlock, archive/fork/codec, manager/GUI/device or current-image OTA. Synchronous tar/Wait lifetime inspected; full lifecycle remains open.",
+    "evidence": "logs/mtp-active-identity-delivery-audit.json",
+    "scope": "Patch0114 checks active staging lstat regular-file/device/inode identity against the received descriptor before publish or cleanup; rejects observed replacement and preserves destination/external file. EndSendObject reconciles replacement visibility. Host production server/database/storage/files/inotify/threads ASan/UBSan241 and transfers48 pass, old8/12 fail. USB/properties fixtures; check-to-rename/unlink race, parent replacement/in-place edits/inode reuse, cross-restart ownership/recovery, ARM64 MTP/Windows/device and full OTA remain unverified.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -5867,6 +5891,13 @@
     "patch": "0113",
     "scope": "Patch0113 keeps locked secondary-user exclusions local to each BackupTar attempt; unlock/retry does not mutate the persistent base policy. Original BackupTar/exclusion methods with real private files under ASan/UBSan8 pass, same-harness old5/8 fail. Mount/users/DataManager/console/tar boundary are fixtures; no real unlock, archive/fork/codec, manager/GUI/device or current-image OTA. Synchronous tar/Wait lifetime inspected; full lifecycle remains open.",
     "document": "docs/BACKUP-SESSION-ADAPTATION.md#user-attempt-policy",
+    "production_changes": true,
+    "new_build": true
+  },
+  "mtp_active_staging_identity": {
+    "patch": "0114",
+    "scope": "Patch0114 checks active staging lstat regular-file/device/inode identity against the received descriptor before publish or cleanup; rejects observed replacement and preserves destination/external file. EndSendObject reconciles replacement visibility. Host production server/database/storage/files/inotify/threads ASan/UBSan241 and transfers48 pass, old8/12 fail. USB/properties fixtures; check-to-rename/unlink race, parent replacement/in-place edits/inode reuse, cross-restart ownership/recovery, ARM64 MTP/Windows/device and full OTA remain unverified.",
+    "document": "docs/MTP-ATOMIC-UPLOAD.md#active-staging-identity",
     "production_changes": true,
     "new_build": true
   }

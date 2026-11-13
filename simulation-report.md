@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-backup-user-policy.img` |
-| SHA-256 | `48fe187e092f6cedec048959ba5b5e6338db02bdb78eceb4f802f152dbd8cd8a` |
-| 生产来源绑定 | 841 份 |
+| 文件 | `recovery-dijun-unified-mtp-active-identity.img` |
+| SHA-256 | `5ed25fa108d24ca8f90b11685466a1677fd148bb932d70e1266936950438a29a` |
+| 生产来源绑定 | 842 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：解锁后备份不再沿用锁定用户排除项
+## 本批生产修正：拒绝发布或删除被替换的上传临时文件
+
+0114在MTP发布/清理前核对临时路径仍指向接收inode；发现外部替换时失败并保留原目标与替换文件。传输结束后重新协调父目录，让事件曾被忽略的普通替换文件恢复可见。原对象链ASan/UBSan241项及移动/复制48项通过；旧实现新增十二项中八项失败，四项路径消失控制本来正确。清理构建、842来源及六profile核对通过。
+
+详见[活跃上传路径身份](docs/MTP-ATOMIC-UPLOAD.md#active-staging-identity)。这不是原子所有权或跨重启回收：检查后的竞争、父目录替换、就地改写和inode复用仍有边界。USB/属性为替身，未执行ARM64 MTP或Windows。本批没有重跑完整OTA或已解决功能。
+
+## 沿用的锁定用户备份排除修正
 
 0113将锁定次用户的排除目录限制在本次备份副本内，避免先前尝试或失败重试污染持久基础策略，导致解锁后仍漏备用户数据。执行原BackupTar/排除方法、私有文件及ASan/UBSan，八项通过；同夹具旧实现五项失败。清理构建后841来源及六profile核对通过。
 

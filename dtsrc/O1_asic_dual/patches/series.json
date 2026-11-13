@@ -418,6 +418,10 @@
         {
           "file": "0113-backup-user-attempt-policy.patch",
           "sha256": "29cff3138e336648598a345ed4cc98c3b840e2283cb1eafb61ebb6d096439e5f"
+        },
+        {
+          "file": "0114-mtp-active-staging-identity.patch",
+          "sha256": "622caa5a8cfd4a20938493b96352476131f8c53f2e83f97ece1515190c12ec00"
         }
       ],
       "result_files": {
@@ -474,11 +478,11 @@
         "oaes/oaes.cpp": "306acbfddd40512ba8c0ad0b7ad8afc86533425625e6a875f95d0a3ae4e1e356",
         "oaes/oaes.hpp": "256c988afbd924a12db4bdaa4c9c35475dda92b53676cf7693f64e36de0ed3c4",
         "mtp/IMtpDatabase.h": "bbe651b95e206c307ba4b9e9d6c57225697dcc6667bf508bf8d5ac3c59548086",
-        "mtp/MtpServer.cpp": "2827b1c394b0db312b8022fb7693305e7c34d4a1e250d99fa24ac3064a3e9487",
+        "mtp/MtpServer.cpp": "a5eb8e3d3cae0fc68194f521237eabdf6bdeafcdcde68c76b9f075956c1359b9",
         "mtp/MtpServer.h": "8ee134a2913fe80785e6255c13bd2e270135ea69469e6f1a24211d5d2d144e4c",
         "mtp/twrp/TwrpMtpDatabase.cpp": "9abf68632a54fc69580c4bbd7a45d620e0a237c84ba3304f754af16d56d05739",
         "mtp/twrp/TwrpMtpDatabase.hpp": "0ffaf9304ae67e9dd3b755593b9ea15b2ff5d2e16b05508401b38882c7735a2b",
-        "mtp/twrp/TwrpMtpStorage.cpp": "06f33ac6966815427f673e37bf01c511a1117058a201b1f97ac384acd8beedae",
+        "mtp/twrp/TwrpMtpStorage.cpp": "ab3450d3efdb791f0f2cd5d4a60f994bedf9c8f376129f7637ac98717cc48c5f",
         "mtp/twrp/TwrpMtpStorage.hpp": "1cf2733a84e7a830f1e717309978f483132a218f38109364313d4b1b91c06738",
         "mtp/MtpUtils.cpp": "dfa7b9844c350ee5468805a8bde4babc0638a67dbf590a30cc075f8ba11c9a0e",
         "mtp/MtpUtils.h": "23f233d41237c5fae6452e19414cb849f972055ea6071be2682f934405a755b8",

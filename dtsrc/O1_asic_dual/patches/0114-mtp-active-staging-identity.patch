@@ -1,0 +1,68 @@
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -1242,6 +1242,12 @@
+     bool isCanceled = false;
+     struct stat sstat = {};
+     std::string temporary;
++    const auto owns_temporary = [&] {
++        struct stat current{};
++        return !temporary.empty() && S_ISREG(sstat.st_mode) &&
++               lstat(temporary.c_str(), &current) == 0 && S_ISREG(current.st_mode) &&
++               current.st_dev == sstat.st_dev && current.st_ino == sstat.st_ino;
++    };
+ 
+     auto start = std::chrono::steady_clock::now();
+ 
+@@ -1336,6 +1342,12 @@
+ 
+     // Only a complete, synced and closed file replaces the visible object.
+     // A failed receive never truncates or unlinks the previous destination.
++    // The open upload inode may have been moved away and its pathname reused.
++    // Never publish a replacement supplied by another filesystem actor.
++    if (ret >= 0 && !owns_temporary()) {
++        errno = ESTALE;
++        ret = -1;
++    }
+     if (ret >= 0 && rename(temporary.c_str(), mSendObjectFilePath) != 0) ret = -1;
+     if (ret >= 0) {
+         // Rename has committed. A directory-sync error cannot restore the old
+@@ -1351,7 +1363,8 @@
+ 
+     if (ret < 0) {
+         ALOGE("Mtp receive file got error %s", strerror(errno));
+-        unlink(temporary.c_str());
++        // A failed upload only owns its original inode, not a reused pathname.
++        if (owns_temporary()) unlink(temporary.c_str());
+         if (isCanceled)
+             result = MTP_RESPONSE_TRANSACTION_CANCELLED;
+         else
+--- a/mtp/twrp/TwrpMtpStorage.cpp
++++ b/mtp/twrp/TwrpMtpStorage.cpp
+@@ -911,6 +911,7 @@
+         // node is gone by now: a guard that outlives its transfer would keep
+         // swallowing every later inotify event for that node.
+         if (handle_currently_sending_ == handle) handle_currently_sending_ = 0;
++        MtpEntry* replacement_parent = nullptr;
+         if (auto it = sending_files_.find(handle); it != sending_files_.end()) {
+             // Preserve failed cleanup visibility protection independently of
+             // the finished handle, which may immediately be uploaded again.
+@@ -924,6 +925,11 @@
+             } else if (result != 0 && errno != ENOENT && errno != ENOTDIR) {
+                 // Indeterminate lookup is not evidence of a user replacement.
+                 abandoned_sending_files_[it->second.path] = it->second;
++            } else if (result == 0) {
++                // Events raised while the active path was hidden may already
++                // have been consumed. Make a replacement visible once the
++                // active record is retired, without taking ownership of it.
++                if (auto* entry = FindNode(handle)) replacement_parent = FindNode(entry->parent);
+             }
+             sending_files_.erase(it);
+         }
+@@ -941,6 +947,7 @@
+                 DeleteFile(handle);
+             }
+         }
++        if (replacement_parent) ReconcileDirectory(replacement_parent, events);
+     }
+     SendEvents(server_, events);
+ }
