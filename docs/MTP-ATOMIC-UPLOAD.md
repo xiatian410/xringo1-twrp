@@ -73,6 +73,18 @@ python3 tests/mtp_transfers_test.py --report logs/mtp-directory-transfers.json
 python3 scripts/audit_mtp_directory_delivery.py
 ```
 
+<a id="upload-parent-directory"></a>
+
+## 上传父目录被移走后的发布与清理（0115）
+
+0114的临时文件身份检查仍沿完整路径操作。如果父目录被移走并在原位置建替换目录，清理找不到原临时文件；若原接收inode也被移动到替换目录，身份相同还会使旧代码在错误目录完成发布。六个新场景在旧实现全部失败，分别覆盖新建/覆盖目标及目录替换、链接替换、原inode移入替换目录。
+
+0115在创建临时文件前打开父目录，持有RAII目录描述符直到本次上传结束。发布前检查可见父路径仍为相同device/inode的目录；临时文件身份检查改为描述符相对的fstatat且不跟随链接。renameat、unlinkat和目录fsync均使用原目录描述符，不重新解析被替换的完整路径。发现父目录变化则失败，保留原目标及替换目录内容；仅在原目录里仍存在原临时inode时清理它。原inode被外部移走则保留，不追踪或删除其新位置。
+
+原server/database/storage、真实私有文件、inotify及线程在ASan/UBSan下247项通过，新六项均通过；核对失败响应、两个目录的目标内容、替换临时文件及原目录清理。原正常/取消/失败上传和0114十二项包含在本次对象回归。移动/复制实现未改变，其独立48项证据沿用，不为刷新来源哈希重复运行。
+
+创建临时文件仍由数据库按路径调用mkstemp：打开目录与创建之间的竞争尚未消除，极端替换可留下新创建文件，但发布校验会拒绝。临时名称的检查后竞争、原inode就地修改及跨重启归属/回收仍未完成。目录描述符确保收尾操作不因祖先路径变化被重定向，不能据此宣称完整并发隔离。没有ARM64 MTP、真实USB/Windows或断电验收。本地报告 `logs/mtp-parent-identity.json`、`logs/mtp-parent-identity-old.json`；交付核对 `python3 scripts/audit_mtp_parent_identity.py` 绑定0115、清理构建及六份profile。
+
 <a id="active-staging-identity"></a>
 
 ## 活跃上传路径被替换时拒绝发布（0114）

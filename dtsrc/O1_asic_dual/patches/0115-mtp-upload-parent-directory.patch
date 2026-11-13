@@ -1,0 +1,98 @@
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -18,6 +18,7 @@
+ #include <android-base/logging.h>
+ #include <android-base/properties.h>
+ #include <android-base/scopeguard.h>
++#include <android-base/unique_fd.h>
+ #include <chrono>
+ #include <dirent.h>
+ #include <errno.h>
+@@ -1241,11 +1242,20 @@
+     int ret, initialData;
+     bool isCanceled = false;
+     struct stat sstat = {};
+-    std::string temporary;
++    std::string temporary, parent_path, temporary_name, target_name;
++    android::base::unique_fd directory;
++    struct stat parent_stat{};
++    const auto parent_unchanged = [&] {
++        struct stat current{};
++        return directory.get() >= 0 && lstat(parent_path.c_str(), &current) == 0 &&
++               S_ISDIR(current.st_mode) && current.st_dev == parent_stat.st_dev &&
++               current.st_ino == parent_stat.st_ino;
++    };
+     const auto owns_temporary = [&] {
+         struct stat current{};
+-        return !temporary.empty() && S_ISREG(sstat.st_mode) &&
+-               lstat(temporary.c_str(), &current) == 0 && S_ISREG(current.st_mode) &&
++        return directory.get() >= 0 && !temporary_name.empty() && S_ISREG(sstat.st_mode) &&
++               fstatat(directory.get(), temporary_name.c_str(), &current, AT_SYMLINK_NOFOLLOW) == 0 &&
++               S_ISREG(current.st_mode) &&
+                current.st_dev == sstat.st_dev && current.st_ino == sstat.st_ino;
+     };
+ 
+@@ -1274,12 +1284,30 @@
+         return result;
+     }
+ 
++    // Pin the directory before creating the staging file. Later rename/unlink
++    // must stay in this directory even if its visible path is replaced.
++    {
++        const std::string destination(static_cast<const char*>(mSendObjectFilePath));
++        const auto slash = destination.find_last_of('/');
++        if (slash == std::string::npos) {
++            result = MTP_RESPONSE_GENERAL_ERROR;
++            goto done;
++        }
++        parent_path = slash == 0 ? "/" : destination.substr(0, slash);
++        target_name = destination.substr(slash + 1);
++    }
++    directory.reset(open(parent_path.c_str(), O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC));
++    if (directory.get() < 0 || fstat(directory.get(), &parent_stat) != 0) {
++        result = MTP_RESPONSE_GENERAL_ERROR;
++        goto done;
++    }
+     mtp_file_range  mfr;
+     mfr.fd = mDatabase->createSendObjectFile(mSendObjectHandle, temporary);
+     if (mfr.fd < 0) {
+         result = MTP_RESPONSE_GENERAL_ERROR;
+         goto done;
+     }
++    temporary_name = temporary.substr(temporary.find_last_of('/') + 1);
+     fchown(mfr.fd, getuid(), FILE_GROUP);
+     // set permissions
+     mask = umask(0);
+@@ -1344,27 +1372,24 @@
+     // A failed receive never truncates or unlinks the previous destination.
+     // The open upload inode may have been moved away and its pathname reused.
+     // Never publish a replacement supplied by another filesystem actor.
+-    if (ret >= 0 && !owns_temporary()) {
++    if (ret >= 0 && (!parent_unchanged() || !owns_temporary())) {
+         errno = ESTALE;
+         ret = -1;
+     }
+-    if (ret >= 0 && rename(temporary.c_str(), mSendObjectFilePath) != 0) ret = -1;
++    if (ret >= 0 && renameat(directory.get(), temporary_name.c_str(),
++                             directory.get(), target_name.c_str()) != 0) ret = -1;
+     if (ret >= 0) {
+         // Rename has committed. A directory-sync error cannot restore the old
+         // inode; retain the complete new object and report uncertain durability.
+-        const auto slash = temporary.find_last_of('/');
+-        const std::string parent = temporary.substr(0, slash);
+-        const int directory = open(parent.c_str(), O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+-        if (directory < 0 || fsync(directory) != 0) {
++        if (fsync(directory.get()) != 0) {
+             ALOGW("Mtp upload published but directory sync failed: %s", strerror(errno));
+         }
+-        if (directory >= 0) close(directory);
+     }
+ 
+     if (ret < 0) {
+         ALOGE("Mtp receive file got error %s", strerror(errno));
+         // A failed upload only owns its original inode, not a reused pathname.
+-        if (owns_temporary()) unlink(temporary.c_str());
++        if (owns_temporary()) unlinkat(directory.get(), temporary_name.c_str(), 0);
+         if (isCanceled)
+             result = MTP_RESPONSE_TRANSACTION_CANCELLED;
+         else

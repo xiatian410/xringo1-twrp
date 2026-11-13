@@ -40,6 +40,9 @@ ACTIVE_IDENTITY_CASES = ['active-staging-'+kind+'-'+replacement for kind in ['ne
                          for replacement in ['file','symlink','missing']]
 ACTIVE_IDENTITY_CASES += [name+'-receive-error' for name in ACTIVE_IDENTITY_CASES]
 CASES += ACTIVE_IDENTITY_CASES
+PARENT_IDENTITY_CASES = ['upload-parent-'+kind+'-'+mode for kind in ['new','overwrite']
+                         for mode in ['directory','symlink','moved-inode']]
+CASES += PARENT_IDENTITY_CASES
 STREAM_CASES = ['stream-boundary-'+op+'-'+kind for op in ['new','overwrite','partial']
                 for kind in ['short-length','long-length','zero-length','wrong-type',
                              'wrong-code','wrong-transaction','short-header','stale-cancel','oversized']]
@@ -103,7 +106,7 @@ template<class T> inline std::string Trim(const T& v){std::string s(v);auto a=s.
                   AOSP/'system/core/libusbhost/include',AOSP/'system/core/libcutils/include']
         cmd=['g++','-std=c++23','-O1','-g','-pthread','-DMTP_DEVICE','-fno-pie','-no-pie',
              '-fsanitize=address,undefined','-fno-sanitize-recover=all','-fno-omit-frame-pointer',
-             '-include','unistd.h','-include','ctime','-include','cstring','-include','climits','-include','cstdint','-include','chrono','-include','cstdarg','-Wl,--wrap=unlink','-Wl,--wrap=unlinkat','-Wl,--wrap=write','-Wl,--wrap=fsync','-Wl,--wrap=mkdir','-Wl,--wrap=rename','-Wl,--wrap=mkstemp','-Wl,--wrap=close','-Wl,--wrap=futimens','-Wl,--wrap=open',*[f'-I{p}' for p in includes],
+             '-include','unistd.h','-include','ctime','-include','cstring','-include','climits','-include','cstdint','-include','chrono','-include','cstdarg','-Wl,--wrap=unlink','-Wl,--wrap=unlinkat','-Wl,--wrap=write','-Wl,--wrap=fsync','-Wl,--wrap=mkdir','-Wl,--wrap=rename','-Wl,--wrap=renameat','-Wl,--wrap=mkstemp','-Wl,--wrap=close','-Wl,--wrap=futimens','-Wl,--wrap=open',*[f'-I{p}' for p in includes],
              '-Wl,--wrap=pwrite',*[str(stage/n) for n in names],str(ROOT/'tests/mtp_objects_test.cpp'),'-o',str(tmp/'test')]
         subprocess.run(cmd,check=True)
         results=[]

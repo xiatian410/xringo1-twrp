@@ -56,6 +56,11 @@ extern "C" int __wrap_futimens(int fd,const struct timespec t[2]){
 atomic_int publish_fault=0;
 extern "C" int __real_rename(const char*,const char*);
 extern "C" int __wrap_rename(const char*a,const char*b){if(publish_fault==1&&string(a).find(".mtp-upload-")!=string::npos){errno=EIO;return -1;}return __real_rename(a,b);}
+extern "C" int __real_renameat(int,const char*,int,const char*);
+extern "C" int __wrap_renameat(int a,const char* b,int c,const char* d){
+ if(publish_fault==1&&string(b).find(".mtp-upload-")!=string::npos){errno=EIO;return -1;}
+ return __real_renameat(a,b,c,d);
+}
 extern "C" int __real_mkstemp(char*);
 extern "C" int __wrap_mkstemp(char*p){if(publish_fault==2){errno=ENOSPC;return -1;}return __real_mkstemp(p);}
 extern "C" int __real_close(int);
@@ -583,6 +588,34 @@ int main(int argc,char** argv){
   data=info("retry.txt",3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
   Bytes payload{'o','k','!'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&payload).code==MTP_RESPONSE_OK);
   REQUIRE(stat("/one/retry.txt",&st)==0&&st.st_mtime>=before&&readfile("/one/retry.txt")=="ok!");
+ }else if(test.starts_with("upload-parent-")){
+  const bool replacing=test.starts_with("upload-parent-overwrite-");
+  const bool moved_inode=test.ends_with("moved-inode");
+  const bool link=test.ends_with("symlink");
+  const string name=replacing?"a.txt":"new.txt",target="/one/"+name;
+  const string previous=replacing?readfile(target):"";
+  string basename;
+  receiving_probe=[&](int){
+   for(const auto&e:fs::directory_iterator("/one"))
+    if(e.path().filename().string().starts_with(".mtp-upload-"))basename=e.path().filename();
+   REQUIRE(!basename.empty());
+   REQUIRE(__real_rename("/one","/moved-one")==0);
+   fs::create_directory("/replacement");
+   if(link)REQUIRE(symlink("/replacement","/one")==0);
+   else fs::create_directory("/one");
+   writefile(target,"replacement-destination");
+   if(moved_inode)REQUIRE(__real_rename(("/moved-one/"+basename).c_str(),("/one/"+basename).c_str())==0);
+   else writefile("/one/"+basename,"replacement-staging");
+  };
+  auto data=info(name,60000);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  Bytes content(60000,'N');auto r=s.call(MTP_OPERATION_SEND_OBJECT,{},&content);receiving_probe={};
+  REQUIRE(r.code==MTP_RESPONSE_GENERAL_ERROR);
+  REQUIRE(readfile(target)=="replacement-destination");
+  REQUIRE(replacing?readfile("/moved-one/"+name)==previous:!fs::exists("/moved-one/"+name));
+  if(moved_inode)REQUIRE(readfile("/one/"+basename)==string(60000,'N'));
+  else REQUIRE(readfile("/one/"+basename)=="replacement-staging");
+  REQUIRE(!fs::exists("/moved-one/"+basename));
+  cout<<"parent_replacement_rejected=1 replacement_untouched=1 original_directory_cleanup=1\n";
  }else if(test.starts_with("active-staging-")){
   const bool replacing=test.starts_with("active-staging-overwrite-");
   const bool receive_error=test.ends_with("receive-error");

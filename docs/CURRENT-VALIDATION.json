@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-active-identity.img",
-  "image_sha256": "5ed25fa108d24ca8f90b11685466a1677fd148bb932d70e1266936950438a29a",
-  "production_sources": 842,
+  "image_name": "recovery-dijun-unified-mtp-parent-identity.img",
+  "image_sha256": "38407943d0dfda0a08e8b7316364d079bb64a2ce581d6df7fb79e17f051c8768",
+  "production_sources": 843,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2085,6 +2085,22 @@
       "failures": 0,
       "local_report_sha256": "407b28c3c25cc99a23ec141f56af9a4b6c18783d5e79009131cfc048c34970b4",
       "scope": "Patch0114 checks active staging lstat regular-file/device/inode identity against the received descriptor before publish or cleanup; rejects observed replacement and preserves destination/external file. EndSendObject reconciles replacement visibility. Host production server/database/storage/files/inotify/threads ASan/UBSan241 and transfers48 pass, old8/12 fail. USB/properties fixtures; check-to-rename/unlink race, parent replacement/in-place edits/inode reuse, cross-restart ownership/recovery, ARM64 MTP/Windows/device and full OTA remain unverified."
+    },
+    {
+      "name": "mtp-parent-identity",
+      "status": "PASS",
+      "cases": 247,
+      "failures": 0,
+      "local_report_sha256": "21d49ce8ccb5428b7d06f0669607e58d5d7e5416b6476ceeae70b0748810af7f",
+      "scope": "Patch0115 pins upload parent directory before staging creation, checks visible parent identity before publish, and uses fstatat/renameat/unlinkat/fsync on the original directory fd. Original host MTP/files/inotify/threads ASan/UBSan247 pass; old6/6 new parent replacement cases fail. Existing transfer48 reused, not rerun. Path-based mkstemp pre-create race, check-to-use filename race, in-place edits, cross-restart recovery and ARM64 MTP/USB/Windows/powerloss remain unverified."
+    },
+    {
+      "name": "mtp-parent-identity-old",
+      "status": "FAIL",
+      "cases": 6,
+      "failures": 6,
+      "local_report_sha256": "edb5a5c2117842c8caba4722f013a5dfd562248bdb17090aafca050a26905177",
+      "scope": "Patch0115 pins upload parent directory before staging creation, checks visible parent identity before publish, and uses fstatat/renameat/unlinkat/fsync on the original directory fd. Original host MTP/files/inotify/threads ASan/UBSan247 pass; old6/6 new parent replacement cases fail. Existing transfer48 reused, not rerun. Path-based mkstemp pre-create race, check-to-use filename race, in-place edits, cross-restart recovery and ARM64 MTP/USB/Windows/powerloss remain unverified."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2356,5 +2372,10 @@
     "patch": "0114",
     "document": "docs/MTP-ATOMIC-UPLOAD.md#active-staging-identity",
     "scope": "Patch0114 checks active staging lstat regular-file/device/inode identity against the received descriptor before publish or cleanup; rejects observed replacement and preserves destination/external file. EndSendObject reconciles replacement visibility. Host production server/database/storage/files/inotify/threads ASan/UBSan241 and transfers48 pass, old8/12 fail. USB/properties fixtures; check-to-rename/unlink race, parent replacement/in-place edits/inode reuse, cross-restart ownership/recovery, ARM64 MTP/Windows/device and full OTA remain unverified."
+  },
+  "mtp_upload_parent_directory": {
+    "patch": "0115",
+    "document": "docs/MTP-ATOMIC-UPLOAD.md#upload-parent-directory",
+    "scope": "Patch0115 pins upload parent directory before staging creation, checks visible parent identity before publish, and uses fstatat/renameat/unlinkat/fsync on the original directory fd. Original host MTP/files/inotify/threads ASan/UBSan247 pass; old6/6 new parent replacement cases fail. Existing transfer48 reused, not rerun. Path-based mkstemp pre-create race, check-to-use filename race, in-place edits, cross-restart recovery and ARM64 MTP/USB/Windows/powerloss remain unverified."
   }
 }
