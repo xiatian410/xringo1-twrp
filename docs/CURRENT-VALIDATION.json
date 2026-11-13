@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-command-boundary.img",
-  "image_sha256": "4a18f423ae1d49ad35a9f328aabd2171752ee6413312cbf5ec8524b07a1d26c5",
-  "production_sources": 829,
+  "image_name": "recovery-dijun-unified-mtp-data-boundary.img",
+  "image_sha256": "d058a7d88cc5928e6cbb2890359aed0dd477408b1ed6aa3bac6e487d192db44c",
+  "production_sources": 831,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -1813,6 +1813,22 @@
       "failures": 4,
       "local_report_sha256": "ff3ab96d41d350a21e9c9db4332c72e099da4cf43addbd5f7b14022f5b437666",
       "scope": "Host original MTP parser/server/database/storage with files/inotify/threads and ASan/UBSan. Validate declared command length, reset state and use EPROTO on malformed requests; retain existing noncommand skip for upload recovery. Current167 pass; previous4/7 fail. USB/logging/properties/errno are fixtures; full malformed-upload recovery, ARM64 MTP and Windows unverified."
+    },
+    {
+      "name": "mtp-data-objects",
+      "status": "PASS",
+      "cases": 198,
+      "failures": 0,
+      "local_report_sha256": "df2c204387aac806e3f8efad613ed0ba4e4a3f77e3dcc00b60d38002833d8b41",
+      "scope": "Host original MTP server/database/storage and packet methods with private files/inotify/threads and ASan/UBSan. Bounded metadata DATA requires exact length/type/operation/transaction; malformed phase closes connection before mutation and leaves next delete unread. Short successful reads set EPROTO, not stale ECANCELED. Current198 pass; previous25/31 fail. Streaming object paths retain own validation. USB/properties/logging/errno are fixtures; ARM64 MTP/Windows, client reconnect and full endpoint recovery unverified."
+    },
+    {
+      "name": "mtp-data-negative",
+      "status": "FAIL",
+      "cases": 31,
+      "failures": 25,
+      "local_report_sha256": "6f6ad2f512d5ac62b97989ab22daa0f22353dcb33f5c53696255d216e3822f4d",
+      "scope": "Host original MTP server/database/storage and packet methods with private files/inotify/threads and ASan/UBSan. Bounded metadata DATA requires exact length/type/operation/transaction; malformed phase closes connection before mutation and leaves next delete unread. Short successful reads set EPROTO, not stale ECANCELED. Current198 pass; previous25/31 fail. Streaming object paths retain own validation. USB/properties/logging/errno are fixtures; ARM64 MTP/Windows, client reconnect and full endpoint recovery unverified."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2016,6 +2032,13 @@
     "patch": "0103",
     "scope": "Host original MTP parser/server/database/storage with files/inotify/threads and ASan/UBSan. Validate declared command length, reset state and use EPROTO on malformed requests; retain existing noncommand skip for upload recovery. Current167 pass; previous4/7 fail. USB/logging/properties/errno are fixtures; full malformed-upload recovery, ARM64 MTP and Windows unverified.",
     "document": "docs/MTP-CONTROL-ADAPTATION.md#command-boundary",
+    "production_changes": true,
+    "new_build": true
+  },
+  "mtp_metadata_data_boundary": {
+    "patch": "0104",
+    "scope": "Host original MTP server/database/storage and packet methods with private files/inotify/threads and ASan/UBSan. Bounded metadata DATA requires exact length/type/operation/transaction; malformed phase closes connection before mutation and leaves next delete unread. Short successful reads set EPROTO, not stale ECANCELED. Current198 pass; previous25/31 fail. Streaming object paths retain own validation. USB/properties/logging/errno are fixtures; ARM64 MTP/Windows, client reconnect and full endpoint recovery unverified.",
+    "document": "docs/MTP-CONTROL-ADAPTATION.md#metadata-data-boundary",
     "production_changes": true,
     "new_build": true
   }

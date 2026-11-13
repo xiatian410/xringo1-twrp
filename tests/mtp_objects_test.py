@@ -33,6 +33,9 @@ CASES += ['session-'+phase+'-'+op for phase in ['unopened','closed'] for op in
 CASES += ['session-close-edit', 'session-reset-edit', 'session-close-pending']
 CASES += ['edit-partial-'+case for case in ['small','large','empty','oversized','wrong-type','wrong-code','wrong-transaction','short-write','eintr','zero-write','write-error']]
 CASES += ['command-boundary-'+case for case in ['short-length','long-length','zero-length','short-header','unaligned','six-parameters','stale-cancel']]
+CASES += ['data-boundary-'+op+'-'+kind for op in ['rename','info','references','device'] for kind in ['wrong-type','wrong-code','wrong-transaction','short-length','long-length','zero-length','short-header']]
+CASES += ['data-boundary-rename-stale-cancel']
+CASES += ['data-boundary-valid-rename','data-boundary-valid-info']
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 
 def main():

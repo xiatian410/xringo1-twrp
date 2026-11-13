@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-command-boundary.img",
-  "image_sha256": "4a18f423ae1d49ad35a9f328aabd2171752ee6413312cbf5ec8524b07a1d26c5",
-  "image_status": "Clean installclean + make -j$(nproc); patch0103 validates declared command length and sets EPROTO after malformed request. 829 sources/six profiles; objects167 pass; previous4/7 fail. Hardware unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-data-boundary.img",
+  "image_sha256": "d058a7d88cc5928e6cbb2890359aed0dd477408b1ed6aa3bac6e487d192db44c",
+  "image_status": "Clean installclean + make -j$(nproc); patch0104 rejects malformed/mismatched metadata DATA before mutation. 831 sources/six profiles; objects198 pass; previous25/31 fail. Hardware unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -4124,6 +4124,22 @@
       "evidence": "logs/mtp-command-negative.json",
       "evidence_sha256": "ff3ab96d41d350a21e9c9db4332c72e099da4cf43addbd5f7b14022f5b437666",
       "scope": "Host original MTP parser/server/database/storage with files/inotify/threads and ASan/UBSan. Validate declared command length, reset state and use EPROTO on malformed requests; retain existing noncommand skip for upload recovery. Current167 pass; previous4/7 fail. USB/logging/properties/errno are fixtures; full malformed-upload recovery, ARM64 MTP and Windows unverified."
+    },
+    {
+      "name": "mtp-data-objects",
+      "status": "PASS",
+      "count": 198,
+      "evidence": "logs/mtp-data-objects.json",
+      "evidence_sha256": "df2c204387aac806e3f8efad613ed0ba4e4a3f77e3dcc00b60d38002833d8b41",
+      "scope": "Host original MTP server/database/storage and packet methods with private files/inotify/threads and ASan/UBSan. Bounded metadata DATA requires exact length/type/operation/transaction; malformed phase closes connection before mutation and leaves next delete unread. Short successful reads set EPROTO, not stale ECANCELED. Current198 pass; previous25/31 fail. Streaming object paths retain own validation. USB/properties/logging/errno are fixtures; ARM64 MTP/Windows, client reconnect and full endpoint recovery unverified."
+    },
+    {
+      "name": "mtp-data-negative",
+      "status": "FAIL",
+      "count": 31,
+      "evidence": "logs/mtp-data-negative.json",
+      "evidence_sha256": "6f6ad2f512d5ac62b97989ab22daa0f22353dcb33f5c53696255d216e3822f4d",
+      "scope": "Host original MTP server/database/storage and packet methods with private files/inotify/threads and ASan/UBSan. Bounded metadata DATA requires exact length/type/operation/transaction; malformed phase closes connection before mutation and leaves next delete unread. Short successful reads set EPROTO, not stale ECANCELED. Current198 pass; previous25/31 fail. Streaming object paths retain own validation. USB/properties/logging/errno are fixtures; ARM64 MTP/Windows, client reconnect and full endpoint recovery unverified."
     }
   ],
   "source_review_followups": [
@@ -4462,9 +4478,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/mtp-command-delivery-audit.json",
-    "evidence_sha256": "dede608cd3a198101e7a57aba75a7d04167e314c073feea360315bf99e2e5d84",
-    "scope": "Host original MTP parser/server/database/storage with files/inotify/threads and ASan/UBSan. Validate declared command length, reset state and use EPROTO on malformed requests; retain existing noncommand skip for upload recovery. Current167 pass; previous4/7 fail. USB/logging/properties/errno are fixtures; full malformed-upload recovery, ARM64 MTP and Windows unverified.",
+    "evidence": "logs/mtp-data-delivery-audit.json",
+    "scope": "Host original MTP server/database/storage and packet methods with private files/inotify/threads and ASan/UBSan. Bounded metadata DATA requires exact length/type/operation/transaction; malformed phase closes connection before mutation and leaves next delete unread. Short successful reads set EPROTO, not stale ECANCELED. Current198 pass; previous25/31 fail. Streaming object paths retain own validation. USB/properties/logging/errno are fixtures; ARM64 MTP/Windows, client reconnect and full endpoint recovery unverified.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -5550,6 +5565,13 @@
     "patch": "0103",
     "scope": "Host original MTP parser/server/database/storage with files/inotify/threads and ASan/UBSan. Validate declared command length, reset state and use EPROTO on malformed requests; retain existing noncommand skip for upload recovery. Current167 pass; previous4/7 fail. USB/logging/properties/errno are fixtures; full malformed-upload recovery, ARM64 MTP and Windows unverified.",
     "document": "docs/MTP-CONTROL-ADAPTATION.md#command-boundary",
+    "production_changes": true,
+    "new_build": true
+  },
+  "mtp_metadata_data_boundary": {
+    "patch": "0104",
+    "scope": "Host original MTP server/database/storage and packet methods with private files/inotify/threads and ASan/UBSan. Bounded metadata DATA requires exact length/type/operation/transaction; malformed phase closes connection before mutation and leaves next delete unread. Short successful reads set EPROTO, not stale ECANCELED. Current198 pass; previous25/31 fail. Streaming object paths retain own validation. USB/properties/logging/errno are fixtures; ARM64 MTP/Windows, client reconnect and full endpoint recovery unverified.",
+    "document": "docs/MTP-CONTROL-ADAPTATION.md#metadata-data-boundary",
     "production_changes": true,
     "new_build": true
   }

@@ -378,6 +378,10 @@
         {
           "file": "0103-mtp-command-container-boundary.patch",
           "sha256": "bd033b35257658db8255c13714795b32b2f55b49734ea150acb46b3efae9cad5"
+        },
+        {
+          "file": "0104-mtp-metadata-data-boundary.patch",
+          "sha256": "80f5af98011df15726582e896b1d2d4bcc5040a4965fc7dd1abd44f8531d0126"
         }
       ],
       "result_files": {
@@ -434,7 +438,7 @@
         "oaes/oaes.cpp": "306acbfddd40512ba8c0ad0b7ad8afc86533425625e6a875f95d0a3ae4e1e356",
         "oaes/oaes.hpp": "256c988afbd924a12db4bdaa4c9c35475dda92b53676cf7693f64e36de0ed3c4",
         "mtp/IMtpDatabase.h": "bbe651b95e206c307ba4b9e9d6c57225697dcc6667bf508bf8d5ac3c59548086",
-        "mtp/MtpServer.cpp": "cad5138ff74c4b7e60672cf2767c6578aee32a7661f05af3ed8eb722d4d4dbfb",
+        "mtp/MtpServer.cpp": "db16367f632896cd4a947b07edca4cdb62e3fd969d5e5aed6c7a126d11462d9d",
         "mtp/MtpServer.h": "7b99b314181d4e9ab125d274b71011777867bc6fc30fe43b66478c9bbb3bcaf5",
         "mtp/twrp/TwrpMtpDatabase.cpp": "9abf68632a54fc69580c4bbd7a45d620e0a237c84ba3304f754af16d56d05739",
         "mtp/twrp/TwrpMtpDatabase.hpp": "0ffaf9304ae67e9dd3b755593b9ea15b2ff5d2e16b05508401b38882c7735a2b",
@@ -484,7 +488,8 @@
         "libtar/append.c": "9d63e1112bd8509f81bd0e4cb5d652b00df8f3fb97945bd7212b2b477d806bb2",
         "libtar/handle.c": "e3e36efdb1e92426f3fe8ae5f0735631326347bda3255b4f6c8b6a136557fd20",
         "libtar/wrapper.c": "582dc1f0aec6a5f5ed8715e091de13bcf446a1a99ce7b231e697fc82b156b7e9",
-        "mtp/MtpRequestPacket.cpp": "9e143dbd31fd424728e753e7383de0957aced6415f166b6b1dd9b5e1fdcdbd3e"
+        "mtp/MtpRequestPacket.cpp": "9e143dbd31fd424728e753e7383de0957aced6415f166b6b1dd9b5e1fdcdbd3e",
+        "mtp/MtpDataPacket.cpp": "fe7d542a6ddf5fc40be0ab7ee4c74f8abfb6240846d72390c2f1bca4b0805f0d"
       }
     },
     "system/sepolicy": {

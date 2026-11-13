@@ -121,7 +121,41 @@ int main(int argc,char** argv){
  auto* one=s.add(0x10001,"/one");s.add(0x20001,"/two");s.start();
  if(!test.starts_with("session-unopened-"))s.open();
  auto a=find(s.db,0x10001,"a.txt"),dir=find(s.db,0x10001,"dir");REQUIRE(a&&dir);
- if(test.starts_with("command-boundary-")){
+ if(test.starts_with("data-boundary-valid-")){
+  if(test.ends_with("rename")){
+   Bytes data;str(data,"renamed.txt");
+   REQUIRE(s.call(MTP_OPERATION_SET_OBJECT_PROP_VALUE,{a,MTP_PROPERTY_OBJECT_FILE_NAME},&data).code==MTP_RESPONSE_OK);
+   REQUIRE(!fs::exists("/one/a.txt")&&readfile("/one/renamed.txt")=="alpha");
+  }else{
+   auto data=info("new.txt",3);
+   REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+   Bytes content{'a','b','c'};
+   REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&content).code==MTP_RESPONSE_OK);
+   REQUIRE(readfile("/one/new.txt")=="abc");
+  }
+  REQUIRE(s.call(MTP_OPERATION_GET_STORAGE_IDS).code==MTP_RESPONSE_OK);
+  cout<<"matching_data_completed=1"<<endl;
+ }else if(test.starts_with("data-boundary-")){
+  auto tail=test.substr(14);auto split=tail.find('-');auto op=tail.substr(0,split),kind=tail.substr(split+1);
+  uint16_t code=op=="rename"?MTP_OPERATION_SET_OBJECT_PROP_VALUE:op=="info"?MTP_OPERATION_SEND_OBJECT_INFO:op=="references"?MTP_OPERATION_SET_OBJECT_REFERENCES:MTP_OPERATION_SET_DEVICE_PROP_VALUE;
+  Bytes params=op=="rename"?words({a,MTP_PROPERTY_OBJECT_FILE_NAME}):op=="info"?words({0x10001,0xffffffff}):op=="references"?words({a}):words({MTP_DEVICE_PROPERTY_DEVICE_FRIENDLY_NAME});
+  Bytes data;
+  if(op=="info")data=info("new.txt",3);else if(op=="references")data=words({1,a});else str(data,"renamed.txt");
+  auto transaction=++s.tx;
+  auto bad=packet(kind=="wrong-type"?1:2,kind=="wrong-code"?MTP_OPERATION_DELETE_OBJECT:code,transaction+(kind=="wrong-transaction"?1:0),data);
+  if(kind=="short-length")bad[0]=12;
+  if(kind=="long-length")bad[0]+=4;
+  if(kind=="zero-length")bad[0]=0;
+  if(kind=="short-header"||kind=="stale-cancel")bad.resize(8);
+  {lock_guard l(peer.mutex);if(kind=="stale-cancel")peer.read_errno=ECANCELED;peer.input.push_back(packet(1,code,transaction,params));peer.input.push_back(bad);
+   peer.input.push_back(packet(1,MTP_OPERATION_DELETE_OBJECT,++s.tx,words({a,0})));peer.cv.notify_all();}
+  {unique_lock l(peer.mutex);REQUIRE(peer.cv.wait_for(l,2s,[]{return peer.closes>0||peer.input.empty();}));}
+  s.stop();
+  REQUIRE(fs::exists("/one/a.txt")&&readfile("/one/a.txt")=="alpha");
+  REQUIRE(!fs::exists("/one/renamed.txt")&&!fs::exists("/one/new.txt")&&find(s.db,0x10001,"new.txt")==0);
+  {lock_guard l(peer.mutex);REQUIRE(peer.closes==1&&peer.input.size()==1);}
+  cout<<"malformed_data_stopped_before_mutation=1"<<endl;
+ }else if(test.starts_with("command-boundary-")){
   const auto kind=test.substr(17);
   Bytes bad=packet(kind=="wrong-type"?2:1,MTP_OPERATION_DELETE_OBJECT,++s.tx,words({a,0}));
   if(kind=="short-length")bad[0]=12;

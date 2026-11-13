@@ -7,6 +7,24 @@
 导航：[分段编辑写入](#partial-edit-write) · [会话文件操作边界](#session-file-boundary) · [控制报文](#修复内容) · [活动事务取消](#transaction-cancel) · [Reset 会话释放](#reset-session) · [事件生命周期](#event-lifecycle) · [bulk 完成队列错误](#bulk-completion-error)。
 
 <a id="command-boundary"></a>
+<a id="metadata-data-boundary"></a>
+
+## 元数据 DATA 与命令对应（0104）
+
+通用数据阶段读取后，原主循环没有核对容器类型、操作码、事务号或声明长度便进入处理函数。例如 SET_OBJECT_PROP_VALUE 的重命名请求收到另一个事务的数据，仍会修改文件；SEND_OBJECT_INFO 也会登记错误请求。0104 在四个元数据入口（上述两项、SET_OBJECT_REFERENCES、SET_DEVICE_PROP_VALUE）分发前要求完整 DATA 容器及准确身份，不符则停止连接并执行原 resetSession 清理，不再解析后续排队的命令。正常客户端不会触发此拒绝；错误客户端需要重新建立会话。
+
+MtpDataPacket::read 先清空旧包。真实读错误保持原 errno；成功但少于12字节的读视为 EPROTO，避免继承旧 ECANCELED 后跳回命令解析。长度相等仅用于这里的有界元数据阶段，不对流式 SEND_OBJECT / SEND_PARTIAL_OBJECT 的首块强加全包长度相等。没有新增端点排空逻辑。
+
+现有对象套件198项全部通过；同一套件与旧0103源码的31个新增场景中25项失败。四种元数据操作各覆盖错误类型 / 操作码 / 事务号、短 / 长 / 零声明长度和短头；另有残留取消errno、有效重命名、有效上传三项。新实现要求原文件内容不变、无新文件或上传登记、连接关闭及后续删除命令仍未读；正常控制核对实际写入和下一命令成功。旧短头场景原本可停止，是保留的控制；旧残留取消errno场景则继续执行后续删除。
+
+本地报告 `logs/mtp-data-objects.json`、`logs/mtp-data-negative.json`、`logs/mtp-data-delivery-audit.json`。执行生产主机服务器 / 数据库 / 文件和inotify线程，启用ASan/UBSan；USB、属性、日志、errno为明确替身。无真实USB / Windows / ARM64 MTP / 客户端重连或完整错误传输恢复证明。本批清理后30并发构建，镜像与831份生产来源绑定；具体产物见[交付报告](../simulation-report.md)。
+
+```bash
+# 已执行，来源和输入不变时复用。
+python3 tests/mtp_objects_test.py --report logs/mtp-data-objects.json
+python3 scripts/audit_mtp_data_delivery.py
+```
+
 ## 命令容器边界（0103）
 
 请求解析原先只检查实际读长为12–32字节且参数对齐，没有核对容器声明长度；错误返回也可能沿用成功read未清除的旧ECANCELED，主循环因此继续读取。0103读取前清空packet与参数计数，要求声明长度等于读长；损坏时再次清空，设置EPROTO。主循环按现有永久错误出口释放会话并关闭连接，不尝试盲目排空未知数据。

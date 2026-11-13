@@ -8,18 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-mtp-command-boundary.img` |
-| SHA-256 | `4a18f423ae1d49ad35a9f328aabd2171752ee6413312cbf5ec8524b07a1d26c5` |
-| 生产来源绑定 | 829 份 |
+| 文件 | `recovery-dijun-unified-mtp-data-boundary.img` |
+| SHA-256 | `d058a7d88cc5928e6cbb2890359aed0dd477408b1ed6aa3bac6e487d192db44c` |
+| 生产来源绑定 | 831 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：MTP 命令容器边界
+## 本批生产修正：MTP 元数据包对应关系
 
-0103补齐命令声明长度与实际读长校验；读取前清空旧状态，损坏请求清空参数并明确设置EPROTO，使主循环停止当前连接，不继承旧ECANCELED继续解析。既有对象套件扩展到167项通过；旧实现新增7场景中4项失败，覆盖长度不符和残留取消错误码。检查确认后续排队删除未执行，文件保留。
+0104 在通用元数据数据阶段分发前校验 DATA 类型、操作码、事务号和声明长度。旧实现会把错误事务的数据用于重命名 / 上传登记，且继续执行后续命令。现在遇到错误包停止当前连接，统一释放会话状态，不再使用该数据触发文件修改。成功短读明确设置 EPROTO，避免继承旧 ECANCELED 后继续解析。流式 SendObject / SendPartialObject 保留自己的数据阶段校验。
 
-清理构建后829来源与六profile封装核对通过。USB、属性、日志和残留errno注入为替身；没有真实端点排空、ARM64 MTP或Windows验收。完整上传错误恢复仍未完成，详见[命令边界](docs/MTP-CONTROL-ADAPTATION.md#command-boundary)。首次候选将非COMMAND也判为致命错误，导致8项上传恢复回归失败；已撤回该限制，保留既有非COMMAND跳过，最终167项通过。首次失败报告与镜像保留为initial版本，不计交付。本批未重复整包或已解决功能。
+现有 ASan / UBSan 对象套件扩展到198项通过；旧实现新增31项中25项失败。四种元数据操作均覆盖类型 / 操作码 / 事务 / 三种长度错误与短头，另有旧取消错误码及正常重命名、上传控制。检查实际文件、上传登记、连接关闭和后续排队删除未执行。清理构建后831来源与六profile核对通过。
+
+USB、属性、日志及残留errno注入为替身；没有真实端点恢复、ARM64 MTP、Windows或客户端重连验收。完整上传错误排空仍未完成。详见[元数据包校验](docs/MTP-CONTROL-ADAPTATION.md#metadata-data-boundary)。原始4.0.4整包模拟沿用既有报告，本批未重复执行。
 
 ## 沿用的槽位切换前 Vendor 卸载失败
 

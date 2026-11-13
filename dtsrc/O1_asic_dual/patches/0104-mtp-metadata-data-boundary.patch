@@ -1,0 +1,41 @@
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -232,6 +232,18 @@
+                 }
+                 break;
+             }
++            // These metadata operations require one complete data container.
++            // Never dispatch a mutation using another operation/transaction's
++            // payload, or resume command parsing at an untrusted boundary.
++            // Streaming SendObject/SendPartialObject validate their own phase.
++            if (mData.getContainerLength() != static_cast<uint32_t>(ret)
++                    || mData.getContainerType() != MTP_CONTAINER_TYPE_DATA
++                    || mData.getContainerCode() != operation
++                    || mData.getTransactionID() != transaction) {
++                ALOGE("Malformed or mismatched MTP metadata data container");
++                mData.reset();
++                break;
++            }
+             ALOGV("received data:");
+         } else {
+             mData.reset();
+--- a/mtp/MtpDataPacket.cpp
++++ b/mtp/MtpDataPacket.cpp
+@@ -447,9 +447,16 @@
+ 
+ #ifdef MTP_DEVICE
+ int MtpDataPacket::read(IMtpHandle *h) {
++    reset();
+     int ret = h->read(mBuffer, MTP_BUFFER_SIZE);
+-    if (ret < MTP_CONTAINER_HEADER_SIZE)
++    if (ret < 0)
++        return ret;
++    if (ret < MTP_CONTAINER_HEADER_SIZE) {
++        // A successful short read is malformed, not a stale cancellation.
++        reset();
++        errno = EPROTO;
+         return -1;
++    }
+     mPacketSize = ret;
+     mOffset = MTP_CONTAINER_HEADER_SIZE;
+     return ret;
