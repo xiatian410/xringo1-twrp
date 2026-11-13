@@ -6,9 +6,9 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-repair-unmounted.img` |
-| SHA-256 | `a219fe1f2b933db720ee1598d566f448ca5919ab76e4a98433e053a01c359be9` |
-| 生产来源绑定 | 803 份 |
+| 文件 | `recovery-dijun-unified-format-unmounted.img` |
+| SHA-256 | `2b100b9a54291eabf99a36db29b7919fc0aa1fa9afbd14800cea1493f7ff9b3c` |
+| 生产来源绑定 | 804 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
@@ -23,7 +23,11 @@ scratch保存后，在目标写入前/一块后/ordered块全写后及header提�
 
 实际 client Connect/query、server、SnapshotHandlerManager、ReadWorker 与 replace/zero MergeWorker 已接续八场景。真实COW压缩数据/零块读取、64 KiB合并内容与未改尾部逐字节核对，写入/同步故障均保持失败；容量查询和dm-user端点为明确替身。没有发现新增生产缺陷，不重编0080镜像。该检查点未包含COPY/XOR/RA；后续有序合并见上文，进程退出后的局部续合并见上文，硬件断电、内核映射和完整OTA仍待完成，见[范围](docs/OTA-OPERATION-COW.md#snapuserd-handler)。
 
-## 0085 交付时的定向验证
+## 0086 交付时的定向验证
+
+六个离线格式化 helper 补齐卸载后仍挂载拒绝，避免保留 System 的成功返回导致 mkfs 误执行。十五个选择 / 挂载场景及可选 USE_EXT4 保留挂载分支通过，旧七个格式选择加内建分支一个场景失败；既有二十五项格式转换、同镜像 ARM64 格式化修复六项、原 Unmount / 修复九项回归通过。同格式 rm-rf 保持原分派。挂载观测与命令为明确替身，非实机或完整生命周期验收。804 来源清理构建、六份 profile 不变，仅 Recovery 主程序、构建属性和摘要变化，`logs/format-mounted-delivery.json` 审计通过。见[格式化前置条件](docs/FILESYSTEM-TOOLS-EXECUTION.md#format-mounted-guards)。
+
+## 0085 交付时的定向验证（历史）
 
 离线修复在 Unmount 成功请求后确认目标确实未挂载，拒绝保留 System 挂载时的 fsck 和 Resize 前置修复，不强制取消用户设置。九个挂载路径场景通过，旧两项误执行；146 返回码断言、同镜像 ARM64 修复七项和格式化 / 修复六项回归通过。挂载与设备是明确替身，工具仅运行于私有普通文件；并非实机 / 完整 GUI 验收。803 来源清理构建、六份 profile 不变，仅 Recovery 主程序、构建属性和摘要变化，`logs/repair-mounted-delivery.json` 审计通过。见[前置条件与限制](docs/FILESYSTEM-TOOLS-EXECUTION.md#repair-mounted-guard)。
 
@@ -51,6 +55,7 @@ scratch保存后，在目标写入前/一块后/ordered块全写后及header提�
 
 ## 本次候选包含的修正
 
+- **0086**：离线格式化 helpers 拒绝卸载请求后仍保持挂载的目标，同格式 rm-rf 分派保留。
 - **0085**：离线 Repair 确认卸载后的实际状态，阻止保留 System 挂载时继续运行 fsck / Resize。
 - **0084**：兼容多批发送先等待读取收尾，再返回先前 USB 错误，避免后续磁盘错误覆盖。
 - **0083**：负磁盘读取先检查，原生 / 兼容尾批 USB 写入错误传回调用者，取消不覆盖原错误。

@@ -1,5 +1,29 @@
 # 当前镜像文件系统工具实际执行
 
+<a id="format-mounted-guards"></a>
+## 离线格式化的挂载前置检查（0086）
+
+修复入口的 0085 不覆盖格式化 helpers。它们原先同样只检查 `Unmount()` 返回值，在该请求按用户设置保留 System 挂载时仍执行 mkfs。固定补丁 `patches/0086-offline-format-mount-guards.patch` 补齐 WipeExtfs、USE_EXT4 下的 WipeExt4、WipeFat、WipeExfat、WipeF2fs 和 WipeNtfs 的入口检查：卸载请求后若 `IsMounted()` 仍真，输出既有 fail_unmount / EBUSY 消息并失败，不调用格式化工具，不改变文件系统类型或重建目录。
+
+原 `Wipe()` 的同格式 rm-rf / 媒体保留分派不受影响；这些分支原本就需要已挂载文件系统。当前格式化 helper 在确认已卸载后仍保留同格式缺工具的既有 rm-rf 回退，不借此强制卸载保留中的 System。
+
+```bash
+python3 tests/format_transition_test.py --mounted --report logs/format-mounted-current.json
+python3 tests/format_transition_test.py --builtin-ext4 --report logs/format-mounted-builtin-current.json
+python3 tests/format_transition_test.py --report logs/format-mounted-transition-regression.json
+python3 tests/format_tool_chain_test.py --report logs/format-mounted-tool-regression.json
+python3 tests/repair_mounted_test.py --report logs/format-mounted-repair-regression.json
+python3 scripts/audit_format_mounted_delivery.py
+```
+
+扩展既有格式转换夹具，执行完整 Wipe / helpers / manager / backend：ext4、ext2、ext3、FAT、exFAT、F2FS、NTFS 各有“卸载成功但保留挂载”和正常卸载两个场景，加同格式 rm-rf 保留挂载控制，共十五项。旧代码七个格式选择均误执行工具；修正后十五项通过，命令数、返回状态、类型和重建次数均核对。可选 `USE_EXT4` 单独编译原内建分支；保留挂载时不得进入 make_ext4fs，旧同组一个场景失败、修正通过。内建 formatter 是明确拒绝调用的替身，不证明其真实工具实现。
+
+此组 Unmount / IsMounted 是显式状态替身，模拟上节原 Unmount 已执行证明的保留挂载返回语义；没有调用 mount 或 umount。工具 / 容量 / 设备 / metadata 也为替身。原二十五项格式转换回归通过；新镜像 ARM64 格式化后修复六项回归及 0085 原 Unmount / Repair / Resize 九项回归通过，实际工具只操作私有普通文件。
+
+清理构建使用 installclean 和 `make -j$(nproc)`；804 来源绑定，六份 profile 字节不变，相对 0085 仅 Recovery 主程序、构建属性和摘要变化，`logs/format-mounted-delivery.json` 审计通过。现行候选与哈希见[交付报告](../simulation-report.md)。
+
+本项到此收尾，不扩展等价格式选择夹具。检查使用既有挂载点观测，不证明同设备所有别名挂载、外部并发重挂载、完整 GUI / fscrypt 或真实 kernel / 断电。后续格式化后的临时挂载、标签初始化与目录重建仍需按具体故障处理，本项不声称完整格式化生命周期完成。
+
 <a id="repair-mounted-guard"></a>
 ## 离线修复的挂载前置检查（0085）
 

@@ -30,6 +30,8 @@ MTP 单批发送的负磁盘读取与尾批 USB 错误误报成功已由 0083 �
 
 0085 阻止保留 System 挂载设置使离线 Repair / Resize 在仍挂载时误执行。原 Unmount 分支与修复 / manager / backend 九场景通过，旧两项失败；146 返回码断言、ARM64 修复七项及格式化修复六项回归通过，已清理构建收尾。不重复保留挂载夹具；其他入口及完整真实挂载 / GUI / fscrypt 生命周期仍未完成。见[挂载前置检查](FILESYSTEM-TOOLS-EXECUTION.md#repair-mounted-guard)。
 
+0086 补齐六个离线格式化 helper 的保留挂载拒绝；十五项格式 / 挂载场景及 USE_EXT4 分支通过，旧七个格式选择和内建一个场景失败，25 项转换 / ARM64 格式修复六项 / 原卸载修复九项回归通过，已清理构建收尾。不重复等价格式夹具；格式化后临时挂载 / 标签 / 目录重建与完整 GUI / fscrypt 仍未闭环。见[格式化前置条件](FILESYSTEM-TOOLS-EXECUTION.md#format-mounted-guards)。
+
 ## 已维护事项的入口
 
 这些事项不重新立项。生产修正、各阶段证据和剩余限制在所属主题维护；当前镜像以[交付报告](../simulation-report.md)为准。

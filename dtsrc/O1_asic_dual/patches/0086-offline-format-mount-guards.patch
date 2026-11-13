@@ -1,0 +1,80 @@
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -2063,6 +2063,12 @@
+ 
+ bool TWPartition::WipeExtfs(const std::string& file_system) {
+   if (!Unmount(true)) return false;
++  // A successful request may retain System by user policy. Never format
++  // through a mount that Unmount deliberately left in place.
++  if (IsMounted()) {
++    gui2_console::log_error("fail_unmount", mount_point_, strerror(EBUSY));
++    return false;
++  }
+ 
+   if (!TWFunc::IsPathExists("/system/bin/mke2fs") || !
+       TWFunc::IsPathExists("/system/bin/e2fsdroid")) {
+@@ -2132,6 +2138,12 @@
+   int ret;
+ 
+   if (!Unmount(true)) return false;
++  // A successful request may retain System by user policy. Never format
++  // through a mount that Unmount deliberately left in place.
++  if (IsMounted()) {
++    gui2_console::log_error("fail_unmount", mount_point_, strerror(EBUSY));
++    return false;
++  }
+ 
+   FindActualBlockDevice();
+   if (!is_present_) {
+@@ -2173,6 +2185,12 @@
+ 
+ bool TWPartition::WipeFat() {
+   if (!Unmount(true)) return false;
++  // A successful request may retain System by user policy. Never format
++  // through a mount that Unmount deliberately left in place.
++  if (IsMounted()) {
++    gui2_console::log_error("fail_unmount", mount_point_, strerror(EBUSY));
++    return false;
++  }
+ 
+   if (TWFunc::IsPathExists("/system/bin/mkfs.fat")) {
+     gui2_console::info("formatting_using", display_name_, "mkfs.fat");
+@@ -2194,6 +2212,12 @@
+ 
+ bool TWPartition::WipeExfat() {
+   if (!Unmount(true)) return false;
++  // A successful request may retain System by user policy. Never format
++  // through a mount that Unmount deliberately left in place.
++  if (IsMounted()) {
++    gui2_console::log_error("fail_unmount", mount_point_, strerror(EBUSY));
++    return false;
++  }
+ 
+   if (TWFunc::IsPathExists("/system/bin/mkfs.exfat")) {
+     gui2_console::info("formatting_using", display_name_, "mkfs.exfat");
+@@ -2228,6 +2252,12 @@
+   std::string f2fs_command;
+ 
+   if (!Unmount(true)) return false;
++  // A successful request may retain System by user policy. Never format
++  // through a mount that Unmount deliberately left in place.
++  if (IsMounted()) {
++    gui2_console::log_error("fail_unmount", mount_point_, strerror(EBUSY));
++    return false;
++  }
+ 
+   if (TWFunc::IsPathExists("/system/bin/make_f2fs")) f2fs_command =
+                                                      "/system/bin/make_f2fs -g android";
+@@ -2283,6 +2313,12 @@
+   std::string ntfsmake_binary;
+ 
+   if (!Unmount(true)) return false;
++  // A successful request may retain System by user policy. Never format
++  // through a mount that Unmount deliberately left in place.
++  if (IsMounted()) {
++    gui2_console::log_error("fail_unmount", mount_point_, strerror(EBUSY));
++    return false;
++  }
+ 
+   if (TWFunc::IsPathExists("/system/bin/mkntfs")) ntfsmake_binary = "mkntfs";
+   else if (TWFunc::IsPathExists("/system/bin/mkfs.ntfs")) ntfsmake_binary = "mkfs.ntfs";

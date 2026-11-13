@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-repair-unmounted.img",
-  "image_sha256": "a219fe1f2b933db720ee1598d566f448ca5919ab76e4a98433e053a01c359be9",
-  "production_sources": 803,
+  "image_name": "recovery-dijun-unified-format-unmounted.img",
+  "image_sha256": "2b100b9a54291eabf99a36db29b7919fc0aa1fa9afbd14800cea1493f7ff9b3c",
+  "production_sources": 804,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -1126,6 +1126,62 @@
       "failures": 0,
       "local_report_sha256": "6f31f00a2dd6e038486912e0f92b5c8d404f91c3fce632577c7b93063c686f75",
       "scope": "Patch0085 verifies IsMounted after Unmount before offline Repair; retained System mount fails before fsck and Resize prerequisite. Original Unmount/Repair/Resize->manager->backend; nine mount scenarios pass, old repair/resize retained-System fail. Mount state/syscalls/device/commands are explicit fixtures.146 exit assertions, seven real ARM64 repair and six format+repair file regressions pass. No real mount/GUI/fscrypt/hardware proof. Clean803/six unchanged profiles."
+    },
+    {
+      "name": "format-mounted-negative",
+      "status": "FAIL",
+      "cases": 15,
+      "failures": 7,
+      "local_report_sha256": "aed91e1c861836d8161f0585070cbcf9470430a16827771e61dc47771bab8cf3",
+      "scope": "Patch0086 guards six offline format helpers with IsMounted after Unmount; retained mount rejects formatter before writes/type change; same-format rm-rf bypass stays intact. 15 mount outcomes and optional USE_EXT4 retained branch pass; old seven format selections plus one optional branch fail.25 dispatch,6 actual ARM64 file format/repair and9 repair mount regressions pass. Mount/unmount/device/commands are explicit fixtures for selection tests; no real mount/full GUI/fscrypt/power loss. Clean804/six profiles unchanged."
+    },
+    {
+      "name": "format-mounted-current",
+      "status": "PASS",
+      "cases": 15,
+      "failures": 0,
+      "local_report_sha256": "0e56250cf4a9883bcae6a5ef62c13cbabf15b0c951699982229f168af226ba20",
+      "scope": "Patch0086 guards six offline format helpers with IsMounted after Unmount; retained mount rejects formatter before writes/type change; same-format rm-rf bypass stays intact. 15 mount outcomes and optional USE_EXT4 retained branch pass; old seven format selections plus one optional branch fail.25 dispatch,6 actual ARM64 file format/repair and9 repair mount regressions pass. Mount/unmount/device/commands are explicit fixtures for selection tests; no real mount/full GUI/fscrypt/power loss. Clean804/six profiles unchanged."
+    },
+    {
+      "name": "format-mounted-builtin-negative",
+      "status": "FAIL",
+      "cases": 1,
+      "failures": 1,
+      "local_report_sha256": "4d1e8060688d8789b4ad66abdf7a25662c23438b176c2f3dc4c28eaffdaf5b57",
+      "scope": "Patch0086 guards six offline format helpers with IsMounted after Unmount; retained mount rejects formatter before writes/type change; same-format rm-rf bypass stays intact. 15 mount outcomes and optional USE_EXT4 retained branch pass; old seven format selections plus one optional branch fail.25 dispatch,6 actual ARM64 file format/repair and9 repair mount regressions pass. Mount/unmount/device/commands are explicit fixtures for selection tests; no real mount/full GUI/fscrypt/power loss. Clean804/six profiles unchanged."
+    },
+    {
+      "name": "format-mounted-builtin-current",
+      "status": "PASS",
+      "cases": 1,
+      "failures": 0,
+      "local_report_sha256": "ec51a35107f294d60dd4e7ce98c65ab2890b475b7de5d0add97c3cf9774dfd29",
+      "scope": "Patch0086 guards six offline format helpers with IsMounted after Unmount; retained mount rejects formatter before writes/type change; same-format rm-rf bypass stays intact. 15 mount outcomes and optional USE_EXT4 retained branch pass; old seven format selections plus one optional branch fail.25 dispatch,6 actual ARM64 file format/repair and9 repair mount regressions pass. Mount/unmount/device/commands are explicit fixtures for selection tests; no real mount/full GUI/fscrypt/power loss. Clean804/six profiles unchanged."
+    },
+    {
+      "name": "format-mounted-transition-regression",
+      "status": "PASS",
+      "cases": 25,
+      "failures": 0,
+      "local_report_sha256": "d1472b47a766117bb601e69eeb130ebc2683da15bc692023a41c16e8064b435e",
+      "scope": "Patch0086 guards six offline format helpers with IsMounted after Unmount; retained mount rejects formatter before writes/type change; same-format rm-rf bypass stays intact. 15 mount outcomes and optional USE_EXT4 retained branch pass; old seven format selections plus one optional branch fail.25 dispatch,6 actual ARM64 file format/repair and9 repair mount regressions pass. Mount/unmount/device/commands are explicit fixtures for selection tests; no real mount/full GUI/fscrypt/power loss. Clean804/six profiles unchanged."
+    },
+    {
+      "name": "format-mounted-tool-regression",
+      "status": "PASS",
+      "cases": 6,
+      "failures": 0,
+      "local_report_sha256": "07058afff2604c7123dcf617b7538d079d146b6be13888336b2ff2aa09f6814e",
+      "scope": "Patch0086 guards six offline format helpers with IsMounted after Unmount; retained mount rejects formatter before writes/type change; same-format rm-rf bypass stays intact. 15 mount outcomes and optional USE_EXT4 retained branch pass; old seven format selections plus one optional branch fail.25 dispatch,6 actual ARM64 file format/repair and9 repair mount regressions pass. Mount/unmount/device/commands are explicit fixtures for selection tests; no real mount/full GUI/fscrypt/power loss. Clean804/six profiles unchanged."
+    },
+    {
+      "name": "format-mounted-repair-regression",
+      "status": "PASS",
+      "cases": 9,
+      "failures": 0,
+      "local_report_sha256": "86a0c12e55ea27e0c4a854921bfbe64e1c52f48fb327950ae43837f62e034f2a",
+      "scope": "Patch0086 guards six offline format helpers with IsMounted after Unmount; retained mount rejects formatter before writes/type change; same-format rm-rf bypass stays intact. 15 mount outcomes and optional USE_EXT4 retained branch pass; old seven format selections plus one optional branch fail.25 dispatch,6 actual ARM64 file format/repair and9 repair mount regressions pass. Mount/unmount/device/commands are explicit fixtures for selection tests; no real mount/full GUI/fscrypt/power loss. Clean804/six profiles unchanged."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",

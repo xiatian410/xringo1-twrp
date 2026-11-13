@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 #include <cstdio>
 #include <functional>
 #include <format>
@@ -11,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <sys/stat.h>
+#include <unistd.h>
 #define LOGINFO(...) ((void)0)
 #define LOGERR(...) ((void)0)
 #define TW_RM_RF_VAR "rmrf"
@@ -18,7 +20,7 @@
 #define DATA_LOGS_DIR "/data/cache/"
 #define TW_IS_ENCRYPTED "encrypted"
 #define TW_IS_DECRYPTED "decrypted"
-static bool tool_available=true,unmount_ok=true;static int command_result=0,rmrf=0,rm_calls=0,recreated=0,last_result=-1;
+static bool tool_available=true,unmount_ok=true,mounted=false,retain_mount=false;static int command_result=0,rmrf=0,rm_calls=0,recreated=0,last_result=-1;
 static std::vector<std::string>commands;
 namespace gui2_console {template<class... T>void info(T...){}template<class... T>void warning(T...){}template<class... T>void log_error(T...){} }
 namespace twrp_operation_executor {struct executor{std::recursive_mutex m;auto& mutex(){return m;}};executor& instance(){static executor e;return e;}using guard=std::lock_guard<std::recursive_mutex>;}
@@ -37,6 +39,8 @@ struct DataManager {
  static void OutputVersion(){}
 };
 int tw_get_default_metadata(const char*){return 0;}int tw_set_default_metadata(const char*){return 0;}
+// The optional built-in formatter is never really invoked in host checks.
+int make_ext4fs(const char*,unsigned long long,const char*,void*){commands.push_back("make_ext4fs");return -1;}
 static void*selinux_handle=nullptr;
 int selabel_lookup(void*,char**,const char*,int){assert(false);return -1;}void freecon(char*p){free(p);}
 struct TWPartition {
@@ -44,7 +48,9 @@ struct TWPartition {
  bool is_sub_partition_=false,can_be_wiped_=true,has_data_media_=false,use_rm_rf_=false,is_present_=true,is_storage_=false,is_fbe_=false,is_encrypted_=false,is_decrypted_=false,needs_metadata_csum_=false,needs_fs_compress_=false;
  unsigned mtp_storage_id_=1;
  std::string GetMountPoint()const{return mount_point_;}
- bool Unmount(bool){return unmount_ok;}bool Mount(bool){assert(false);return false;}
+ bool Unmount(bool){if(!unmount_ok)return false;if(!retain_mount)mounted=false;return true;}
+ bool IsMounted()const{return mounted;}
+ bool Mount(bool){assert(false);return false;}
  void FindActualBlockDevice(){}void SetupFileSystem(bool){}void RecreateAndSecFolder(){++recreated;}
  bool WipeRmrf(){++rm_calls;return true;}
  bool WipeDataWithoutWipingMedia(){assert(false);return false;}bool WipeAndSec(){assert(false);return false;}
@@ -55,6 +61,7 @@ struct TWPartitionManager {
  static bool MatchesPath(const TWPartition*,const std::string&);
  TWPartition*FindPartitionByPath(const std::string&)const;
  int WipeByPath(const std::string&,const std::string&)const;
+ int MountByPath(const std::string&,bool){assert(false);return false;}
  static std::string GetAndroidRootPath(){return "/system_root";}
  static bool RecreateLogsDir(){return true;}static void AddMtpStorage(unsigned){assert(false);}
  void UpdateSystemDetails(){}
@@ -69,6 +76,11 @@ int main(int argc,char**argv){
  if(name.starts_with("ntfs")){requested="ntfs";prefix="/system/bin/mkntfs";}
  if(name.starts_with("fat")){requested="vfat";prefix="mkfs.fat";}
  if(name.starts_with("ext")){p.current_file_system_="f2fs";requested="ext4";prefix="mke2fs -t ext4";}
+ if(name.starts_with("ext2")){requested="ext2";prefix="mke2fs -t ext2";}
+ if(name.starts_with("ext3")){requested="ext3";prefix="mke2fs -t ext3";}
+ if(name.ends_with("retained")){mounted=true;retain_mount=true;expected=false;}
+ if(name.ends_with("mounted"))mounted=true;
+ if(name=="same-rmrf-retained"){requested="ext4";rmrf=1;expect_rm=true;expected=true;}
  if(name=="from-tntfs"){p.current_file_system_="tntfs";requested="f2fs";}
  if(name=="from-mifs"){p.current_file_system_="mifs";requested="vfat";prefix="mkfs.fat";}
  if(name=="global-rmrf")rmrf=1;
