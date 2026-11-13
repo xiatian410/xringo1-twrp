@@ -974,12 +974,20 @@
       "failures": 0,
       "local_report_sha256": "5ea7b62c79fb73f1c29445081df644e61f6cc2aed14c6cc3cf9abf4405585592",
       "scope": "Actual ARM64 client/server/handler ReadWorker + ReadAhead + ordered COPY/XOR MergeWorker, cyclic sources and XOR offset21; replace/zero mixed and scratch-space case. Real COW, ordinary-file base, socketpair dm-user endpoint/size doubles. Independent whole-file content, persisted COW progress and ordered write/fsync errors. No kernel mappings, process-death resume, io_uring or full OTA."
+    },
+    {
+      "name": "refresh-original-gui-loop",
+      "status": "PASS",
+      "cases": 3,
+      "failures": 0,
+      "local_report_sha256": "94ea67b0e79ed69d052ebcddda511734b969e53b5adb572b52d5cad9de3fbe9c",
+      "scope": "Original gui2_loop_tick and app/gui2_loop.cpp, tools worker/status adapter, LVGL progress and page host. Normal completion, precompleted worker and controlled 220ms submit wait; wait halts GUI ticks despite worker DONE, release updates next tick. Scan, device services, input/perf, console/background polling, route composition and display submission are explicit fixtures. Not real DRM, full Android or field root-cause proof; no production fix."
     }
   ],
-  "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
+  "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
   "current_batch_groups": [
     12
   ],
-  "current_batch_document": "docs/OTA-OPERATION-COW.md#snapuserd-resume",
-  "current_batch_groups_scope": "Execution evidence only: four abrupt process exit points with fresh server/client/handler restart. Actual scratch reconstruction/committed progress resume, premerge snapshot reads, whole-base readback and COW progress; ordered6 regression. No production change/rebuild, hardware power loss, multiwindow, kernel mapping or full OTA."
+  "current_batch_document": "docs/REFRESH-STUCK-INVESTIGATION.md#gui-loop",
+  "current_batch_groups_scope": "Original gui2_loop_tick and app/gui2_loop.cpp, tools worker/status adapter, LVGL progress and page host. Normal completion, precompleted worker and controlled 220ms submit wait; wait halts GUI ticks despite worker DONE, release updates next tick. Scan, device services, input/perf, console/background polling, route composition and display submission are explicit fixtures. Not real DRM, full Android or field root-cause proof; no production fix."
 }

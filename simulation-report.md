@@ -15,6 +15,8 @@
 
 ## 后续执行证据
 
+容量刷新新增原 `gui2_loop_tick` / app 主循环接续证据：正常结束、建页前结束与人为提交等待三场景通过。等待期间 worker DONE 不会使阻塞中的 GUI 继续轮询，解除后下一轮更新完成；不证明现场 DRM 长期等待。扫描、提交及设备服务有明确替身，现场根因仍未解决。无生产修改或重编，不重复同类夹具，见[范围](docs/REFRESH-STUCK-INVESTIGATION.md#gui-loop)。
+
 scratch保存后，在目标写入前/一块后/ordered块全写后及header提交两项后退出整个服务，再创建新client/server/handler的四项恢复通过：前三项走真实scratch重建，第四项沿进度2继续，重启后快照读取、最终全文件及进度4均核对。受影响ordered六项回归通过。没有生产修正或重编；进程退出恢复不等于手机断电，见[恢复范围](docs/OTA-OPERATION-COW.md#snapuserd-resume)。
 
 有序COPY/XOR与实际ReadAhead已补六场景，覆盖双块依赖、XOR偏移21、混合操作、scratch区和写入/同步失败；整文件与重新打开COW进度核对通过，共享handler八项回归通过。无生产修改或重编，此检查点未验证进程死亡续合并（后续见上文），多窗口与内核接续仍未验证，见[有序合并范围](docs/OTA-OPERATION-COW.md#snapuserd-ordered)。

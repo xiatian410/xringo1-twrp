@@ -68,7 +68,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "cc6739d66b4cf5f60c7b4f55eb94c57b4d95193a49c1ceff5ac90e5ce9d6b179",
+    "sha256": "9dc6ed28cc49a62b0652b09822ff95e35a1e6d5293392731ddec9528f34c947d",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -140,7 +140,7 @@
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
-    "sha256": "040e5296b213a163c2234e6b21532692d9426a8ac9a56ea7f937116ef36fb111",
+    "sha256": "180c1c5af0e0b5b0f63c896c57b9ef69fba75ba351f7fa8e009593a9e47b373b",
     "mode": "0o644"
   },
   "docs/RESTORE-SESSION-ADAPTATION.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "6b200592d62327865bd16ec899fa3b6a353cf39b18c72e98b79f14fe9f6d7467",
+    "sha256": "1066fe499f4a726201e5878383e19a34e8b3cbb435e2630ce2f5fc5fb5122596",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1628,11 +1628,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "a284144b7faa2dab50b387abaf7f666fa182dc3de774b38ce2113710741e8367",
+    "sha256": "df222eeb4ccbabd7453c846d49aa11a36ac865ae0dee54c6ddcc35d3c9312aa5",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "fbf50f190e81561a6ae67c5fc90b5e4a69b4ce09629ce7dc58cd87f8bfe437e0",
+    "sha256": "042ef3dc45143c2141d7d81835a73e8211558ef87a4cbc007abfc0e57e1cfd85",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2333,6 +2333,14 @@
   },
   "tests/raw_image_test.py": {
     "sha256": "399abfef910ac2ee1a2fd45a577bd380b912889365744ffeb74b788c2b15f12b",
+    "mode": "0o644"
+  },
+  "tests/refresh_loop_test.cpp": {
+    "sha256": "f5df1051517ccce3edf8db5ce2d7434908f9bf781a6577060728f789593dcf18",
+    "mode": "0o644"
+  },
+  "tests/refresh_loop_test.py": {
+    "sha256": "342f88f16a4550db3593ce274d0a83f4a763ec9c3bae226b001cd4e0c5b2302a",
     "mode": "0o644"
   },
   "tests/refresh_page_lifecycle_test.cpp": {

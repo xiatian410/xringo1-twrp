@@ -3283,6 +3283,14 @@
       "evidence": "logs/ota-snapuserd-resume.json",
       "evidence_sha256": "c6d516823d3f8d4b1c021e4a9019223e04cfb000f6c41d671f70aca1807dc39e",
       "scope": "Actual ARM64 server exits abruptly from base pwrite boundary before/after partial/full ordered writes or after real header msync commits two ops; scratch and progress unchanged by fixture. New server process reconstructs original scratch before reads, resumes merge, independently verifies whole base and persisted progress. Ordinary-file base/size and dm-user socket doubles, no kernel mapping, hardware power loss, init or full OTA."
+    },
+    {
+      "name": "refresh-original-gui-loop",
+      "result": "pass",
+      "count": 3,
+      "evidence": "logs/refresh-loop.json",
+      "evidence_sha256": "94ea67b0e79ed69d052ebcddda511734b969e53b5adb572b52d5cad9de3fbe9c",
+      "scope": "Original gui2_loop_tick and app/gui2_loop.cpp, tools worker/status adapter, LVGL progress and page host. Normal completion, precompleted worker and controlled 220ms submit wait; wait halts GUI ticks despite worker DONE, release updates next tick. Scan, device services, input/perf, console/background polling, route composition and display submission are explicit fixtures. Not real DRM, full Android or field root-cause proof; no production fix."
     }
   ],
   "source_review_followups": [
@@ -4256,7 +4264,10 @@
     "lifecycle_scope": "Refreshed only because shared tools worker changed for0067. Three original page lifecycle schedules pass. Does not reproduce or resolve field presentation fault.",
     "production_fix_scope": "Bound tool console work, defer logs until matching first present, update terminal state first; field root cause not proven.",
     "console_evidence": "logs/tool-console.json",
-    "field_incident_fixed": false
+    "field_incident_fixed": false,
+    "loop_evidence": "logs/refresh-loop.json",
+    "loop_scope": "Original gui2_loop_tick and app/gui2_loop.cpp, tools worker/status adapter, LVGL progress and page host. Normal completion, precompleted worker and controlled 220ms submit wait; wait halts GUI ticks despite worker DONE, release updates next tick. Scan, device services, input/perf, console/background polling, route composition and display submission are explicit fixtures. Not real DRM, full Android or field root-cause proof; no production fix.",
+    "next_action": "Use distinguishing presentation/submit-wait evidence; no repeated scan/DONE fixtures or speculative DRM patch."
   },
   "finite_maintenance": {
     "date": "2026-11-13",
