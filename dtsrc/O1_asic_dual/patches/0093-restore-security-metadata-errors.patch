@@ -1,0 +1,31 @@
+diff --git a/libtar/extract.c b/libtar/extract.c
+--- a/libtar/extract.c
++++ b/libtar/extract.c
+@@ -194,8 +194,12 @@
+ #ifdef DEBUG
+ 		LOG("tar_extract_file(): restoring SELinux context %s to file %s\n", t->th_buf.selinux_context, realname);
+ #endif
+-		if (lsetfilecon(realname, t->th_buf.selinux_context) < 0)
++		if (lsetfilecon(realname, t->th_buf.selinux_context) < 0) {
++			int saved_errno = errno;
+ 			fprintf(stderr, "tar_extract_file(): failed to restore SELinux context %s to file %s !!!\n", t->th_buf.selinux_context, realname);
++			errno = saved_errno;
++			return -1;
++		}
+ 	}
+ 
+ 	if((t->options & TAR_STORE_POSIX_CAP) && t->th_buf.has_cap_data)
+@@ -204,8 +208,12 @@
+ 		LOG("tar_extract_file(): restoring posix capabilities to file %s\n", realname);
+ 		print_caps(&t->th_buf.cap_data);
+ #endif
+-		if (setxattr(realname, XATTR_NAME_CAPS, &t->th_buf.cap_data, sizeof(struct vfs_cap_data), 0) < 0)
++		if (setxattr(realname, XATTR_NAME_CAPS, &t->th_buf.cap_data, sizeof(struct vfs_cap_data), 0) < 0) {
++			int saved_errno = errno;
+ 			fprintf(stderr, "tar_extract_file(): failed to restore posix capabilities to file %s !!!\n", realname);
++			errno = saved_errno;
++			return -1;
++		}
+ 	}
+ 
+ #ifdef LIBTAR_FILE_HASH

@@ -6,14 +6,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-sparse-restore.img` |
-| SHA-256 | `0858fc70cdf2365e2d70d1859458fb11d9d7e1e8e71a14eea3bec132e1b72109` |
-| 生产来源绑定 | 811 份 |
+| 文件 | `recovery-dijun-unified-security-metadata.img` |
+| SHA-256 | `cb3083794d3cd3cf8f38af4251d77955b9651bf8941eac6ebf5ef0dbb04848b1` |
+| 生产来源绑定 | 812 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：恢复稀疏文件时避免展开零区
+## 本批生产修正：安全元数据失败不再误报恢复成功
+
+0093 在归档 SELinux 标签或 capability 写入失败后保存 errno 并返回失败，原 libtar / codec / fork 链向上传递；原先只打印错误却继续成功。恢复50项、编解码62项通过；旧实现同夹具分别4/10与8/12故障场景误报成功。最终清理构建、812来源 / 六profile核对通过，相对0092仅 recovery、构建属性和摘要变化。范围见[安全元数据](docs/BACKUP-DATA-PATHS.md#security-metadata-errors)。
+
+安全系统调用在测试中重定向到 user xattr，不代表真实 SELinux / capability enforcement。失败不回滚已经提取的内容；ARM64恢复、完整GUI/manager和断电持久性仍未验收。本批没有重复OTA、MTP、触摸或震动检查。
+
+## 沿用的稀疏恢复修正
 
 0092 保持普通 tar 格式，在普通文件恢复时跳过全零数据块，末尾零区用 truncate 保持逻辑长度。seek / truncate 中断重试、其他错误传播，逻辑进度保持原语义。主机恢复40项、编解码50项通过；同夹具旧实现10项中9项失败。最终清理构建、811来源 / 六profile核对通过，ramdisk仅 recovery、构建属性和摘要变化。详见[归档恢复](docs/BACKUP-DATA-PATHS.md#archive-restore)。
 

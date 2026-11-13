@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-sparse-restore.img",
-  "image_sha256": "0858fc70cdf2365e2d70d1859458fb11d9d7e1e8e71a14eea3bec132e1b72109",
-  "production_sources": 811,
+  "image_name": "recovery-dijun-unified-security-metadata.img",
+  "image_sha256": "cb3083794d3cd3cf8f38af4251d77955b9651bf8941eac6ebf5ef0dbb04848b1",
+  "production_sources": 812,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -12,6 +12,38 @@
     "scope": "After Synaptics is live and Xiaomi input is registered, wait 2 seconds, request ordinary touch reports, and check the software cache. This does not prove controller acknowledgement or event delivery. Prior manual raw0 user capture observed 215 Linux input events; this automatic-startup candidate has no corresponding hardware observation."
   },
   "checks": [
+    {
+      "name": "archive-security-pipeline-negative",
+      "status": "FAIL",
+      "cases": 12,
+      "failures": 8,
+      "local_report_sha256": "b5d88a0333ec274348aa849f36f1f0cb855b290fa767ba783eb925dea1aa20d4",
+      "scope": "Original libtar serialization/extraction and whole tar/pigz/OAES/BoringSSL host pipeline; ordinary files, ASan/UBSan. Security syscalls explicitly redirected to user xattrs, UI/fscrypt/mount fixtures. Error propagates through extractTarFork; no kernel SELinux/capability, ARM64 restore, full GUI/manager or rollback proof."
+    },
+    {
+      "name": "archive-security-pipeline",
+      "status": "PASS",
+      "cases": 62,
+      "failures": 0,
+      "local_report_sha256": "ec672dee7ee3ad671c4e58226d46794b230d3b92d37544a46d4bbc8a71e7911c",
+      "scope": "Original libtar serialization/extraction and whole tar/pigz/OAES/BoringSSL host pipeline; ordinary files, ASan/UBSan. Security syscalls explicitly redirected to user xattrs, UI/fscrypt/mount fixtures. Error propagates through extractTarFork; no kernel SELinux/capability, ARM64 restore, full GUI/manager or rollback proof."
+    },
+    {
+      "name": "archive-security-negative",
+      "status": "FAIL",
+      "cases": 10,
+      "failures": 4,
+      "local_report_sha256": "576eb01adff19df5a076f6bf2f038a15ca69e73291c287f641a2a334c0991191",
+      "scope": "Original libtar serialization/extraction and whole tar/pigz/OAES/BoringSSL host pipeline; ordinary files, ASan/UBSan. Security syscalls explicitly redirected to user xattrs, UI/fscrypt/mount fixtures. Error propagates through extractTarFork; no kernel SELinux/capability, ARM64 restore, full GUI/manager or rollback proof."
+    },
+    {
+      "name": "archive-security-restore",
+      "status": "PASS",
+      "cases": 50,
+      "failures": 0,
+      "local_report_sha256": "f330c7bd7dfec2b1c705e94f75c4cd2dcec572c4825c44acdd67530dd5515a4d",
+      "scope": "Original libtar serialization/extraction and whole tar/pigz/OAES/BoringSSL host pipeline; ordinary files, ASan/UBSan. Security syscalls explicitly redirected to user xattrs, UI/fscrypt/mount fixtures. Error propagates through extractTarFork; no kernel SELinux/capability, ARM64 restore, full GUI/manager or rollback proof."
+    },
     {
       "name": "archive-sparse-pipeline",
       "status": "PASS",

@@ -16,11 +16,14 @@ CASES=['plain','gzip','aes','both','plain-split','gzip-split','aes-split','both-
  'plain-split-percent','aes-percent','aes-extra-invalid',
  'plain-extra-invalid','wait-eintr','wait-not-child','wait-invalid-pid','wait-signalled','wait-nonzero','buffer-parallel','read-fragmented','read-eintr','read-truncated','read-invalid-fd']
 CASES += [kind+'-sparse' for kind in ['plain','gzip','aes','both']]
+CASES += [kind+'-security-'+case for kind in ['plain','gzip','aes','both']
+          for case in ['success','label-error','cap-error']]
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source',type=Path,default=SRC)
+ ap.add_argument('--libtar-source',type=Path,default=SRC/'libtar')
  ap.add_argument('--report',type=Path,default=ROOT/'logs/archive-pipeline.json');ap.add_argument('--cases',nargs='*')
- args=ap.parse_args();cases=args.cases or CASES
+ args=ap.parse_args();cases=args.cases or CASES;libtar=args.libtar_source.resolve()
  with tempfile.TemporaryDirectory(prefix='dijun-archive-pipeline-',dir='/tmp') as tmp:
   tmp=Path(tmp);stage=tmp/'src';stage.mkdir();sources={};shared={}
   names=['twrpTar.cpp','twrpTar.hpp','tarWrite.cpp','tarWrite.hpp','exclude.cpp','exclude.hpp',
@@ -31,7 +34,7 @@ def main():
    else:p=SRC/name;shared[str(p)]=sha(p)
    dest=stage/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(p.read_bytes())
   # Boundary include resolution only. Production function bodies stay intact.
-  (stage/'libtar').symlink_to(SRC/'libtar')
+  (stage/'libtar').symlink_to(libtar)
   (stage/'gui2/console').mkdir(parents=True);(stage/'android-base').mkdir()
   stubs=json.loads((ROOT/'tests/archive_pipeline_stubs.json').read_text())
   for name,body in stubs.items():(stage/name).write_text(body)
@@ -51,20 +54,21 @@ def main():
   harness=(ROOT/'tests/archive_pipeline_test.cpp').read_text().replace('// PRODUCTION_FUNCTIONS',extracted+'\n'+callback)
   (stage/'test.cpp').write_text(harness)
   compat=stage/'host.h';compat.write_text('#include <stdint.h>\n#include <stdio.h>\n#include <limits.h>\n#include <sys/types.h>\n#include <linux/fscrypt.h>\n#define __unused __attribute__((unused))\n')
-  inc=['-I'+str(stage),'-I'+str(SRC/'libtar'),'-I'+str(ANDROID/'external/libcap/libcap/include'),
+  inc=['-I'+str(stage),'-I'+str(libtar),'-I'+str(ANDROID/'external/libcap/libcap/include'),
    '-I'+str(ANDROID/'external/selinux/libselinux/include'),'-I'+str(ANDROID/'system/vold'),
    '-I'+str(ANDROID/'system/core/libcutils/include'),'-I'+str(ANDROID/'system/libbase/include'),
    '-I'+str(ANDROID/'external/boringssl/src/include')]
   common=['-g','-O1','-pthread','-fno-omit-frame-pointer','-fno-pie','-fsanitize=address,undefined','-fno-sanitize-recover=all',
    '-DUSE_FSCRYPT','-DTW_INCLUDE_FBE','-include',str(compat),*inc]
   objects=[];commands=[]
-  c_names=re.findall(r'"([\w]+\.c)"',(SRC/'libtar/Android.bp').read_text())+['strlcpy.c']
+  c_names=re.findall(r'"([\w]+\.c)"',(libtar/'Android.bp').read_text())+['strlcpy.c']
   for name in c_names:
-   src=SRC/'libtar'/name;dest=tmp/(name+'.o');cmd=['gcc','-std=gnu11','-D_GNU_SOURCE',*common,'-c',str(src),'-o',str(dest)]
+   src=libtar/name;dest=tmp/(name+'.o');cmd=['gcc','-std=gnu11','-D_GNU_SOURCE',*common,'-c',str(src),'-o',str(dest)]
    subprocess.run(cmd,check=True);commands.append(cmd);objects.append(dest)
   crypto=ANDROID/'out/soong/.intermediates/external/boringssl/libcrypto/linux_glibc_x86_64_static/libcrypto.a'
   cpp=['twrpTar.cpp','tarWrite.cpp','exclude.cpp','infomanager.cpp','oaes/oaes.cpp','test.cpp']
   cmd=['g++','-std=c++23',*common,'-no-pie',*[str(stage/n) for n in cpp],*[str(p) for p in objects],str(crypto),
+   '-Wl,--wrap=lgetfilecon','-Wl,--wrap=lsetfilecon','-Wl,--wrap=getxattr','-Wl,--wrap=setxattr',
    '-l:libselinux.so.1','-lz','-o',str(tmp/'test')]
   subprocess.run(cmd,check=True);commands.append(cmd)
   pigz=tmp/'pigz';cmd=['gcc','-O2','-static','-DNOZOPFLI',*[str(SRC/'pigz'/n) for n in ['pigz.c','yarn.c','try.c']],'-pthread','-lz','-lm','-o',str(pigz)]
@@ -96,7 +100,7 @@ def main():
      except ChildProcessError:break
    record=dict(case=case,status='PASS' if code==0 else 'FAIL',returncode=code,output=(wd/'output.log').read_text(errors='replace'))
    results.append(record);print(record['status'],case,flush=True)
-  for folder in [SRC/'libtar',SRC/'pigz']:
+  for folder in [libtar,SRC/'pigz']:
    for p in folder.iterdir():
     if p.suffix in ['.c','.h','.bp']:shared[str(p)]=sha(p)
   shared[str(crypto)]=sha(crypto)

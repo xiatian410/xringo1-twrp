@@ -18,6 +18,8 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/xattr.h>
+#include <linux/xattr.h>
+#include <linux/capability.h>
 #include <unistd.h>
 #include <android-base/file.h>
 #include <android-base/unique_fd.h>
@@ -31,6 +33,44 @@
 using namespace std;
 namespace fs=std::filesystem;
 #define CHECK(x) do{if(!(x)){fprintf(stderr,"FAIL %d: %s errno=%d\n",__LINE__,#x,errno);exit(1);}}while(0)
+static bool security_fixture=false;
+static string security_fault;
+static const char security_context[]="u:object_r:system_file:s0";
+static vfs_cap_data security_cap{};
+extern "C" int __real_lgetfilecon(const char*,char**);
+extern "C" int __real_lsetfilecon(const char*,const char*);
+extern "C" ssize_t __real_getxattr(const char*,const char*,void*,size_t);
+extern "C" int __real_setxattr(const char*,const char*,const void*,size_t,int);
+static void metadata_call(const char* name){
+ int fd=open("/backup/security-calls",O_CREAT|O_APPEND|O_WRONLY,0600);CHECK(fd>=0);
+ CHECK(write(fd,name,strlen(name))==static_cast<ssize_t>(strlen(name)));CHECK(close(fd)==0);
+}
+extern "C" int __wrap_lgetfilecon(const char* path,char** value){
+ if(!security_fixture)return __real_lgetfilecon(path,value);
+ if(string(path)=="/src/dir/file0"){*value=strdup(security_context);CHECK(*value);return strlen(*value)+1;}
+ errno=ENODATA;return -1;
+}
+extern "C" int __wrap_lsetfilecon(const char* path,const char* value){
+ if(!security_fixture)return __real_lsetfilecon(path,value);
+ CHECK(fs::path(path).lexically_normal()=="/src/dir/file0"&&!strcmp(value,security_context));metadata_call("label\n");
+ if(security_fault=="label-error"){errno=EPERM;return -1;}
+ return __real_setxattr(path,"user.fixture_selinux",value,strlen(value)+1,0);
+}
+extern "C" ssize_t __wrap_getxattr(const char* path,const char* name,void* value,size_t size){
+ if(security_fixture&&!strcmp(name,XATTR_NAME_CAPS)){
+  if(string(path)=="/src/dir/file0"){CHECK(size>=sizeof security_cap);memcpy(value,&security_cap,sizeof security_cap);return sizeof security_cap;}
+  errno=ENODATA;return -1;
+ }
+ return __real_getxattr(path,name,value,size);
+}
+extern "C" int __wrap_setxattr(const char* path,const char* name,const void* value,size_t size,int flags){
+ if(security_fixture&&!strcmp(name,XATTR_NAME_CAPS)){
+  CHECK(fs::path(path).lexically_normal()=="/src/dir/file0"&&size==sizeof security_cap&&!memcmp(value,&security_cap,size));metadata_call("cap\n");
+  if(security_fault=="cap-error"){errno=EIO;return -1;}
+  return __real_setxattr(path,"user.fixture_capability",value,size,flags);
+ }
+ return __real_setxattr(path,name,value,size,flags);
+}
 bool datamedia=false;
 extern "C" {
 bool fscrypt_set_mode(){return true;}
@@ -126,6 +166,9 @@ int main(int argc,char** argv){
  bool missing=scenario.find("missing-source")!=string::npos;
  bool empty=scenario.find("empty")!=string::npos;
  bool no_codec=scenario.find("no-codec")!=string::npos;
+ security_fixture=scenario.find("-security-")!=string::npos;
+ security_cap.magic_etc=VFS_CAP_REVISION_2|VFS_CAP_FLAGS_EFFECTIVE;
+ security_cap.data[0].permitted=1U<<10;
  map<string,string> contents;
  string archive="/backup/data.ext4.win";
  if(scenario.find("percent")!=string::npos)archive="/backup/%s-data.ext4.win";
@@ -178,7 +221,20 @@ int main(int argc,char** argv){
  fs::remove_all("/src");fs::create_directory("/src");
  twrpTar restore;restore.setdir("/src");restore.setfn(archive);restore.part_settings=&settings;
  bool wrong=scenario.find("wrong-password")!=string::npos;restore.setpassword(wrong?"incorrect":"fixture-password");
+ if(security_fixture)security_fault=scenario.substr(scenario.find("-security-")+10);
  result=restore.extractTarFork();
+ if(security_fixture){
+  const string calls=read_file("/backup/security-calls");
+  CHECK(calls==(security_fault=="label-error"?"label\n":"label\ncap\n"));
+  if(security_fault!="success"){
+   CHECK(result!=0);CHECK(fs::exists("/src/dir/file0"));
+   puts("PASS security metadata failure reaches extractTarFork; partial restore is retained");return 0;
+  }
+  char label[128];vfs_cap_data cap;
+  CHECK(getxattr("/src/dir/file0","user.fixture_selinux",label,sizeof label)==sizeof security_context&&!strcmp(label,security_context));
+  CHECK(getxattr("/src/dir/file0","user.fixture_capability",&cap,sizeof cap)==sizeof cap&&!memcmp(&cap,&security_cap,sizeof cap));
+  puts("PASS security metadata arguments serialized/restored through codec and fork");
+ }
  if(corrupt||wrong){CHECK(result!=0);puts("PASS expected restore failure");return 0;}
  CHECK(result==0);
  for(const auto& [name,data]:contents){CHECK(read_file("/src/"+name)==data);struct stat st{};CHECK(stat(("/src/"+name).c_str(),&st)==0);CHECK((st.st_mode&0777)==0640);}

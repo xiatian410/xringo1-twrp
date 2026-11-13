@@ -2,7 +2,9 @@
 """Run the production libtar C sources with ASan/UBSan in disposable directories.
 
 Uses real host files, modes, ownership, hard/symbolic links and Android xattrs.
-Only writes/closes for controlled restore files are fault-injected. The fscrypt
+Writes/closes/seeks and metadata calls for controlled restore files are fault-injected. Security
+metadata tests redirect SELinux/capability syscalls to user xattrs; they verify
+serialization, arguments and error propagation, not kernel security enforcement. The fscrypt
 kernel/vold provider normally reports no policy; one synthetic v2 policy checks
 ordering (set policy before creating cache children), with no real encryption.
 This does not execute twrpTar's compression, split/fork, raw-image or GUI paths.
@@ -35,6 +37,9 @@ cases = ['roundtrip-metadata', 'symlink', 'hardlink-short', 'hardlink-long',
          'metadata-unknown-tag', 'gnu-name-block-boundary']
 cases += ['sparse-'+name for name in ['leading', 'trailing', 'all-zero', 'partial-zero',
           'mixed', 'empty', 'seek-error', 'truncate-error', 'seek-interrupted', 'truncate-interrupted']]
+cases += ['security-'+name for name in ['selinux-file', 'selinux-directory', 'selinux-symlink',
+          'capability-file', 'options-disabled', 'metadata-absent', 'selinux-denied',
+          'selinux-unsupported', 'capability-denied', 'capability-io']]
 cases = args.cases or cases
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 with tempfile.TemporaryDirectory(prefix='dijun-archive-', dir='/tmp') as tmp:
@@ -51,7 +56,8 @@ with tempfile.TemporaryDirectory(prefix='dijun-archive-', dir='/tmp') as tmp:
            *[str(args.source/n) for n in names], str(args.source/'strlcpy.c'),
            str(ROOT/'tests/archive_restore_test.c'),
            '-Wl,--wrap=write', '-Wl,--wrap=close', '-Wl,--wrap=setxattr',
-           '-Wl,--wrap=lseek64', '-Wl,--wrap=ftruncate64', '-l:libselinux.so.1', '-o', str(tmp/'test')]
+           '-Wl,--wrap=lseek64', '-Wl,--wrap=ftruncate64', '-Wl,--wrap=lgetfilecon',
+           '-Wl,--wrap=lsetfilecon', '-Wl,--wrap=getxattr', '-l:libselinux.so.1', '-o', str(tmp/'test')]
     subprocess.run(cmd,check=True)
     results=[]
     for case in cases:

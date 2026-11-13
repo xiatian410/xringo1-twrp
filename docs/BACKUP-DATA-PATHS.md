@@ -52,7 +52,7 @@ tar 写出结束后会检查 close、编码器退出和输出文件 fsync；失�
 | 加密 | OAES/BoringSSL 在主机真实执行；不涉及 ARM64、MiTEE、FBE、RPMB 或 UFS wrapped-key |
 | fscrypt | provider 返回无策略，不证明合成加密卷或实际 fscrypt 映射 |
 | 随机源 | 夹具文件装入主机随机字节；缺失和短输入专门注入，不是手机熵源验证 |
-| 文件属性 | 检查内容、mode、链接及 Android 目录标记；任意应用 xattr、最终目录时间、SELinux/capability 错误和稀疏空洞仍待补 |
+| 文件属性 | 此阶段检查内容、mode、链接及 Android 目录标记；后续 0092 补齐零区恢复、0093 补齐 SELinux/capability 失败返回。任意应用 xattr、最终目录时间及真实安全策略仍待补 |
 
 旧 OAES CBC 格式没有认证标签。本次错误检测不等于能检测所有密文篡改，也不能证明最后一个完整分卷及其 sidecar 一同消失时仍可发现；需要另外的可信完整清单/校验设计。不能把“错误密码用例被拒绝”说成格式已经获得完整认证。
 
@@ -119,6 +119,25 @@ ASan/UBSan 覆盖这些生产 C 源码。历史 append 扩展缓冲区所有权�
 此前稀疏内容用例确认恢复字节正确但会把空洞展开。0092 已修正普通文件恢复：归档中的全零块在连续数据之间通过 `lseek` 跳过，末尾零区用 `ftruncate` 保持逻辑长度；目标仍以 `O_TRUNC` 打开，所以原有尾部内容不会残留。只对普通文件启用，目录、链接和其他类型不改变。归档本身仍保存零字节，未压缩备份大小不因此减少；这也会把原先实际分配的全零数据区重新建为空洞，不承诺原 extent 布局一致。`EINTR` 会重试，seek / truncate 的其他错误返回失败；每个逻辑 tar 块仍报告原有进度。
 
 新增稀疏恢复场景覆盖前导、尾部、全零、部分零、混合、空文件，以及 seek / truncate 错误和 EINTR。正向恢复 40 项、四种普通 / gzip / AES / gzip+AES 管道稀疏场景通过；旧 libtar 对照除空文件外的 9 项按预期失败。普通文件夹具的恢复块数显著低于逻辑大小，内容、长度和元数据仍核对一致。此项仍不代表真实文件系统、压缩格式专用 sparse 扩展、断电持久性或完整备份 GUI 事务已验收。
+
+<a id="security-metadata-errors"></a>
+
+### 安全元数据失败返回（0093）
+
+旧 `tar_extract_file` 在 `lsetfilecon` 或 capability `setxattr` 失败时仅打印错误，仍返回成功。0093 保存系统调用 errno、打印原诊断并返回 `-1`，由原 `tar_extract_all → twrpTar::extractTar → extractTarFork` 传递失败；标签失败后不继续设置 capability。未启用对应选项或归档无对应元数据时维持原行为。归档声明的标签无法写入，包括目标不支持该操作时，会明确失败；没有悄悄降级为“恢复成功”。
+
+新增十项 libtar 场景验证文件 / 目录 / 符号链接的标签调用、capability 字节、选项关闭、元数据缺失，以及 EPERM / EOPNOTSUPP / EIO。实际 tar 扩展记录序列化和解析照常执行，安全系统调用边界重定向到私有文件的 `user.fixture_*` 属性；符号链接只验证调用，不尝试主机不支持的链接 user xattr。完整恢复 50 项通过，旧实现十项中四个失败返回场景误报成功。
+
+普通 tar、gzip、AES、gzip+AES 各三项接续验证正常、标签失败和 capability 失败，真实编解码 / fork / 子进程回收执行；完整管道 62 项通过，旧 libtar 同组 12 项中八个故障仍返回成功。第一次管道夹具未规范化 `/src//...` 路径而失败，仅修正测试边界，未改生产路径。历史报告保留，不覆盖为成功。
+
+```bash
+# 已完成，相关输入和实现未变时复用。
+python3 tests/archive_restore_test.py --report logs/archive-security-restore.json
+python3 tests/archive_pipeline_test.py --report logs/archive-security-pipeline-delivery.json
+python3 scripts/audit_archive_security_delivery.py
+```
+
+恢复失败不回滚已经提取的文件或先前成功的元数据。本批未验证真实 SELinux 强制策略、内核 capability、ARM64 恢复、完整 GUI/manager 或断电持久性；它证明的是元数据错误不会被归档恢复链误报为成功。0093 已固定进设备树，最终 `installclean` / `make -j$(nproc)`，812 份来源与六份 profile；相对 0092 仅 recovery 主程序、构建属性和 ramdisk 摘要变化。
 
 复现命令：
 

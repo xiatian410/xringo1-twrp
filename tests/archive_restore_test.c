@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/xattr.h>
+#include <linux/xattr.h>
 #include <unistd.h>
 
 #define CHECK(x) do { if (!(x)) { fprintf(stderr, "FAIL line %d: %s (errno=%d)\n", __LINE__, #x, errno); exit(1); } } while (0)
@@ -37,10 +38,40 @@ void bytes_to_hex(const uint8_t *p, size_t n, char *r) {
 static const char *fault;
 static unsigned fault_calls;
 static int record_progress;
+static int security_fixture, label_calls, cap_calls;
+static const char security_context[]="u:object_r:system_file:s0";
+static struct vfs_cap_data fixture_cap;
+int __real_lgetfilecon(const char *, char **);
+int __real_lsetfilecon(const char *, const char *);
+ssize_t __real_getxattr(const char *, const char *, void *, size_t);
+int __wrap_lgetfilecon(const char *path, char **context) {
+    if(!security_fixture)return __real_lgetfilecon(path,context);
+    if(!strncmp(path,"input/",6)) {*context=strdup(security_context); CHECK(*context); return strlen(*context)+1;}
+    errno=ENODATA;return -1;
+}
+int __wrap_lsetfilecon(const char *path, const char *context) {
+    if(!security_fixture)return __real_lsetfilecon(path,context);
+    ++label_calls; CHECK(!strncmp(path,"restore/",8)&&!strcmp(context,security_context));
+    if(fault && strstr(fault,"selinux-denied")){errno=EPERM;return -1;}
+    if(fault && strstr(fault,"selinux-unsupported")){errno=EOPNOTSUPP;return -1;}
+    struct stat st; CHECK(lstat(path,&st)==0);
+    if(S_ISLNK(st.st_mode))return 0; /* call semantics only, host symlink xattrs unavailable */
+    return setxattr(path,"user.fixture_selinux",context,strlen(context)+1,0);
+}
+ssize_t __wrap_getxattr(const char *path,const char *name,void *value,size_t size) {
+    if(security_fixture&&!strcmp(name,XATTR_NAME_CAPS))name="user.fixture_capability";
+    return __real_getxattr(path,name,value,size);
+}
 ssize_t __real_write(int, const void *, size_t);
 int __real_close(int);
 int __real_setxattr(const char *, const char *, const void *, size_t, int);
 int __wrap_setxattr(const char *path, const char *name, const void *value, size_t size, int flags) {
+    if(security_fixture&&!strcmp(name,XATTR_NAME_CAPS)) {
+        ++cap_calls; CHECK(!strncmp(path,"restore/",8)&&size==sizeof fixture_cap&&!memcmp(value,&fixture_cap,size));
+        if(fault&&strstr(fault,"capability-denied")){errno=EPERM;return -1;}
+        if(fault&&strstr(fault,"capability-io")){errno=EIO;return -1;}
+        name="user.fixture_capability";
+    }
     if(fault && !strcmp(fault,"android-xattr-write-error") && !strncmp(path,"restore/",8)) {
         ++fault_calls; errno=EIO; return -1;
     }
@@ -179,7 +210,34 @@ int main(int argc,char **argv) {
     CHECK(access(".fixture",F_OK)==0);
     CHECK(mkdir("input",0700)==0); CHECK(mkdir("restore",0700)==0);
     const char *c=argv[1];
-    if(!strcmp(c,"roundtrip-metadata")) {
+    if(!strncmp(c,"security-",9)) {
+        security_fixture=strcmp(c,"security-metadata-absent")!=0;
+        const int directory=strstr(c,"directory")!=NULL, symlink=strstr(c,"symlink")!=NULL;
+        if(directory) CHECK(mkdir("input/secure",0750)==0);
+        else if(symlink) CHECK(symlinkat("missing",AT_FDCWD,"input/secure")==0);
+        else putfile("input/secure",513);
+        memset(&fixture_cap,0,sizeof fixture_cap);fixture_cap.magic_etc=VFS_CAP_REVISION_2|VFS_CAP_FLAGS_EFFECTIVE;
+        fixture_cap.data[0].permitted=1U<<10;
+        if(security_fixture&&!directory&&!symlink)
+            CHECK(setxattr("input/secure","user.fixture_capability",&fixture_cap,sizeof fixture_cap,0)==0);
+        TAR *t=writer(); CHECK(tar_append_file(t,"input/secure","secure")==0);finish(t);
+        int progress=0;CHECK(tar_open(&t,"backup.tar",NULL,O_RDONLY,0,FLAGS)==0);
+        const int disabled=!strcmp(c,"security-options-disabled");
+        if(disabled)t->options&=~(TAR_STORE_SELINUX|TAR_STORE_POSIX_CAP);
+        fault=c;int result=tar_extract_all(t,"restore",&progress),saved=errno;fault=NULL;CHECK(tar_close(t)==0);
+        const int failure=strstr(c,"denied")||strstr(c,"unsupported")||strstr(c,"-io");
+        if(failure){CHECK(result==-1);CHECK(saved==(strstr(c,"denied")?EPERM:(strstr(c,"unsupported")?EOPNOTSUPP:EIO)));}
+        else CHECK(result==0);
+        CHECK(label_calls==(!disabled&&security_fixture?1:0));
+        CHECK(cap_calls==(!disabled&&security_fixture&&!directory&&!symlink&&!strstr(c,"selinux-denied")&&!strstr(c,"selinux-unsupported")?1:0));
+        if(!failure&&!disabled&&security_fixture&&!symlink){
+            char context[128];CHECK(getxattr("restore/secure","user.fixture_selinux",context,sizeof context)==sizeof security_context);
+            CHECK(!strcmp(context,security_context));
+            if(!directory){struct vfs_cap_data got;CHECK(getxattr("restore/secure","user.fixture_capability",&got,sizeof got)==sizeof got);CHECK(!memcmp(&got,&fixture_cap,sizeof got));}
+        }
+        if(!directory&&!symlink)compare("input/secure","restore/secure");
+        printf("PASS security metadata result=%d labels=%d capabilities=%d saved_errno=%d\n",result,label_calls,cap_calls,saved);
+    } else if(!strcmp(c,"roundtrip-metadata")) {
         size_t sizes[]={0,1,511,512,513,8193}; TAR *t=writer();
         for(unsigned i=0;i<6;++i) {
             char path[80],name[32]; snprintf(name,sizeof name,"file%u",i); snprintf(path,sizeof path,"input/%s",name);
