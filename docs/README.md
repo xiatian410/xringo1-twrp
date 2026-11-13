@@ -34,10 +34,8 @@
 
 - [MTP 传输、启停与存储消息](MTP-ADAPTATION.md)
 - [MTP 上传、日期与目录元数据](MTP-ATOMIC-UPLOAD.md)
-- [MTP 控制报文、事务取消与 Reset](MTP-CONTROL-ADAPTATION.md)
-- [MTP 事件请求、退出与重连](MTP-EVENTS-ADAPTATION.md)
-- [MTP 对象数据库与会话适配](MTP-OBJECTS-ADAPTATION.md)
-- [MTP 移动、复制与目录重建](MTP-TRANSFERS-ADAPTATION.md)
+- [MTP 控制报文、事务取消、Reset 与事件生命周期](MTP-CONTROL-ADAPTATION.md)
+- [MTP 对象数据库、会话、移动与复制](MTP-OBJECTS-ADAPTATION.md)
 - [USB configfs 切换与服务交接](USB-CONFIGFS-ADAPTATION.md)
 
 ## 界面、设置与状态

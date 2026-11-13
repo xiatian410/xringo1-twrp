@@ -39,7 +39,7 @@
 
 这组 S2 测试覆盖传输实现，不等于完整 MTP 对象数据库、媒体存储授权、解密后目录发布或 init/configfs 调度模拟。
 
-后续 [MTP 对象与会话回放](MTP-OBJECTS-ADAPTATION.md)另有 42 项通过，旧实现同组 28 项失败，运行实际请求分发、数据包、数据库与目录监视。再后续 [移动/复制与重建](MTP-TRANSFERS-ADAPTATION.md)完成 48 项回放；后续 [事件生命周期](MTP-EVENTS-ADAPTATION.md)有 62 项通过；目录发布与 USB 控制请求仍待验收；configfs 时序见后续独立回放，不能合并宣称全部 MTP 已适配。
+后续 [MTP 对象与会话回放](MTP-OBJECTS-ADAPTATION.md)另有 42 项通过，旧实现同组 28 项失败，运行实际请求分发、数据包、数据库与目录监视。再后续 [移动/复制与重建](MTP-OBJECTS-ADAPTATION.md#object-transfers)完成 48 项回放；后续 [事件生命周期](MTP-CONTROL-ADAPTATION.md#event-lifecycle)有 62 项通过；目录发布与 USB 控制请求仍待验收；configfs 时序见后续独立回放，不能合并宣称全部 MTP 已适配。
 管道没有 FunctionFS 的 endpoint ioctl，因此相应用例走包长/分配后备路径，日志中的 ioctl 失败是夹具预期。
 USB 物理枚举、Windows 驱动识别、控制器取消传输行为和手机存储性能保持 U。
 最新构建和镜像核对状态以 [模拟报告](../simulation-report.md) 为准。

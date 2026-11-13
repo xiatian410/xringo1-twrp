@@ -32,7 +32,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "eb6af556e0d203a6c7de9fc453a7e85decccc0b48a3a413ddd4dd76b2a8f99d8",
+    "sha256": "e957582a5250d10be1c6ee8948b2bc20167716948d3114882d8b27a1d4bd75dd",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -44,7 +44,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "909890dd0d219167ab17dd8aab157134579bd6a42599edf01515d1872a99cf34",
+    "sha256": "4850528bf6280c0e031ce127ccbdcb359c061ec3240e5f72fe59d8087d29d47d",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -88,7 +88,7 @@
     "mode": "0o644"
   },
   "docs/MTP-ADAPTATION.md": {
-    "sha256": "d7546157dbbb3eaa66ac5509f9ce7a07cd2738c026e77a8c54c248ea645c2913",
+    "sha256": "06af5ef5b525f0e6026f7b3a6c3135e815dc0a861754aceee3e6dda6ceed67b4",
     "mode": "0o644"
   },
   "docs/MTP-ATOMIC-UPLOAD.md": {
@@ -96,19 +96,11 @@
     "mode": "0o644"
   },
   "docs/MTP-CONTROL-ADAPTATION.md": {
-    "sha256": "5c5d1fd8c625e9103cdecc41df0662010666febceb17134b7dbf0563dc34851b",
-    "mode": "0o644"
-  },
-  "docs/MTP-EVENTS-ADAPTATION.md": {
-    "sha256": "35d73aaf9f3350d9ad6e1e70a1369ce3375192f7f32509823ce15289e0c750b5",
+    "sha256": "5cc31d5110059ffd7ded43fb3503cd5523b3a4110b4019a4959d6f49afed36a3",
     "mode": "0o644"
   },
   "docs/MTP-OBJECTS-ADAPTATION.md": {
-    "sha256": "9c4d36ea4a9750c2c71baaaa66cf872601bf9a8bbb0a2a9d22ad344f414ea419",
-    "mode": "0o644"
-  },
-  "docs/MTP-TRANSFERS-ADAPTATION.md": {
-    "sha256": "41405d49449966796e8542527d935dca06fc8b15cf42e4c7a9566353cbb03ace",
+    "sha256": "231c6199a340ee73c3ccba14839b1631e88b02f4ba6854eab79d80d758ac586c",
     "mode": "0o644"
   },
   "docs/MULTIUSER-ADAPTATION.md": {
@@ -144,7 +136,7 @@
     "mode": "0o644"
   },
   "docs/README.md": {
-    "sha256": "e42f9afe36bb86c3a69d7226538d00a76ff54a96eda96c71301562e984012240",
+    "sha256": "2283e305a106d62cd633693f87401578b02a56a9d56d3fb68ff64c9833bf605c",
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
@@ -176,7 +168,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "a6f18c3153fac110b5a89596a7888840bd15d2a36ba47004a20ed5648294607b",
+    "sha256": "0b5e59cc0f3c3ad6567aeb84d43d9ce61e99a482509e99ccd1bcc2fd6089c639",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1316,7 +1308,7 @@
     "mode": "0o644"
   },
   "scripts/audit_unified_delivery.py": {
-    "sha256": "0a2f565bac6ccd54ed7a4c19b867d412ec2e27fdf58dbf4db4ac77d69993b390",
+    "sha256": "88239bc3dc74af823cb40a7a0ae0bdf1fc7082165fa15c7d5d5481ea9e972f1a",
     "mode": "0o644"
   },
   "scripts/audit_updater_protocol_delivery.py": {
