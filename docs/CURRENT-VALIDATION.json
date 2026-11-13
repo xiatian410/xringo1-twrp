@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-exclusion-union.img",
-  "image_sha256": "279135fa22715a32bdbce529319baca2c75067c010cedacb1b96c0a7b75cd432",
-  "production_sources": 840,
+  "image_name": "recovery-dijun-unified-backup-user-policy.img",
+  "image_sha256": "48fe187e092f6cedec048959ba5b5e6338db02bdb78eceb4f802f152dbd8cd8a",
+  "production_sources": 841,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2045,6 +2045,22 @@
       "failures": 0,
       "local_report_sha256": "4c34d85e0fdd8a6ae568f206c4196e861912dd5535b5029781964e4ee1dac3be",
       "scope": "Patch0112 measures the union of duplicate/nested absolute capacity exclusions using a sorted unique local copy and component-boundary coverage by lstat directories. Original exclusion policy remains unchanged. Whole source/private host files ASan/UBSan19 pass, old7/19 fail; tar/pigz/OAES roundtrip8 pass. Logical estimate only; I/O errors, aliases/concurrent replacement, allocation and full manager/GUI remain open. Does not resolve DRM refresh stall or validate latest-image OTA."
+    },
+    {
+      "name": "backup-user-policy",
+      "status": "PASS",
+      "cases": 8,
+      "failures": 0,
+      "local_report_sha256": "e4d2304b55c93a8945479746468f8244414ea45f5efb20da639f6cc57a72fae1",
+      "scope": "Patch0113 keeps locked secondary-user exclusions local to each BackupTar attempt; unlock/retry does not mutate the persistent base policy. Original BackupTar/exclusion methods with real private files under ASan/UBSan8 pass, same-harness old5/8 fail. Mount/users/DataManager/console/tar boundary are fixtures; no real unlock, archive/fork/codec, manager/GUI/device or current-image OTA. Synchronous tar/Wait lifetime inspected; full lifecycle remains open."
+    },
+    {
+      "name": "backup-user-policy-old",
+      "status": "FAIL",
+      "cases": 8,
+      "failures": 5,
+      "local_report_sha256": "231c67df950e8d75be3291468b47751b70b45450fdbb0638df5dd86369072e4a",
+      "scope": "Patch0113 keeps locked secondary-user exclusions local to each BackupTar attempt; unlock/retry does not mutate the persistent base policy. Original BackupTar/exclusion methods with real private files under ASan/UBSan8 pass, same-harness old5/8 fail. Mount/users/DataManager/console/tar boundary are fixtures; no real unlock, archive/fork/codec, manager/GUI/device or current-image OTA. Synchronous tar/Wait lifetime inspected; full lifecycle remains open."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2306,5 +2322,10 @@
     "document": "docs/BACKUP-SESSION-ADAPTATION.md#exclusion-union",
     "production_changes": true,
     "new_build": true
+  },
+  "backup_user_attempt_policy": {
+    "patch": "0113",
+    "document": "docs/BACKUP-SESSION-ADAPTATION.md#user-attempt-policy",
+    "scope": "Patch0113 keeps locked secondary-user exclusions local to each BackupTar attempt; unlock/retry does not mutate the persistent base policy. Original BackupTar/exclusion methods with real private files under ASan/UBSan8 pass, same-harness old5/8 fail. Mount/users/DataManager/console/tar boundary are fixtures; no real unlock, archive/fork/codec, manager/GUI/device or current-image OTA. Synchronous tar/Wait lifetime inspected; full lifecycle remains open."
   }
 }

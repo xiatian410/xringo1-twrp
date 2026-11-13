@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-exclusion-union.img` |
-| SHA-256 | `279135fa22715a32bdbce529319baca2c75067c010cedacb1b96c0a7b75cd432` |
-| 生产来源绑定 | 840 份 |
+| 文件 | `recovery-dijun-unified-backup-user-policy.img` |
+| SHA-256 | `48fe187e092f6cedec048959ba5b5e6338db02bdb78eceb4f802f152dbd8cd8a` |
+| 生产来源绑定 | 841 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：重叠排除容量只扣一次
+## 本批生产修正：解锁后备份不再沿用锁定用户排除项
+
+0113将锁定次用户的排除目录限制在本次备份副本内，避免先前尝试或失败重试污染持久基础策略，导致解锁后仍漏备用户数据。执行原BackupTar/排除方法、私有文件及ASan/UBSan，八项通过；同夹具旧实现五项失败。清理构建后841来源及六profile核对通过。
+
+详见[按次隔离用户策略](docs/BACKUP-SESSION-ADAPTATION.md#user-attempt-policy)。tar创建、挂载及用户状态是替身；真实解密/归档/完整manager与GUI仍有边界。检查了同步tar/Wait的副本生命周期；没有重跑未改OTA或已解决功能。
+
+## 沿用的重叠排除容量修正
 
 0112修正Data初始化重复登记及父子排除目录重复扣除容量：在局部列表去重，已计量目录覆盖的子路径不再累加，按路径组件边界区分相似前缀；原备份/清除排除策略不变。真实私有文件/完整exclude源码在ASan/UBSan下19项通过；同夹具旧实现7/19失败，相关codec八项往返通过。清理构建后840来源及六profile核对通过。
 

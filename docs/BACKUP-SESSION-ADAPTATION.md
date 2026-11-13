@@ -1,5 +1,17 @@
 # 备份会话、目录管理与摘要发布
 
+<a id="user-attempt-policy"></a>
+
+## 锁定用户排除策略按备份次数隔离（0113）
+
+此前 `BackupTar()` 把锁定次用户的五类目录直接追加到分区的持久排除列表。同一 Recovery 会话内解锁用户后再次备份，这些路径仍然被排除，可能生成遗漏用户数据的备份；一次失败的尝试也会污染后续策略。
+
+0113 每次调用复制基础排除策略，仅向本次副本添加仍锁定用户的 `system_ce`、`misc_ce`、`vendor_ce`、`media`、`user` 目录。下一次备份重新读取用户状态；设备树明确配置的基础排除仍保留。用户 0、非 Data、非 FBE 路径沿用既有规则。副本在同步 `createTarFork()` 调用期间有效；源码确认父进程等待 `BackupProcess::Wait()`，子进程及归档线程结束后才返回，不向后台遗留该指针。
+
+定向检查执行原始完整 `BackupTar()` 和排除匹配方法，在私有普通文件上核对所选内容。ASan/UBSan 下八项通过，覆盖基础策略、下次解锁、失败重试、重新锁定、混合用户、挂载失败和两个非目标路径；同夹具旧实现五项失败。挂载、用户状态、DataManager、控制台及 tar 创建边界是替身，没有执行真实解密、归档、fork、codec 或完整 manager/GUI。此前未改归档生命周期证据沿用，不为此重跑整包 OTA 或无关功能。
+
+本地报告 `logs/backup-user-policy.json`、`logs/backup-user-policy-old.json`；交付审计 `python3 scripts/audit_backup_user_policy.py` 绑定固定补丁、清理构建、镜像内容及六份 profile。真实 CE 状态变化、完整备份恢复接续与并发源一致性仍未验收。
+
 <a id="exclusion-union"></a>
 
 ## 重复及嵌套排除容量（0112）

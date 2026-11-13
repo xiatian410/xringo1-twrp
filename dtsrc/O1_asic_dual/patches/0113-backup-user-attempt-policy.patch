@@ -1,0 +1,44 @@
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -2420,6 +2420,9 @@
+ }
+ 
+ bool TWPartition::BackupTar(PartitionSettings* part_settings, BackupProcess* backup_process) {
++  // Locked-user exclusions belong to this attempt. Keep the partition's base
++  // policy intact so a later successful unlock includes that user's data.
++  TWExclude attempt_exclusions = backup_exclusions;
+   twrpTar tar;
+ 
+   if (!Mount(true)) return false;
+@@ -2457,16 +2460,16 @@
+       if (!user.is_decrypted && user.user_id != 0) {
+         gui2_console::warning("backup_storage_undecrypt_warning", user.user_id);
+         const std::string uid = std::to_string(user.user_id);
+-        backup_exclusions.add_absolute_dir(fs::path("/data/system_ce") / uid);
+-        backup_exclusions.add_absolute_dir(fs::path("/data/misc_ce") / uid);
+-        backup_exclusions.add_absolute_dir(fs::path("/data/vendor_ce") / uid);
+-        backup_exclusions.add_absolute_dir(fs::path("/data/media") / uid);
+-        backup_exclusions.add_absolute_dir(fs::path("/data/user") / uid);
++        attempt_exclusions.add_absolute_dir(fs::path("/data/system_ce") / uid);
++        attempt_exclusions.add_absolute_dir(fs::path("/data/misc_ce") / uid);
++        attempt_exclusions.add_absolute_dir(fs::path("/data/vendor_ce") / uid);
++        attempt_exclusions.add_absolute_dir(fs::path("/data/media") / uid);
++        attempt_exclusions.add_absolute_dir(fs::path("/data/user") / uid);
+       }
+     }
+   }
+   tar.part_settings = part_settings;
+-  tar.backup_exclusions = &backup_exclusions;
++  tar.backup_exclusions = &attempt_exclusions;
+   tar.setdir(backup_path_);
+   tar.setfn(full_filename);
+   tar.setsize(backup_size_);
+@@ -2839,7 +2842,7 @@
+     return;
+   }
+ 
+-  // The worker owns this snapshot; BackupTar() and Mount() mutate the object.
++  // The worker owns its policy snapshot independently of later setup changes.
+   TWExclude exclusions = backup_exclusions;
+   const std::string dev = decrypted_block_device_.empty() ? actual_block_device_ : decrypted_block_device_;
+ 
