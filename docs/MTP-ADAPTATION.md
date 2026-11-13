@@ -117,4 +117,4 @@ python3 tests/mtp_receiver_test.py --source backups/mtp-caller-pre-fix --report 
 
 后两条是负向对照，预期返回非零。测试超时清理其独立进程组，避免故障夹具遗留子进程。
 
-尚未完成完整 GUI/挂载/init/解密后发布端到端联调；临时工作线程与真正进程退出的测试不代表整套 fork 后 C++ 库在任意并发负载下无锁风险。完整交易取消、会话 reset、compat ep0 调度、bulk AIO drain、真实 USB/Windows 枚举仍保持独立未完成项。物理震动、TEE 与唤醒延迟也不由本组用例证明。
+尚未完成完整 GUI/挂载/init/解密后发布端到端联调；临时工作线程与真正进程退出的测试不代表整套 fork 后 C++ 库在任意并发负载下无锁风险。完整交易取消、会话 reset、compat ep0 调度、bulk AIO drain、真实 USB/Windows 枚举仍保持独立未完成项。TEE 与唤醒延迟不由本组用例证明。

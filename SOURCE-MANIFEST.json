@@ -44,7 +44,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "ba453ae369667d9ae4a30b1170a7f09323d96f012b6ef56a0f9ca346fb608e8f",
+    "sha256": "8323bb262dff1107dad988ebf0b1515c11d1494c6d64cd1d3599fe74d0e70375",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -92,7 +92,7 @@
     "mode": "0o644"
   },
   "docs/MTP-ADAPTATION.md": {
-    "sha256": "54cff9a28e7a1ab8d3edc8eadd045251a1f5d37d5a7e314955ff1b02de64800b",
+    "sha256": "2372f677be1cfb51bfb968d444c7ad9182e2a663cf065f986b35ea73541e4f00",
     "mode": "0o644"
   },
   "docs/MTP-ATOMIC-UPLOAD.md": {
