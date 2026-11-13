@@ -1,0 +1,10 @@
+{
+  "package": "Debian f2fs-tools source1.16.0-1.1",
+  "archives": {
+    "f2fs-tools_1.16.0-1.1.debian.tar.xz": "f961e45386404c30059aa74065adb124d453916cafb9976a914c7d242b4b7694",
+    "f2fs-tools_1.16.0-1.1.dsc": "120ec3fed9e3ac2b822680542d393833ed36d91619a04848ba96a7f9b72d096e",
+    "f2fs-tools_1.16.0.orig.tar.xz": "fe25b17422f278e5fc0c6ae9977d814fe3122b5bc82dd92a58296fad57263d9c"
+  },
+  "patch_sha256": "4d723c80ecdc4e8c7cffe8d695b11558800a5fcd81da26e150aaadf66df9a196",
+  "scope": "Only fsck/dump.c inline reader uses existing inline_data_addr; stock Debian package incorrectly omits extra attr offset."
+}

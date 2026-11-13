@@ -49,6 +49,8 @@
 
 ## 本批与继承证据
 
+后续独立F2FS内容读回补齐六个文件（含内联、多节点、嵌套和零数据），副本单字节破坏可检出，读取不改变镜像哈希。仅修正主机Debian读取器的extra_attr偏移；当前cli-fifo候选与793生产来源不变，没有生产修改或构建。见[范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#f2fs-readback)。
+
 | 范围 | 结果 | 限制 |
 | --- | --- | --- |
 | 格式转换分派 | 25 场景 / 旧 10 失败 | 原 Wipe/helper/manager/backend；命令/卸载/容量/设备/metadata 替身 |

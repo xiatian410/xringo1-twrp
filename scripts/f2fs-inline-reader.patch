@@ -1,0 +1,11 @@
+--- a/fsck/dump.c
++++ b/fsck/dump.c
+@@ -429,7 +429,7 @@
+ 	if((node_blk->i.i_inline & F2FS_INLINE_DATA)) {
+ 		DBG(3, "ino[0x%x] has inline data!\n", nid);
+ 		/* recover from inline data */
+-		dev_write_dump(((unsigned char *)node_blk) + INLINE_DATA_OFFSET,
++		dev_write_dump(inline_data_addr(node_blk),
+ 						0, MAX_INLINE_DATA(node_blk));
+ 		return -1;
+ 	}

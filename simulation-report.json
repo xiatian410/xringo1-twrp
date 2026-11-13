@@ -3147,6 +3147,14 @@
       "evidence": "logs/cli-fifo-before.json",
       "evidence_sha256": "6616477dfc06c10ebdebdd635589bd1f83db8ca5c4f61fb12ad31aa47abb50e9",
       "scope": "Run original background poll/CLI listener against private real FIFOs.\n\nDataManager, partition work, console mirror and CLI execution are explicit\nfixtures. Original listener/thread/callback uses host read/open/stdio/select;\nno Android GUI, device, real CLI command, mounts or physical block access.\n"
+    },
+    {
+      "name": "independent-F2FS-content-readback",
+      "result": "pass",
+      "count": 2,
+      "evidence": "logs/f2fs-readback.json",
+      "evidence_sha256": "49c9ad158c4984310bd598a0b98f369cf9836ed2d78547e02d1dfb255d089e3a",
+      "scope": "Read ARM64-created F2FS files through a separately packaged host reader.\n\nCurrent-image make_f2fs/sload_f2fs run via pinned QEMU/linker in a private chroot.\nDebian amd64 dump.f2fs reads ordinary image files; compare every exported byte\nand require unchanged image SHA. Not a mount, fscrypt, full Recovery caller/GUI,\nmetadata fidelity, sparse allocation, compressed filesystem or power-loss test.\n"
     }
   ],
   "source_review_followups": [

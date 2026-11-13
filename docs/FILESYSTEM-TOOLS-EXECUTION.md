@@ -140,3 +140,26 @@ python3 scripts/audit_format_tool_chain.py
 隔离环境提供普通空文件 `/proc/mounts`，明确代表无挂载，不挂载 procfs、不读取主机挂载表。初次缺少该文件使 F2FS regular-file 检查在 getmntent(NULL) 退出；随后一次 launcher PATH 未包含 `/system/bin`，造成 sload 找不到，均为夹具问题。编译缺少 fs 别名也已补齐，失败日志保留，没有据此修改生产模块。linker 缺 `/proc/self/fd` / linkerconfig 的警告保留，不声称生产 namespace 已验证。
 
 selinux_handle 为空，原 WipeExtfs 的 e2fsdroid 标签初始化分支未执行；后续显式内容填充不是该分支的替代证明。sload_f2fs 使用原 `-t /data`，没有接入真实 Android 属性、标签或加密密钥。父 Recovery 调用者为主机程序，不是完整 ARM64 Recovery/GUI，MTP与真实挂载、fscrypt、discard、并发和断电仍未覆盖。测试只允许脚本新建普通文件；没有操作手机或物理块设备。
+
+<a id="f2fs-readback"></a>
+
+## F2FS 独立内容读回
+
+`tests/f2fs_readback_test.py` 补齐此前只有结构检查的内容边界：当前 cli-fifo 镜像的 ARM64 `make_f2fs` / `sload_f2fs` 经固定 QEMU 和同镜像 linker / 库，在私有 chroot 中创建及填充 256 MiB 普通文件。格式参数保留 `project_quota,extra_attr`；没有挂载文件系统、连接手机或访问物理块设备。
+
+独立 Debian amd64 `dump.f2fs` 从该镜像导出六个合成文件，包括空文件、251字节内联文件、普通数据、嵌套中文名称、5 MiB+17字节多节点文件与长零数据区域，全部内容/大小/SHA一致。另一份副本中只翻转实际payload数据的一个字节，独立导出仅该文件不一致，其余内容一致；两次读取前后整个镜像SHA不变。它证明普通文件内容读回，不证明稀疏物理分配、元数据、压缩或加密。
+
+Debian1.16读取器只支持按inode导出，没有Android分支的递归`-r/-o`选项，第一次尝试失败保留为 `logs/f2fs-readback-first-attempt.json`。改用已知合成名称/父inode字段定位候选inode后，由外部读取器自行解析NAT和数据；这不是通用目录遍历器，不能把已知路径夹具说成目录查找验收。
+
+该读取器还存在独立兼容问题：`dump_inode_blk` 用固定 `INLINE_DATA_OFFSET`，遗漏 `extra_attr` 占用。未修正的主机包能读回其他五文件，内联小文件内容错误。主机专用 [补丁](../scripts/f2fs-inline-reader.patch)改用该源码已有的 `inline_data_addr(node_blk)`；Android当前dump实现已如此处理，无需修改生产工具。保留原包同组失败报告，不将读取器错误归因于ARM64写入损坏。源码归档及补丁SHA固定在 [来源清单](../scripts/f2fs-reader-source.json)。
+
+```bash
+# 需要Debian source源及gcc/make/autoconf/automake/libtool/pkgconf/uuid-dev
+python3 scripts/prepare_f2fs_reader.py
+python3 tests/f2fs_readback_test.py
+python3 scripts/audit_f2fs_readback.py
+```
+
+准备脚本将源码和编译文件只留在本地 `tools/f2fs-host`，不覆盖已有构建目录；没有将host读取器作为Recovery补丁，也未安装替换系统文件。首次libtool包装器/共享库构建路径问题已修正为明确禁用共享libf2fs后复制ELF，最终脚本从新目录实际执行并通过。原Debian二进制对照依赖本地已提取包，使用`--stock-reader`和单独`--report`保存。
+
+本批只有验证及host工具维护，生产候选、793来源及六profile不变，没有重编Recovery。结果 `logs/f2fs-readback.json` 和定向核对 `logs/f2fs-readback-audit.json`。不重复此前六种转换场景；父manager/GUI、真实挂载/fscrypt、F2FS目录通用查找及断电边界仍未完成。
