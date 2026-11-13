@@ -1968,6 +1968,17 @@
     "image_rebuilt": false,
     "scope": "Original target page and page_router/page_host plus actual LVGL swipe-slider widget and extracted install_confirmed callback. For each of five targets, four valid tap locations select the target, a full slider gesture passes the exact image path/target/both-slot flag to an observed install_backend::start_image, and the router enters INSTALL_PROGRESS; one drag-out gesture cancels. Backend worker/manager, writes, device input, fonts and hardware remain fixtures; independent image worker suite is reused, not rerun."
   },
+  "install_target_current_image": {
+    "evidence": "logs/install-target-current-image.json",
+    "evidence_sha256": "7eb8e80db7740cdd0684538b7bc741da4a47579d973e3b5202313cd51efa0c14",
+    "count": 25,
+    "result": "pass",
+    "image": "imgs/built/recovery-dijun-unified-ordinary-reports.img",
+    "image_sha256": "aee7856e90ba4f5861bdc918d4da0b585b7de4fd337a64138204c9f526d3b300",
+    "production_changes": false,
+    "image_rebuilt": false,
+    "scope": "Run the existing target click/router/confirmation-chain suite against flags extracted from the exact current candidate image. Confirms five flash targets are present and each target supports label/detail/arrow hit, drag-out cancellation, and production callback parameter handoff. Host LVGL metrics/fonts, backend and physical touch remain fixtures."
+  },
   "additional_checks": [
     {
       "name": "os4-touch-ordinary-report-startup-policy",

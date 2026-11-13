@@ -363,6 +363,17 @@
       "scope": "Original LVGL target page/router/host and swipe slider execute through install_confirmed. Twenty valid gestures pass the exact image path, selected mount point and both-slot flag to observed start_image and route to INSTALL_PROGRESS; five drag-outs cancel. Backend writes, worker/manager and device I/O are not executed here; existing independent image worker evidence is reused."
     },
     {
+      "name": "install-target-current-image",
+      "grade": "S2/S3",
+      "result": "pass",
+      "count": 25,
+      "evidence": "local logs/install-target-current-image.json",
+      "evidence_sha256": "7eb8e80db7740cdd0684538b7bc741da4a47579d973e3b5202313cd51efa0c14",
+      "image": "imgs/built/recovery-dijun-unified-ordinary-reports.img",
+      "image_sha256": "aee7856e90ba4f5861bdc918d4da0b585b7de4fd337a64138204c9f526d3b300",
+      "scope": "Binds target chooser rows to twrp.flags extracted from this exact candidate image; five targets pass label/detail/arrow selection and drag-out behavior through original callback and router. Host input, fonts, backend and physical touch remain fixtures."
+    },
+    {
       "name": "partition-actions-image-chain",
       "status": "PASS",
       "cases": 40,

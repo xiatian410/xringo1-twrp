@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "96e28c826a5bb212086f42f8479931bf5e8b40d0cc815e04667dd856e6b95e19",
+    "sha256": "f43417dd0f3094ec32e15f27306a4d15fbf56c95574d60e380b607444d5b09d5",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -124,7 +124,7 @@
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
-    "sha256": "0557f9a2bf59841b737db5efef9784cdedbb36fc8426d7d37e3dd7fdcc76a12c",
+    "sha256": "50421499e85b9af4189e36f016887338554079385de0cdeeed9d3a81d321e31b",
     "mode": "0o644"
   },
   "docs/PROFILE-LINKER-ARM64.md": {
@@ -1712,11 +1712,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "3e4c7c29fe644954c8d59d9415573f40b62632d7024ad3b29164be3ae8caedba",
+    "sha256": "110d4b985563cf53166856d286a3bd515626d117d8e3388c5fd4a9b480bb1d1c",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "06f4578c014a3130c28f06330f00de7e7b0c09039a8940f6144e1fd1df35adb1",
+    "sha256": "d010ce55aab1ccd0010caeff84dd0a0b617e0c1918775d5ddcc91c77d9a17627",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {

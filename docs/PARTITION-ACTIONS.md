@@ -15,11 +15,11 @@
 
 NV 集合为 nvram、proinfo、nvdata、nvcfg、protect_f、protect_s，含 `/mnt/vendor/` 对应路径、规范化路径、子路径和解析到 NV 的别名。前缀相似的普通路径不误拦截。原厂 fstab 不删除，内部服务仍可访问；备份/恢复和特权终端不受此普通 GUI 策略限制。persist、metadata 不按 NV 集合隐藏。FactoryReset 仍按核心 `wipe_during_factory_reset_` 标记选择目标，未给 NV 新增该标记。
 
-离线检查执行生产方法：26 个路径/批次场景覆盖列表、提交、执行、别名、混合清除预检和分号注入；旧实现同组 19 个失败，修正后通过。真实 LVGL 确认页与原回调覆盖五目标各 label/detail/arrow/blank/drag-out，共 25 场景；路由执行目标点击后的 REPLACE、返回安装入口的 POP、再次 PUSH。新增的确认接合回归再让五目标各四种有效点击位置完成真实滑块拖动，断言 `start_image` 收到所选镜像路径、目标挂载点和双槽标志，并进入 INSTALL_PROGRESS；另五种拖出手势取消，共 25 项全部通过。安装源和 manager 仍为观察替身，未执行分区写入；原镜像写入链 40 场景核对私有文件内容与双槽顺序，修复链 7 场景调用镜像 ARM64 e2fsck，挂载策略 26 场景回归通过。上述离线证据不代表实机触摸或完整刷写已验收。
+离线检查执行生产方法：26 个路径/批次场景覆盖列表、提交、执行、别名、混合清除预检和分号注入；旧实现同组 19 个失败，修正后通过。真实 LVGL 确认页与原回调覆盖五目标各 label/detail/arrow/blank/drag-out，共 25 场景；路由执行目标点击后的 REPLACE、返回安装入口的 POP、再次 PUSH。确认接合回归让五目标各四种有效点击位置完成真实滑块拖动，断言 `start_image` 收到所选镜像路径、目标挂载点和双槽标志，并进入 INSTALL_PROGRESS；另五种拖出手势取消，共 25 项通过。之后将同一套点击/确认测试绑定当前候选镜像中提取的 `twrp.flags`，再次25项通过，证实这份交付镜像确实包含五个目标。安装源和 manager 仍为观察替身，未执行分区写入；原镜像写入链 40 场景核对私有文件内容与双槽顺序，修复链 7 场景调用镜像 ARM64 e2fsck，挂载策略 26 场景回归通过。上述离线证据不代表实机触摸或完整刷写已验收。
 
 最终候选：`recovery-dijun-unified-partition-actions.img`，SHA256 `f9a11c04da1669ef601ca52ee6c38a99f32011aedcab06a5005af4f74f386db6`。最终 `installclean` 后 `make -j$(nproc)` 以 30 并发构建；769 来源绑定、六 profile 封装和实际镜像 flags 字节核对。初次编译发现新增自由函数访问私有字段，已改用公开 `GetMountPoint()`，修正后重新清理构建。未操作手机或物理块设备。
 
-本地证据：`logs/partition-actions-delivery.json`、`nv-partition-actions.json`、`install-target-lifecycle.json`、`install-target-confirmation-chain.json`、`partition-actions-image-chain.json`、`partition-actions-repair-chain.json`、`partition-actions-mount.json`。公开仓库仅发布源码、配置、补丁、测试及摘要，不上传镜像、编译产物或原始日志。
+本地证据：`logs/partition-actions-delivery.json`、`nv-partition-actions.json`、`install-target-lifecycle.json`、`install-target-confirmation-chain.json`、`install-target-current-image.json`、`partition-actions-image-chain.json`、`partition-actions-repair-chain.json`、`partition-actions-mount.json`。公开仓库仅发布源码、配置、补丁、测试及摘要，不上传镜像、编译产物或原始日志。
 
 <a id="tool-page-worker-lifecycle"></a>
 ## 分区工具页面与后台接续
