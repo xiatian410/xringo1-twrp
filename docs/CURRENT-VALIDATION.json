@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-slot-unmount.img",
-  "image_sha256": "ebf73e3dc5ae11e7263c4518ab2a872f8274e896a9ab5252a38f448660c954f2",
-  "production_sources": 827,
+  "image_name": "recovery-dijun-unified-mtp-command-boundary.img",
+  "image_sha256": "4a18f423ae1d49ad35a9f328aabd2171752ee6413312cbf5ec8524b07a1d26c5",
+  "production_sources": 829,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -1797,6 +1797,22 @@
       "failures": 3,
       "local_report_sha256": "49fe74a29fc484987ebaab81a32e6b37ee11d293ac90553cd4342599dec900eb",
       "scope": "Original slot manager/backend and backup/reboot confirmation callbacks; 21 cases including normal/lazy unmount success, both unmounts failing and missing vendor. Previous0101 fails three refusal cases. HAL, unmount, DataManager and navigation are explicit doubles; no real mounts/slot/full GUI or device proof."
+    },
+    {
+      "name": "mtp-command-objects",
+      "status": "PASS",
+      "cases": 167,
+      "failures": 0,
+      "local_report_sha256": "bb9ece4dd6e5d200d88eb17fe4c3cc6fa5f14a3c77cfe1b2b8894b68c3662a59",
+      "scope": "Host original MTP parser/server/database/storage with files/inotify/threads and ASan/UBSan. Validate declared command length, reset state and use EPROTO on malformed requests; retain existing noncommand skip for upload recovery. Current167 pass; previous4/7 fail. USB/logging/properties/errno are fixtures; full malformed-upload recovery, ARM64 MTP and Windows unverified."
+    },
+    {
+      "name": "mtp-command-negative",
+      "status": "FAIL",
+      "cases": 7,
+      "failures": 4,
+      "local_report_sha256": "ff3ab96d41d350a21e9c9db4332c72e099da4cf43addbd5f7b14022f5b437666",
+      "scope": "Host original MTP parser/server/database/storage with files/inotify/threads and ASan/UBSan. Validate declared command length, reset state and use EPROTO on malformed requests; retain existing noncommand skip for upload recovery. Current167 pass; previous4/7 fail. USB/logging/properties/errno are fixtures; full malformed-upload recovery, ARM64 MTP and Windows unverified."
     }
   ],
   "refresh_stuck_investigation": {
@@ -1993,6 +2009,13 @@
     "patch": "0102",
     "scope": "Original slot manager/backend and backup/reboot confirmation callbacks; 21 cases including normal/lazy unmount success, both unmounts failing and missing vendor. Previous0101 fails three refusal cases. HAL, unmount, DataManager and navigation are explicit doubles; no real mounts/slot/full GUI or device proof.",
     "document": "docs/MULTIUSER-ADAPTATION.md#slot-unmount",
+    "production_changes": true,
+    "new_build": true
+  },
+  "mtp_command_boundary": {
+    "patch": "0103",
+    "scope": "Host original MTP parser/server/database/storage with files/inotify/threads and ASan/UBSan. Validate declared command length, reset state and use EPROTO on malformed requests; retain existing noncommand skip for upload recovery. Current167 pass; previous4/7 fail. USB/logging/properties/errno are fixtures; full malformed-upload recovery, ARM64 MTP and Windows unverified.",
+    "document": "docs/MTP-CONTROL-ADAPTATION.md#command-boundary",
     "production_changes": true,
     "new_build": true
   }

@@ -24,6 +24,7 @@ struct Peer {
  bool transaction_lifetime_error=false;
  bool reset_pending=false,reset_next_write=false,reset_receive=false,reset_send=false;
  bool reset_disconnect=false;
+ int read_errno=0;
 };
 inline Peer peer;
 inline std::function<void(int)> receiving_probe;
@@ -50,7 +51,9 @@ class FixtureHandle:public IMtpHandle {
   if(peer.input.empty()){errno=EIO;return -1;}
   if(peer.input.front().empty()){peer.input.pop_front();peer.reset_pending=true;errno=peer.reset_disconnect?ESHUTDOWN:ECANCELED;return -1;}
   auto& b=peer.input.front();auto n=std::min(len,b.size());memcpy(out,b.data(),n);
-  b.erase(b.begin(),b.begin()+n);if(b.empty())peer.input.pop_front();return n;
+  b.erase(b.begin(),b.begin()+n);if(b.empty())peer.input.pop_front();
+  if(peer.read_errno){errno=peer.read_errno;peer.read_errno=0;}
+  return n;
  }
  int write(const void* data,size_t n) override {std::lock_guard l(peer.mutex);if(peer.reset_next_write){peer.reset_next_write=false;peer.reset_pending=true;errno=ECANCELED;return -1;}const auto* p=static_cast<const uint8_t*>(data);peer.output.emplace_back(p,p+n);peer.cv.notify_all();return n;}
  int sendEvent(mtp_event e) override {std::lock_guard l(peer.mutex);const auto* p=static_cast<const uint8_t*>(e.data);peer.events.emplace_back(p,p+e.length);peer.cv.notify_all();return 0;}

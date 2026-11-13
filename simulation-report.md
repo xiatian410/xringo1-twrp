@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-slot-unmount.img` |
-| SHA-256 | `ebf73e3dc5ae11e7263c4518ab2a872f8274e896a9ab5252a38f448660c954f2` |
-| 生产来源绑定 | 827 份 |
+| 文件 | `recovery-dijun-unified-mtp-command-boundary.img` |
+| SHA-256 | `4a18f423ae1d49ad35a9f328aabd2171752ee6413312cbf5ec8524b07a1d26c5` |
+| 生产来源绑定 | 829 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：槽位切换前的 Vendor 卸载失败
+## 本批生产修正：MTP 命令容器边界
+
+0103补齐命令声明长度与实际读长校验；读取前清空旧状态，损坏请求清空参数并明确设置EPROTO，使主循环停止当前连接，不继承旧ECANCELED继续解析。既有对象套件扩展到167项通过；旧实现新增7场景中4项失败，覆盖长度不符和残留取消错误码。检查确认后续排队删除未执行，文件保留。
+
+清理构建后829来源与六profile封装核对通过。USB、属性、日志和残留errno注入为替身；没有真实端点排空、ARM64 MTP或Windows验收。完整上传错误恢复仍未完成，详见[命令边界](docs/MTP-CONTROL-ADAPTATION.md#command-boundary)。首次候选将非COMMAND也判为致命错误，导致8项上传恢复回归失败；已撤回该限制，保留既有非COMMAND跳过，最终167项通过。首次失败报告与镜像保留为initial版本，不计交付。本批未重复整包或已解决功能。
+
+## 沿用的槽位切换前 Vendor 卸载失败
 
 0102在Vendor普通卸载和MNT_DETACH都失败时结束操作并返回false，不再调用Boot HAL或发布新槽位。沿用0101的备份页错误与输入保留、重启确认页失败分支。既有槽位套件扩展到21项全部通过；上一版在后台 / 备份 / 重启三个卸载失败场景中失败。正常卸载、延迟卸载成功和无Vendor路径保留。清理构建后827来源与六profile封装通过。
 

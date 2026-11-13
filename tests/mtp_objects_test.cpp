@@ -121,7 +121,25 @@ int main(int argc,char** argv){
  auto* one=s.add(0x10001,"/one");s.add(0x20001,"/two");s.start();
  if(!test.starts_with("session-unopened-"))s.open();
  auto a=find(s.db,0x10001,"a.txt"),dir=find(s.db,0x10001,"dir");REQUIRE(a&&dir);
- if(test.starts_with("edit-partial-")){
+ if(test.starts_with("command-boundary-")){
+  const auto kind=test.substr(17);
+  Bytes bad=packet(kind=="wrong-type"?2:1,MTP_OPERATION_DELETE_OBJECT,++s.tx,words({a,0}));
+  if(kind=="short-length")bad[0]=12;
+  if(kind=="long-length")bad[0]=24;
+  if(kind=="zero-length")bad[0]=0;
+  if(kind=="short-header"||kind=="stale-cancel")bad.resize(8);
+  if(kind=="unaligned")bad.push_back(0);
+  if(kind=="six-parameters")bad=packet(1,MTP_OPERATION_DELETE_OBJECT,s.tx,words({a,0,0,0,0,0}));
+  {lock_guard l(peer.mutex);if(kind=="stale-cancel")peer.read_errno=ECANCELED;peer.input.push_back(bad);
+   // This valid mutation must remain unread after a malformed boundary.
+   peer.input.push_back(packet(1,MTP_OPERATION_DELETE_OBJECT,++s.tx,words({a,0})));
+   peer.cv.notify_all();}
+  {unique_lock l(peer.mutex);REQUIRE(peer.cv.wait_for(l,2s,[]{return peer.closes>0||!peer.input.size();}));}
+  s.stop();
+  REQUIRE(fs::exists("/one/a.txt")&&readfile("/one/a.txt")=="alpha");
+  {lock_guard l(peer.mutex);REQUIRE(peer.closes==1&&peer.input.size()==1);}
+  cout<<"malformed_command_stopped_before_mutation=1"<<endl;
+ }else if(test.starts_with("edit-partial-")){
   const auto kind=test.substr(13);
   REQUIRE(s.call(MTP_OPERATION_BEGIN_EDIT_OBJECT,{a}).code==MTP_RESPONSE_OK);
   const bool malformed=kind=="oversized"||kind.starts_with("wrong-");

@@ -1,0 +1,30 @@
+--- a/mtp/MtpRequestPacket.cpp
++++ b/mtp/MtpRequestPacket.cpp
+@@ -38,6 +38,8 @@
+ 
+ #ifdef MTP_DEVICE
+ int MtpRequestPacket::read(IMtpHandle *h) {
++    reset();
++    mParameterCount = 0;
+     int ret = h->read(mBuffer, mBufferSize);
+     if (ret < 0) {
+         // file read error
+@@ -48,11 +50,17 @@
+     const size_t read_size = static_cast<size_t>(ret);
+     if (read_size >= MTP_CONTAINER_HEADER_SIZE
+             && read_size <= MTP_CONTAINER_HEADER_SIZE + 5 * sizeof(uint32_t)
+-            && ((read_size - MTP_CONTAINER_HEADER_SIZE) & 3) == 0) {
++            && ((read_size - MTP_CONTAINER_HEADER_SIZE) & 3) == 0
++            && getUInt32(MTP_CONTAINER_LENGTH_OFFSET) == read_size) {
+         mPacketSize = read_size;
+         mParameterCount = (read_size - MTP_CONTAINER_HEADER_SIZE) / sizeof(uint32_t);
+     } else {
+         ALOGE("Malformed MTP request packet");
++        // Its data boundary is unknown. Never inherit a previous cancellation
++        // errno and resume parsing the remainder as another command.
++        reset();
++        mParameterCount = 0;
++        errno = EPROTO;
+         ret = -1;
+     }
+     return ret;

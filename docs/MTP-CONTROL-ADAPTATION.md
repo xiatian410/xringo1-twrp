@@ -6,6 +6,15 @@
 
 导航：[分段编辑写入](#partial-edit-write) · [会话文件操作边界](#session-file-boundary) · [控制报文](#修复内容) · [活动事务取消](#transaction-cancel) · [Reset 会话释放](#reset-session) · [事件生命周期](#event-lifecycle) · [bulk 完成队列错误](#bulk-completion-error)。
 
+<a id="command-boundary"></a>
+## 命令容器边界（0103）
+
+请求解析原先只检查实际读长为12–32字节且参数对齐，没有核对容器声明长度；错误返回也可能沿用成功read未清除的旧ECANCELED，主循环因此继续读取。0103读取前清空packet与参数计数，要求声明长度等于读长；损坏时再次清空，设置EPROTO。主循环按现有永久错误出口释放会话并关闭连接，不尝试盲目排空未知数据。
+
+现有对象套件扩展7项：声明长度过短 / 过长 / 零、短头、未对齐、六参数，以及短头伴随残留ECANCELED。后面排队一条合法删除，核对连接停止、删除仍未读取、源文件内容保持。当前对象167项通过；保存旧源码同7项中4项失败，三个既有结构拒绝作为通过对照。ASan / UBSan启用；原server / parser / database / storage、普通文件与线程执行，USB / 属性 / 日志与errno故障注入为替身。
+
+本地报告logs/mtp-command-objects.json、logs/mtp-command-negative.json与logs/mtp-command-delivery-audit.json；固定补丁0103。首次候选额外拒绝非COMMAND导致8项既有上传恢复失败，因此撤回类型限制，保留原服务端跳过非COMMAND行为。失败报告与镜像留存initial版本，最终回归167项通过。本项只修正命令长度与错误状态边界，未证明所有损坏上传均排空或恢复。数据阶段身份、完整Reset / 取消 / USB / Windows接续仍按各自边界维护。必要检查通过后收尾，不重复。
+
 <a id="partial-edit-write"></a>
 
 ## 分段编辑报文校验、短写与响应计数（0099）

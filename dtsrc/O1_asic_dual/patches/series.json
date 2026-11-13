@@ -374,6 +374,10 @@
         {
           "file": "0102-slot-vendor-unmount-failure.patch",
           "sha256": "f2e3e5c9c7e8cd79644100d2cc10e873b77bc3958538adf8cc4306471a14db17"
+        },
+        {
+          "file": "0103-mtp-command-container-boundary.patch",
+          "sha256": "bd033b35257658db8255c13714795b32b2f55b49734ea150acb46b3efae9cad5"
         }
       ],
       "result_files": {
@@ -479,7 +483,8 @@
         "libtar/android_utils.c": "dfa8967e239e97c27c4d4db2e3951de316ab3f9307eb0add7446919c613c5c65",
         "libtar/append.c": "9d63e1112bd8509f81bd0e4cb5d652b00df8f3fb97945bd7212b2b477d806bb2",
         "libtar/handle.c": "e3e36efdb1e92426f3fe8ae5f0735631326347bda3255b4f6c8b6a136557fd20",
-        "libtar/wrapper.c": "582dc1f0aec6a5f5ed8715e091de13bcf446a1a99ce7b231e697fc82b156b7e9"
+        "libtar/wrapper.c": "582dc1f0aec6a5f5ed8715e091de13bcf446a1a99ce7b231e697fc82b156b7e9",
+        "mtp/MtpRequestPacket.cpp": "9e143dbd31fd424728e753e7383de0957aced6415f166b6b1dd9b5e1fdcdbd3e"
       }
     },
     "system/sepolicy": {
