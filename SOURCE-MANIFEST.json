@@ -124,7 +124,7 @@
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
-    "sha256": "49b52815c4f29d02ed8bed3c29049be949763fc12fd8d6fe79569e106230753c",
+    "sha256": "75a0d5d7200807298a45f6104a81898b02e1faa28b38eda0adf112d4d532db8f",
     "mode": "0o644"
   },
   "docs/PROFILE-LINKER-ARM64.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "aa248b413935e85174b65b462bbc99af0349ec616e4352519024e4b9e3dcb81f",
+    "sha256": "d5bad11398aa62c16d678428b91e24edf321bb29d76ea8809a411590084e6010",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1712,11 +1712,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "b06045d7a38b6736afb38839f03ef7a3386e5b8af591f89aadddaa07755efc5d",
+    "sha256": "8296efdf04ed55006b9c2046e50987052c498c89428da49c156337cb53abbd69",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "c66d9e5cc2019ad10400bc02dc0d33cfc6fedba50cc24c9cb5f6b93ee958c370",
+    "sha256": "e9f8ed08d20114865a0dd75015e98b28ae2d9a0c0cc593f5e2daa58ed48d5bda",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2104,11 +2104,11 @@
     "mode": "0o644"
   },
   "tests/install_target_interaction_test.cpp": {
-    "sha256": "f1512931a91d284845c0116f8e6dc94f652d15876418e4e6dc0b98bf4d54dc22",
+    "sha256": "c0b0618bc8eab7f163bafea041c964fd6f5e716d72de9e07b722be45fba67874",
     "mode": "0o644"
   },
   "tests/install_target_interaction_test.py": {
-    "sha256": "1dcc2b1971ea3180d6306d34d53e775455112308ca08074ae23c0b283a7f77e7",
+    "sha256": "729f03add985b1eae5efc4d3a281ed77eb95a9d02333a94578a1603807565a3b",
     "mode": "0o644"
   },
   "tests/manager_wipe_test.cpp": {

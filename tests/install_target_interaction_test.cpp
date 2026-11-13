@@ -10,16 +10,44 @@
 #include "pages/page_router.h"
 #include "shell/page_host.h"
 #include "pages/install_confirm_page.h"
+#include "i18n/i18n.h"
 #include "components/swipe_slider.h"
 using page_kind=gui2_pages::page_id;
 using page_transition=gui2_core::page_transition;
 using gui2_core::accept_click;
 #include "image-targets.inc"
-static struct {std::string install_target_mount;} page_state;
-static int navigations=0;
-static void navigate_to(page_kind page,const void*,page_transition transition){assert(page==page_kind::INSTALL_CONFIRM);assert(transition==page_transition::REPLACE);++navigations;}
-#include "callback.inc"
 namespace gui2_i18n { extern const language_pack kEnglish; }
+static std::vector<int> target_indices=[] {std::vector<int> v;for(size_t i=0;i<install_targets.size();++i)v.push_back(i);return v;}();
+static struct {std::string install_target_mount;} page_state;
+static gui2_shell::page_host host;
+static gui2_pages::page_router router;
+static int navigations=0;
+static page_kind last_page=page_kind::HOME;
+static page_transition last_transition=page_transition::NONE;
+static void install_target_event_cb(lv_event_t* event);
+static void build_routed_page(const gui2_pages::page_request& request) {
+  last_page=request.id; last_transition=request.transition; ++navigations;
+  if(request.id==page_kind::INSTALL_CONFIRM) {
+    auto page=host.build("Install image", "", gui2_core::navigation_safe_area(), request.transition);
+    gui2_pages::install_confirm_page_options options;
+    options.content=page.content;options.metrics=&gui2_core::ui;options.strings=&gui2_i18n::kEnglish;
+    options.image=true;options.folder="/data/media/0";options.file="test.img";
+    options.targets=install_targets.data();options.target_count=install_targets.size();
+    options.target_indices=target_indices.data();options.selected_target=install_targets.size();
+    for(size_t i=0;i<install_targets.size();++i)
+      if(install_targets[i].mount_point==page_state.install_target_mount) options.selected_target=i;
+    options.target_callback=install_target_event_cb;options.press_guard_callback=gui2_core::press_cancel_guard_cb;
+    gui2_pages::build_install_confirm_page(options);
+  } else {
+    host.build("Install", "", gui2_core::navigation_safe_area(), request.transition);
+    auto* label=lv_label_create(host.content());lv_label_set_text(label,"Install source");
+  }
+  host.settle();
+}
+static void navigate_to(page_kind page,const void* payload,page_transition transition){
+  assert(router.navigate(page,payload,transition));
+}
+#include "callback.inc"
 static lv_point_t position;
 static bool down;
 static lv_indev_t* pointer;
@@ -63,22 +91,12 @@ int main(int argc, char** argv) {
   auto* screen=lv_screen_active(); gui2_core::disable_scrolling(screen);
   auto* layer=lv_obj_create(screen); lv_obj_remove_style_all(layer);
   lv_obj_set_size(layer,1440,3100); gui2_core::disable_scrolling(layer);
-  gui2_shell::page_host host; host.initialize(layer, ui);
-  host.build("Previous", "", gui2_core::navigation_safe_area());
-  host.settle();
-  auto page=host.build("Settings", "", gui2_core::navigation_safe_area(), gui2_core::page_transition::PUSH);
-  std::vector<int> indices;for(size_t i=0;i<install_targets.size();++i)indices.push_back(i);
-  gui2_pages::install_confirm_page_options options;
-  options.content=page.content;options.metrics=&ui;options.strings=&gui2_i18n::kEnglish;
-  options.image=true;options.folder="/data/media/0";options.file="test.img";
-  options.targets=install_targets.data();options.target_count=install_targets.size();
-  options.target_indices=indices.data();options.selected_target=install_targets.size();
-  options.target_callback=install_target_event_cb;options.press_guard_callback=gui2_core::press_cancel_guard_cb;
-  gui2_pages::build_install_confirm_page(options);
-  gui2_components::swipe_slider slider;
-  slider.create(host.current_page(),ui,ui.content_left,2600,ui.content_width,140,"Swipe",nullptr,nullptr);
-  host.settle();advance(500);
-  auto* body=lv_obj_get_child(page.content,0);
+  host.initialize(layer, ui); router.set_builder(build_routed_page);
+  assert(router.navigate(page_kind::INSTALL,nullptr,page_transition::PUSH));
+  assert(router.navigate(page_kind::INSTALL_CONFIRM,nullptr,page_transition::PUSH));
+  advance(500);
+  auto* source_page=host.current_page();
+  auto* body=lv_obj_get_child(host.content(),0);
   auto* card=lv_obj_get_child(body,index+2);
   lv_obj_scroll_to_view(card,LV_ANIM_OFF);lv_obj_update_layout(screen);
   auto* text=lv_obj_get_child(card,0);
@@ -89,8 +107,25 @@ int main(int argc, char** argv) {
   point(target,true);
   if(mode=="drag-out") point({0,0},true);
   point(position,false);
-  if(mode=="drag-out") assert(navigations==0);
-  else { assert(navigations==1); assert(page_state.install_target_mount==install_targets[index].mount_point); }
-  printf("PASS image target %d %s routes=%d destination=%d\n",index,mode.c_str(),navigations,0);
+  if(mode=="drag-out") {
+    assert(navigations==2 && host.current_page()==source_page);
+    assert(router.current()==page_kind::INSTALL_CONFIRM);
+  } else {
+    assert(navigations==3 && host.current_page()!=source_page);
+    assert(router.current()==page_kind::INSTALL_CONFIRM);
+    assert(last_page==page_kind::INSTALL_CONFIRM && last_transition==page_transition::REPLACE);
+    assert(page_state.install_target_mount==install_targets[index].mount_point);
+    auto* rebuilt_body=lv_obj_get_child(host.content(),0);
+    auto* rebuilt_card=lv_obj_get_child(rebuilt_body,index+2);
+    assert(lv_obj_get_style_border_width(rebuilt_card,LV_PART_MAIN)>0);
+    auto* confirmed_page=host.current_page();
+    assert(router.navigate(page_kind::INSTALL,nullptr,page_transition::POP));
+    assert(router.current()==page_kind::INSTALL && last_transition==page_transition::POP);
+    assert(host.current_page()!=confirmed_page);
+    assert(router.navigate(page_kind::INSTALL_CONFIRM,nullptr,page_transition::PUSH));
+    assert(router.current()==page_kind::INSTALL_CONFIRM && last_transition==page_transition::PUSH);
+    assert(page_state.install_target_mount==install_targets[index].mount_point);
+  }
+  printf("PASS image target %d %s routes=%d destination=%d\n",index,mode.c_str(),navigations,int(router.current()));
   host.clear(); lv_deinit();
 }

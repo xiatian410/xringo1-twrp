@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Real LVGL image confirmation page, pointer hit testing and original target callback.
+"""Exercise image-target taps through the original router and LVGL page host.
 
-Destination navigation is recorded, not executed. Metrics/fonts and hardware are
-host fixtures; this does not prove Android touch, persistence or destination pages.
+The target chooser is rendered and selected; REPLACE, POP back to the install
+entry, and PUSH back to confirmation execute in the real page host/router. The
+install-source and manager/backend operations remain fixtures; Android input,
+fonts, persistence and physical hardware are not tested.
 """
 import argparse
 import hashlib
@@ -31,7 +33,8 @@ def main():
     production = ['pages/install_confirm_page.cpp', 'components/check_row.cpp', 'components/flat_button.cpp', 'components/section_label.cpp', 'components/tip_card.cpp', 'components/swipe_slider.cpp', 'components/setting_card.cpp',
                   'components/icon.cpp', 'core/ui_event_guard.cpp', 'core/ui_helpers.cpp',
                   'core/ui_metrics.cpp', 'shell/page_host.cpp', 'shell/page_scaffold.cpp',
-                  'shell/navigation_fade.cpp', 'gui2_svg_cache.cpp', 'i18n/en.cpp']
+                  'shell/navigation_fade.cpp', 'pages/page_router.cpp',
+                  'gui2_svg_cache.cpp', 'i18n/en.cpp']
     sources = [SRC/name for name in production]
     with tempfile.TemporaryDirectory(prefix='install-target-interaction-') as tmp:
         from pathlib import Path

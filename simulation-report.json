@@ -1951,6 +1951,14 @@
     "power consumption",
     "OS4 stable physical touch for the current automatic-startup candidate (user reports the earlier image failed)"
   ],
+  "install_target_page_lifecycle": {
+    "evidence": "logs/install-target-lifecycle.json",
+    "count": 25,
+    "result": "pass",
+    "production_changes": false,
+    "image_rebuilt": false,
+    "scope": "Original LVGL image target page and callback with real page_router/page_host REPLACE to confirm, POP to install entry, and PUSH back to confirmation. Selected target styling is checked after rebuild; drag-out cancels. Install source, manager, device discovery, block I/O and hardware input remain fixtures."
+  },
   "additional_checks": [
     {
       "name": "os4-touch-ordinary-report-startup-policy",
