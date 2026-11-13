@@ -1,5 +1,15 @@
 # 备份会话、目录管理与摘要发布
 
+<a id="exclusion-capacity"></a>
+
+## 排除项容量（0110）
+
+容量扫描此前仅在目录分支检查排除策略，导致绝对排除的普通文件（包括设备树声明的`/data/adb/ksu/modules.img`）仍计入备份大小；排除容量统计又只尝试opendir文件，得到零。链接还可能被位掩码误判为目录并跟随目标。0110在访问条目前应用排除策略，使用S_ISDIR/S_ISREG/S_ISLNK分类；绝对排除项先lstat，普通文件与链接计入自身st_size，目录才递归。悬空链接也可计量，缺失路径及取消仍返回零。
+
+完整exclude源码在私有主机文件上执行，保留原路径规范化方法，仅日志和include边界为替身。ASan/UBSan下11项覆盖普通文件、绝对文件/目录、文件/目录/悬空链接、相对文件/目录、尾斜杠、缺失路径及取消，源文件内容保持；同测试旧实现6/11失败。既有tar/pigz/OAES链定向执行普通、gzip、AES、组合编码与四种分卷八项往返通过，不重复无关故障套件。
+
+本地报告`logs/exclusion-size.json`、`logs/exclusion-size-old.json`、`logs/exclusion-size-codec.json`；交付审计`python3 scripts/audit_exclusion_capacity.py`核对0110、清理构建、838来源和六profile。容量仍是逻辑字节估计，读取错误未显式失败、重叠排除项可能重复、稀疏分配和并发变化仍有局限；没有完整manager/挂载/fscrypt/GUI验证。此修正不解释现场显示提交卡住，也未重跑完整OTA。
+
 <a id="source-type-classification"></a>
 
 ## 源类型与属性读取（0108）

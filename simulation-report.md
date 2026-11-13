@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-reboot-worker-drain.img` |
-| SHA-256 | `ff1d2e023942cdb1f68345639627458850c3d15e8040c3d378cefcdaf30c5128` |
-| 生产来源绑定 | 836 份 |
+| 文件 | `recovery-dijun-unified-exclusion-capacity.img` |
+| SHA-256 | `f8c1c5e2229afcd7626e64d50d5684004d7fdde56da5f3259228c8383e17d9be` |
+| 生产来源绑定 | 838 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：最终重启前等待后台任务退出
+## 本批生产修正：排除文件的备份容量
+
+0110修正容量扫描只排除目录的问题：`/data/adb/ksu/modules.img`等普通文件现在按排除策略跳过，绝对排除项的容量统计可计量文件及链接自身，不跟随目录链接或悬空链接目标。真实私有文件、完整exclude源码与ASan/UBSan下11项通过，同夹具旧实现6/11失败；普通/gzip/AES/组合编码及分卷八项往返通过。清理构建后838来源及六profile核对通过。
+
+这项修正改善逻辑字节估计；I/O错误、重叠排除项、实际分配块和并发源一致性仍有边界，也不解释此前刷新页DRM等待。详见[容量排除策略](docs/BACKUP-SESSION-ADAPTATION.md#exclusion-capacity)。没有重跑未改的整包OTA或已解决功能。
+
+## 沿用的最终重启前等待后台任务退出
 
 0109调整GUI后台生命周期：已接收任务的析构/线程等待先完成，再执行最终intent及重启；background stop即使没有热插拔线程，也等待CLI退出。原作用域/七个析构函数及stop在真实主机线程与锁、ASan/UBSan下四场景通过；旧main在两个正常退出场景失败，旧background四场景全部失败。CLI十二项、重启入口二十一项通过，清理构建后836来源及六profile核对通过。
 

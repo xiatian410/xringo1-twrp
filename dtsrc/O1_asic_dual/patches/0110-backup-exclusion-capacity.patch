@@ -1,0 +1,63 @@
+--- a/exclude.cpp
++++ b/exclude.cpp
+@@ -76,15 +76,16 @@
+ 	while ((!cancel || !cancel->load()) && (de = readdir(d)) != NULL) {
+ 		FullPath = Path + "/";
+ 		FullPath += de->d_name;
++		if (check_skip_dirs(FullPath)) continue;
+ 		if (lstat(FullPath.c_str(), &st)) {
+ 			if (Display_Error)
+ 				gui2_console::log_error("error_opening_strerr", FullPath, strerror(errno));
+ 			LOGINFO("Real error: Unable to stat '%s'\n", FullPath.c_str());
+ 			continue;
+ 		}
+-		if ((st.st_mode & S_IFDIR) && !check_skip_dirs(FullPath) && de->d_type != DT_SOCK) {
++		if (S_ISDIR(st.st_mode)) {
+ 			dusize += Get_Folder_Size(FullPath, Display_Error, cancel);
+-		} else if (st.st_mode & S_IFREG || st.st_mode & S_IFLNK) {
++		} else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
+ 			dusize += (uint64_t)(st.st_size);
+ 		}
+ 	}
+@@ -92,8 +93,8 @@
+ 	return dusize;
+ }
+ 
+-// Same recursive stat walk as Get_Folder_Size, but without skip-dir checks;
+-// used to measure the exact size of each absolute exclusion directory.
++// Measure absolute exclusions without following links. Exclusions can be
++// ordinary files too (for example /data/adb/ksu/modules.img), not just directories.
+ static uint64_t _Get_Folder_Size(const string& Path, const std::atomic<bool>* cancel) {
+ 	if (cancel && cancel->load()) return 0;
+ 	DIR* d;
+@@ -102,6 +103,9 @@
+ 	uint64_t dusize = 0;
+ 	string FullPath;
+ 
++	if (lstat(Path.c_str(), &st) != 0) return 0;
++	if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) return (uint64_t)st.st_size;
++	if (!S_ISDIR(st.st_mode)) return 0;
+ 	d = opendir(Path.c_str());
+ 	if (d == NULL) return 0;
+ 
+@@ -111,9 +115,9 @@
+ 		FullPath = Path + "/";
+ 		FullPath += de->d_name;
+ 		if (lstat(FullPath.c_str(), &st)) continue;
+-		if ((st.st_mode & S_IFDIR) && de->d_type != DT_SOCK) {
++		if (S_ISDIR(st.st_mode)) {
+ 			dusize += _Get_Folder_Size(FullPath, cancel);
+-		} else if (st.st_mode & S_IFREG || st.st_mode & S_IFLNK) {
++		} else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
+ 			dusize += (uint64_t)(st.st_size);
+ 		}
+ 	}
+@@ -125,7 +129,7 @@
+ 	uint64_t dusize = 0;
+ 	for (size_t i = 0; i < absolutedir.size() && (!cancel || !cancel->load()); i++) {
+ 		string exclude_dir = absolutedir[i];
+-		if (TWFunc::IsPathExists(exclude_dir)) dusize += _Get_Folder_Size(exclude_dir, cancel);
++		dusize += _Get_Folder_Size(exclude_dir, cancel);
+ 	}
+ 	return dusize;
+ }

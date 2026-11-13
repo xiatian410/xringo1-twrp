@@ -402,6 +402,10 @@
         {
           "file": "0109-reboot-worker-quiescence.patch",
           "sha256": "f828a01f70b353a260c6cd8ac036dcbc2bbffb44640ed80d104584d985065c4d"
+        },
+        {
+          "file": "0110-backup-exclusion-capacity.patch",
+          "sha256": "581ec4471f244738e5af8f2951524a28309f16357af2230113b62230fa81ceed"
         }
       ],
       "result_files": {
@@ -509,7 +513,8 @@
         "libtar/handle.c": "e3e36efdb1e92426f3fe8ae5f0735631326347bda3255b4f6c8b6a136557fd20",
         "libtar/wrapper.c": "5451d5d6b4f1b8102277e188a435e4a64b64d1554c9731267c5088e88b97f9be",
         "mtp/MtpRequestPacket.cpp": "9e143dbd31fd424728e753e7383de0957aced6415f166b6b1dd9b5e1fdcdbd3e",
-        "mtp/MtpDataPacket.cpp": "fe7d542a6ddf5fc40be0ab7ee4c74f8abfb6240846d72390c2f1bca4b0805f0d"
+        "mtp/MtpDataPacket.cpp": "fe7d542a6ddf5fc40be0ab7ee4c74f8abfb6240846d72390c2f1bca4b0805f0d",
+        "exclude.cpp": "fb39641b04b31ca9525a495285c9defa535ea13f2acc149fc32d1bf4db7bd3dc"
       }
     },
     "system/sepolicy": {

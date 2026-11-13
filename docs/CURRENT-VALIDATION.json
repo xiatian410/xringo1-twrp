@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-reboot-worker-drain.img",
-  "image_sha256": "ff1d2e023942cdb1f68345639627458850c3d15e8040c3d378cefcdaf30c5128",
-  "production_sources": 836,
+  "image_name": "recovery-dijun-unified-exclusion-capacity.img",
+  "image_sha256": "f8c1c5e2229afcd7626e64d50d5684004d7fdde56da5f3259228c8383e17d9be",
+  "production_sources": 838,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -1981,6 +1981,30 @@
       "failures": 0,
       "local_report_sha256": "f6dc24b92047f244895a258f4e5e1b8453cb267f0f6a9361992973a4485dd397",
       "scope": "Original main backend scope and seven original worker destructors plus background stop/destructor; real host threads and storage mutex under ASan/UBSan. Four cases cover GUI success/error and hotplug present/absent; isolated old main fails2/4, old background fails4/4. CLI12 and reboot entry21 regressions pass. Constructors/work/GUI/controllers/intent/reboot are fixtures; no full Android/Binder/TEE/USB/MTP shutdown or safe synchronous cancellation proof. Already accepted work drains before final reboot; no new admission reservation."
+    },
+    {
+      "name": "exclusion-size",
+      "status": "PASS",
+      "cases": 11,
+      "failures": 0,
+      "local_report_sha256": "88d6ed2e5282ddec4539a76fe44f16771a2705a86fe5f334fd11308d801deeb3",
+      "scope": "Patch0110 applies exclusions to every entry type before stat, measures excluded regular files and links with lstat, and never follows directory or dangling links. Whole source/real private host files under ASan/UBSan11 pass; same-harness old6/11 fail; existing tar/pigz/OAES roundtrip8 pass. Logical estimates only; I/O errors, nested exclusions, allocated blocks, concurrent consistency and full manager/GUI remain open. Does not resolve DRM refresh stall or validate latest-image full OTA."
+    },
+    {
+      "name": "exclusion-size-old",
+      "status": "FAIL",
+      "cases": 11,
+      "failures": 6,
+      "local_report_sha256": "cfed3fec3894c26375873e357d63805447340da8df9ee9d41946053810caf37d",
+      "scope": "Patch0110 applies exclusions to every entry type before stat, measures excluded regular files and links with lstat, and never follows directory or dangling links. Whole source/real private host files under ASan/UBSan11 pass; same-harness old6/11 fail; existing tar/pigz/OAES roundtrip8 pass. Logical estimates only; I/O errors, nested exclusions, allocated blocks, concurrent consistency and full manager/GUI remain open. Does not resolve DRM refresh stall or validate latest-image full OTA."
+    },
+    {
+      "name": "exclusion-size-codec",
+      "status": "PASS",
+      "cases": 8,
+      "failures": 0,
+      "local_report_sha256": "032fbb61781995c8a24c9a903851d91c698d1eb5be453aa852e44f99c75d2512",
+      "scope": "Patch0110 applies exclusions to every entry type before stat, measures excluded regular files and links with lstat, and never follows directory or dangling links. Whole source/real private host files under ASan/UBSan11 pass; same-harness old6/11 fail; existing tar/pigz/OAES roundtrip8 pass. Logical estimates only; I/O errors, nested exclusions, allocated blocks, concurrent consistency and full manager/GUI remain open. Does not resolve DRM refresh stall or validate latest-image full OTA."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2219,6 +2243,13 @@
     "patch": "0108",
     "scope": "Host original tar/pigz/OAES/fork with ASan/UBSan, private files and injected dirent DT_UNKNOWN/source stat EIO/ENOENT. Checked lstat classifies files/directories/links without following link targets, excludes skipped paths before metadata access, propagates source metadata errors without info publication.216 codec cases pass; previous32/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/concurrent identity/power-loss proof; size estimation remains approximate.",
     "document": "docs/BACKUP-SESSION-ADAPTATION.md#source-type-classification",
+    "production_changes": true,
+    "new_build": true
+  },
+  "backup_exclusion_capacity": {
+    "patch": "0110",
+    "scope": "Patch0110 applies exclusions to every entry type before stat, measures excluded regular files and links with lstat, and never follows directory or dangling links. Whole source/real private host files under ASan/UBSan11 pass; same-harness old6/11 fail; existing tar/pigz/OAES roundtrip8 pass. Logical estimates only; I/O errors, nested exclusions, allocated blocks, concurrent consistency and full manager/GUI remain open. Does not resolve DRM refresh stall or validate latest-image full OTA.",
+    "document": "docs/BACKUP-SESSION-ADAPTATION.md#exclusion-capacity",
     "production_changes": true,
     "new_build": true
   }
