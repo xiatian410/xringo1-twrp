@@ -2,6 +2,18 @@
 
 本文集中说明文件上传提交、日期解析与目录上传状态。当前交付见[交付报告](../simulation-report.md)；各补丁的历史候选与报告哈希保留在机器索引和 Git 历史中，不作为完整 USB 验收。
 
+<a id="upload-unread-tail"></a>
+
+## 上传提前失败后的未读数据（0122）
+
+SendObject先读取一段DATA，再准备临时文件和写入初始数据。如果父目录打开、临时文件创建、权限设置或初始写入失败，原代码跳过receiveFile却继续命令循环；文件尾部可能被解析为命令。0122记录读取首段之后是否仍有数据、未知长度或需要终止包；若最终未调用receiveFile，沿既有协议错误路径关闭会话，不发送普通响应，也不解析尾部及其后的命令。上传登记和临时文件仍正常释放。小文件DATA已完整缓冲时，保留普通错误响应及同会话重试。
+
+八个定向场景在合法DATA首段后排入刻意构造的DeleteObject字节及下一条正常命令，覆盖新建/覆盖与fchown、fchmod、create、write失败。同夹具旧实现八项均实际删除了原有a.txt；新实现不派发尾部或排队命令，原目标保持、临时文件清理。夹具显式丢弃断开的传输队列后，重新start/OpenSession并实际上传成功。这是模拟重连，不代表Windows或真实FunctionFS会自动恢复。
+
+原server/database/storage、真实普通文件/inotify/线程与ASan/UBSan271项通过。同一对象套件的四项历史大文件创建/写入失败原先等待普通响应，首次回归超时；预期已调整为等待连接关闭并重连，首次报告保留为`logs/mtp-upload-tail-current.json`。最终结果为`logs/mtp-upload-tail-final.json`，旧版八项为`logs/mtp-upload-tail-old-final.json`。源修改仅MtpServer.cpp，固定补丁0122；清理构建851来源及六profile，核对为`python3 scripts/audit_mtp_upload_tail.py`。
+
+一旦调用receiveFile，其成功/取消/reset/错误语义仍由transport负责；本批没有解决receiveFile内部失败的未读余量、没有无限排空数据。真实USB关闭/客户端重连、ARM64 MTP、断电及临时路径竞争仍未验证。原始完整OTA结果和其他未改功能证据复用，不例行重跑。
+
 <a id="upload-permissions"></a>
 
 ## 上传属主及权限设置失败（0121）

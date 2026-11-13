@@ -8,14 +8,22 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-mtp-upload-permissions.img` |
-| SHA-256 | `fd8c2bc6e59b2311aaa0d03b2e9f816838127ae133852cde1857cfeeb28bb64c` |
-| 生产来源绑定 | 850 份 |
+| 文件 | `recovery-dijun-unified-mtp-upload-tail.img` |
+| SHA-256 | `6188be47e6f3cae9680b1e9f9732a2b5da391aefbe71c3c6497d7d3d7054a4a3` |
+| 生产来源绑定 | 851 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：上传权限设置失败不再发布成功
+## 本批生产修正：上传提前失败后不解析未读数据
+
+0122在SendObject本地准备或首段写入失败、未调用receiveFile且仍有数据/终止包未读时，关闭当前会话并清理上传，不将文件尾部继续当命令。小文件完全缓冲的错误仍返回普通错误。此修正不改变已经调用receiveFile后的传输错误处理。
+
+主机生产server/database/storage、真实私有文件/inotify/线程及ASan/UBSan271项通过。新增八项在文件尾部放入合法删除命令，覆盖新建/覆盖各自chown/chmod/create/write失败；旧版八项均实际删除已有文件，修复版保留文件、尾部和排队命令未执行、清理临时文件，显式重连后可上传。四个历史原子失败场景更新为期望断开；首次预期冲突保留。
+
+清理构建绑定851来源及六profile；核对为`python3 scripts/audit_mtp_upload_tail.py`。USB重连/属性为替身，不宣称真实Windows/ARM64 MTP、receiveFile内部错误、完整端点恢复或路径竞争已完成。详见[未读尾部隔离](docs/MTP-ATOMIC-UPLOAD.md#upload-unread-tail)。未重放未变整包OTA。
+
+## 沿用的上传权限错误传播
 
 0121检查MTP上传临时文件的fchown/fchmod结果，失败时停止接收和发布，关闭并清理本次临时文件，保留已有目标；删除不必要的全局umask切换。此前这两个系统调用失败仍可能返回成功并覆盖目标。
 

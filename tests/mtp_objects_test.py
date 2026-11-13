@@ -47,7 +47,8 @@ CREATE_PARENT_CASES = ['staging-create-parent-'+kind+'-'+mode for kind in ['new'
                        for mode in ['directory','symlink']]
 CREATE_RANDOM_CASES = ['staging-create-random-'+kind for kind in ['eintr','short','error','zero','collision','exhausted']]
 PERMISSION_CASES = ['upload-permissions-'+kind+'-'+fault for kind in ['new','overwrite'] for fault in ['success','chown','chmod']]
-CASES += CREATE_PARENT_CASES + CREATE_RANDOM_CASES + PERMISSION_CASES
+UPLOAD_TAIL_CASES = ['upload-tail-'+kind+'-'+fault for kind in ['new','overwrite'] for fault in ['chown','chmod','create','write']]
+CASES += CREATE_PARENT_CASES + CREATE_RANDOM_CASES + PERMISSION_CASES + UPLOAD_TAIL_CASES
 STREAM_CASES = ['stream-boundary-'+op+'-'+kind for op in ['new','overwrite','partial']
                 for kind in ['short-length','long-length','zero-length','wrong-type',
                              'wrong-code','wrong-transaction','short-header','stale-cancel','oversized']]

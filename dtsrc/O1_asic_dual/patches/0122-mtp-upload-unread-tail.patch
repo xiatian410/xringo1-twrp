@@ -1,0 +1,40 @@
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -1240,6 +1240,7 @@
+     MtpResponseCode result = MTP_RESPONSE_OK;
+     int ret, initialData;
+     bool isCanceled = false;
++    bool unreadData = false;
+     struct stat sstat = {};
+     std::string temporary, parent_path, temporary_name, target_name;
+     android::base::unique_fd directory;
+@@ -1273,6 +1274,11 @@
+         goto done;
+     }
+     initialData = ret - MTP_CONTAINER_HEADER_SIZE;
++    // If local preparation fails before receiveFile, bulk bytes (or a required
++    // terminating packet) may still belong to this object. They are not commands.
++    unreadData = mSendObjectFileSize == UINT32_MAX ||
++                 mSendObjectFileSize > static_cast<uint32_t>(initialData) ||
++                 initialData == MTP_BUFFER_SIZE - MTP_CONTAINER_HEADER_SIZE;
+ 
+     if (mSendObjectFormat == MTP_FORMAT_ASSOCIATION) {
+         if (initialData != 0)
+@@ -1342,6 +1348,9 @@
+         // transfer the file
+         ret = mHandle->receiveFile(mfr, mfr.length == 0 &&
+                 initialData == MTP_BUFFER_SIZE - MTP_CONTAINER_HEADER_SIZE);
++        // Once invoked, the transport owns its receive/cancel/reset semantics.
++        // This guard covers failures that bypassed the receive entirely.
++        unreadData = false;
+         if ((ret < 0) && (errno == ECANCELED)) {
+             isCanceled = true;
+         }
+@@ -1395,6 +1404,7 @@
+     }
+ 
+ done:
++    if (unreadData) mProtocolError = true;
+     // reset so we don't attempt to send the data back
+     mData.reset();
+ 

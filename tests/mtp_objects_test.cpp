@@ -623,6 +623,42 @@ int main(int argc,char** argv){
   data=info("retry.txt",3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
   Bytes payload{'o','k','!'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&payload).code==MTP_RESPONSE_OK);
   REQUIRE(stat("/one/retry.txt",&st)==0&&st.st_mtime>=before&&readfile("/one/retry.txt")=="ok!");
+ }else if(test.starts_with("upload-tail-")){
+  const bool replacing=test.starts_with("upload-tail-overwrite-");
+  const auto kind=test.substr(test.find_last_of('-')+1);
+  const string name=replacing?"a.txt":"new.txt",target="/one/"+name;
+  const uint32_t initial=MTP_BUFFER_SIZE-MTP_CONTAINER_HEADER_SIZE;
+  // These bytes are object content, deliberately shaped like a valid command.
+  // An early local failure must never resume the command loop at this tail.
+  const Bytes tail=packet(1,MTP_OPERATION_DELETE_OBJECT,900,words({a,0}));
+  auto data=info(name,initial+tail.size());
+  REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  upload_permission_fault=kind=="chown"?1:kind=="chmod"?2:0;
+  publish_fault=kind=="create"?2:0;write_fault=kind=="write"?4:0;
+  const auto transfer=++s.tx,next=++s.tx;size_t first;
+  auto header=packet(2,MTP_OPERATION_SEND_OBJECT,transfer,Bytes(initial,'N'));
+  const uint32_t total=MTP_CONTAINER_HEADER_SIZE+initial+tail.size();
+  for(int i=0;i<4;++i)header[i]=total>>(8*i);
+  {lock_guard l(peer.mutex);first=peer.output.size();
+   peer.input.push_back(packet(1,MTP_OPERATION_SEND_OBJECT,transfer));
+   peer.input.push_back(header);peer.input.push_back(tail);
+   peer.input.push_back(packet(1,MTP_OPERATION_GET_STORAGE_IDS,next));peer.cv.notify_all();}
+  {unique_lock l(peer.mutex);REQUIRE(peer.cv.wait_for(l,2s,[&]{
+   if(peer.closes)return true;
+   for(size_t i=first;i<peer.output.size();++i)if(word(peer.output[i],8)==next)return true;
+   return false;}));}
+  s.stop();upload_permission_fault=0;publish_fault=0;write_fault=0;
+  cout<<"tail_victim_present="<<fs::exists("/one/a.txt")<<" target_content="<<readfile(target)<<endl;
+  REQUIRE(readfile("/one/a.txt")=="alpha");
+  REQUIRE(replacing?readfile(target)=="alpha":!fs::exists(target));
+  {lock_guard l(peer.mutex);REQUIRE(peer.closes==1&&peer.input.size()==2&&peer.input.front()==tail);
+   for(size_t i=first;i<peer.output.size();++i)REQUIRE(word(peer.output[i],8)!=900&&word(peer.output[i],8)!=next&&word(peer.output[i],8)!=transfer);
+   peer.input.clear();}
+  for(const auto&e:fs::directory_iterator("/one"))REQUIRE(!e.path().filename().string().starts_with(".mtp-upload-"));
+  s.start();s.open();REQUIRE(s.call(MTP_OPERATION_GET_STORAGE_IDS).code==MTP_RESPONSE_OK);
+  data=info(name,3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  Bytes retry{'o','k','!'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&retry).code==MTP_RESPONSE_OK&&readfile(target)=="ok!");
+  cout<<"unread_tail_not_dispatched=1 staging_cleaned=1 session_reopen_upload=1\n";
  }else if(test.starts_with("upload-permissions-")){
   const bool replacing=test.starts_with("upload-permissions-overwrite-");
   const auto kind=test.substr(test.find_last_of('-')+1);
@@ -765,7 +801,17 @@ int main(int argc,char** argv){
   const auto handle=word(r.response,20);if(replacing)REQUIRE(handle==oldid);
   {lock_guard l(peer.mutex);peer.receive_fail=test.ends_with("receive-error");peer.receive_cancel=test.ends_with("cancel");peer.receive_short_success=test.ends_with("short-error");}
   Bytes content(60000,'N');
-  if(test.ends_with("cancel")){
+  if(test.ends_with("create-error")||test.ends_with("write-error")){
+   const auto transfer=++s.tx;
+   {lock_guard l(peer.mutex);peer.input.push_back(packet(1,MTP_OPERATION_SEND_OBJECT,transfer));
+    peer.input.push_back(packet(2,MTP_OPERATION_SEND_OBJECT,transfer,content));peer.cv.notify_all();}
+   {unique_lock l(peer.mutex);REQUIRE(peer.cv.wait_for(l,2s,[]{return peer.closes==1;}));}
+   s.stop();r.code=MTP_RESPONSE_GENERAL_ERROR;
+   // A local failure before the bulk receive leaves a data tail. Reconnect
+   // explicitly; an ordinary error response would permit command misframing.
+   {lock_guard l(peer.mutex);REQUIRE(!peer.input.empty());peer.input.clear();}
+   s.start();s.open();
+  }else if(test.ends_with("cancel")){
    uint32_t cancelled;size_t first;
    {lock_guard l(peer.mutex);cancelled=++s.tx;first=peer.output.size();peer.input.push_back(packet(1,MTP_OPERATION_SEND_OBJECT,cancelled));peer.input.push_back(packet(2,MTP_OPERATION_SEND_OBJECT,cancelled,content));peer.cv.notify_all();}
    // Cancel responses are deliberately suppressed by MtpServer. A following

@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-upload-permissions.img",
-  "image_sha256": "fd8c2bc6e59b2311aaa0d03b2e9f816838127ae133852cde1857cfeeb28bb64c",
-  "production_sources": 850,
+  "image_name": "recovery-dijun-unified-mtp-upload-tail.img",
+  "image_sha256": "6188be47e6f3cae9680b1e9f9732a2b5da391aefbe71c3c6497d7d3d7054a4a3",
+  "production_sources": 851,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2261,6 +2261,22 @@
       "failures": 4,
       "local_report_sha256": "ceca547713509652300af8a3b7ded073ea0e6e123656a2b911937d80bbdecb07",
       "scope": "Patch0121 propagates upload fchown/fchmod failures before receiving remaining data or publishing; normal permissions exact, failed new/overwrite preserves old destination and cleans staging, next small upload succeeds. Unnecessary process-wide umask toggle removed. Host original server/database/storage ASan/UBSan263 pass, same-harness old4/4 false-success failures (response OK and new content published). Private ordinary files/inotify/threads; USB/properties are fixtures and faults injected at syscalls. No ARM64 MTP/Windows/large-stream recovery/powerloss, complete path race isolation or cross-restart recovery. Historical full OTA reused, not rerun."
+    },
+    {
+      "name": "mtp-upload-tail-final",
+      "status": "PASS",
+      "cases": 271,
+      "failures": 0,
+      "local_report_sha256": "eba66fc348e787be6847c08b89bb91cb4bace6cd25c657a25b24871fd6e8ea3c",
+      "scope": "Patch0122 terminates an MTP session when local SendObject setup/initial-write failure bypasses receiveFile and object bytes or a terminating packet remain unread. It cleans staging, retains old destination and does not dispatch command-shaped payload or queued command; explicit modeled reconnect/open/upload succeeds. Host production objects ASan/UBSan271 pass; same-harness old8/8 fail with actual victim deletion for new/overwrite chown/chmod/create/write errors. Small fully buffered errors retain ordinary responses. USB transport/reset/properties are fixtures; no actual ARM64/Windows/endpoint reconnect, receiveFile-internal error recovery, pathname race isolation or powerloss proof. Historical OTA reused."
+    },
+    {
+      "name": "mtp-upload-tail-old-final",
+      "status": "FAIL",
+      "cases": 8,
+      "failures": 8,
+      "local_report_sha256": "f1fd169a86ec97f9f0cc6911015e1964570833e31f0cb662f4760ddaa015cf5d",
+      "scope": "Patch0122 terminates an MTP session when local SendObject setup/initial-write failure bypasses receiveFile and object bytes or a terminating packet remain unread. It cleans staging, retains old destination and does not dispatch command-shaped payload or queued command; explicit modeled reconnect/open/upload succeeds. Host production objects ASan/UBSan271 pass; same-harness old8/8 fail with actual victim deletion for new/overwrite chown/chmod/create/write errors. Small fully buffered errors retain ordinary responses. USB transport/reset/properties are fixtures; no actual ARM64/Windows/endpoint reconnect, receiveFile-internal error recovery, pathname race isolation or powerloss proof. Historical OTA reused."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2549,6 +2565,13 @@
     "patch": "0121",
     "scope": "Patch0121 propagates upload fchown/fchmod failures before receiving remaining data or publishing; normal permissions exact, failed new/overwrite preserves old destination and cleans staging, next small upload succeeds. Unnecessary process-wide umask toggle removed. Host original server/database/storage ASan/UBSan263 pass, same-harness old4/4 false-success failures (response OK and new content published). Private ordinary files/inotify/threads; USB/properties are fixtures and faults injected at syscalls. No ARM64 MTP/Windows/large-stream recovery/powerloss, complete path race isolation or cross-restart recovery. Historical full OTA reused, not rerun.",
     "document": "docs/MTP-ATOMIC-UPLOAD.md#upload-permissions",
+    "production_changes": true,
+    "new_build": true
+  },
+  "mtp_upload_unread_tail": {
+    "patch": "0122",
+    "scope": "Patch0122 terminates an MTP session when local SendObject setup/initial-write failure bypasses receiveFile and object bytes or a terminating packet remain unread. It cleans staging, retains old destination and does not dispatch command-shaped payload or queued command; explicit modeled reconnect/open/upload succeeds. Host production objects ASan/UBSan271 pass; same-harness old8/8 fail with actual victim deletion for new/overwrite chown/chmod/create/write errors. Small fully buffered errors retain ordinary responses. USB transport/reset/properties are fixtures; no actual ARM64/Windows/endpoint reconnect, receiveFile-internal error recovery, pathname race isolation or powerloss proof. Historical OTA reused.",
+    "document": "docs/MTP-ATOMIC-UPLOAD.md#upload-unread-tail",
     "production_changes": true,
     "new_build": true
   }
