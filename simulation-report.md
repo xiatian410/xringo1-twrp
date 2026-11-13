@@ -6,9 +6,9 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-format-postprocess.img` |
-| SHA-256 | `99e76c07767724d3175ebd1e3997caf37995c09a172b4025fd316d20b47e76bd` |
-| 生产来源绑定 | 805 份 |
+| 文件 | `recovery-dijun-unified-andsec-recreate.img` |
+| SHA-256 | `7ec5926064702eaf0443d6c5e8cf8103d461b345eb334cec7371e03e35050086` |
+| 生产来源绑定 | 806 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
@@ -23,7 +23,11 @@ scratch保存后，在目标写入前/一块后/ordered块全写后及header提�
 
 实际 client Connect/query、server、SnapshotHandlerManager、ReadWorker 与 replace/zero MergeWorker 已接续八场景。真实COW压缩数据/零块读取、64 KiB合并内容与未改尾部逐字节核对，写入/同步故障均保持失败；容量查询和dm-user端点为明确替身。没有发现新增生产缺陷，不重编0080镜像。该检查点未包含COPY/XOR/RA；后续有序合并见上文，进程退出后的局部续合并见上文，硬件断电、内核映射和完整OTA仍待完成，见[范围](docs/OTA-OPERATION-COW.md#snapuserd-handler)。
 
-## 0087 交付时的定向验证
+## 0088 交付时的定向验证
+
+Android Secure 目录重建改为返回结果，七种格式选择与 rm-rf 将创建 / 挂载 / bind 失败传回 manager/backend。目录在父分区挂载后创建，拒绝普通文件及符号链接，已有绑定不重复叠加；原调用不再创建后随意卸载父存储。37 项原 helper/manager/backend 场景通过，旧实现 34 项失败；25 项格式转换、11 项清除错误传播、六项同镜像 ARM64 工具回归通过。实际目录操作只涉及临时普通文件，挂载 / bind / 设备 / 命令有明确替身，不是物理设备或完整 GUI 验收。806 来源清理构建及六 profile 核对通过，证据 `logs/andsec-recreate-delivery.json`。见[目录重建范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#andsec-recreation)。
+
+## 0087 交付时的定向验证（历史）
 
 ext 格式化成功后立即记录新文件系统类型，避免后续临时挂载沿用旧类型；persist 后处理明确检查挂载、目录删除及卸载结果，仍挂载时拒绝执行离线 e2fsdroid。清理失败仍尝试卸载，失败不能伪装为格式化回滚。18 项原 helper / manager / backend 定向场景通过，旧实现 15 项失败；25 项格式转换及同镜像 ARM64 格式化 / 修复六项回归通过。挂载、设备、SELinux 与删除为明确替身，工具仅操作普通临时文件，不是设备 persist / 实际挂载或完整 GUI 验收。清理构建 805 来源、六 profile 不变，交付核对 `logs/format-persist-delivery.json` 通过。见[后处理范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#persist-postformat)。
 
@@ -59,6 +63,7 @@ ext 格式化成功后立即记录新文件系统类型，避免后续临时挂�
 
 ## 本次候选包含的修正
 
+- **0088**：Android Secure 目录重建返回失败，格式化 / rm-rf 不再忽略创建和绑定错误，已存在绑定不叠加。
 - **0087**：ext 格式化成功立即保留真实新类型；persist 临时挂载 / 删除 / 卸载失败传回调用者，仍挂载时不运行 e2fsdroid。
 - **0086**：离线格式化 helpers 拒绝卸载请求后仍保持挂载的目标，同格式 rm-rf 分派保留。
 - **0085**：离线 Repair 确认卸载后的实际状态，阻止保留 System 挂载时继续运行 fsck / Resize。

@@ -1,0 +1,106 @@
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -2140,7 +2140,7 @@
+     }
+   }
+ 
+-  RecreateAndSecFolder();
++  if (!RecreateAndSecFolder()) return false;
+   gui2_console::info("done");
+   return true;
+ }
+@@ -2210,7 +2210,7 @@
+     std::string cmd = "mkfs.fat " + actual_block_device_;
+     if (TWFunc::ExecCmd(cmd) == 0) {
+       current_file_system_ = "vfat";
+-      RecreateAndSecFolder();
++      if (!RecreateAndSecFolder()) return false;
+       gui2_console::info("done");
+       return true;
+     }
+@@ -2236,7 +2236,7 @@
+     FindActualBlockDevice();
+     if (const std::string cmd = "mkfs.exfat " + actual_block_device_; TWFunc::ExecCmd(cmd) == 0) {
+       current_file_system_ = "exfat";
+-      RecreateAndSecFolder();
++      if (!RecreateAndSecFolder()) return false;
+       gui2_console::info("done");
+       return true;
+     }
+@@ -2256,7 +2256,7 @@
+ 
+   gui2_console::info("remove_all", mount_point_);
+   if (TWFunc::RemoveDir(mount_point_, true) != 0) return false;
+-  RecreateAndSecFolder();
++  if (!RecreateAndSecFolder()) return false;
+   return true;
+ }
+ 
+@@ -2313,7 +2313,7 @@
+ 
+   if (TWFunc::ExecCmd(f2fs_command) == 0) {
+     current_file_system_ = "f2fs";
+-    RecreateAndSecFolder();
++    if (!RecreateAndSecFolder()) return false;
+     gui2_console::info("done");
+     return true;
+   }
+@@ -2340,7 +2340,7 @@
+   FindActualBlockDevice();
+   if (const std::string cmd = "/system/bin/" + ntfsmake_binary + " " + actual_block_device_; TWFunc::ExecCmd(cmd) == 0) {
+     current_file_system_ = "ntfs";
+-    RecreateAndSecFolder();
++    if (!RecreateAndSecFolder()) return false;
+     gui2_console::info("done");
+     return true;
+   } else {
+@@ -3138,17 +3138,30 @@
+   }
+ }
+ 
+-void TWPartition::RecreateAndSecFolder() {
+-  if (!has_android_secure_) return;
++bool TWPartition::RecreateAndSecFolder() {
++  if (!has_android_secure_) return true;
+   LOGINFO("Creating %s: %s\n", backup_display_name_.c_str(), symlink_path_.c_str());
+   if (!Mount(true)) {
+     gui2_console::log_error("recreate_folder_err", backup_name_);
+-  } else if (!TWFunc::IsPathExists(symlink_path_)) {
+-    LOGINFO("Recreating %s folder.\n", backup_name_.c_str());
+-    PartitionManager.MountByPath(symlink_mount_point_, true);
+-    mkdir(symlink_path_.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+-    PartitionManager.UnmountByPath(symlink_mount_point_, true);
+-  }
++    return false;
++  }
++
++  // MountFilesystem cannot bind a directory that was removed by the wipe.
++  // Create it on the mounted filesystem, then explicitly restore the bind.
++  struct stat st {};
++  if (lstat(symlink_path_.c_str(), &st) == 0) {
++    if (!S_ISDIR(st.st_mode)) {
++      gui2_console::log_error("recreate_folder_err", backup_name_);
++      return false;
++    }
++  } else if (errno != ENOENT ||
++             mkdir(symlink_path_.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0) {
++    gui2_console::log_error("recreate_folder_err", backup_name_);
++    return false;
++  }
++  // Mount() may already have restored an existing directory binding.
++  if (IsPathMounted(symlink_mount_point_)) return true;
++  return BindMount();
+ }
+ 
+ uint64_t TWPartition::GetMaxFileSize() const {
+--- a/partitions.hpp
++++ b/partitions.hpp
+@@ -480,7 +480,7 @@
+   static bool MakeDir(const std::string& path, bool display_error);
+ 
+   // Recreates the .android_secure folder
+-  void RecreateAndSecFolder();
++  bool RecreateAndSecFolder();
+ 
+   bool MountStorageRetry(bool display_error);
+ 

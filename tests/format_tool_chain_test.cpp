@@ -55,7 +55,7 @@ struct TWPartition {
  std::string GetMountPoint()const{return mount_point_;}
  bool Unmount(bool){return unmount_ok;}bool Mount(bool){assert(false);return false;}
  bool IsMounted()const{return false;} // This chroot contains no mounted target.
- void FindActualBlockDevice(){}void SetupFileSystem(bool){}void RecreateAndSecFolder(){++recreated;}
+ void FindActualBlockDevice(){}void SetupFileSystem(bool){}bool RecreateAndSecFolder(){++recreated;return true;}
  bool WipeRmrf(){++rm_calls;return true;}
  bool WipeDataWithoutWipingMedia(){assert(false);return false;}bool WipeAndSec(){assert(false);return false;}
  bool Repair();bool Wipe(const std::string&);bool WipeExtfs(const std::string&);bool WipeExt4();bool WipeFat();bool WipeExfat();bool WipeF2fs();bool WipeNtfs();

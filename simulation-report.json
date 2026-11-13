@@ -1,8 +1,8 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-format-postprocess.img",
-  "image_sha256": "99e76c07767724d3175ebd1e3997caf37995c09a172b4025fd316d20b47e76bd",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-andsec-recreate.img",
+  "image_sha256": "7ec5926064702eaf0443d6c5e8cf8103d461b345eb334cec7371e03e35050086",
   "image_status": "Clean installclean + make -j$(nproc); patch0086 guards offline format helpers against retained mounts.804 production sources/six unchanged profiles; goal in progress.",
   "checks": [
     {
@@ -1936,7 +1936,7 @@
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
     "MTP remaining media metadata and final post-child directory date semantics (file epoch0/timestamp-error publication and directory SendObjectInfo time/completion16 cases covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
     "backup/restore real archive codec/GUI and sparse-hole/progress behavior, actual filesystem power-loss durability and content authenticity; new-backup completion manifests and restore rejection are covered by17 helper,55 RunBackup and56 RunRestore host cases but do not prove sudden power-loss behavior",
-    "full GUI/PartitionManager write/format/repair lifecycle and I/O faults; current-image tools17 historical cases, e2fsck result146 assertions and current-image wrapper/lookup/Repair/ExecCmd/ARM64 checker7 joined cases covered with explicit unmount/device/presentation fixtures; real mounts/full GUI still pending; patch0073 covers RemoveDir + WipeRmrf/AndSec/DataCache -> manager -> backend LIST/run terminal result with real private permission failures; patch0074 executes media-preserving recursion and real exclusion matching through manager/backend13 cases; full Wipe dispatch, GUI/format lifecycle, concurrent writers and power-loss remain pending; patch0075 covers Dalvik mount/query/delete failures and internal-media root retention through backend16 cases, inode/user xattr marker is not actual fscrypt proof; full GUI/format/repair, real mounts/MTP and I/O lifecycle remain pending; patch0076 covers requested format dispatch/rmrf override/missing tools/result state25 fixture cases; actual target formatter -> readback -> repair -> full GUI/mount lifecycle still pending; actual current-image ARM64 ext4/F2FS formatter + original caller/ExecCmd/Repair chain6 now covered on regular files, ext4 independent payload readback and F2FS populated structural check; full mounts/GUI/fscrypt/SELinux and independent F2FS content readback still pending; patch0087 covers ext post-format type and persist temporary mount/delete/unmount failures, full and-sec/media recreation remains pending",
+    "full GUI/PartitionManager write/format/repair lifecycle and I/O faults; current-image tools17 historical cases, e2fsck result146 assertions and current-image wrapper/lookup/Repair/ExecCmd/ARM64 checker7 joined cases covered with explicit unmount/device/presentation fixtures; real mounts/full GUI still pending; patch0073 covers RemoveDir + WipeRmrf/AndSec/DataCache -> manager -> backend LIST/run terminal result with real private permission failures; patch0074 executes media-preserving recursion and real exclusion matching through manager/backend13 cases; full Wipe dispatch, GUI/format lifecycle, concurrent writers and power-loss remain pending; patch0075 covers Dalvik mount/query/delete failures and internal-media root retention through backend16 cases, inode/user xattr marker is not actual fscrypt proof; full GUI/format/repair, real mounts/MTP and I/O lifecycle remain pending; patch0076 covers requested format dispatch/rmrf override/missing tools/result state25 fixture cases; actual target formatter -> readback -> repair -> full GUI/mount lifecycle still pending; actual current-image ARM64 ext4/F2FS formatter + original caller/ExecCmd/Repair chain6 now covered on regular files, ext4 independent payload readback and F2FS populated structural check; full mounts/GUI/fscrypt/SELinux and independent F2FS content readback still pending; patch0087 covers ext post-format type and persist temporary mount/delete/unmount failures, Android Secure recreation return/bind errors covered by0088; media recreation/full mount/GUI remains pending",
     "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
     "video target ARM64 codec/display-shadow sampling integration, real storage/codec fault behavior, hour-scale stability and seek/index performance (bounded12.5s multi-cluster/keyframe correctness covered), GUI player rendering and full-resolution performance; host frames/queue/failure recovery plus independent FFmpeg native decode and72 short input seeks covered",
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
@@ -3523,6 +3523,46 @@
       "evidence": "logs/format-persist-tool-regression.json",
       "evidence_sha256": "adefcf32b8863a39e6e5ff6a4623c203595182e25444c9aa9891125b2202009b",
       "scope": "Patch0087 records new ext type immediately after successful mkfs. Persist temporary mount/delete/unmount failures propagate; e2fsdroid never runs while still mounted.18 original helper/manager/backend cases pass, old15 fail;25 format dispatch and6 actual ARM64 ordinary-file format/repair regressions pass. Mount/device/SELinux/deletion boundaries are explicit fixtures; no physical persist, real mounts/full GUI/fscrypt validation."
+    },
+    {
+      "name": "andsec-recreate-negative",
+      "result": "expected-failure",
+      "count": 37,
+      "evidence": "logs/andsec-recreate-negative.json",
+      "evidence_sha256": "587b21c165cce138f2a954bdba6b2ebcebe01a93f2b8b87223a6325d572d0d0d",
+      "scope": "Patch0088 propagates Android Secure recreation failures through seven format selections and rmrf to manager/backend. Creates directory on mounted parent, rejects non-directory/symlink, restores bind only if not already mounted.37 cases pass; old34 fail;25 format,11 wipe and6 same-image ARM64 tool regressions pass. Mount/bind/device/command boundaries are explicit; ordinary-directory operations do not establish real mounting/full GUI/fscrypt or physical operation."
+    },
+    {
+      "name": "andsec-recreate-current",
+      "result": "pass",
+      "count": 37,
+      "evidence": "logs/andsec-recreate-current.json",
+      "evidence_sha256": "df462480e0174966531c770d62f3878742cea05b292fdabb50154d1bced17295",
+      "scope": "Patch0088 propagates Android Secure recreation failures through seven format selections and rmrf to manager/backend. Creates directory on mounted parent, rejects non-directory/symlink, restores bind only if not already mounted.37 cases pass; old34 fail;25 format,11 wipe and6 same-image ARM64 tool regressions pass. Mount/bind/device/command boundaries are explicit; ordinary-directory operations do not establish real mounting/full GUI/fscrypt or physical operation."
+    },
+    {
+      "name": "andsec-recreate-transition-regression",
+      "result": "pass",
+      "count": 25,
+      "evidence": "logs/andsec-recreate-transition-regression.json",
+      "evidence_sha256": "fd3426d1bab6f053405700065645c75d4c31d6f6d312b57c0c7be6823fded5be",
+      "scope": "Patch0088 propagates Android Secure recreation failures through seven format selections and rmrf to manager/backend. Creates directory on mounted parent, rejects non-directory/symlink, restores bind only if not already mounted.37 cases pass; old34 fail;25 format,11 wipe and6 same-image ARM64 tool regressions pass. Mount/bind/device/command boundaries are explicit; ordinary-directory operations do not establish real mounting/full GUI/fscrypt or physical operation."
+    },
+    {
+      "name": "andsec-recreate-wipe-regression",
+      "result": "pass",
+      "count": 11,
+      "evidence": "logs/andsec-recreate-wipe-regression.json",
+      "evidence_sha256": "2c0d43a714e2497de57d394493a87f803bc1b78221327ec9171abc311aa516fd",
+      "scope": "Patch0088 propagates Android Secure recreation failures through seven format selections and rmrf to manager/backend. Creates directory on mounted parent, rejects non-directory/symlink, restores bind only if not already mounted.37 cases pass; old34 fail;25 format,11 wipe and6 same-image ARM64 tool regressions pass. Mount/bind/device/command boundaries are explicit; ordinary-directory operations do not establish real mounting/full GUI/fscrypt or physical operation."
+    },
+    {
+      "name": "andsec-recreate-tool-regression",
+      "result": "pass",
+      "count": 6,
+      "evidence": "logs/andsec-recreate-tool-regression.json",
+      "evidence_sha256": "9de737adfd795f968deaee601943621ccbdb91e81690488fd543e17e431684fa",
+      "scope": "Patch0088 propagates Android Secure recreation failures through seven format selections and rmrf to manager/backend. Creates directory on mounted parent, rejects non-directory/symlink, restores bind only if not already mounted.37 cases pass; old34 fail;25 format,11 wipe and6 same-image ARM64 tool regressions pass. Mount/bind/device/command boundaries are explicit; ordinary-directory operations do not establish real mounting/full GUI/fscrypt or physical operation."
     }
   ],
   "source_review_followups": [
@@ -4605,5 +4645,11 @@
     "scope": "Patch0087 records new ext type immediately after successful mkfs. Persist temporary mount/delete/unmount failures propagate; e2fsdroid never runs while still mounted.18 original helper/manager/backend cases pass, old15 fail;25 format dispatch and6 actual ARM64 ordinary-file format/repair regressions pass. Mount/device/SELinux/deletion boundaries are explicit fixtures; no physical persist, real mounts/full GUI/fscrypt validation.",
     "evidence": "logs/format-persist-delivery.json",
     "evidence_sha256": "ac5e7ec03559d6ff15bef9cf688c4c4863b23f7c9ae4feee380a3ebaf21e5b9a"
+  },
+  "andsec_recreation": {
+    "patch": "0088-andsec-recreation-result.patch",
+    "scope": "Patch0088 propagates Android Secure recreation failures through seven format selections and rmrf to manager/backend. Creates directory on mounted parent, rejects non-directory/symlink, restores bind only if not already mounted.37 cases pass; old34 fail;25 format,11 wipe and6 same-image ARM64 tool regressions pass. Mount/bind/device/command boundaries are explicit; ordinary-directory operations do not establish real mounting/full GUI/fscrypt or physical operation.",
+    "evidence": "logs/andsec-recreate-delivery.json",
+    "evidence_sha256": "27569a4dc026ead76df5001d0b29d78099ce434c147ff3b1e7ea534a1df18597"
   }
 }

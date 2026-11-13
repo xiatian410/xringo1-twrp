@@ -39,7 +39,7 @@ struct TWPartition {
  unsigned mtp_storage_id_=1;
  std::string GetMountPoint()const{return mount_point_;}
  bool Mount(bool){return mount_ok;}bool Unmount(bool){return true;}
- void FindActualBlockDevice(){}void RecreateAndSecFolder(){++recreation;}
+ void FindActualBlockDevice(){}bool RecreateAndSecFolder(){++recreation;return true;}
  bool Wipe(){return WipeRmrf();}bool WipeRmrf();bool WipeAndSec();bool WipeDataCache();
 };
 struct TWPartitionManager {

@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-format-postprocess.img",
-  "image_sha256": "99e76c07767724d3175ebd1e3997caf37995c09a172b4025fd316d20b47e76bd",
-  "production_sources": 805,
+  "image_name": "recovery-dijun-unified-andsec-recreate.img",
+  "image_sha256": "7ec5926064702eaf0443d6c5e8cf8103d461b345eb334cec7371e03e35050086",
+  "production_sources": 806,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -1214,6 +1214,46 @@
       "failures": 0,
       "local_report_sha256": "adefcf32b8863a39e6e5ff6a4623c203595182e25444c9aa9891125b2202009b",
       "scope": "Patch0087 records new ext type immediately after successful mkfs. Persist temporary mount/delete/unmount failures propagate; e2fsdroid never runs while still mounted.18 original helper/manager/backend cases pass, old15 fail;25 format dispatch and6 actual ARM64 ordinary-file format/repair regressions pass. Mount/device/SELinux/deletion boundaries are explicit fixtures; no physical persist, real mounts/full GUI/fscrypt validation."
+    },
+    {
+      "name": "andsec-recreate-negative",
+      "status": "FAIL",
+      "cases": 37,
+      "failures": 34,
+      "local_report_sha256": "587b21c165cce138f2a954bdba6b2ebcebe01a93f2b8b87223a6325d572d0d0d",
+      "scope": "Patch0088 propagates Android Secure recreation failures through seven format selections and rmrf to manager/backend. Creates directory on mounted parent, rejects non-directory/symlink, restores bind only if not already mounted.37 cases pass; old34 fail;25 format,11 wipe and6 same-image ARM64 tool regressions pass. Mount/bind/device/command boundaries are explicit; ordinary-directory operations do not establish real mounting/full GUI/fscrypt or physical operation."
+    },
+    {
+      "name": "andsec-recreate-current",
+      "status": "PASS",
+      "cases": 37,
+      "failures": 0,
+      "local_report_sha256": "df462480e0174966531c770d62f3878742cea05b292fdabb50154d1bced17295",
+      "scope": "Patch0088 propagates Android Secure recreation failures through seven format selections and rmrf to manager/backend. Creates directory on mounted parent, rejects non-directory/symlink, restores bind only if not already mounted.37 cases pass; old34 fail;25 format,11 wipe and6 same-image ARM64 tool regressions pass. Mount/bind/device/command boundaries are explicit; ordinary-directory operations do not establish real mounting/full GUI/fscrypt or physical operation."
+    },
+    {
+      "name": "andsec-recreate-transition-regression",
+      "status": "PASS",
+      "cases": 25,
+      "failures": 0,
+      "local_report_sha256": "fd3426d1bab6f053405700065645c75d4c31d6f6d312b57c0c7be6823fded5be",
+      "scope": "Patch0088 propagates Android Secure recreation failures through seven format selections and rmrf to manager/backend. Creates directory on mounted parent, rejects non-directory/symlink, restores bind only if not already mounted.37 cases pass; old34 fail;25 format,11 wipe and6 same-image ARM64 tool regressions pass. Mount/bind/device/command boundaries are explicit; ordinary-directory operations do not establish real mounting/full GUI/fscrypt or physical operation."
+    },
+    {
+      "name": "andsec-recreate-wipe-regression",
+      "status": "PASS",
+      "cases": 11,
+      "failures": 0,
+      "local_report_sha256": "2c0d43a714e2497de57d394493a87f803bc1b78221327ec9171abc311aa516fd",
+      "scope": "Patch0088 propagates Android Secure recreation failures through seven format selections and rmrf to manager/backend. Creates directory on mounted parent, rejects non-directory/symlink, restores bind only if not already mounted.37 cases pass; old34 fail;25 format,11 wipe and6 same-image ARM64 tool regressions pass. Mount/bind/device/command boundaries are explicit; ordinary-directory operations do not establish real mounting/full GUI/fscrypt or physical operation."
+    },
+    {
+      "name": "andsec-recreate-tool-regression",
+      "status": "PASS",
+      "cases": 6,
+      "failures": 0,
+      "local_report_sha256": "9de737adfd795f968deaee601943621ccbdb91e81690488fd543e17e431684fa",
+      "scope": "Patch0088 propagates Android Secure recreation failures through seven format selections and rmrf to manager/backend. Creates directory on mounted parent, rejects non-directory/symlink, restores bind only if not already mounted.37 cases pass; old34 fail;25 format,11 wipe and6 same-image ARM64 tool regressions pass. Mount/bind/device/command boundaries are explicit; ordinary-directory operations do not establish real mounting/full GUI/fscrypt or physical operation."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",

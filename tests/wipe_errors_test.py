@@ -19,6 +19,7 @@ from nested_partition_path_test import ROOT, SRC, method
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--before',action='store_true')
+    p.add_argument('--report',type=Path)
     a=p.parse_args()
     base=ROOT/'logs/wipe-errors-before' if a.before else SRC
     selected={
@@ -50,7 +51,7 @@ def main():
             print(name,cases[-1]['status'],flush=True)
     sources=[*selected,Path(__file__),ROOT/'tests/wipe_errors_test.cpp',ROOT/'tests/nested_partition_path_test.py',SRC/'gui2/backend/wipe_backend.h',SRC/'gui2/backend/mount_backend.h']
     report=dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL',scope=__doc__,baseline=a.before,cases=cases,compile_command=cmd,sources={str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in sources})
-    (ROOT/'logs'/('wipe-errors-before.json' if a.before else 'wipe-errors.json')).write_text(json.dumps(report,indent=2)+'\n')
+    (a.report or ROOT/'logs'/('wipe-errors-before.json' if a.before else 'wipe-errors.json')).write_text(json.dumps(report,indent=2)+'\n')
     return report['status']!='PASS'
 
 if __name__=='__main__':raise SystemExit(main())

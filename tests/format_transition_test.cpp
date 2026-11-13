@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 #include <sys/stat.h>
+#include <sys/mount.h>
+#include <fstream>
 #include <unistd.h>
 #define LOGINFO(...) ((void)0)
 #define LOGERR(...) ((void)0)
@@ -24,17 +26,22 @@ static bool tool_available=true,unmount_ok=true,mounted=false,retain_mount=false
 static bool persist_case=false,mount_ok=true,cleanup_unmount_ok=true,cleanup_retain=false;
 static int remove_result=0,label_result=0,mount_calls=0,unmount_calls=0,delete_calls=0;
 static std::string mounted_fs;
+static bool andsec_case=false,fail_mkdir=false,fail_bind=false,bound=false;
+static int bind_calls=0,alias_mounts=0,alias_unmounts=0;
+static bool IsPathMounted(const std::string&){assert(andsec_case);return bound;}
+static int test_mkdir(const char*p,mode_t mode){if(fail_mkdir){errno=EACCES;return -1;}return ::mkdir(p,mode);}
+static int test_mount(const char*,const char*,const char*,unsigned long flags,const void*){assert(andsec_case&&flags==MS_BIND);++bind_calls;if(fail_bind){errno=EIO;return -1;}return 0;}
 static std::vector<std::string>commands;
 namespace gui2_console {template<class... T>void info(T...){}template<class... T>void warning(T...){}template<class... T>void log_error(T...){} }
 namespace twrp_operation_executor {struct executor{std::recursive_mutex m;auto& mutex(){return m;}};executor& instance(){static executor e;return e;}using guard=std::lock_guard<std::recursive_mutex>;}
 namespace android::base {bool GetBoolProperty(const char*,bool v){return v;}}
 namespace TWFunc {
- bool IsPathExists(const std::string&p){return tool_available&&p!="/system/bin/sload_f2fs";}
+ bool IsPathExists(const std::string&p){if(andsec_case&&!p.starts_with("/system/bin/"))return std::filesystem::exists(p);return tool_available&&p!="/system/bin/sload_f2fs";}
  std::string GetRootPath(const std::string&p){return p;}
  std::string GetLogDir(){return DATA_LOGS_DIR;}
  uint64_t GetBlockSizeByIoctl(const char*){return 256ULL<<20;}
  int ExecCmd(const std::string&cmd){commands.push_back(cmd);return command_result;}
- int RemoveDir(const std::string&p,bool retain){assert(persist_case&&mounted&&p=="/persist/lost+found"&&!retain);++delete_calls;return remove_result;}
+ int RemoveDir(const std::string&p,bool retain){if(andsec_case){assert(retain&&mounted);for(const auto&e:std::filesystem::directory_iterator(p))std::filesystem::remove_all(e.path());return 0;}assert(persist_case&&mounted&&p=="/persist/lost+found"&&!retain);++delete_calls;return remove_result;}
 }
 struct DataManager {
  static void GetValue(const std::string&,int&v){v=rmrf;}
@@ -47,15 +54,26 @@ int make_ext4fs(const char*,unsigned long long,const char*,void*){commands.push_
 static void*selinux_handle=nullptr;
 int selabel_lookup(void*,char**context,const char*,int){assert(persist_case);if(label_result)return label_result;*context=strdup("fixture_context");return 0;}void freecon(char*p){free(p);}
 struct TWPartition {
+ std::string symlink_path_,backup_display_name_="AndSec",backup_name_="and-sec";bool has_android_secure_=false;
  std::string mount_point_="/fixture",symlink_mount_point_,sub_partition_of_,current_file_system_="ext4",display_name_="fixture",actual_block_device_="/fixture/never-open",decrypted_block_device_;
  bool is_sub_partition_=false,can_be_wiped_=true,has_data_media_=false,use_rm_rf_=false,is_present_=true,is_storage_=false,is_fbe_=false,is_encrypted_=false,is_decrypted_=false,needs_metadata_csum_=false,needs_fs_compress_=false;
  unsigned mtp_storage_id_=1;
  std::string GetMountPoint()const{return mount_point_;}
  bool Unmount(bool){++unmount_calls;if(!unmount_ok)return false;if(persist_case&&unmount_calls>1){if(!cleanup_unmount_ok)return false;if(!cleanup_retain)mounted=false;}else if(!retain_mount)mounted=false;return true;}
  bool IsMounted()const{return mounted;}
- bool Mount(bool){assert(persist_case);++mount_calls;mounted_fs=current_file_system_;if(mount_ok)mounted=true;return mount_ok;}
- void FindActualBlockDevice(){}void SetupFileSystem(bool){}void RecreateAndSecFolder(){++recreated;}
+ bool Mount(bool){assert(persist_case||andsec_case);++mount_calls;mounted_fs=current_file_system_;if(mount_ok)mounted=true;return mount_ok;}
+ void FindActualBlockDevice(){}void SetupFileSystem(bool){}
+#ifdef TEST_ANDSEC
+#ifdef LEGACY_ANDSEC
+ void RecreateAndSecFolder();
+#else
+ bool RecreateAndSecFolder();
+#endif
+ bool BindMount() const;bool WipeRmrf();
+#else
+ bool RecreateAndSecFolder(){++recreated;return true;}
  bool WipeRmrf(){++rm_calls;return true;}
+#endif
  bool WipeDataWithoutWipingMedia(){assert(false);return false;}bool WipeAndSec(){assert(false);return false;}
  bool Wipe(const std::string&);bool WipeExtfs(const std::string&);bool WipeExt4();bool WipeFat();bool WipeExfat();bool WipeF2fs();bool WipeNtfs();
 };
@@ -64,17 +82,27 @@ struct TWPartitionManager {
  static bool MatchesPath(const TWPartition*,const std::string&);
  TWPartition*FindPartitionByPath(const std::string&)const;
  int WipeByPath(const std::string&,const std::string&)const;
- int MountByPath(const std::string&,bool){assert(false);return false;}
+ int MountByPath(const std::string&,bool){assert(andsec_case);++alias_mounts;return true;}
+ int UnmountByPath(const std::string&,bool){assert(andsec_case);++alias_unmounts;return true;}
+ static void RemoveMtpStorage(unsigned){}
  static std::string GetAndroidRootPath(){return "/system_root";}
  static bool RecreateLogsDir(){return true;}static void AddMtpStorage(unsigned){assert(false);}
  void UpdateSystemDetails(){}
 }PartitionManager;
 void operation_start(const char*){}void operation_end(int v){last_result=v;}
 // Explicit GUI policy boundary: target is an allowed ordinary fixture route.
-bool partition_tool_target_allowed(const std::string&p){return p=="/fixture"||p=="/persist";}
+bool partition_tool_target_allowed(const std::string&p){return andsec_case||p=="/fixture"||p=="/persist";}
+#ifdef TEST_ANDSEC
+#define mkdir test_mkdir
+#define mount test_mount
+#endif
 #include "methods.inc"
+#ifdef TEST_ANDSEC
+#undef mkdir
+#undef mount
+#endif
 int main(int argc,char**argv){
- assert(argc==2);std::string name=argv[1];TWPartition p;std::string requested="f2fs",prefix="/system/bin/make_f2fs";bool expected=true;bool expect_rm=false;
+ assert(argc==3);std::string name=argv[1];TWPartition p;std::string requested="f2fs",prefix="/system/bin/make_f2fs";bool expected=true;bool expect_rm=false;
  if(name.starts_with("exfat")){requested="exfat";prefix="mkfs.exfat";}
  if(name.starts_with("ntfs")){requested="ntfs";prefix="/system/bin/mkntfs";}
  if(name.starts_with("fat")){requested="vfat";prefix="mkfs.fat";}
@@ -95,6 +123,40 @@ int main(int argc,char**argv){
  if(name=="unmount-denied"){unmount_ok=false;expected=false;}
  if(name=="not-present"){p.is_present_=false;expected=false;}
  if(name=="not-wipeable"){p.can_be_wiped_=false;expected=false;}
+#ifdef TEST_ANDSEC
+ if(name.contains("-andsec-")){
+   andsec_case=true;p.has_android_secure_=true;
+   std::string state=name.substr(name.find("-andsec-")+8);
+   std::filesystem::path dir=std::filesystem::path(argv[2])/name;std::filesystem::create_directory(dir);
+   p.mount_point_=dir;p.symlink_path_=dir/".android_secure";p.symlink_mount_point_="/and-sec";
+   if(name.starts_with("rmrf")){requested="ext4";rmrf=1;}
+   if(name.starts_with("direct")){
+     if(state=="disabled")p.has_android_secure_=false;
+     if(state=="existing"||state=="bound")std::filesystem::create_directory(p.symlink_path_);
+     bound=state=="bound";
+     if(state=="file")std::ofstream(p.symlink_path_)<<"keep";
+     if(state=="symlink")std::filesystem::create_directory_symlink(dir,p.symlink_path_);
+     expected=state=="disabled"||state=="existing"||state=="bound";
+#ifdef LEGACY_ANDSEC
+     p.RecreateAndSecFolder();bool ok=true;
+#else
+     bool ok=p.RecreateAndSecFolder();
+#endif
+     assert(ok==expected);
+     assert(bind_calls==(state=="existing"?1:0));
+   }else{
+     fail_mkdir=state=="mkdir-error";fail_bind=state=="bind-error";mount_ok=state!="mount-error";
+     expected=state=="success";
+     PartitionManager.partitions_={&p};int result=changefilesystem(dir,requested);
+     assert(result==(expected?0:1)&&last_result==result);
+     if(!name.starts_with("rmrf"))assert(p.current_file_system_==requested);
+     assert(std::filesystem::is_directory(p.symlink_path_)==(state=="success"||state=="bind-error"));
+     assert(bind_calls==(state=="success"||state=="bind-error"?1:0));
+   }
+   assert(alias_mounts==0&&alias_unmounts==0);
+   puts("PASS: directory recreation and bind outcome -> wipe/format backend status");return 0;
+ }
+#endif
  if(name.contains("-persist-")){
    persist_case=true;selinux_handle=reinterpret_cast<void*>(1);p.mount_point_="/persist";
    mount_ok=name.substr(name.find("-persist-")+9)!="mount-error";remove_result=name.ends_with("delete-error")?-1:0;

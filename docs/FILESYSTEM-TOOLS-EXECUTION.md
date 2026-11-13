@@ -230,3 +230,22 @@ python3 scripts/audit_format_persist_delivery.py
 ```
 
 挂载、设备、容量、SELinux 和目录删除是显式故障边界；没有操作实际 persist、物理块设备或真实挂载。ARM64 工具回归只在私有普通文件上运行。and-sec / media 目录重建、完整 GUI / fscrypt 生命周期仍未完成，本批不据此关闭完整文件系统目标。最终 installclean / 30 并发构建，805 来源绑定；候选哈希集中见[交付报告](../simulation-report.md)。
+
+<a id="andsec-recreation"></a>
+
+## Android Secure 目录重建结果（0088）
+
+原 `RecreateAndSecFolder` 为 void：挂载失败仅记录，mkdir 和别名挂载 / 卸载返回均忽略。格式化 helpers 与 rm-rf 随后仍返回成功。父分区 Mount 无法为尚不存在的目录执行绑定；旧逻辑在创建前调用管理器挂载，创建后再卸载，也没有可靠恢复 `/and-sec` 绑定。
+
+0088 将其改为 bool。无 Android Secure 功能时直接成功；父挂载失败立即返回；使用 lstat 确认目录，缺失时按 0755 创建，查询 / 创建失败或非目录返回失败。目录就绪后检查已有绑定，未绑定时调用原 BindMount，并传回实际结果。七种格式选择（ext2/ext3/ext4/vfat/exfat/f2fs/ntfs）和 WipeRmrf 均检查返回值；失败不输出最终 done，不假装回滚已完成清除或新文件系统类型。保留父挂载，不为目录重建调用管理器卸载整个存储。
+
+扩展已有格式转换夹具，37 场景覆盖上述八个入口各四种结果（成功 / mkdir失败 / bind失败 / Mount失败），以及直接调用的禁用、已有目录、已有绑定、普通文件与符号链接。目录创建及 lstat 使用私有临时普通文件；mkdir拒绝、挂载、绑定、设备和格式化命令为显式边界。原 helper/manager/changefilesystem 返回及最终目录检查均执行，旧实现 34 项失败，修正后 37 项通过。25 项格式转换、11 项实际私有目录权限清除结果回归与六项同镜像 ARM64 格式化修复通过。
+
+```bash
+python3 tests/format_transition_test.py --andsec --report logs/andsec-recreate-current.json
+python3 tests/wipe_errors_test.py --report logs/andsec-recreate-wipe-regression.json
+python3 tests/format_tool_chain_test.py --report logs/andsec-recreate-tool-regression.json
+python3 scripts/audit_andsec_recreate_delivery.py
+```
+
+SetupAndSec 的发现阶段仍按原 best-effort 方式记录失败；可选 USE_EXT4 内建格式化的 lost+found 后处理与 media 目录重建不在本修正内。不是完整 MountFilesystem / 真实 bind、GUI、fscrypt 或并发外部目录更改的证明。最终 installclean / 30 并发构建、806 份来源、六份 profile 不变，候选见[交付报告](../simulation-report.md)。
