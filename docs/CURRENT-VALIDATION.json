@@ -1438,11 +1438,12 @@
     }
   ],
   "refresh_stuck_investigation": {
-    "status": "unresolved-with-display-wait-evidence",
+    "status": "unresolved-awaiting-new-distinguishing-evidence",
     "refresh_elapsed_upper_bound_ms": 5147,
     "capture_uptime_seconds": 338.12,
     "display_thread": "disp_commit_0: D state, dpu_kms_wait_for_hw_cfg_done",
-    "limitations": "Single non-atomic capture snapshot proves the display wait at capture time only; it does not establish duration or causality for the refresh page symptom. No DRM production change or repeated worker/DONE tests."
+    "limitations": "Single non-atomic capture snapshot proves the display wait at capture time only; it does not establish duration or causality for the refresh page symptom. No DRM production change or repeated worker/DONE tests.",
+    "next_action": "New adjacent stacks, submission/completion timeline or direct software-defect evidence required; existing capture has no second display-wait sample or matching DPU timeout/recovery event. No repeated capture searches or equivalent fixtures."
   },
   "current_batch_groups": [
     6,
@@ -1605,5 +1606,11 @@
     "production_changes": false,
     "new_build": false,
     "scope": "After model Cleanup releases controller before process-static destruction, one original OS4.0.4 full ZIP run succeeds in explicit file model: whole-file signature/host ZIP parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager initializes10 COWs -> original controller writer4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified publication -> modeled slot/unmap/Cleanup -> engine0/wait0/parent INSTALL_SUCCESS0.24 checks pass,881seconds. Synthetic32GiB source LP, independent file DM views, readonly/mount/HAL/slot/proc/cleanup/GUI remain models; scratch/daemon disabled. No production change/build or physical mapping/boot/merge/full device OTA."
+  },
+  "installation_chain_summary": {
+    "status": "stock-os4-full-zip-file-model-success-device-boundaries-open",
+    "current_evidence": "stock_allocated_zip_success",
+    "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success",
+    "scope": "Original OS4.0.4 full ZIP has one joined MODEL_SUCCESS run: host TWinstall_zip/signature/A-B/fork/pipe -> QEMU/intact ARM64 engine -> actual controller preparation/SnapshotManager initializes ten COWs -> all4933 payload operations/payload hash/42 final hashes -> stock Recovery postinstall guard -> actual Unverified state -> modeled slot/unmap/Cleanup; engine0/wait0/parent INSTALL_SUCCESS0. Synthetic source LP and independent regular-file mappings, readonly/mount/HAL/slot/proc/cleanup/GUI remain explicit models; scratch/daemon disabled. Real source layout/kernel mapping/mount/boot/merge, full ARM64 Recovery GUI, OZIP and actual USB/FUSE sideload remain unverified. Earlier harmless updater/parameter-checker evidence is historical coverage, not the latest OTA limit."
   }
 }

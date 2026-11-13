@@ -4239,12 +4239,12 @@
     "boundaries": "private host files, block-stat/capacity/discard doubles; full manager/GUI/slots, ZIP/update-binary/sideload, CRC/authenticity and physical persistence remain unverified"
   },
   "installation_chain": {
-    "status": "host-ZIP-backend-queue-and-completion-covered-offline",
+    "status": "stock-os4-full-zip-file-model-success-device-boundaries-open",
     "patch": "dtsrc/O1_asic_dual/patches/0052-updater-protocol-validation.patch",
     "image_route": "logs/image-install-chain.json",
     "updater": "logs/zip-updater.json",
     "before": "logs/zip-updater-before.json",
-    "boundaries": "Actual public ZIP backend/worker has native chain coverage. Separate host TWinstall_zip/package/signature/digest/extraction/fork/protocol/wait chain executes genuine harmless AArch64 ELF through an explicit QEMU execve bridge with current-image linker/libc:20 cases; native regression36. Mount/cache/block/progress/property boundaries remain doubles. No full ARM64 recovery parent, stock OTA updater, OZIP, AB payload/update_engine, real USB/FUSE sideload, GUI clicks or physical writes. A/B metadata/real ZIP command preparation and pipe/fork/protocol/wait now covered with harmless host engine replacement:21 cases, old8 failures; actual update_engine/payload application remains open.",
+    "boundaries": "Original OS4.0.4 full ZIP has one joined MODEL_SUCCESS run: host TWinstall_zip/signature/A-B/fork/pipe -> QEMU/intact ARM64 engine -> actual controller preparation/SnapshotManager initializes ten COWs -> all4933 payload operations/payload hash/42 final hashes -> stock Recovery postinstall guard -> actual Unverified state -> modeled slot/unmap/Cleanup; engine0/wait0/parent INSTALL_SUCCESS0. Synthetic source LP and independent regular-file mappings, readonly/mount/HAL/slot/proc/cleanup/GUI remain explicit models; scratch/daemon disabled. Real source layout/kernel mapping/mount/boot/merge, full ARM64 Recovery GUI, OZIP and actual USB/FUSE sideload remain unverified. Earlier harmless updater/parameter-checker evidence is historical coverage, not the latest OTA limit.",
     "selection_patch": "dtsrc/O1_asic_dual/patches/0053-zip-updater-abi-selection.patch",
     "zip_chain": "logs/zip-install-chain.json",
     "zip_chain_before": "logs/zip-install-chain-before.json",
@@ -4878,7 +4878,8 @@
       "production_changes": false,
       "new_build": false,
       "scope": "After model Cleanup releases controller before process-static destruction, one original OS4.0.4 full ZIP run succeeds in explicit file model: whole-file signature/host ZIP parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager initializes10 COWs -> original controller writer4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified publication -> modeled slot/unmap/Cleanup -> engine0/wait0/parent INSTALL_SUCCESS0.24 checks pass,881seconds. Synthetic32GiB source LP, independent file DM views, readonly/mount/HAL/slot/proc/cleanup/GUI remain models; scratch/daemon disabled. No production change/build or physical mapping/boot/merge/full device OTA."
-    }
+    },
+    "current_summary": "stock_allocated_zip_success"
   },
   "os4_haptics_user_confirmation": {
     "date": "2026-11-12",
@@ -4955,7 +4956,7 @@
     "scope": "Original ARM64 read/set and OS4 refresh callbacks with MMIO/PMIC/calendar fixtures. Full probe/hctosys/calendar/cold-start and physical drift remain open."
   },
   "refresh_stuck_investigation": {
-    "status": "unresolved-with-display-wait-evidence",
+    "status": "unresolved-awaiting-new-distinguishing-evidence",
     "document": "docs/REFRESH-STUCK-INVESTIGATION.md",
     "local_analysis": "logs/refresh-capture-analysis.json",
     "production_fix": true,
@@ -4969,7 +4970,7 @@
     "field_incident_fixed": false,
     "loop_evidence": "logs/refresh-loop.json",
     "loop_scope": "Original gui2_loop_tick and app/gui2_loop.cpp, tools worker/status adapter, LVGL progress and page host. Normal completion, precompleted worker and controlled 220ms submit wait; wait halts GUI ticks despite worker DONE, release updates next tick. Scan, device services, input/perf, console/background polling, route composition and display submission are explicit fixtures. Not real DRM, full Android or field root-cause proof; no production fix.",
-    "next_action": "Use distinguishing presentation/submit-wait evidence; no repeated scan/DONE fixtures or speculative DRM patch.",
+    "next_action": "Existing capture exhausted: no second display-wait sample or matching DPU timeout/recovery event. Resume only on new adjacent stacks, submission/completion timeline or direct software-defect evidence; do not re-search this capture or repeat scan/DONE/loop fixtures.",
     "current_analysis": "logs/refresh-capture-analysis-current.json",
     "capture_evidence": {
       "evidence": "logs/refresh-capture-analysis-current.json",
