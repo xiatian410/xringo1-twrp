@@ -8,6 +8,7 @@
 #include <atomic>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/random.h>
 #include "mtp_objects_peer.hpp"
 #include "twrp/TwrpMtpDatabase.hpp"
 #include "MtpObjectInfo.h"
@@ -61,8 +62,31 @@ extern "C" int __wrap_renameat(int a,const char* b,int c,const char* d){
  if(publish_fault==1&&string(b).find(".mtp-upload-")!=string::npos){errno=EIO;return -1;}
  return __real_renameat(a,b,c,d);
 }
+std::function<void()> staging_create_probe;
+atomic_int staging_random_fault=0,staging_random_calls=0,staging_create_calls=0;
+extern "C" ssize_t __real_getrandom(void*,size_t,unsigned);
+extern "C" ssize_t __wrap_getrandom(void* p,size_t size,unsigned flags){
+ ++staging_random_calls;
+ if(staging_random_fault==1){staging_random_fault=0;errno=EINTR;return -1;}
+ if(staging_random_fault==2)size=min(size,size_t(3));
+ if(staging_random_fault==3){errno=EIO;return -1;}
+ if(staging_random_fault==4)return 0;
+ return __real_getrandom(p,size,flags);
+}
+atomic_int staging_collision=0;
+extern "C" int __real_openat(int,const char*,int,...);
+extern "C" int __wrap_openat(int dir,const char* p,int flags,...){
+ mode_t mode=0;if(flags&O_CREAT){va_list args;va_start(args,flags);mode=va_arg(args,int);va_end(args);}
+ if(string(p).starts_with(".mtp-upload-")&&(flags&O_CREAT)){
+  ++staging_create_calls;
+  if(staging_create_probe)staging_create_probe();
+  if(publish_fault==2){errno=ENOSPC;return -1;}
+  if(staging_collision){REQUIRE(symlinkat("/one/user-content.txt",dir,p)==0);if(staging_collision==1)staging_collision=0;}
+ }
+ return (flags&O_CREAT)?__real_openat(dir,p,flags,mode):__real_openat(dir,p,flags);
+}
 extern "C" int __real_mkstemp(char*);
-extern "C" int __wrap_mkstemp(char*p){if(publish_fault==2){errno=ENOSPC;return -1;}return __real_mkstemp(p);}
+extern "C" int __wrap_mkstemp(char*p){if(staging_create_probe)staging_create_probe();if(publish_fault==2){errno=ENOSPC;return -1;}return __real_mkstemp(p);}
 extern "C" int __real_close(int);
 extern "C" int __wrap_close(int fd){if(fd==edit_fd){edit_fd=-1;++edit_closes;}bool bad=(publish_fault==3&&upload_fd(fd))||(directory_close_fault&&upload_directory(fd));int r=__real_close(fd);if(bad){errno=EIO;return -1;}return r;}
 extern "C" int __real_unlinkat(int,const char*,int);
@@ -588,6 +612,45 @@ int main(int argc,char** argv){
   data=info("retry.txt",3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
   Bytes payload{'o','k','!'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&payload).code==MTP_RESPONSE_OK);
   REQUIRE(stat("/one/retry.txt",&st)==0&&st.st_mtime>=before&&readfile("/one/retry.txt")=="ok!");
+ }else if(test.starts_with("staging-create-parent-")){
+  const bool replacing=test.starts_with("staging-create-parent-overwrite-");
+  const bool link=test.ends_with("symlink");
+  const string name=replacing?"a.txt":"new.txt",target="/one/"+name;
+  const string previous=replacing?readfile(target):"";
+  bool observed=false;
+  staging_create_probe=[&]{
+   REQUIRE(!observed);observed=true;
+   REQUIRE(__real_rename("/one","/moved-one")==0);
+   fs::create_directory("/replacement");
+   if(link)REQUIRE(symlink("/replacement","/one")==0);else fs::create_directory("/one");
+   writefile(target,"replacement-destination");
+  };
+  auto data=info(name,60000);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  Bytes content(60000,'N');auto r=s.call(MTP_OPERATION_SEND_OBJECT,{},&content);staging_create_probe={};
+  REQUIRE(observed&&r.code==MTP_RESPONSE_GENERAL_ERROR);
+  REQUIRE(readfile(target)=="replacement-destination");
+  REQUIRE(replacing?readfile("/moved-one/"+name)==previous:!fs::exists("/moved-one/"+name));
+  for(auto dir:{"/one","/moved-one"})for(const auto&e:fs::directory_iterator(dir))REQUIRE(!e.path().filename().string().starts_with(".mtp-upload-"));
+  cout<<"create_anchored=1 both_directories_clean=1 replacement_untouched=1\n";
+ }else if(test.starts_with("staging-create-random-")){
+  const auto kind=test.substr(string("staging-create-random-").size());
+  staging_random_fault=kind=="eintr"?1:kind=="short"?2:kind=="error"?3:kind=="zero"?4:0;
+  staging_collision=kind=="collision"?1:kind=="exhausted"?2:0;
+  writefile("/one/user-content.txt","user-data");
+  auto data=info("a.txt",3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  Bytes content{'n','e','w'};auto r=s.call(MTP_OPERATION_SEND_OBJECT,{},&content);
+  const bool failed=kind=="error"||kind=="zero"||kind=="exhausted";
+  REQUIRE(r.code==(failed?MTP_RESPONSE_GENERAL_ERROR:MTP_RESPONSE_OK));
+  REQUIRE(readfile("/one/a.txt")==(failed?"alpha":"new"));
+  REQUIRE(readfile("/one/user-content.txt")=="user-data");
+  REQUIRE(staging_random_calls>0);
+  if(kind=="eintr"||kind=="short")REQUIRE(staging_random_calls>1);
+  if(kind=="error"||kind=="zero")REQUIRE(staging_create_calls==0);
+  if(kind=="collision")REQUIRE(staging_create_calls==2);
+  if(kind=="exhausted")REQUIRE(staging_create_calls==32);
+  unsigned collisions=0;for(const auto&e:fs::directory_iterator("/one"))if(e.path().filename().string().starts_with(".mtp-upload-")){REQUIRE(fs::is_symlink(e.path()));++collisions;}
+  REQUIRE(collisions==(kind=="collision"?1:kind=="exhausted"?32:0));
+  cout<<"entropy_and_exclusive_creation=1 user_collision_preserved=1\n";
  }else if(test.starts_with("upload-parent-")){
   const bool replacing=test.starts_with("upload-parent-overwrite-");
   const bool moved_inode=test.ends_with("moved-inode");

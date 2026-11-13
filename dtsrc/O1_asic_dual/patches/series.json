@@ -426,6 +426,10 @@
         {
           "file": "0115-mtp-upload-parent-directory.patch",
           "sha256": "d15bab1ffac080df17c26acbd296d589da51b3d60e9afa6b7ff44d14866a5a5f"
+        },
+        {
+          "file": "0116-mtp-staging-create-at.patch",
+          "sha256": "a4120c17a6a278a7b16791f1637af4c47af7df1fc0d691e258cb8a9549778d0a"
         }
       ],
       "result_files": {
@@ -481,13 +485,13 @@
         "twrp_functions.hpp": "0dec08d05f3ca3cabce444f0b67cec6a981c7808c8b924ac24c04ac51ffeb84c",
         "oaes/oaes.cpp": "306acbfddd40512ba8c0ad0b7ad8afc86533425625e6a875f95d0a3ae4e1e356",
         "oaes/oaes.hpp": "256c988afbd924a12db4bdaa4c9c35475dda92b53676cf7693f64e36de0ed3c4",
-        "mtp/IMtpDatabase.h": "bbe651b95e206c307ba4b9e9d6c57225697dcc6667bf508bf8d5ac3c59548086",
-        "mtp/MtpServer.cpp": "96163776e33837cae1869d3b031104dc6fb2b67ebb1937484fe58ff6b267cd65",
+        "mtp/IMtpDatabase.h": "fc1882a4836fe013c6871b5ff6be7cccadcf370b132ab58755d17dadb5a96c71",
+        "mtp/MtpServer.cpp": "8240ea89f445ef11077c4b2e19b1e87527921a296165885ae642962ea446028e",
         "mtp/MtpServer.h": "8ee134a2913fe80785e6255c13bd2e270135ea69469e6f1a24211d5d2d144e4c",
-        "mtp/twrp/TwrpMtpDatabase.cpp": "9abf68632a54fc69580c4bbd7a45d620e0a237c84ba3304f754af16d56d05739",
-        "mtp/twrp/TwrpMtpDatabase.hpp": "0ffaf9304ae67e9dd3b755593b9ea15b2ff5d2e16b05508401b38882c7735a2b",
-        "mtp/twrp/TwrpMtpStorage.cpp": "ab3450d3efdb791f0f2cd5d4a60f994bedf9c8f376129f7637ac98717cc48c5f",
-        "mtp/twrp/TwrpMtpStorage.hpp": "1cf2733a84e7a830f1e717309978f483132a218f38109364313d4b1b91c06738",
+        "mtp/twrp/TwrpMtpDatabase.cpp": "bf3de21de83287eb857cd9c723acd2dfb6ff47dac5ccf38e49c26958f402fa22",
+        "mtp/twrp/TwrpMtpDatabase.hpp": "fa4c2eeddfe32c8c936d6669a40c8528ce7de2086296a8c9ea2430171e64bc0c",
+        "mtp/twrp/TwrpMtpStorage.cpp": "8147d1d787cf4b2f4308ca60f076c119ba066869379a60ad106c5828875c7a50",
+        "mtp/twrp/TwrpMtpStorage.hpp": "b483e34ab541f700cf667f198b485129d888bf88b50b6f7aa98e59301ad4228e",
         "mtp/MtpUtils.cpp": "dfa7b9844c350ee5468805a8bde4babc0638a67dbf590a30cc075f8ba11c9a0e",
         "mtp/MtpUtils.h": "23f233d41237c5fae6452e19414cb849f972055ea6071be2682f934405a755b8",
         "etc/init.rc": "98d2f6766432b57480e5a794c98efb5d277a8913f594173196de7bb82b3fedfc",

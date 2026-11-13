@@ -1,0 +1,128 @@
+--- a/mtp/IMtpDatabase.h
++++ b/mtp/IMtpDatabase.h
+@@ -44,7 +44,7 @@
+ 
+     // Creates a private sibling under the database observer lock. The caller
+     // owns the fd and removes or publishes the path before endSendObject.
+-    virtual int createSendObjectFile(MtpObjectHandle handle, std::string& path) = 0;
++    virtual int createSendObjectFile(MtpObjectHandle handle, int directory, std::string& path) = 0;
+ 
+     // Called to rescan a file, such as after an edit.
+     virtual void                    rescanFile(const char* path,
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -1302,7 +1302,7 @@
+         goto done;
+     }
+     mtp_file_range  mfr;
+-    mfr.fd = mDatabase->createSendObjectFile(mSendObjectHandle, temporary);
++    mfr.fd = mDatabase->createSendObjectFile(mSendObjectHandle, directory.get(), temporary);
+     if (mfr.fd < 0) {
+         result = MTP_RESPONSE_GENERAL_ERROR;
+         goto done;
+--- a/mtp/twrp/TwrpMtpDatabase.hpp
++++ b/mtp/twrp/TwrpMtpDatabase.hpp
+@@ -43,7 +43,7 @@
+ 
+     void endSendObject(MtpObjectHandle handle,
+                        bool succeeded) override;
+-    int createSendObjectFile(MtpObjectHandle handle, std::string& path) override;
++    int createSendObjectFile(MtpObjectHandle handle, int directory, std::string& path) override;
+ 
+     MtpObjectHandleList* getObjectList(MtpStorageID storage_id,
+                                        MtpObjectFormat format,
+--- a/mtp/twrp/TwrpMtpDatabase.cpp
++++ b/mtp/twrp/TwrpMtpDatabase.cpp
+@@ -197,9 +197,9 @@
+     return storage_map_[storage_id]->BeginSendObject(path, format, parent, 0, 0);
+ }
+ 
+-int TwrpMtpDatabase::createSendObjectFile(MtpObjectHandle handle, std::string& path) {
++int TwrpMtpDatabase::createSendObjectFile(MtpObjectHandle handle, int directory, std::string& path) {
+     for (auto* storage : storage_map_ | std::views::values)
+-        if (storage->OwnsObject(handle)) return storage->CreateSendObjectFile(handle, path);
++        if (storage->OwnsObject(handle)) return storage->CreateSendObjectFile(handle, directory, path);
+     return -1;
+ }
+ 
+--- a/mtp/twrp/TwrpMtpStorage.hpp
++++ b/mtp/twrp/TwrpMtpStorage.hpp
+@@ -140,7 +140,7 @@
+     int RenameObject(MtpObjectHandle handle, const std::string& new_name);
+     MtpObjectHandle BeginSendObject(const char* path, MtpObjectFormat format,
+                                     MtpObjectHandle parent, uint64_t size, time_t modified);
+-    int CreateSendObjectFile(MtpObjectHandle handle, std::string& path);
++    int CreateSendObjectFile(MtpObjectHandle handle, int directory, std::string& path);
+     MtpObjectHandleList* GetObjectList(MtpStorageID storage_id, MtpObjectHandle parent,
+                                       MtpObjectFormat format = 0);
+     int GetNumObjects(MtpObjectHandle parent);
+--- a/mtp/twrp/TwrpMtpStorage.cpp
++++ b/mtp/twrp/TwrpMtpStorage.cpp
+@@ -20,6 +20,7 @@
+ #include "TwrpMtpStorage.hpp"
+ #include <fcntl.h>
+ #include <sys/syscall.h>
++#include <sys/random.h>
+ #include <linux/fs.h>
+ 
+ #include <sys/inotify.h>
+@@ -494,26 +495,50 @@
+     return false;
+ }
+ 
+-int TwrpMtpStorage::CreateSendObjectFile(MtpObjectHandle handle, std::string& path) {
++int TwrpMtpStorage::CreateSendObjectFile(MtpObjectHandle handle, int directory, std::string& path) {
+     const std::lock_guard guard(tree_mutex_);
+     auto* entry = FindNode(handle);
+     if (!entry || entry->is_dir || handle != handle_currently_sending_ ||
+         sending_files_.contains(handle)) return -1;
+-    std::string temporary = (fs::path(GetNodePath(entry)).parent_path() /
+-                             ".mtp-upload-XXXXXX").string();
+-    // Creation and registration share the observer lock: no inotify event or
+-    // enumeration can expose the partial object between these operations.
+-    const int fd = mkstemp(temporary.data());
+-    if (fd < 0) return -1;
++    if (directory < 0) { errno = EBADF; return -1; }
++    // Create exclusively relative to the caller's pinned parent. Neither a
++    // renamed ancestor nor a pre-existing name may redirect or truncate it.
++    std::string name;
++    int fd = -1;
++    for (unsigned attempt = 0; attempt < 32; ++attempt) {
++        std::array<unsigned char, 16> random{};
++        size_t received = 0;
++        unsigned reads = 0;
++        while (received < random.size() && ++reads <= 64) {
++            const ssize_t count = getrandom(random.data() + received, random.size() - received, 0);
++            if (count < 0 && errno == EINTR) continue;
++            if (count <= 0) {
++                if (count == 0) errno = EIO;
++                return -1;
++            }
++            received += count;
++        }
++        if (received != random.size()) { errno = EAGAIN; return -1; }
++        name = ".mtp-upload-";
++        for (unsigned char byte : random) {
++            static constexpr char hex[] = "0123456789abcdef";
++            name += hex[byte >> 4];
++            name += hex[byte & 15];
++        }
++        fd = openat(directory, name.c_str(), O_RDWR | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0600);
++        if (fd >= 0) break;
++        if (errno != EEXIST) return -1;
++    }
++    if (fd < 0) { errno = EEXIST; return -1; }
+     struct stat st{};
+     if (fstat(fd, &st) != 0) {
+         const int error = errno;
+         close(fd);
+-        unlink(temporary.c_str());
++        unlinkat(directory, name.c_str(), 0);
+         errno = error;
+         return -1;
+     }
+-    fcntl(fd, F_SETFD, FD_CLOEXEC);
++    const std::string temporary = (fs::path(GetNodePath(entry)).parent_path() / name).string();
+     sending_files_[handle] = {temporary, st.st_dev, st.st_ino};
+     path = temporary;
+     return fd;

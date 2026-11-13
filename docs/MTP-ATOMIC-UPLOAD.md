@@ -73,6 +73,18 @@ python3 tests/mtp_transfers_test.py --report logs/mtp-directory-transfers.json
 python3 scripts/audit_mtp_directory_delivery.py
 ```
 
+<a id="staging-create-at"></a>
+
+## 临时文件创建绑定原目录（0116）
+
+0115持有目录fd后，数据库仍按完整路径调用mkstemp。若原目录在打开fd与创建之间被改名并替换，临时文件会建在替换目录，而收尾只清理原目录，导致残留。四个同夹具旧实现场景全部复现，覆盖新建/覆盖与目录/链接替换。
+
+0116将原目录fd通过数据库接口传给存储层，用openat及O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC创建0600临时文件。16字节getrandom输出编码为随机名称；短读和EINTR最多64次读取，其他错误或零返回立即失败，名称碰撞最多32次。已存在的名称不会被截断、跟随或删除。创建/发布/清理均相对于原目录；仍拒绝父路径身份变化后的发布。
+
+原生产server/database/storage与真实私有文件、inotify、线程在ASan/UBSan下257项通过。四项父替换验证原目标和替换目录不变、两目录无本次遗留；六项验证随机读取中断/短读/错误/零返回、单次碰撞重试及持续碰撞有限失败，用户碰撞链接保持。移动/复制实现未改，原48项证据沿用，不为哈希重复执行。
+
+本地记录为logs/mtp-staging-create.json及logs/mtp-staging-create-old.json。交付核对入口为`python3 scripts/audit_mtp_staging_create.py`，绑定0116、清理构建、844生产来源及六profile。USB/属性是替身，未执行ARM64 MTP、Windows或断电。名称检查到renameat/unlinkat之间的竞争、就地修改、inode复用及跨重启归属/回收仍未完成；目录fd不提供完整并发隔离。
+
 <a id="upload-parent-directory"></a>
 
 ## 上传父目录被移走后的发布与清理（0115）
@@ -83,7 +95,7 @@ python3 scripts/audit_mtp_directory_delivery.py
 
 原server/database/storage、真实私有文件、inotify及线程在ASan/UBSan下247项通过，新六项均通过；核对失败响应、两个目录的目标内容、替换临时文件及原目录清理。原正常/取消/失败上传和0114十二项包含在本次对象回归。移动/复制实现未改变，其独立48项证据沿用，不为刷新来源哈希重复运行。
 
-创建临时文件仍由数据库按路径调用mkstemp：打开目录与创建之间的竞争尚未消除，极端替换可留下新创建文件，但发布校验会拒绝。临时名称的检查后竞争、原inode就地修改及跨重启归属/回收仍未完成。目录描述符确保收尾操作不因祖先路径变化被重定向，不能据此宣称完整并发隔离。没有ARM64 MTP、真实USB/Windows或断电验收。本地报告 `logs/mtp-parent-identity.json`、`logs/mtp-parent-identity-old.json`；交付核对 `python3 scripts/audit_mtp_parent_identity.py` 绑定0115、清理构建及六份profile。
+0115交付时创建仍按路径调用mkstemp，保留了创建前竞争；此缺口现由上节0116修正。临时名称的检查后竞争、原inode就地修改及跨重启归属/回收仍未完成。目录描述符确保收尾操作不因祖先路径变化被重定向，不能据此宣称完整并发隔离。没有ARM64 MTP、真实USB/Windows或断电验收。本地报告 `logs/mtp-parent-identity.json`、`logs/mtp-parent-identity-old.json`；交付核对 `python3 scripts/audit_mtp_parent_identity.py` 绑定0115、清理构建及六份profile。
 
 <a id="active-staging-identity"></a>
 

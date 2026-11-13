@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-parent-identity.img",
-  "image_sha256": "38407943d0dfda0a08e8b7316364d079bb64a2ce581d6df7fb79e17f051c8768",
-  "production_sources": 843,
+  "image_name": "recovery-dijun-unified-mtp-staging-create.img",
+  "image_sha256": "4e91c50f03e7ecbd114256527f963b1099ff38c30232c408e2deb412055abfa2",
+  "production_sources": 844,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2101,6 +2101,22 @@
       "failures": 6,
       "local_report_sha256": "edb5a5c2117842c8caba4722f013a5dfd562248bdb17090aafca050a26905177",
       "scope": "Patch0115 pins upload parent directory before staging creation, checks visible parent identity before publish, and uses fstatat/renameat/unlinkat/fsync on the original directory fd. Original host MTP/files/inotify/threads ASan/UBSan247 pass; old6/6 new parent replacement cases fail. Existing transfer48 reused, not rerun. Path-based mkstemp pre-create race, check-to-use filename race, in-place edits, cross-restart recovery and ARM64 MTP/USB/Windows/powerloss remain unverified."
+    },
+    {
+      "name": "mtp-staging-create",
+      "status": "PASS",
+      "cases": 257,
+      "failures": 0,
+      "local_report_sha256": "2e9f7f5bca05d5cfe96c3b4d1f838df64b506f00e353beb7643e8736fe16b552",
+      "scope": "Patch0116 passes the pinned upload parent fd through the database and creates staging with openat/O_CREAT/O_EXCL/O_NOFOLLOW/O_CLOEXEC; 16 random bytes from getrandom with bounded EINTR/short-read retries and 32 name attempts. Host production MTP/files/inotify/threads ASan/UBSan257 pass; old4/4 pre-create parent replacement cases fail. Six entropy/collision controls preserve user collision symlinks. Transfer48 implementation unchanged and evidence reused. No ARM64 MTP/USB/Windows/powerloss/cross-restart recovery; basename check-to-use race and in-place edits remain open."
+    },
+    {
+      "name": "mtp-staging-create-old",
+      "status": "FAIL",
+      "cases": 4,
+      "failures": 4,
+      "local_report_sha256": "ab0dc893db8491dfdee1d2a32ab287f341b2501ff9282a25c8b108a6fa5878e7",
+      "scope": "Patch0116 passes the pinned upload parent fd through the database and creates staging with openat/O_CREAT/O_EXCL/O_NOFOLLOW/O_CLOEXEC; 16 random bytes from getrandom with bounded EINTR/short-read retries and 32 name attempts. Host production MTP/files/inotify/threads ASan/UBSan257 pass; old4/4 pre-create parent replacement cases fail. Six entropy/collision controls preserve user collision symlinks. Transfer48 implementation unchanged and evidence reused. No ARM64 MTP/USB/Windows/powerloss/cross-restart recovery; basename check-to-use race and in-place edits remain open."
     }
   ],
   "refresh_stuck_investigation": {
