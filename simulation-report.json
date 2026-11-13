@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-restore-paths.img",
-  "image_sha256": "fb27832383884206ddce0ae7233da11dfc41034b51124d1c4cdbf2852b656c93",
-  "image_status": "Clean installclean + make -j$(nproc); patch0096 selected restore root. 821 sources/six profiles; libtar79/codec116 pass; old11/15 and12/12 fail. Hardware unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-special-file-errors.img",
+  "image_sha256": "feef6a20449a10f9ca40c2bd530a79797cbf3542f301a543655c5e5bf492c4df",
+  "image_status": "Clean installclean + make -j$(nproc); patch0097 special-file creation errors. 822 sources/six profiles; libtar89/codec124 pass; old8/10 and8/8 fail. Hardware unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1935,7 +1935,7 @@
     "Security services: original six-profile ARM64 relocation18, missing-library6 and undefined-symbol6 covered; actual default namespace fields and config removal/marker12 controls now covered in private chroot (42-case suite). Real init/mount namespace/APEX/property/proc runtime, service initialization/Binder/TEE/key operations and synthetic crypto volumes remain open.",
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U.",
     "MTP remaining media metadata and final post-child directory date semantics (file epoch0/timestamp-error publication and directory SendObjectInfo time/completion16 cases covered), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
-    "Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix. Patch0095 now preserves application user.* binary/empty xattrs with bounded multiblock PAX and errors; existing Android references excluded. libtar64/GNU readback and codec104 pass, old10/14 and20/20fail. Arbitrary privileged namespaces/ACL, live concurrent consistency and complete manager/GUI/powerloss remain outside scope. Patch0096 now bounds ordinary/split extraction to selected root and rejects observed traversal/symlink/shared-inode hazards; libtar79/codec116 pass, old11/15 and12/12 fail. Concurrent ancestor replacement and bind-mount isolation remain open; not complete archive sandboxing.",
+    "Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix. Patch0095 now preserves application user.* binary/empty xattrs with bounded multiblock PAX and errors; existing Android references excluded. libtar64/GNU readback and codec104 pass, old10/14 and20/20fail. Arbitrary privileged namespaces/ACL, live concurrent consistency and complete manager/GUI/powerloss remain outside scope. Patch0096 now bounds ordinary/split extraction to selected root and rejects observed traversal/symlink/shared-inode hazards; libtar79/codec116 pass, old11/15 and12/12 fail. Concurrent ancestor replacement and bind-mount isolation remain open; not complete archive sandboxing. Patch0097 propagates char/block mknod failures before applying metadata to existing files: libtar89/codec124 pass, old8/10 and8/8 fail. mknod is intercepted; no actual device node creation or target kernel success verified.",
     "Full filesystem GUI/manager/tool format/write/repair lifecycle, real mounts/fscrypt, concurrent changes and I/O/power-loss cleanup remain pending. Ten original partition-tool page/worker/return-detail cases now cover that handoff with an explicit manager fixture; they do not join the independent ARM64 tool runs into one full lifecycle. Existing deletion/media/conversion/mount/persist/Android Secure/startup media fixes and ext4 labeling evidence are reused.",
     "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
     "video target ARM64 codec/display-shadow sampling integration, real storage/codec fault behavior, hour-scale stability and seek/index performance (bounded12.5s multi-cluster/keyframe correctness covered), GUI player rendering and full-resolution performance; host frames/queue/failure recovery plus independent FFmpeg native decode and72 short input seeks covered",
@@ -3948,6 +3948,38 @@
       "evidence": "logs/archive-path-pipeline-negative.json",
       "evidence_sha256": "2632e8bcd93be51996198646df03bed6aa88bbe1c42f48765d101fd1ac82fd06",
       "scope": "Host original libtar/codecs/fork/volumes reject dotdot, out-of-root absolute names and hardlink targets, existing symlink paths; shared regular inodes detached before truncation. Normal absolute split backups preserved. No race-free fd-relative ancestor traversal, bind-mount isolation, ARM64/full GUI/manager/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-special-restore",
+      "status": "PASS",
+      "count": 89,
+      "evidence": "logs/archive-special-restore.json",
+      "evidence_sha256": "13d9f355088dfce2496c4cfe64eded0a7ea4f7fdd42c97919c87763b88b3806d",
+      "scope": "Original host libtar/codecs/fork error propagation. All mknod calls intercepted: EPERM/ENOSPC/EEXIST, checked type/device number; existing ordinary content/mode/mtime preserved. FIFO creation is real. No actual device nodes, target kernel success, full GUI/manager/ARM64 restore/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-special-negative",
+      "status": "FAIL",
+      "count": 10,
+      "evidence": "logs/archive-special-negative.json",
+      "evidence_sha256": "b672f7da81d120b66fb281a047e3d38ad6b8cc162f64d171d13430d49c5560d7",
+      "scope": "Original host libtar/codecs/fork error propagation. All mknod calls intercepted: EPERM/ENOSPC/EEXIST, checked type/device number; existing ordinary content/mode/mtime preserved. FIFO creation is real. No actual device nodes, target kernel success, full GUI/manager/ARM64 restore/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-special-pipeline",
+      "status": "PASS",
+      "count": 124,
+      "evidence": "logs/archive-special-pipeline.json",
+      "evidence_sha256": "ffb57a1b5b50da6582c7b8f53c3b609d8f8ecb506a0f4453f4b3888d66ba5929",
+      "scope": "Original host libtar/codecs/fork error propagation. All mknod calls intercepted: EPERM/ENOSPC/EEXIST, checked type/device number; existing ordinary content/mode/mtime preserved. FIFO creation is real. No actual device nodes, target kernel success, full GUI/manager/ARM64 restore/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-special-pipeline-negative",
+      "status": "FAIL",
+      "count": 8,
+      "evidence": "logs/archive-special-pipeline-negative.json",
+      "evidence_sha256": "3fa21da2e91e154213cd2fcbde7c2a0b59cbf5a9853d898823855273cdcb03ce",
+      "scope": "Original host libtar/codecs/fork error propagation. All mknod calls intercepted: EPERM/ENOSPC/EEXIST, checked type/device number; existing ordinary content/mode/mtime preserved. FIFO creation is real. No actual device nodes, target kernel success, full GUI/manager/ARM64 restore/power-loss or rollback proof."
     }
   ],
   "source_review_followups": [
@@ -4286,10 +4318,10 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/archive-path-delivery-audit.json",
-    "scope": "Host original libtar/codecs/fork/volumes reject dotdot, out-of-root absolute names and hardlink targets, existing symlink paths; shared regular inodes detached before truncation. Normal absolute split backups preserved. No race-free fd-relative ancestor traversal, bind-mount isolation, ARM64/full GUI/manager/power-loss or rollback proof.",
+    "evidence": "logs/archive-special-delivery-audit.json",
+    "scope": "Original host libtar/codecs/fork error propagation. All mknod calls intercepted: EPERM/ENOSPC/EEXIST, checked type/device number; existing ordinary content/mode/mtime preserved. FIFO creation is real. No actual device nodes, target kernel success, full GUI/manager/ARM64 restore/power-loss or rollback proof.",
     "hardware": "unverified",
-    "evidence_sha256": "627e97f5ecb664923cd5c26500e2516bf4c03fbdd2bc64e03f86c5b73acb1cf8"
+    "evidence_sha256": "d7b02ffbdae1f2009864f2c5f54b814802554672e7cdb06df7e29dcb80555aef"
   },
   "delivery_evidence_refresh": {
     "date": "2026-11-12",

@@ -17,6 +17,7 @@
 #include <vector>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/sysmacros.h>
 #include <sys/wait.h>
 #include <sys/xattr.h>
 #include <linux/xattr.h>
@@ -37,6 +38,14 @@ namespace fs=std::filesystem;
 #define CHECK(x) do{if(!(x)){fprintf(stderr,"FAIL %d: %s errno=%d\n",__LINE__,#x,errno);exit(1);}}while(0)
 static bool security_fixture=false;
 static string security_fault;
+static bool special_fixture=false;
+static mode_t special_type;
+extern "C" int __wrap_mknod(const char* path,mode_t mode,dev_t device){
+ CHECK(special_fixture&&string(path)=="/src/node"&&(mode&S_IFMT)==special_type);
+ CHECK(major(device)==1&&minor(device)==3);
+ int fd=open("/backup/mknod-called",O_WRONLY|O_CREAT,0600);CHECK(fd>=0);CHECK(close(fd)==0);
+ errno=EEXIST;return -1;
+}
 static const char security_context[]="u:object_r:system_file:s0";
 static vfs_cap_data security_cap{};
 extern "C" int __real_lgetfilecon(const char*,char**);
@@ -201,6 +210,28 @@ int main(int argc,char** argv){
   if(scenario=="wait-eintr")ualarm(5000,0);
   int result=TWFunc::WaitForChild(child,&status,"fixture wait");
   CHECK((result==0)==(scenario=="wait-eintr"));puts("PASS child wait status");return 0;
+ }
+ if(scenario.find("-special-")!=string::npos){
+  special_fixture=true;special_type=scenario.ends_with("-char")?S_IFCHR:S_IFBLK;
+  fs::create_directory("/src");fs::create_directory("/backup");
+  write_file("/src/node","EXISTING ORDINARY FILE");CHECK(chmod("/src/node",0640)==0);
+  struct stat before{},after{};CHECK(stat("/src/node",&before)==0);
+  TAR* handle=nullptr;CHECK(tar_open(&handle,"/backup/plain",nullptr,O_WRONLY|O_CREAT|O_TRUNC,0600,TAR_GNU)==0);
+  th_set_path(handle,"node");handle->th_buf.typeflag=special_type==S_IFCHR?CHRTYPE:BLKTYPE;
+  th_set_device(handle,makedev(1,3));th_set_mode(handle,0600);th_set_mtime(handle,1600000000);th_set_size(handle,0);
+  CHECK(th_write(handle)==0&&tar_append_eof(handle)==0&&tar_close(handle)==0);
+  string input="/backup/plain";const string archive="/backup/data.ext4.win";
+  if(scenario.starts_with("gzip")||scenario.starts_with("both")){
+   string data=read_file(input);gzFile gz=gzopen("/backup/compressed","wb");CHECK(gz);
+   CHECK(gzwrite(gz,data.data(),data.size())==static_cast<int>(data.size()));CHECK(gzclose(gz)==Z_OK);input="/backup/compressed";
+  }
+  if(scenario.starts_with("aes")||scenario.starts_with("both"))transform(true,input,archive);else fs::copy_file(input,archive);
+  ProgressTracking progress(512);PartitionSettings settings;settings.progress=&progress;
+  twrpTar restore;restore.setdir("/src");restore.setfn(archive);restore.setpassword("fixture-password");restore.part_settings=&settings;
+  CHECK(restore.extractTarFork()!=0);CHECK(fs::exists("/backup/mknod-called"));
+  CHECK(stat("/src/node",&after)==0&&before.st_ino==after.st_ino&&before.st_mode==after.st_mode&&before.st_mtime==after.st_mtime);
+  CHECK(read_file("/src/node")=="EXISTING ORDINARY FILE");
+  puts("PASS special-file failure reaches codec/fork parent without changing existing file");return 0;
  }
  if(scenario.find("-path")!=string::npos){
   const bool split=scenario.ends_with("-split"), encrypted=scenario.starts_with("aes")||scenario.starts_with("both");

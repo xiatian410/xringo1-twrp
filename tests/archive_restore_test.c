@@ -40,6 +40,16 @@ void bytes_to_hex(const uint8_t *p, size_t n, char *r) {
 
 static const char *fault;
 static unsigned fault_calls;
+/* Never create a character/block node in this host suite. */
+int __wrap_mknod(const char *path, mode_t mode, dev_t device) {
+    CHECK(fault && !strncmp(fault,"special-",8));
+    CHECK(!strcmp(path,"restore/node"));
+    CHECK((mode&S_IFMT)==(strstr(fault,"-char-")?S_IFCHR:S_IFBLK));
+    CHECK(major(device)==1 && minor(device)==3);
+    ++fault_calls;
+    errno=strstr(fault,"-full")?ENOSPC:(strstr(fault,"-denied")?EPERM:EEXIST);
+    return -1;
+}
 static int record_progress;
 static int security_fixture, label_calls, cap_calls;
 static const char security_context[]="u:object_r:system_file:s0";
@@ -288,7 +298,31 @@ int main(int argc,char **argv) {
     CHECK(access(".fixture",F_OK)==0);
     CHECK(mkdir("input",0700)==0); CHECK(mkdir("restore",0700)==0);
     const char *c=argv[1];
-    if(!strncmp(c,"path-",5)) {
+    if(!strncmp(c,"special-",8)) {
+        const int fifo=strstr(c,"-fifo-")!=NULL;
+        const int exists=strstr(c,"-exists")||strstr(c,"-pipeline");
+        if(exists)putfile("restore/node",513);
+        struct stat before,after;if(exists)CHECK(lstat("restore/node",&before)==0);
+        TAR *t=writer();th_set_path(t,"node");
+        t->th_buf.typeflag=fifo?FIFOTYPE:(strstr(c,"-char-")?CHRTYPE:BLKTYPE);
+        th_set_device(t,makedev(1,3));th_set_mode(t,0600);th_set_mtime(t,1600000000);th_set_size(t,0);
+        CHECK(th_write(t)==0);finish(t);fault=c;
+        int result,saved;
+        if(fifo||strstr(c,"-pipeline")){result=restore("restore");saved=errno;}
+        else {
+            CHECK(tar_open(&t,"backup.tar",NULL,O_RDONLY,0,FLAGS)==0);CHECK(th_read(t)==0);
+            result=strstr(c,"-char-")?tar_extract_chardev(t,"restore/node"):tar_extract_blockdev(t,"restore/node");
+            saved=errno;CHECK(tar_close(t)==0);
+        }
+        fault=NULL;
+        if(fifo&&!exists){CHECK(result==0);CHECK(lstat("restore/node",&after)==0&&S_ISFIFO(after.st_mode));}
+        else {
+            CHECK(result==-1);CHECK(saved==(strstr(c,"-full")?ENOSPC:(strstr(c,"-denied")?EPERM:EEXIST)));
+            if(exists){CHECK(lstat("restore/node",&after)==0);CHECK(before.st_ino==after.st_ino&&before.st_mode==after.st_mode&&before.st_mtime==after.st_mtime);CHECK(after.st_size==513);}
+            else CHECK(lstat("restore/node",&after)==-1&&errno==ENOENT);
+        }
+        CHECK(fault_calls==(fifo?0:1));puts("PASS special-file creation result/errno; existing target metadata preserved");
+    } else if(!strncmp(c,"path-",5)) {
         path_case(c+5);
     } else if(!strncmp(c,"xattr-pax-",10)) {
         char payload[5000]={0},record[5100]={0};size_t length=0;

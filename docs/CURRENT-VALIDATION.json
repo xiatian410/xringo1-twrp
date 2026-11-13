@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-restore-paths.img",
-  "image_sha256": "fb27832383884206ddce0ae7233da11dfc41034b51124d1c4cdbf2852b656c93",
-  "production_sources": 821,
+  "image_name": "recovery-dijun-unified-special-file-errors.img",
+  "image_sha256": "feef6a20449a10f9ca40c2bd530a79797cbf3542f301a543655c5e5bf492c4df",
+  "production_sources": 822,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -12,6 +12,38 @@
     "scope": "After Synaptics is live and Xiaomi input is registered, wait 2 seconds, request ordinary touch reports, and check the software cache. This does not prove controller acknowledgement or event delivery. Prior manual raw0 user capture observed 215 Linux input events; this automatic-startup candidate has no corresponding hardware observation."
   },
   "checks": [
+    {
+      "name": "archive-special-restore",
+      "status": "PASS",
+      "cases": 89,
+      "failures": 0,
+      "local_report_sha256": "13d9f355088dfce2496c4cfe64eded0a7ea4f7fdd42c97919c87763b88b3806d",
+      "scope": "Original host libtar/codecs/fork error propagation. All mknod calls intercepted: EPERM/ENOSPC/EEXIST, checked type/device number; existing ordinary content/mode/mtime preserved. FIFO creation is real. No actual device nodes, target kernel success, full GUI/manager/ARM64 restore/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-special-negative",
+      "status": "FAIL",
+      "cases": 10,
+      "failures": 8,
+      "local_report_sha256": "b672f7da81d120b66fb281a047e3d38ad6b8cc162f64d171d13430d49c5560d7",
+      "scope": "Original host libtar/codecs/fork error propagation. All mknod calls intercepted: EPERM/ENOSPC/EEXIST, checked type/device number; existing ordinary content/mode/mtime preserved. FIFO creation is real. No actual device nodes, target kernel success, full GUI/manager/ARM64 restore/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-special-pipeline",
+      "status": "PASS",
+      "cases": 124,
+      "failures": 0,
+      "local_report_sha256": "ffb57a1b5b50da6582c7b8f53c3b609d8f8ecb506a0f4453f4b3888d66ba5929",
+      "scope": "Original host libtar/codecs/fork error propagation. All mknod calls intercepted: EPERM/ENOSPC/EEXIST, checked type/device number; existing ordinary content/mode/mtime preserved. FIFO creation is real. No actual device nodes, target kernel success, full GUI/manager/ARM64 restore/power-loss or rollback proof."
+    },
+    {
+      "name": "archive-special-pipeline-negative",
+      "status": "FAIL",
+      "cases": 8,
+      "failures": 8,
+      "local_report_sha256": "3fa21da2e91e154213cd2fcbde7c2a0b59cbf5a9853d898823855273cdcb03ce",
+      "scope": "Original host libtar/codecs/fork error propagation. All mknod calls intercepted: EPERM/ENOSPC/EEXIST, checked type/device number; existing ordinary content/mode/mtime preserved. FIFO creation is real. No actual device nodes, target kernel success, full GUI/manager/ARM64 restore/power-loss or rollback proof."
+    },
     {
       "name": "archive-path-restore",
       "status": "PASS",

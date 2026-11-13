@@ -255,3 +255,12 @@ python3 tests/raw_image_test.py --source backups/raw-image-pre-fix/partition.cpp
 本修正使用路径检查后调用原提取方法，不是逐层目录描述符隔离；并发祖先替换仍有TOCTOU窗口，根内bind mount也不被识别。不存在完整恶意归档沙箱、ARM64恢复、真实挂载/GUI/manager或断电证明。拒绝发生前已恢复内容不回滚。
 
 本地证据：`logs/archive-path-restore-final.json`、`logs/archive-path-negative.json`、`logs/archive-path-pipeline.json`、`logs/archive-path-pipeline-negative.json`与`logs/archive-path-delivery-audit.json`。相关输入未变时复用，不重复运行。
+
+<a id="special-file-errors"></a>
+## 特殊文件创建失败（0097）
+
+旧字符/块节点提取方法在 `mknod` 失败后记录日志却返回0。若目的路径已有普通文件，后续权限/时间恢复还能成功，因此整个恢复可能误报成功并修改已有文件元数据。0097保留原errno、返回-1，停止后续元数据处理，并由原codec/fork链传到恢复调用者。
+
+新增直接调用覆盖EPERM、ENOSPC和EEXIST；提取链覆盖EEXIST时普通文件内容、inode、权限和mtime保持原样。plain/gzip/AES/组合编码八个场景确认父进程失败。libtar共89项、codec124项通过；旧实现在新增10项中8项失败，两个FIFO控制通过；codec新增八项旧实现全部失败。测试的mknod始终拦截，不调用真实系统创建设备节点，核对类型及major/minor；FIFO为真实临时管道文件。最初codec夹具缺少sys/sysmacros.h导致编译失败，已仅补测试头文件，失败日志保留。
+
+此项未验证目标内核允许创建设备节点、真实挂载/ARM64恢复/完整GUI或断电持久性，也不回滚已经恢复的内容。相关输入未变时复用结果。报告：本地 `logs/archive-special-restore.json`、`logs/archive-special-negative.json`、`logs/archive-special-pipeline.json`、`logs/archive-special-pipeline-negative.json` 与 `logs/archive-special-delivery-audit.json`。

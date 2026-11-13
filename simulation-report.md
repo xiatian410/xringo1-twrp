@@ -6,14 +6,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-restore-paths.img` |
-| SHA-256 | `fb27832383884206ddce0ae7233da11dfc41034b51124d1c4cdbf2852b656c93` |
-| 生产来源绑定 | 821 份 |
+| 文件 | `recovery-dijun-unified-special-file-errors.img` |
+| SHA-256 | `feef6a20449a10f9ca40c2bd530a79797cbf3542f301a543655c5e5bf492c4df` |
+| 生产来源绑定 | 822 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：恢复路径约束
+## 本批生产修正：特殊文件创建失败传播
+
+0097 修正字符/块节点创建失败后仍返回成功的问题。原实现会继续向已有普通文件应用归档权限和时间；现在保留创建错误并停止，错误传到codec/fork恢复父进程。libtar89项及codec124项通过；旧实现新增场景分别8/10与8/8失败，FIFO成功/失败控制正常。已清理构建并核对六profile及来源，范围见[特殊文件错误](docs/BACKUP-DATA-PATHS.md#special-file-errors)。
+
+测试完全拦截mknod，只检查调用参数和失败返回，不创建字符/块设备节点；不代表目标内核成功创建设备节点或完整GUI/manager恢复验收。已有部分恢复内容不回滚。本批未重复整包OTA及已解决功能。
+
+## 沿用的恢复路径约束
 
 0096 将所选恢复根传给全部分卷工作线程，拒绝 `..`、越界绝对路径、现有符号链接父路径及越界硬链接目标；覆盖已有多硬链接普通文件时先解除当前链接，避免截断目录外共享内容。正常分卷的包内绝对路径格式保留。libtar79项、codec/fork/分卷116项通过，同夹具旧实现分别11/15与12/12失败。已清理构建并核对六profile封装，详见[路径范围](docs/BACKUP-DATA-PATHS.md#restore-path-boundary)。
 
