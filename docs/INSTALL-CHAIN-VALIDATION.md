@@ -24,6 +24,27 @@ python3 tests/ota_engine_entry.py --join-zip --model-finish
 python3 scripts/audit_zip_engine_join.py --model-finish
 ```
 
+<a id="stock-snapshot-allocation"></a>
+### 快照分配入口：真实规划、失败清理与合成空间边界
+
+完整包模型此前预置快照分配状态。为确定该替代项可能遗漏的空间 / 格式拒绝，新增 `tests/ota_snapshot_allocate.py/.cpp`：使用哈希固定的原始 4.0.4 manifest，链接原始 ARM64 SnapshotManager、SnapshotMetadataUpdater、PartitionCowCreator 和 liblp，通过交付 linker / 库执行 `BeginUpdate → CreateUpdateSnapshots`。没有重跑 payload，也没有修改这些生产方法。
+
+源槽 LP 是**明确合成布局**：十个源分区使用本包目标尺寸；super 为 32 GiB，或仅比这些分区总量多约 4 MiB。它不代表用户手机的源版本、实际布局或可用空间。liblp 在私有稀疏普通文件读写真实 LP metadata；属性、内核能力、Boot HAL 和不存在的映射 / 镜像状态是夹具。映射创建明确返回失败，未启用设备或实际挂载。
+
+七项必要检查通过，且断言实际停止诊断，避免提前失败也算覆盖：
+
+| 场景 | 实际结果 |
+| --- | --- |
+| 空间充足，拒绝映射 | 原代码生成十份 CREATED 快照状态，逐项核对原包尺寸、快照尺寸及 `estimate_cow_size + 2 MiB` 按 4 KiB 对齐后的 COW 分区尺寸；原 CreateDmTable 生成一个 target 后，映射替身拒绝；十份临时状态清理 |
+| 合成空间不足 | 需要 COW 文件时，Recovery 拒绝 `/data` 后端，返回 `NO_SPACE=-28`，所需文件空间合计 9,287,806,976 字节；这只是该合成布局的计算结果 |
+| 内核能力缺失 | 用户空间快照已请求时拒绝退为旧 dm-snapshot |
+| 删除 COW 估算 / COW 版本改为 99 | 分别命中缺少估算和版本越界诊断，停止分配 |
+| overlayfs / 错误更新状态 | 命中相应入口拒绝，未进行映射 |
+
+每项失败均检查原 LP metadata 前 1 MiB 字节不变、两槽 metadata 可重新读取、目标未发布 `_b` 分区、临时状态目录为空，且没有请求创建后端镜像。正常失败保留 Initiated；错误状态场景保留 Unverified，没有误报完成。首次夹具的 HAL 边界遗漏、内核能力调用拦截无效和 chroot realpath 失败记录留在本地，修正夹具后才记录当前覆盖，未据此改生产逻辑。
+
+本地证据为 `logs/ota-snapshot-allocate.json`，核对入口 `python3 scripts/audit_snapshot_allocation.py`。本批属于新增证据，无生产修正或新镜像。尚未接到真实手机 LP、内核映射、COW 初始化、BootControl 和完整安装；也没有证明生产控制器是否会对具体设备走快照成功或直接更新回退。后续只推进这些边界，不复跑不变的整包或等价分配场景。
+
 <a id="stock-os4-zip"></a>
 ## 历史检查：原始完整包入口与证书修正
 

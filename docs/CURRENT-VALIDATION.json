@@ -1345,6 +1345,17 @@
       "partition_hashes": 42,
       "full_ota_install": false,
       "scope": "One-run original host ZIP signature/A-B/fork/pipe -> QEMU/current linker -> intact ARM64 engine4933 operations/payload hash/42 hashes -> exact stock postinstall Recovery guard with actual ARM64 shell/getprop -> actual SnapshotManager FinishedSnapshotWrites state Unverified -> modeled slot B. Engine0/wait0/parent INSTALL_SUCCESS0; MODEL_SUCCESS only. Block-readonly/mount/allocation/HAL/slot/proc/cleanup/GUI remain explicit models; no actual snapshot creation/kernel mapping/reboot/merge/full OTA. No production change/build."
+    },
+    {
+      "name": "stock-os4-snapshot-allocation",
+      "status": "PASS",
+      "cases": 7,
+      "failures": 0,
+      "local_report_sha256": "1f2b0c98e509394a45787a0606d0132a436519f57773fcbdafb99f579ac07686",
+      "synthetic_source_layout": true,
+      "actual_kernel_mapping": false,
+      "full_ota_install": false,
+      "scope": "Actual ARM64 SnapshotManager BeginUpdate/CreateUpdateSnapshots with unchanged OS4.0.4 manifest and explicit synthetic sparse LP layouts. Real SnapshotMetadataUpdater/PartitionCowCreator/liblp plan10 partition sizes and stock COW estimates; map creation deliberately denied, status rollback and unchanged LP prefix checked. Nearly-full layout returns NO_SPACE and forbids data-backed COW in Recovery. Kernel/estimate/version/overlay/state diagnostics checked. No real kernel mapping, actual source LP/free-space, COW initialization, controller fallback join or full OTA. No production change/build."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",

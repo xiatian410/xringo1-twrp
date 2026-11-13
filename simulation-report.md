@@ -15,6 +15,8 @@
 
 ## 后续执行证据
 
+分配入口新增有限证据：原始 4.0.4 manifest 接到真实 ARM64 `BeginUpdate / CreateUpdateSnapshots`、LP 更新器与 COW 规划器；合成普通文件 LP 中核对十个分区的快照尺寸 / COW 估算、拒绝映射后的清理，及空间不足、缺少内核能力 / 估算、版本越界、overlayfs、错误状态，共七项通过。检查失败不发布目标 LP、metadata 字节不变、临时状态清理。布局与空间为明确合成输入，不能用于判断设备实际容量；映射 / COW 初始化和控制器回退仍未贯通。无生产修正或新镜像，见[分配入口范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-allocation)。
+
 最新原始 4.0.4 整包模拟在模型内成功：一次运行完成整包验签、真实 ARM64 引擎 4933 操作 / payload 哈希 / 42 分区哈希，接到精确原厂 postinstall 的 Recovery 保护分支及真实 SnapshotManager 的 Unverified 状态发布，再记录模型目标槽。引擎退出 0，原父安装器返回 INSTALL_SUCCESS=0，21 项断言通过，约 861 秒。**结果为 MODEL_SUCCESS，完整设备 OTA 仍未验收**：块只读、挂载、快照分配、HAL / 槽位仍有模型，没有真实启动或合并。无生产修改或新构建；保留此前 FAILED63 记录。见[当前模型范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-model-finish)。以下为各阶段历史证据，不能把阶段边界当作最新队列。
 
 原 ZIP 父进程到真实 ARM64 引擎已在一次运行中接续：当前固定信任库验证原始 4.0.4 整包签名后，原 A/B 命令 / fork / pipe 经显式 QEMU 桥接启动原主程序与下载队列，完成 4933 操作及 42 最终哈希。引擎在普通文件块只读设置处返回 63，父进程消费真实两阶段进度，观察 wait status16128，正确返回 INSTALL_ERROR=1 并清理 / 回收；没有误报成功。**安装仍为 FAILED**，postinstall 挂载 / 程序、SnapshotManager、槽位和合并未执行。父为主机编译，HAL / 文件映射等替身保留；无生产修正或新镜像。见[一次父子接续范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-engine-joined)。

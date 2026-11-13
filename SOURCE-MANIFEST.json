@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "b58c5ac59d7cc92ed6e76a4d27eda1db4c50f51cceb7531dd29931e116f6ecee",
+    "sha256": "c9bd993622bb1eeb4615423bb8aec81689c0d1e9f70f2549051eabf73ffa8a63",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -80,7 +80,7 @@
     "mode": "0o644"
   },
   "docs/INSTALL-CHAIN-VALIDATION.md": {
-    "sha256": "b30938df150d9baf9855d95b1b1e0b9038c014a92608cfc5f03a04f8cfa31cc9",
+    "sha256": "e5fc8230e390d3378c36d6755cdbfc41c1601123fa541fe4fb0fceb9d2ea5c49",
     "mode": "0o644"
   },
   "docs/MODULE-STATE-ADAPTATION.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "06d4579fa5f68504ee812dd4b304a16c30cd68171d6c1786a601bf35f0e3333a",
+    "sha256": "1f1dd1ec7cf3f13e8ac906020203d86847fa0ddde1a47d5c31bc6d2d09eb798f",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1323,6 +1323,10 @@
     "sha256": "cdca920c7a4e721fe2a4227e8b5335d42357cc0996f8d20b2509ae694c3d0601",
     "mode": "0o644"
   },
+  "scripts/audit_snapshot_allocation.py": {
+    "sha256": "c4c38d5d7b989ade8c7791ff37051390a32422dfec3510d39b16d4ae00e4a05b",
+    "mode": "0o644"
+  },
   "scripts/audit_snapshot_cancel_delivery.py": {
     "sha256": "0fe5f6eb6dbe9a195337c5b2055343b9889f2eb02f1cbab16337060a093a72bc",
     "mode": "0o644"
@@ -1688,11 +1692,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "5744c90ecb04ae142f0dc95070f731488f025b0cf959ddd50bceda35ede28677",
+    "sha256": "a421af02cce94c77ec0dc00cd5cf7bb3c3e18c0ff29b128d4fba7113e397c2de",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "0dc7078358a77acb173c957b0628bef347f0575eeed18a0c74754a3aa9d9ac32",
+    "sha256": "f3e03e20930712755076b2f87f908c6c415cec9e5fc2de34f2b78953b1c3ba39",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2281,6 +2285,14 @@
   },
   "tests/ota_recovery_fallback.py": {
     "sha256": "7868c042c9fe0a11c8c531ff1ef719f1e975e419b925c116f208039388643e16",
+    "mode": "0o644"
+  },
+  "tests/ota_snapshot_allocate.cpp": {
+    "sha256": "ea59e30431d576a1f0ca7f55b7307f7dc77161c0bfc96383ffda556e3d24e6b6",
+    "mode": "0o644"
+  },
+  "tests/ota_snapshot_allocate.py": {
+    "sha256": "f1036dcd2fb3ccffbde323e6d4c2eb7cd23e1145ae472c8557363555c4711d51",
     "mode": "0o644"
   },
   "tests/ota_snapshot_cancel.cpp": {
