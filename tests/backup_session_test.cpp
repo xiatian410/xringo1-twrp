@@ -89,7 +89,7 @@ namespace TWFunc {
 string gui_lookup(const char*,const char* fallback){return fallback;}
 int tw_set_default_metadata(const char*){return 0;}
 struct TWExclude {
- uint64_t Get_Folder_Size(const string&){return 12;}
+ uint64_t Get_Folder_Size(const string&,bool=true,const void* =nullptr,bool* complete=nullptr){if(complete)*complete=scenario!="session-final-size-fail";return 12;}
  bool check_skip_dirs(const string&){return false;}
 };
 struct ProgressTracking {

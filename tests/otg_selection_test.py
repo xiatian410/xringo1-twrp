@@ -22,7 +22,7 @@ HARNESS=r'''
 namespace android::base {template<class F>struct Guard{F f;bool active=true;~Guard(){if(active)f();}void Disable(){active=false;}};template<class F>Guard<F> make_scope_guard(F f){return {f};}}
 namespace TWFunc {bool IsPathExists(const std::string&){return true;}}
 struct UnitConversion {static std::string FormatBytes(unsigned long long){return "fixture";}};
-struct Exclusions {unsigned long long Get_Folder_Size(const std::string&){return 0;}} backup_exclusions;
+struct Exclusions {unsigned long long Get_Folder_Size(const std::string&,bool=true,const void* =nullptr,bool* complete=nullptr){if(complete)*complete=true;return 0;}} backup_exclusions;
 struct TWPartition {
  std::string mount_point_="/storage/usbotg-1-1",storage_path_="/storage/usbotg-1-1",actual_block_device_="/fixture",backup_path_="/fixture";
  bool removable_=true,is_storage_=true,is_present_=true,mounted=false,mount_read_only_=false,can_be_mounted_=true,is_encrypted_=false,has_data_media_=false,has_android_secure_=false,backup_size_provisional_=false;

@@ -17,7 +17,7 @@ def method(text, signature):
  return text[start:end]
 ROOT=Path(__file__).resolve().parents[1]
 SRC=Path('/root/AAA/twrp/bootable/recovery')
-CASES=['session-normal','session-after-cancel','session-early-cancel','session-unknown-first',
+CASES=['session-final-size-fail','session-normal','session-after-cancel','session-early-cancel','session-unknown-first',
  'session-unknown-last','session-empty','session-duplicates','session-parent-child',
  'session-absent-child','session-absent-selected','session-disabled','session-mount-fail',
  'session-size-fail','session-overflow','session-low-space','session-existing','session-symlink',
@@ -32,13 +32,15 @@ CASES=['session-normal','session-after-cancel','session-early-cancel','session-u
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source',type=Path,default=SRC)
- ap.add_argument('--report',type=Path,default=ROOT/'logs/backup-session.json');args=ap.parse_args()
+ ap.add_argument('--report',type=Path,default=ROOT/'logs/backup-session.json');ap.add_argument('--cases',nargs='*',choices=CASES);args=ap.parse_args()
  pm=(args.source/'partitionmanager.cpp').read_text();tar=(args.source/'twrpTar.cpp').read_text()
  modern='BackupProcess*' in tar
  code='\n'.join(method(pm,s) for s in ['bool TWPartitionManager::IsBackupNameValid(',
   'bool TWPartitionManager::BackupPartition(', 'void TWPartitionManager::CleanBackupFolder(',
   'int TWPartitionManager::CheckBackupCancel(', 'int TWPartitionManager::CancelBackup(',
   'bool TWPartitionManager::RunBackup('])
+ if 'readDirectory(DIR*' in tar:
+  code+='\n'+method(tar,'struct dirent* readDirectory(')+'\n'+method(tar,'int closeDirectory(')
  code+='\n'+method(tar,'int twrpTar::createTarFork(')
  code+='\n'+method((SRC/'digest/twrp_digest_driver.cpp').read_text(),'std::optional<std::vector<std::string>> TwrpDigestDriver::GetBackupFiles(')
  gui=(args.source/'gui2/backend/twrp_backup_backend.cpp').read_text()
@@ -63,7 +65,7 @@ def main():
    *['-Wl,--wrap='+f for f in ['fork','kill','waitpid','waitid','mkstemp','fsync','sync']]]
   subprocess.run(cmd,check=True);results=[]
   assert ctypes.CDLL(None).prctl(36,1,0,0,0)==0  # adopt fixture orphans for cleanup
-  for case in CASES:
+  for case in args.cases or CASES:
    wd=tmp/case;wd.mkdir();(wd/'.fixture').touch()
    with (wd/'output.log').open('w') as log:
     proc=subprocess.Popen([str(tmp/'test'),case],cwd=wd,stdout=log,stderr=log,start_new_session=True)

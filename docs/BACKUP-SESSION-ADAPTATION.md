@@ -2,6 +2,20 @@
 
 <a id="user-attempt-policy"></a>
 
+<a id="size-scan-errors"></a>
+
+## 容量扫描错误传播（0117）
+
+此前Get_Folder_Size遇到opendir/lstat失败或readdir/closedir错误时返回零或已累计的部分大小，调用方无法区分空目录和失败。异步Data扫描仍将结果排队并清除provisional，同步备份预检、加密线程分配与最终备份统计也继续。
+
+0117共享递归扫描返回完整状态，读取前逐次清除errno，传播目录/属性错误、取消及累计溢出；失败不返回部分字节。缺失的可选绝对排除根允许零容量，存在根以下的ENOENT仍失败。路径仍不跟随链接，按普通文件/链接逻辑字节计量，保留排除并集规则。后台只有完整结果可排队，失败保留临时估算；同步Data/secure扫描返回false并恢复本次挂载和只读标记。加密规划失败退出子进程；最终备份文件夹统计失败返回父失败，不发布完成manifest。
+
+有限检查执行真实私有文件及ASan/UBSan：底层16项覆盖正常/空/缺失可选根、读取/关闭/属性/打开错误、取消和残留errno；旧版12项失败。原UpdateSize/后台worker/Apply执行14项，旧版11项错误场景失败，检查状态发布与挂载恢复。原容量策略19项及存储选择15项通过。会话五项包含最终统计失败与正常/预检失败/取消/tar控制，统计返回是显式替身，底层另行执行。普通/gzip/AES/组合及分卷、相关遍历错误共18项codec通过；新加的四项规划控制旧版仅AES关闭错误失败，其他三项已由后续遍历拒绝。
+
+本地证据为logs/exclusion-errors*.json与logs/data-size-errors*.json，交付核对入口`python3 scripts/audit_size_scan_errors.py`。备份会话旧测试提取createTarFork时遗漏readDirectory/closeDirectory；本批补齐原辅助函数并增加按case执行，没有改变生产函数来适配测试。清理构建绑定846来源和六profile。
+
+statfs/df/挂载/命令/GUI为替身；codec的fscrypt提供者亦为替身。未验证真实Data挂载/加密、分配块估算、路径别名/并发源一致性或断电；检查不解释现场DRM atomic commit等待。不为未改OTA、MTP或震动重复验证。
+
 ## 锁定用户排除策略按备份次数隔离（0113）
 
 此前 `BackupTar()` 把锁定次用户的五类目录直接追加到分区的持久排除列表。同一 Recovery 会话内解锁用户后再次备份，这些路径仍然被排除，可能生成遗漏用户数据的备份；一次失败的尝试也会污染后续策略。

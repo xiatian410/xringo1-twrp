@@ -55,6 +55,7 @@ static void walk_mark(const char* kind){
  CHECK(write(fd,"x",1)==1);CHECK(close(fd)==0);
 }
 static bool walk_selected(const WalkDirectory& item){
+ if(walk_fault.starts_with("size-"))return item.path==(walk_mixed?"/src/app":"/src/dir")&&item.scan==1;
  if(walk_fault.starts_with("top-first"))return item.path=="/src"&&item.scan==1;
  if(walk_fault.starts_with("top-second"))return item.path=="/src"&&item.scan==2;
  if(item.path!=(walk_mixed?"/src/app":"/src/dir"))return false;

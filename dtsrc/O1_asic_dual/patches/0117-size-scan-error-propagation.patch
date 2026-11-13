@@ -1,0 +1,275 @@
+--- a/exclude.cpp
++++ b/exclude.cpp
+@@ -24,6 +24,7 @@
+ #include <dirent.h>
+ #include <errno.h>
+ #include <algorithm>
++#include <limits>
+ #include <string>
+ #include <vector>
+ #include "exclude.hpp"
+@@ -59,97 +60,78 @@
+ 	absolutedir.push_back(TWFunc::RemoveTrailingSlashes(dir));
+ }
+ 
+-uint64_t TWExclude::Get_Folder_Size(const string& Path, bool Display_Error, const std::atomic<bool>* cancel) {
+-	if (cancel && cancel->load()) return 0;
+-	DIR* d;
+-	struct dirent* de;
+-	struct stat st;
+-	uint64_t dusize = 0;
+-	string FullPath;
+-
+-	d = opendir(Path.c_str());
+-	if (d == NULL) {
+-		if (Display_Error)
+-			gui2_console::log_error("error_opening_strerr", Path, strerror(errno));
+-		return 0;
++// Publish a size only when the whole walk completes. Missing optional exclusion
++// roots are normal; errors below an existing root are not an empty directory.
++static bool MeasurePath(const string& path, TWExclude* policy,
++                        const std::atomic<bool>* cancel, uint64_t& size,
++                        bool optional_root = false) {
++	if (cancel && cancel->load()) { errno = ECANCELED; return false; }
++	struct stat st{};
++	if (lstat(path.c_str(), &st) != 0) return optional_root && errno == ENOENT;
++	if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
++		if (st.st_size < 0 || (uint64_t)st.st_size > numeric_limits<uint64_t>::max() - size) {
++			errno = EOVERFLOW;
++			return false;
++		}
++		size += (uint64_t)st.st_size;
++		return true;
+ 	}
+-
+-	while ((!cancel || !cancel->load()) && (de = readdir(d)) != NULL) {
+-		FullPath = Path + "/";
+-		FullPath += de->d_name;
+-		if (check_skip_dirs(FullPath)) continue;
+-		if (lstat(FullPath.c_str(), &st)) {
+-			if (Display_Error)
+-				gui2_console::log_error("error_opening_strerr", FullPath, strerror(errno));
+-			LOGINFO("Real error: Unable to stat '%s'\n", FullPath.c_str());
+-			continue;
+-		}
+-		if (S_ISDIR(st.st_mode)) {
+-			dusize += Get_Folder_Size(FullPath, Display_Error, cancel);
+-		} else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
+-			dusize += (uint64_t)(st.st_size);
+-		}
++	if (!S_ISDIR(st.st_mode)) return true;
++	DIR* dir = opendir(path.c_str());
++	if (!dir) return false;
++	int error = 0;
++	while (true) {
++		if (cancel && cancel->load()) { error = ECANCELED; break; }
++		errno = 0;
++		struct dirent* entry = readdir(dir);
++		if (!entry) { error = errno; break; }
++		const string child = path + "/" + entry->d_name;
++		if (policy ? policy->check_skip_dirs(child) :
++		    (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..") ||
++		     !strcmp(entry->d_name, "lost+found"))) continue;
++		if (!MeasurePath(child, policy, cancel, size)) { error = errno; break; }
+ 	}
+-	closedir(d);
+-	return dusize;
++	if (closedir(dir) != 0 && error == 0) error = errno;
++	if (error != 0) { errno = error; return false; }
++	return true;
+ }
+ 
+-// Measure absolute exclusions without following links. Exclusions can be
+-// ordinary files too (for example /data/adb/ksu/modules.img), not just directories.
+-static uint64_t _Get_Folder_Size(const string& Path, const std::atomic<bool>* cancel) {
+-	if (cancel && cancel->load()) return 0;
+-	DIR* d;
+-	struct dirent* de;
+-	struct stat st;
+-	uint64_t dusize = 0;
+-	string FullPath;
+-
+-	if (lstat(Path.c_str(), &st) != 0) return 0;
+-	if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) return (uint64_t)st.st_size;
+-	if (!S_ISDIR(st.st_mode)) return 0;
+-	d = opendir(Path.c_str());
+-	if (d == NULL) return 0;
+-
+-	while ((!cancel || !cancel->load()) && (de = readdir(d)) != NULL) {
+-		if(!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..") || !strcmp(de->d_name, "lost+found"))
+-			continue;
+-		FullPath = Path + "/";
+-		FullPath += de->d_name;
+-		if (lstat(FullPath.c_str(), &st)) continue;
+-		if (S_ISDIR(st.st_mode)) {
+-			dusize += _Get_Folder_Size(FullPath, cancel);
+-		} else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
+-			dusize += (uint64_t)(st.st_size);
+-		}
+-	}
+-	closedir(d);
+-	return dusize;
++uint64_t TWExclude::Get_Folder_Size(const string& Path, bool Display_Error,
++                                   const std::atomic<bool>* cancel, bool* complete) {
++	uint64_t size = 0;
++	const bool ok = MeasurePath(Path, this, cancel, size);
++	if (complete) *complete = ok;
++	if (!ok && Display_Error)
++		gui2_console::log_error("error_opening_strerr", Path, strerror(errno));
++	return ok ? size : 0;
+ }
+ 
+-uint64_t TWExclude::Get_Exclusions_Folder_Size(const std::atomic<bool>* cancel) {
+-	uint64_t dusize = 0;
+-	// Setup and per-user exclusions can overlap. Measure their union instead
+-	// of subtracting a repeated directory or its descendants multiple times.
++uint64_t TWExclude::Get_Exclusions_Folder_Size(const std::atomic<bool>* cancel, bool* complete) {
++	if (complete) *complete = false;
++	uint64_t size = 0;
++	// Measure the union: a successful directory walk covers its descendants.
+ 	auto paths = absolutedir;
+ 	std::sort(paths.begin(), paths.end());
+ 	paths.erase(std::unique(paths.begin(), paths.end()), paths.end());
+ 	vector<string> measured_dirs;
+-	for (const auto& exclude_dir : paths) {
+-		if (cancel && cancel->load()) break;
++	for (const auto& path : paths) {
++		if (cancel && cancel->load()) { errno = ECANCELED; return 0; }
+ 		bool covered = false;
+ 		for (const auto& parent : measured_dirs) {
+-			if (exclude_dir.starts_with(parent == "/" ? parent : parent + "/")) {
++			if (path.starts_with(parent == "/" ? parent : parent + "/")) {
+ 				covered = true;
+ 				break;
+ 			}
+ 		}
+ 		if (covered) continue;
+-		dusize += _Get_Folder_Size(exclude_dir, cancel);
++		if (!MeasurePath(path, nullptr, cancel, size, true)) return 0;
+ 		struct stat st{};
+-		if (lstat(exclude_dir.c_str(), &st) == 0 && S_ISDIR(st.st_mode))
+-			measured_dirs.push_back(exclude_dir);
++		if (lstat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode))
++			measured_dirs.push_back(path);
+ 	}
+-	return dusize;
++	if (cancel && cancel->load()) { errno = ECANCELED; return 0; }
++	if (complete) *complete = true;
++	return size;
+ }
+ 
+ bool TWExclude::check_relative_skip_dirs(const string& dir) {
+--- a/exclude.hpp
++++ b/exclude.hpp
+@@ -30,8 +30,8 @@
+ public:
+ 	TWExclude();
+ 	uint64_t Get_Folder_Size(const string& Path, bool Display_Error = true,
+-	                         const std::atomic<bool>* cancel = nullptr); // Optional cancellation for background scans
+-	uint64_t Get_Exclusions_Folder_Size(const std::atomic<bool>* cancel = nullptr);
++	                         const std::atomic<bool>* cancel = nullptr, bool* complete = nullptr); // False on I/O error or cancellation
++	uint64_t Get_Exclusions_Folder_Size(const std::atomic<bool>* cancel = nullptr, bool* complete = nullptr);
+ 	void add_absolute_dir(const string& Path);
+ 	void add_relative_dir(const string& Path);
+ 	bool check_relative_skip_dirs(const string& dir);
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -2866,8 +2866,9 @@
+     unsigned long long size = 0;
+     // Prefer filesystem counters, then fall back to the directory walk.
+     const std::atomic<bool>* cancel_flag = cancel.get();
+-    const uint64_t es = exclusions.Get_Exclusions_Folder_Size(cancel_flag);
+-    if (!cancel_flag->load() && es > 0 && !dev.empty()) {
++    bool complete = false;
++    const uint64_t es = exclusions.Get_Exclusions_Folder_Size(cancel_flag, &complete);
++    if (complete && !cancel_flag->load() && es > 0 && !dev.empty()) {
+       char cmdBuf[256];
+       constexpr char _cmd[] =
+           "dump.f2fs -d1 %s | grep %s | awk -F ': ' '{print $2}' | awk -F ']' '{print $1}'";
+@@ -2890,12 +2891,14 @@
+     if (size == 0 && !cancel_flag->load()) {
+       // dump.f2fs unavailable: use the old walk.
+       LOGINFO("Data size: falling back to folder walk.\n");
+-      size = exclusions.Get_Folder_Size(path, false, cancel_flag);
+-    }
++      size = exclusions.Get_Folder_Size(path, false, cancel_flag, &complete);
++    }
++    if (!complete && !cancel_flag->load())
++      LOGINFO("Data size scan failed; keeping provisional estimate.\n");
+     AsyncSizeState& state = GetAsyncSizeState();
+     std::lock_guard lock(state.lock);
+     if (state.running_generation == generation) state.running_partition = nullptr;
+-    if (!cancel_flag->load() && state.generation == generation) {
++    if (complete && !cancel_flag->load() && state.generation == generation) {
+       state.pending_partition = owner;
+       state.pending_size = size;
+     }
+@@ -2973,13 +2976,26 @@
+     if (defer_folder_size) {
+       LOGINFO("Deferring the data backup size to a background walk.\n");
+     } else {
+-      used_ = backup_exclusions.Get_Folder_Size(mount_point_);
++      bool complete = false;
++      const uint64_t measured = backup_exclusions.Get_Folder_Size(mount_point_, true, nullptr, &complete);
++      if (!complete) {
++        backup_size_provisional_ = true;
++        if (!was_already_mounted) Unmount(false);
++        return false;
++      }
++      used_ = measured;
+       backup_size_ = used_;
+       LOGINFO("Data backup size is %s, free: %s.\n", UnitConversion::FormatBytes(used_).c_str(),
+               UnitConversion::FormatBytes(free_).c_str());
+     }
+   } else if (has_android_secure_) {
+-    backup_size_ = backup_exclusions.Get_Folder_Size(backup_path_);
++    bool complete = false;
++    const uint64_t measured = backup_exclusions.Get_Folder_Size(backup_path_, true, nullptr, &complete);
++    if (!complete) {
++      if (!was_already_mounted) Unmount(false);
++      return false;
++    }
++    backup_size_ = measured;
+   }
+   if (!was_already_mounted) Unmount(false);
+   return true;
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -1211,7 +1211,9 @@
+   const int total_time = static_cast<int>(difftime(total_stop, total_start));
+ 
+   TWExclude twe;
+-  const uint64_t actual_backup_size = twe.Get_Folder_Size(part_settings.backup_folder);
++  bool size_complete = false;
++  const uint64_t actual_backup_size = twe.Get_Folder_Size(part_settings.backup_folder, true, nullptr, &size_complete);
++  if (!size_complete) return false;
+ 
+   int prev_img_bps = 0;
+   DataManager::GetValue(TW_BACKUP_AVG_IMG_RATE, prev_img_bps);
+--- a/twrpTar.cpp
++++ b/twrpTar.cpp
+@@ -253,6 +253,12 @@
+ 					exit_child(-1);
+ 				}
+ 				if (S_ISDIR(st.st_mode)) {
++					bool complete = false;
++					const uint64_t folder_size = backup_exclusions->Get_Folder_Size(FileName, true, nullptr, &complete);
++					if (!complete) {
++						closeDirectory(d, errno);
++						exit_child(-1);
++					}
+ 					item_len = strlen(de->d_name);
+ 					if (userdata_encryption && ((item_len >= 3 && strncmp(de->d_name, "app", 3) == 0) || (item_len >= 6 && strncmp(de->d_name, "dalvik", 6) == 0))) {
+ 						TarItem.fn = FileName;
+@@ -266,9 +272,9 @@
+ 							exit_child(-1);
+ 						}
+ 						file_count += (unsigned long long)(ret);
+-						regular_size += backup_exclusions->Get_Folder_Size(FileName);
++						regular_size += folder_size;
+ 					} else {
+-						encrypt_size += backup_exclusions->Get_Folder_Size(FileName);
++						encrypt_size += folder_size;
+ 					}
+ 				} else if (S_ISREG(st.st_mode)) {
+ 					encrypt_size += (unsigned long long)(st.st_size);

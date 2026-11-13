@@ -56,7 +56,7 @@
     "mode": "0o644"
   },
   "docs/BACKUP-SESSION-ADAPTATION.md": {
-    "sha256": "cbd375f90f59785b0e05f544463cb86e37d89796e6d77ab2133a208016e0b11e",
+    "sha256": "9cdff7d4a6148f30e6350640fa34724d79872e34dbe76a8023acd8c97464d44e",
     "mode": "0o644"
   },
   "docs/BUILDING.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "a454b2ed22d5ef4611802becf66138c641b069cac581ef887b64fcd2a63950f0",
+    "sha256": "72c5babdaf5d28fe8e75dc95c749c2f2dd1be01c950ae406f6188fb9761b439e",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "fb1e7ac027c708323c3cacb51f819a95a5c087fd4dc4f9aaac368dbcfdb597d1",
+    "sha256": "fe9ad525eff898341e434ce3bf9287ae189cd3638562a50f474d886ce1544f41",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -739,8 +739,12 @@
     "sha256": "a4120c17a6a278a7b16791f1637af4c47af7df1fc0d691e258cb8a9549778d0a",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0117-size-scan-error-propagation.patch": {
+    "sha256": "87c47fe2ebb7b735decb7d57f868304118bedfba79908a46bcca0b004d0d7ece",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "a864823c60d76013fb0cea280f2f172656643731d6f2dae5d9884986cce55711",
+    "sha256": "49cd0a2206af27ea756a332398d3779720301679fb8707f0a0eef101f0a85a18",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -1523,6 +1527,10 @@
     "sha256": "cdca920c7a4e721fe2a4227e8b5335d42357cc0996f8d20b2509ae694c3d0601",
     "mode": "0o644"
   },
+  "scripts/audit_size_scan_errors.py": {
+    "sha256": "9948421dcc4a79cdc1ab7e8c1cc636eb686163fb743bcc1e6547efe456e391ec",
+    "mode": "0o644"
+  },
   "scripts/audit_slot_result_delivery.py": {
     "sha256": "0e9024d4a8326264784f8fb4325df9748f0890934ff29c6fb08dd059b655f414",
     "mode": "0o644"
@@ -1916,11 +1924,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "340f8656e9228f2fd65f74bee3128e8955d1acaedbabff88f6ea3cb17a2889fb",
+    "sha256": "ae49d59e5e2fc7662a14e96e0f4105e7e692066b6c4488dab555aa9c44ee4a75",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "80aa0d5740916ef4153bcac734d492485747b6d9b15c0df66b7d90e7a385a763",
+    "sha256": "a1cc8c71884235863380fa3f98583aa078222c6ff0fe7abee615746443f5ef0b",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -1936,11 +1944,11 @@
     "mode": "0o644"
   },
   "tests/archive_pipeline_test.cpp": {
-    "sha256": "3fddfd5c319d6e8e74e21de3e58fcbbff23a435717d79768c38ce838927b8bc0",
+    "sha256": "b021c37ae383da5cb4fcd2fb9fe6554e2778ad22e869a5c176821bd334c7bbf4",
     "mode": "0o644"
   },
   "tests/archive_pipeline_test.py": {
-    "sha256": "1e602333fcda560b4d7136fd5d6b68a1e97d4e8149d76742c50d02e0ebf60d04",
+    "sha256": "40c8b65723c9f8bbb90257505765cb97105686af6f34ae1df3b70cff4db5c376",
     "mode": "0o644"
   },
   "tests/archive_restore_test.c": {
@@ -1968,11 +1976,11 @@
     "mode": "0o644"
   },
   "tests/backup_session_test.cpp": {
-    "sha256": "a7da6680225650d8c7db04824187aef21e37bf1b63f5e68e6526634eb779c614",
+    "sha256": "5e8e37d7217d3bda6fe6bc803198c2e16c8f6d0264008a3f407f9d5a37671651",
     "mode": "0o644"
   },
   "tests/backup_session_test.py": {
-    "sha256": "a59f7f68c4404948fdc6bb17a2edde9eb872b08c2dcf36ea67b1872b6e7e2b29",
+    "sha256": "c3a4539ebd8d0649be840053f6e5c43b2264312bbcd24097bd6f5dc52f7ad4cf",
     "mode": "0o644"
   },
   "tests/backup_user_policy_test.py": {
@@ -2003,6 +2011,10 @@
     "sha256": "c0637d0c43a392b53c5516cd6d3c77a81ef61ee6595509200f15ffe21096276e",
     "mode": "0o644"
   },
+  "tests/data_size_errors_test.py": {
+    "sha256": "b92317395b99194caefedb1d162a4cd467ef9520ebcdbf43b7abf1e94636c68b",
+    "mode": "0o644"
+  },
   "tests/devicefix_regression.py": {
     "sha256": "bfb5ba859a29a7f62a14ada3bcf9e501f494c353d043f2c3ad6d8e51910d7cc2",
     "mode": "0o644"
@@ -2021,6 +2033,10 @@
   },
   "tests/evidence_freshness_test.py": {
     "sha256": "b7fd6e12fd5b0c798077a6c9154662b6544d4395b9ddb97aefddcd876be215f1",
+    "mode": "0o644"
+  },
+  "tests/exclusion_errors_test.py": {
+    "sha256": "30d1cf153da74cd579e4b99eb795943ecb1fa656b27fb26e3979a8a035efb04e",
     "mode": "0o644"
   },
   "tests/exclusion_size_test.py": {
@@ -2656,7 +2672,7 @@
     "mode": "0o644"
   },
   "tests/otg_selection_test.py": {
-    "sha256": "f9a306353fb028ade6e723e7790d2fffafbad1cc480bd0bf5139a38b3a3bec4d",
+    "sha256": "95c04f7c436b70a1aa4b66ed788b9f3923f9c68bd8051d5e1a541237a1875b49",
     "mode": "0o644"
   },
   "tests/partition_operation_path_test.py": {

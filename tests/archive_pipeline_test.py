@@ -32,6 +32,7 @@ CASES += [kind+'-source-key-'+fault for kind in ['plain','gzip','aes','both'] fo
 WALK_CASES = [kind+'-walk-'+fault for kind in ['plain','gzip','aes','both','mixed'] for fault in ['nested-read','nested-open','stale-errno']]
 WALK_CASES += [kind+'-walk-'+phase+'-'+fault for kind in ['aes','both','mixed'] for phase in ['top-first','top-second'] for fault in ['read','close']]
 WALK_CASES += [kind+'-walk-nested-close' for kind in ['plain','gzip','aes','both','mixed']]
+WALK_CASES += [kind+'-walk-size-'+fault for kind in ['aes','mixed'] for fault in ['read','close']]
 CASES += WALK_CASES
 TYPE_CASES = [kind+'-types-'+fault for kind in ['plain','gzip','aes','both','mixed'] for fault in ['nested-unknown','top-unknown','nested-stat-io','nested-stat-missing']]
 TYPE_CASES += [kind+'-types-'+phase+'-stat-'+error for kind in ['aes','both','mixed'] for phase in ['top-first','top-second'] for error in ['io','missing']]

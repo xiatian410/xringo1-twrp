@@ -430,6 +430,10 @@
         {
           "file": "0116-mtp-staging-create-at.patch",
           "sha256": "a4120c17a6a278a7b16791f1637af4c47af7df1fc0d691e258cb8a9549778d0a"
+        },
+        {
+          "file": "0117-size-scan-error-propagation.patch",
+          "sha256": "87c47fe2ebb7b735decb7d57f868304118bedfba79908a46bcca0b004d0d7ece"
         }
       ],
       "result_files": {
@@ -437,7 +441,7 @@
         "etc/init/keystore2.rc": "aa28727dfc718c059b926215f1fcfa9917132265dc01fbd329dcb928a783768e",
         "gui2/app/screen_actions.cpp": "188556ece804fedc23d4d9c2214418de89f49caa4560405dc41e9bcfd5577da1",
         "gui2/gui2_input.cpp": "3504c83906edf8192d0ff717d35a6f6c38770282cba8fd56ec24ebcd55dbe625",
-        "partition.cpp": "35792225ef9327664f69816b3369322b148fcd27fe4ed1d295198adc3aeb9df9",
+        "partition.cpp": "71dea58d562a1a9ec3db49a821690584b35760f1650a956add5ba281760f2f29",
         "twrpminui/force_feedback.cpp": "f7bdb5f50e5ef9d0ecd2ab161fa8f6143292c1207f064147a2db94b080d86f41",
         "twrpminui/graphics_drm.cpp": "61611757cc147b2f925ed52c6f73334acd7ae11d7fa3954d720cbeb8d47d0447",
         "mtp/MtpFfsHandle.cpp": "e7c9043094d9b7852ad9926cf04a5058d5eb8f83e524796c72de531fb662af79",
@@ -445,7 +449,7 @@
         "mtp/MtpFfsCompatHandle.cpp": "0bb87e23bbd8750ba2da8501afeead7ec3d7eb67b87e38aa2c68409d33cde6c6",
         "mtp/MtpDescriptors.cpp": "7b24102682e809c455ed1ebcef0a2defdab37abefd1ba692485b650d87a77025",
         "kernel_module_loader.cpp": "c93c4ca499648217be225a165b37f506ea3e5f7165389b532621b5e4292a4af6",
-        "partitionmanager.cpp": "a8e23171f1aac231d80ddf52fe0f8bb70272bdb8ed9503a665e1a8babb19fe4f",
+        "partitionmanager.cpp": "a0a3e2d33ebcb45c880ac2d5dc04ec385bc31c9e8920815773f066b360e20a1b",
         "infomanager.cpp": "7f1fe90502a85952125c67f2b4613329b19aa095ad649ba221331a48d171e495",
         "Android.bp": "1f705f027a005452faf679686a43d3900779c5aee98fc95ebdc2600202a6da2a",
         "gui2/backend/decrypt_backend.h": "a6ec26538be3ba26af9c449960752b4ad91bcdf6fa15a2027cfdb915c0fc7945",
@@ -475,7 +479,7 @@
         "partitions.hpp": "ebdd80f303eae6344aad7e5afffd852c874dd5481e118ddc340c9694b1571d07",
         "digest/twrp_digest_driver.cpp": "6e2e62e3fdf570be857ac5b62c6befcd8474633f736dcca5a8f2a2ad5ec55ab5",
         "digest/twrp_digest_driver.hpp": "266f16b28f4d3ace274a5ea42253ee993fd6790ce323a8e5b79e885f2e9a6fa4",
-        "twrpTar.cpp": "f8854bced027dc63d497e18ac475696f1db94c8d3aca47e8804d173b74bd2edd",
+        "twrpTar.cpp": "0ee97a08f1a52281ebab8e53f478b6ebb250bd40426256817ddf08301a1caaf2",
         "twrpTar.hpp": "d81ab9ac664ca3cc51e76b05f6fbd51f862e31218983371b6a61a33096ec6ffe",
         "gui2/backend/twrp_backup_backend.cpp": "925155463e34f59103a0b94473363638cb47afb35f80ea782da065eb2e2c985e",
         "backup_process.hpp": "5d4a5d4973bba52d7a796dee1ed5e3d8258cebfb438dad33cfbcbb964b1ee225",
@@ -538,7 +542,8 @@
         "libtar/wrapper.c": "5451d5d6b4f1b8102277e188a435e4a64b64d1554c9731267c5088e88b97f9be",
         "mtp/MtpRequestPacket.cpp": "9e143dbd31fd424728e753e7383de0957aced6415f166b6b1dd9b5e1fdcdbd3e",
         "mtp/MtpDataPacket.cpp": "fe7d542a6ddf5fc40be0ab7ee4c74f8abfb6240846d72390c2f1bca4b0805f0d",
-        "exclude.cpp": "01a5cc1515ea8ea03c8f008e087c72aff0125d3c3077f309b46bb75f4df7e963"
+        "exclude.cpp": "db68a3c2d5bb5908413462e49a61654c5e72ed06783f5eab991aacd76af99bde",
+        "exclude.hpp": "e0b0435e7952fcae99460b69460abd13ff54fddcbf5d611c3517ae9b5a09992e"
       }
     },
     "system/sepolicy": {
