@@ -116,12 +116,16 @@ ASan/UBSan 覆盖这些生产 C 源码。历史 append 扩展缓冲区所有权�
 
 本次尚未执行 `twrpTar` 的压缩、加密归档、分卷、线程/子进程与取消流程，也未执行原始分区复制、整条 GUI 备份/恢复任务。归档层中途失败不是事务回滚，已恢复的条目可能仍存在；不能把“返回错误”说成目标保持原样。
 
-稀疏内容用例通过，但源文件 16 个 512 字节块，恢复后 2056 个块，空洞被展开。保持空洞、目录最终时间、任意应用 xattr、SELinux/capability 恢复失败传播、真实加密策略映射，以及完整不可信归档路径约束仍待补。当前结果不能据此宣称“所有元数据完全保留”。
+此前稀疏内容用例确认恢复字节正确但会把空洞展开。0092 已修正普通文件恢复：归档中的全零块在连续数据之间通过 `lseek` 跳过，末尾零区用 `ftruncate` 保持逻辑长度；目标仍以 `O_TRUNC` 打开，所以原有尾部内容不会残留。只对普通文件启用，目录、链接和其他类型不改变。归档本身仍保存零字节，未压缩备份大小不因此减少；这也会把原先实际分配的全零数据区重新建为空洞，不承诺原 extent 布局一致。`EINTR` 会重试，seek / truncate 的其他错误返回失败；每个逻辑 tar 块仍报告原有进度。
+
+新增稀疏恢复场景覆盖前导、尾部、全零、部分零、混合、空文件，以及 seek / truncate 错误和 EINTR。正向恢复 40 项、四种普通 / gzip / AES / gzip+AES 管道稀疏场景通过；旧 libtar 对照除空文件外的 9 项按预期失败。普通文件夹具的恢复块数显著低于逻辑大小，内容、长度和元数据仍核对一致。此项仍不代表真实文件系统、压缩格式专用 sparse 扩展、断电持久性或完整备份 GUI 事务已验收。
 
 复现命令：
 
 ```bash
 python3 tests/archive_restore_test.py
+python3 tests/archive_restore_test.py --cases sparse-leading sparse-trailing sparse-all-zero sparse-partial-zero sparse-mixed sparse-empty sparse-seek-error sparse-truncate-error sparse-seek-interrupted sparse-truncate-interrupted
+python3 tests/archive_pipeline_test.py
 python3 tests/archive_restore_test.py --source backups/archive-pre-fix/libtar --report logs/archive-restore-before.json
 ```
 

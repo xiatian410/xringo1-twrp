@@ -15,6 +15,7 @@ CASES=['plain','gzip','aes','both','plain-split','gzip-split','aes-split','both-
  'aes-random-missing','both-random-short','plain-volume-limit','gzip-volume-limit',
  'plain-split-percent','aes-percent','aes-extra-invalid',
  'plain-extra-invalid','wait-eintr','wait-not-child','wait-invalid-pid','wait-signalled','wait-nonzero','buffer-parallel','read-fragmented','read-eintr','read-truncated','read-invalid-fd']
+CASES += [kind+'-sparse' for kind in ['plain','gzip','aes','both']]
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source',type=Path,default=SRC)

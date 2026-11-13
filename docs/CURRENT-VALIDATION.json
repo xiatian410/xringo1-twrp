@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-staging-identity.img",
-  "image_sha256": "a2e08d4e3409c61d75890e38a41229e482e03aed945436455b7fe5db3528cb2e",
-  "production_sources": 810,
+  "image_name": "recovery-dijun-unified-sparse-restore.img",
+  "image_sha256": "0858fc70cdf2365e2d70d1859458fb11d9d7e1e8e71a14eea3bec132e1b72109",
+  "production_sources": 811,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -12,6 +12,30 @@
     "scope": "After Synaptics is live and Xiaomi input is registered, wait 2 seconds, request ordinary touch reports, and check the software cache. This does not prove controller acknowledgement or event delivery. Prior manual raw0 user capture observed 215 Linux input events; this automatic-startup candidate has no corresponding hardware observation."
   },
   "checks": [
+    {
+      "name": "archive-sparse-pipeline",
+      "status": "PASS",
+      "cases": 50,
+      "failures": 0,
+      "local_report_sha256": "184bf2cc039172a3cb46dc14e1ebced8c0111a4874b215cfcca4de378bdb962d",
+      "scope": "Production libtar with ordinary files/ASan/UBSan; zero-run seek/truncate and logical progress. Native full tar/pigz/OAES/BoringSSL pipeline; mount/UI/fscrypt providers are fixtures. No original extent topology, ARM64 restore/full manager/GUI/power-loss proof."
+    },
+    {
+      "name": "archive-sparse-negative",
+      "status": "FAIL",
+      "cases": 10,
+      "failures": 9,
+      "local_report_sha256": "171430392b23b9848820c64008056a66b86030e85f1518fcab82bae82036f630",
+      "scope": "Production libtar with ordinary files/ASan/UBSan; zero-run seek/truncate and logical progress. Native full tar/pigz/OAES/BoringSSL pipeline; mount/UI/fscrypt providers are fixtures. No original extent topology, ARM64 restore/full manager/GUI/power-loss proof."
+    },
+    {
+      "name": "archive-sparse-restore",
+      "status": "PASS",
+      "cases": 40,
+      "failures": 0,
+      "local_report_sha256": "f74e866d8bfee49d1c6915a98190a6e89de16b5652c1745bdfa83a36050a61ae",
+      "scope": "Production libtar with ordinary files/ASan/UBSan; zero-run seek/truncate and logical progress. Native full tar/pigz/OAES/BoringSSL pipeline; mount/UI/fscrypt providers are fixtures. No original extent topology, ARM64 restore/full manager/GUI/power-loss proof."
+    },
     {
       "name": "mtp-staging-identity-transfers",
       "status": "PASS",

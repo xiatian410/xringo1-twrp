@@ -36,6 +36,7 @@ void bytes_to_hex(const uint8_t *p, size_t n, char *r) {
 
 static const char *fault;
 static unsigned fault_calls;
+static int record_progress;
 ssize_t __real_write(int, const void *, size_t);
 int __real_close(int);
 int __real_setxattr(const char *, const char *, const void *, size_t, int);
@@ -52,6 +53,26 @@ static int restore_fd(int fd) {
     if(n<0) return 0;
     path[n]=0;
     return strstr(path,"/restore/") != NULL;
+}
+off64_t __real_lseek64(int, off64_t, int);
+int __real_ftruncate64(int, off64_t);
+off64_t __wrap_lseek64(int fd, off64_t offset, int whence) {
+    if(fault && !strcmp(fault,"sparse-seek-interrupted") && restore_fd(fd) && fault_calls++==0) {
+        errno=EINTR; return -1;
+    }
+    if(fault && !strcmp(fault,"sparse-seek-error") && restore_fd(fd)) {
+        ++fault_calls; errno=EIO; return -1;
+    }
+    return __real_lseek64(fd,offset,whence);
+}
+int __wrap_ftruncate64(int fd, off64_t size) {
+    if(fault && !strcmp(fault,"sparse-truncate-interrupted") && restore_fd(fd) && fault_calls++==0) {
+        errno=EINTR; return -1;
+    }
+    if(fault && !strcmp(fault,"sparse-truncate-error") && restore_fd(fd)) {
+        ++fault_calls; errno=ENOSPC; return -1;
+    }
+    return __real_ftruncate64(fd,size);
 }
 ssize_t __wrap_write(int fd, const void *p, size_t n) {
     if (fault && restore_fd(fd)) {
@@ -101,9 +122,10 @@ static TAR *writer(void) {
 static void finish(TAR *t) { CHECK(tar_append_eof(t)==0); CHECK(tar_close(t)==0); }
 static int restore(char *prefix) {
     TAR *t=NULL; int progress=0;
+    if(record_progress){progress=open("progress.bin",O_CREAT|O_TRUNC|O_WRONLY,0600); CHECK(progress>0);}
     CHECK(tar_open(&t,"backup.tar",NULL,O_RDONLY,0,FLAGS)==0);
     int rc=tar_extract_all(t,prefix,&progress),saved=errno;
-    CHECK(tar_close(t)==0); errno=saved; return rc;
+    CHECK(tar_close(t)==0); if(record_progress)CHECK(close(progress)==0); errno=saved; return rc;
 }
 static void make_one(void) {
     putfile("input/payload",8193); TAR *t=writer();
@@ -222,6 +244,41 @@ int main(int argc,char **argv) {
         CHECK(getxattr("restore/app","user.default",NULL,0)==0);
         CHECK(getxattr("restore/app","user.inode_cache",&ino,sizeof ino)==sizeof ino); CHECK(stat("restore/app/cache",&s)==0); CHECK(ino==s.st_ino);
         CHECK(getxattr("restore/app","user.inode_code_cache",&ino,sizeof ino)==sizeof ino); CHECK(stat("restore/app/code_cache",&s)==0); CHECK(ino==s.st_ino);
+    } else if(!strncmp(c,"sparse-",7) && strcmp(c,"sparse-content")) {
+        const int error_case=strstr(c,"error")!=NULL;
+        const off_t length=!strcmp(c,"sparse-empty")?0:1048576+13;
+        int fd=open("input/sparse",O_CREAT|O_WRONLY,0600); CHECK(fd>=0);
+        CHECK(ftruncate(fd,length)==0);
+        if(!strcmp(c,"sparse-leading") || !strcmp(c,"sparse-seek-error") || !strcmp(c,"sparse-seek-interrupted"))
+            CHECK(pwrite(fd,"end",3,length-3)==3);
+        else if(!strcmp(c,"sparse-trailing")) CHECK(pwrite(fd,"start",5,0)==5);
+        else if(!strcmp(c,"sparse-mixed")) {
+            CHECK(pwrite(fd,"A",1,0)==1); CHECK(pwrite(fd,"B",1,524288)==1);
+            CHECK(pwrite(fd,"C",1,length-1)==1);
+        } else if(!strcmp(c,"sparse-partial-zero")) {
+            CHECK(pwrite(fd,"A",1,0)==1); CHECK(pwrite(fd,"B",1,1048575)==1);
+        }
+        CHECK(close(fd)==0);
+        TAR *t=writer(); CHECK(tar_append_file(t,"input/sparse","sparse")==0); finish(t);
+        /* O_TRUNC must remove old content even when all restored data is zero. */
+        putfile("restore/sparse",2*1048576);
+        record_progress=1; fault=c;
+        int result=restore("restore"), saved=errno; fault=NULL;
+        if(error_case) {
+            CHECK(result==-1 && fault_calls>0);
+            CHECK(saved==(!strcmp(c,"sparse-seek-error")?EIO:ENOSPC));
+            puts("PASS sparse I/O failure propagated"); return 0;
+        }
+        CHECK(result==0); compare("input/sparse","restore/sparse");
+        if(strstr(c,"interrupted"))CHECK(fault_calls>=2);
+        struct stat a,b; CHECK(stat("input/sparse",&a)==0); CHECK(stat("restore/sparse",&b)==0);
+        CHECK(b.st_blocks*512 < 65536);
+        fd=open("progress.bin",O_RDONLY);CHECK(fd>=0);
+        uint64_t progress=0,total=0;ssize_t count;
+        while((count=read(fd,&progress,sizeof progress))>0){CHECK(count==sizeof progress&&progress==512);total+=progress;}
+        CHECK(count==0&&close(fd)==0&&total==((length+511)/512)*512);
+        printf("PASS sparse logical progress=%lu\n",total);
+        printf("PASS sparse bytes/mode/mtime preserved size=%ld source_blocks=%ld restored_blocks=%ld\n",b.st_size,a.st_blocks,b.st_blocks);
     } else if(!strcmp(c,"sparse-content")) {
         int fd=open("input/sparse",O_CREAT|O_WRONLY,0600); CHECK(fd>=0);
         CHECK(write(fd,"start",5)==5); CHECK(lseek(fd,1048576,SEEK_SET)==1048576); CHECK(write(fd,"end",3)==3); CHECK(close(fd)==0);

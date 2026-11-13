@@ -21,6 +21,7 @@ ANDROID = Path('/root/AAA/twrp')
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--source', type=Path, default=ANDROID/'bootable/recovery/libtar')
 parser.add_argument('--report', type=Path, default=ROOT/'logs/archive-restore.json')
+parser.add_argument('--cases', nargs='+')
 args = parser.parse_args()
 names = re.findall(r'"([\w]+\.c)"', (args.source/'Android.bp').read_text())
 assert len(names) == 15
@@ -32,6 +33,9 @@ cases = ['roundtrip-metadata', 'symlink', 'hardlink-short', 'hardlink-long',
          'android-xattr-write-error', 'encrypted-dir-order', 'metadata-length',
          'metadata-short-cap', 'metadata-short-policy', 'metadata-no-newline',
          'metadata-unknown-tag', 'gnu-name-block-boundary']
+cases += ['sparse-'+name for name in ['leading', 'trailing', 'all-zero', 'partial-zero',
+          'mixed', 'empty', 'seek-error', 'truncate-error', 'seek-interrupted', 'truncate-interrupted']]
+cases = args.cases or cases
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 with tempfile.TemporaryDirectory(prefix='dijun-archive-', dir='/tmp') as tmp:
     tmp = Path(tmp)
@@ -46,7 +50,8 @@ with tempfile.TemporaryDirectory(prefix='dijun-archive-', dir='/tmp') as tmp:
            '-I'+str(ANDROID/'system/vold'), '-I'+str(ANDROID/'system/core/libcutils/include'),
            *[str(args.source/n) for n in names], str(args.source/'strlcpy.c'),
            str(ROOT/'tests/archive_restore_test.c'),
-           '-Wl,--wrap=write', '-Wl,--wrap=close', '-Wl,--wrap=setxattr', '-l:libselinux.so.1', '-o', str(tmp/'test')]
+           '-Wl,--wrap=write', '-Wl,--wrap=close', '-Wl,--wrap=setxattr',
+           '-Wl,--wrap=lseek64', '-Wl,--wrap=ftruncate64', '-l:libselinux.so.1', '-o', str(tmp/'test')]
     subprocess.run(cmd,check=True)
     results=[]
     for case in cases:

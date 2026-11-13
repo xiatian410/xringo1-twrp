@@ -330,6 +330,10 @@
         {
           "file": "0091-mtp-staging-file-identity.patch",
           "sha256": "5c2a3d3a7e23d8875fce4d5ae9d4f306bca51d41429f89797fd7982f5f86e60c"
+        },
+        {
+          "file": "0092-libtar-sparse-restore.patch",
+          "sha256": "e64c6c08f1fb5694f0d699eb49799c306a02c541146f1f8e8b4959436697ddbb"
         }
       ],
       "result_files": {
@@ -370,7 +374,7 @@
         "gui2/components/keyboard.cpp": "8ce7f769be4a4c7d528e7b209d233d7915f26840bca51effbccefe7dc97fe550",
         "gui2/components/swipe_slider.cpp": "c4d7eee908432f4aba1a9ae52abfb0db0d8c5b187f82c3de8f130cf226e5eb94",
         "libtar/block.c": "73f7891968ed29ea41d8831009ce2e0331e088635cf99e5f2243d48982472f4a",
-        "libtar/extract.c": "dd3766a00afcd2168d209f2d9001e8577b54145bc8b278c4d46078b2f96a28f5",
+        "libtar/extract.c": "50ef3360577924ba9268ca8447508a1b4bf666b40c640b47823e95af2a1c76c7",
         "gui2/backend/twrp_operation.cpp": "a2aaa78468023cd7a2024334ef995838702a5b6904686ec0665c12f142cd1ace",
         "partitions.hpp": "5970edacc232ae54da157f39310dddd47929ffad7bb2fbe8620fe6108f8da7aa",
         "digest/twrp_digest_driver.cpp": "6e2e62e3fdf570be857ac5b62c6befcd8474633f736dcca5a8f2a2ad5ec55ab5",

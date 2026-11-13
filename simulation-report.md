@@ -6,14 +6,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-mtp-staging-identity.img` |
-| SHA-256 | `a2e08d4e3409c61d75890e38a41229e482e03aed945436455b7fe5db3528cb2e` |
-| 生产来源绑定 | 810 份 |
+| 文件 | `recovery-dijun-unified-sparse-restore.img` |
+| SHA-256 | `0858fc70cdf2365e2d70d1859458fb11d9d7e1e8e71a14eea3bec132e1b72109` |
+| 生产来源绑定 | 811 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：MTP 遗留路径隐藏新文件
+## 本批生产修正：恢复稀疏文件时避免展开零区
+
+0092 保持普通 tar 格式，在普通文件恢复时跳过全零数据块，末尾零区用 truncate 保持逻辑长度。seek / truncate 中断重试、其他错误传播，逻辑进度保持原语义。主机恢复40项、编解码50项通过；同夹具旧实现10项中9项失败。最终清理构建、811来源 / 六profile核对通过，ramdisk仅 recovery、构建属性和摘要变化。详见[归档恢复](docs/BACKUP-DATA-PATHS.md#archive-restore)。
+
+这会重建零区，不保留原始extent拓扑，也不引入GNU sparse归档格式。实际文件系统、ARM64恢复、完整GUI/manager和断电持久性仍未验收。本批仅验证相关恢复与编解码范围，未重跑OTA、触摸或MTP。
+
+## 沿用的 MTP 遗留路径身份修正
 
 0091 在临时文件创建时记录设备号 / inode，结束时记录 ctime；遗留路径消失、被替换或 ctime 变化后撤销旧隐藏登记，修改 / 关闭事件可发布原先未登记的新对象。不会按前缀清理或删除用户文件。对象121项、移动复制48项通过；同一夹具对旧实现的5项检查复现3项隐藏错误。最终清理构建、810来源与六profile核对通过，打包变化仅 MTP 库、构建属性和 ramdisk 摘要。详见[MTP上传](docs/MTP-ATOMIC-UPLOAD.md#staging-identity)。
 

@@ -139,6 +139,13 @@ int main(int argc,char** argv){
    }
    CHECK(symlink("dir/file0","/src/link")==0);
    CHECK(setxattr("/src/dir","user.default","",0,0)==0);
+   if(scenario.ends_with("-sparse")){
+    string data(1048576+13,'\0');data[0]='A';data[524288]='B';
+    int fd=open("/src/dir/sparse",O_CREAT|O_WRONLY,0640);CHECK(fd>=0);
+    CHECK(ftruncate(fd,data.size())==0);
+    CHECK(pwrite(fd,"A",1,0)==1);CHECK(pwrite(fd,"B",1,524288)==1);CHECK(close(fd)==0);
+    contents["dir/sparse"]=data;
+   }
   }
  }
  if(no_codec)fs::remove("/bin/pigz");
@@ -175,6 +182,10 @@ int main(int argc,char** argv){
  if(corrupt||wrong){CHECK(result!=0);puts("PASS expected restore failure");return 0;}
  CHECK(result==0);
  for(const auto& [name,data]:contents){CHECK(read_file("/src/"+name)==data);struct stat st{};CHECK(stat(("/src/"+name).c_str(),&st)==0);CHECK((st.st_mode&0777)==0640);}
+ if(scenario.ends_with("-sparse")){
+  struct stat st{};CHECK(stat("/src/dir/sparse",&st)==0);CHECK(st.st_size==1048576+13);
+  CHECK(st.st_blocks*512<65536);printf("PASS codec sparse restored_blocks=%ld\n",st.st_blocks);
+ }
  if(!contents.empty()){CHECK(fs::is_symlink("/src/link"));CHECK(fs::read_symlink("/src/link")=="dir/file0");char x[16]{};CHECK(getxattr("/src/dir","user.default",x,sizeof x)==0);}
  puts("PASS byte/mode/symlink/xattr roundtrip");return 0;
 }
