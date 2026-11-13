@@ -89,6 +89,16 @@ static void model_slot(){
         ++unmaps;for(const auto& n:dynamic)assert(allocated_control->UnmapWritten(n));
         assert(active_views.empty());puts("MODEL actual snapshot unmapping active=0");fflush(stdout);return true;
     }''')
+    old = 'void Cleanup() override { printf("BOUNDARY Cleanup file model\\n"); }'
+    assert old in adapter
+    adapter = adapter.replace(old, r'''void Cleanup() override {
+        if (allocated_control) {
+            allocated_control->Cleanup();
+            allocated_control.reset();
+            puts("MODEL released controller during Cleanup");
+        }
+        puts("BOUNDARY Cleanup file model");fflush(stdout);
+    }''')
     # Headers declaring global extent templates must precede using-directives
     # in shared allocation support, as in the already tested handoff fixture.
     headers = adapter[:adapter.index('using android::base::unique_fd;')]

@@ -48,14 +48,30 @@ python3 tests/ota_snapshot_payload_handoff.py
 python3 scripts/audit_snapshot_payload_handoff.py
 ```
 
+<a id="stock-zip-allocated-success"></a>
+## 完整包真实分配接续：修正模型Cleanup后成功
+
+模型原先用进程静态unique_ptr持有controller，晚于运行时单例开始析构才释放。修正为在FileControl的Cleanup中调用原controller Cleanup、reset所有权；未改生产代码。退出探针仍复现静态模式SIGSEGV，scoped Cleanup/reset则退出0。随后一次必要完整确认约881秒，24项断言全部通过。
+
+原始4.0.4完整ZIP在同次运行中通过整包验签、原主机TWinstall_zip/A-B/fork/pipe、原ARM64 sideload主程序/动作队列、真实控制器PreparePartitionsForUpdate/SnapshotManager初始化十份COW与目标LP发布；原controller OpenCowWriter供给4933操作，payload哈希和42最终分区哈希匹配；精确原厂postinstall Recovery分支、真实完成状态Unverified、模型槽位、映射卸载、controller Cleanup依序执行。引擎实际退出0、wait0，父INSTALL_SUCCESS=0；结果为MODEL_SUCCESS，allocation状态没有预置。
+
+当前本地报告为`logs/zip-engine-allocated-finish.json/.stdout/.stderr`，适配器精确副本为`logs/zip-engine-allocated-adapter-current.cpp`，audit确认同镜像/原库/来源和清理顺序。源LP仍为合成32GiB，base/COW视图是独立普通文件；readonly、挂载、HAL、槽位、proc、旧更新清理、GUI有明确替身，测试模式关闭scratch/daemon。没有kernel DM、真实源布局、物理槽位、启动/合并或完整ARM64 Recovery/USB验收。模型成功不等于完整设备OTA验收。
+
+**记录保存限制：**此次runner使用固定输出名，覆盖了上一轮失败报告和stdout/stderr；旧报告摘要、原失败适配器与文字结果仍保留，旧原始报告字节已不可用。索引明确记录旧digest及替换关系，不能再声称旧失败原始报告完整留存。后续失败/成功复跑必须使用独立输出名。
+
+```bash
+# 已完成。输入与相关实现不变时复用，禁止例行重跑整包。
+python3 scripts/audit_zip_engine_join.py --model-finish --allocate-snapshots
+```
+
 <a id="stock-zip-allocated-failure"></a>
-## 完整包接入真实快照分配：成功回调后退出失败，尚未安装成功
+## 历史：完整包接入真实分配后的模型退出失败
 
 `--join-zip --model-finish --allocate-snapshots` 使用原始 OS4.0.4完整ZIP和当前0090镜像，在同次执行中替换旧模型的预置快照状态及自行创建COW。原控制器 `PreparePartitionsForUpdate → SnapshotManager::BeginUpdate / CreateUpdateSnapshots` 初始化十份COW、发布目标LP；原controller OpenCowWriter / OpenSnapshotWriter供给原ARM64引擎全部4933操作。十份COW分别在初始化和写入时映射，随后原reader物化快照视图，42最终分区哈希全部匹配manifest，payload哈希通过。
 
-原厂postinstall Recovery保护分支、真实FinishUpdate / FinishedSnapshotWrites发布Unverified、模型槽位、显式卸载映射都执行成功；日志已有 `Update successfully applied, waiting to reboot`。但成功回调后进程SIGSEGV，QEMU实际退出1、原父安装器wait256 / INSTALL_ERROR=1。**完整运行报告状态FAIL / installation_result FAILED**，不得用内部动作成功宣称父安装成功。约876秒执行记录保留在本地 `logs/zip-engine-allocated-finish.json/.stdout/.stderr`。
+原厂postinstall Recovery保护分支、真实FinishUpdate / FinishedSnapshotWrites发布Unverified、模型槽位、显式卸载映射都执行成功；日志已有 `Update successfully applied, waiting to reboot`。但成功回调后进程SIGSEGV，QEMU实际退出1、原父安装器wait256 / INSTALL_ERROR=1。**完整运行报告状态FAIL / installation_result FAILED**，不得用内部动作成功宣称父安装成功。约876秒的原始输出后来被固定路径确认运行覆盖，旧digest与文字结果保留，见上文记录限制。
 
-随后保存精确生成适配器及include，只执行真实快照分配后退出，不写payload：进程静态controller模式在main返回后复现SIGSEGV；相同二进制的scoped模式在main结束前reset控制器则退出0。两项差分探针由 `tests/ota_allocated_exit_probe.py/.cpp` 执行，报告 `logs/ota-allocated-exit-probe.json`。这将故障定位到新模型的对象生命周期，**没有证明生产镜像有该退出缺陷**；尚未修正完整模型所有权或重复完整运行。独立review核对已覆盖数据和状态，不将失败报告改记为成功。
+随后保存精确生成适配器及include，只执行真实快照分配后退出，不写payload：进程静态controller模式在main返回后复现SIGSEGV；相同二进制的scoped模式在main结束前reset控制器则退出0。两项差分探针由 `tests/ota_allocated_exit_probe.py/.cpp` 执行，报告 `logs/ota-allocated-exit-probe.json`。这将故障定位到新模型的对象生命周期，**没有证明生产镜像有该退出缺陷**；当时尚未修正完整模型所有权；后续修正及成功运行见上文。独立review核对已覆盖数据和状态，不将失败报告改记为成功。
 
 剩余替身：合成32GiB源LP（目标尺寸代替真实源布局）、独立持久稀疏base/COW文件视图、内核能力/DM及realpath边界、元数据已挂载token、AVB无效果边界、readonly / postinstall挂载 / HAL / 槽位 / proc / 旧更新清理 / GUI。测试模式关闭scratch和daemon；没有真实kernel map、挂载、启动或合并。旧整包模型成功报告属于预置分配版本，保留为历史，不能覆盖本次FAILED。
 
@@ -63,7 +79,7 @@ python3 scripts/audit_snapshot_payload_handoff.py
 # 完整运行已执行且保留失败；不要例行重复十五分钟payload。
 python3 tests/ota_engine_entry.py --join-zip --model-finish --allocate-snapshots
 python3 tests/ota_allocated_exit_probe.py
-python3 scripts/audit_zip_engine_join.py --model-finish --allocate-snapshots --review-exit-failure
+# 历史失败review已不再适用于被覆盖的当前报告
 ```
 
 <a id="stock-zip-model-finish"></a>

@@ -93,13 +93,19 @@ def main():
             mapped=Counter(re.findall(r'Mapped COW device for (\w+_b) at /work/cows/\w+_b-cow',err))
             expected_dynamic={n+'_b' for group in inventory['groups'] for n in group['partitions']}
             assert mapped==Counter({n:2 for n in expected_dynamic}),mapped
-            adapter_path=ROOT/'logs/zip-engine-allocated-adapter.cpp'
+            adapter_path=ROOT/'logs'/('zip-engine-allocated-adapter.cpp' if args.review_exit_failure else 'zip-engine-allocated-adapter-current.cpp')
             assert sha(adapter_path)==engine['adapter_sha256']
             adapter=adapter_path.read_text()
             assert adapter.count('model_prepare_allocated(manifest);')==1
             assert adapter.count('return allocated_control->OpenCowWriter(name,source,label);')==1
             assert 'model_prepare(dynamic);' not in adapter
             assert 'return CreateCowWriter(cow_version' not in adapter
+            if not args.review_exit_failure:
+                assert 'allocated_control->Cleanup();' in adapter
+                assert 'allocated_control.reset();' in adapter
+                assert out.count('MODEL released controller during Cleanup')==1
+                assert out.index('MODEL actual FinishedSnapshotWrites') < out.index('MODEL released controller during Cleanup') < out.index('engine_wait_status=0')
+                assert 'Fatal signal' not in err
             support=ROOT/'logs/zip-engine-allocated-support.inc'
             assert support.read_text()==(ROOT/'tests/ota_snapshot_initialize.cpp').read_text().split('int main(int argc,char**argv){',1)[0]
         else:

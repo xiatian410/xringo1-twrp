@@ -1396,27 +1396,29 @@
     },
     {
       "name": "stock-os4-allocated-full-zip",
-      "status": "FAIL",
+      "status": "PASS",
       "cases": 1,
-      "failures": 1,
-      "local_report_sha256": "df7b543952271ddf2e5cbd68fb483534ea465fa0a559690f7f9eacbaccc37a44",
-      "scope": "Preserved one-run original OS4.0.4 full ZIP: signature/host parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager allocation10 COWs -> original controller writer/all4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified state then modeled slot. No seeded allocation. Engine subsequently SIGSEGV/exits1 after success callbacks; parent correctly INSTALL_ERROR. INSTALLATION FAILED. Exact-adapter allocation-only probe reproduces crash with process-static controller, exits0 with scoped reset; model lifetime issue, not proven production defect. Synthetic32GiB LP/independent file mappings/readonly/mount/HAL/slot/proc/cleanup/GUI remain models, scratch/daemon disabled. No production changes/build; no full payload replay to hide failure."
+      "failures": 0,
+      "local_report_sha256": "4e6f92f43b1ee7a98d35368967b7bd8dc974d231b37313914ad0b4b671efa0f3",
+      "scope": "After model Cleanup releases controller before process-static destruction, one original OS4.0.4 full ZIP run succeeds in explicit file model: whole-file signature/host ZIP parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager initializes10 COWs -> original controller writer4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified publication -> modeled slot/unmap/Cleanup -> engine0/wait0/parent INSTALL_SUCCESS0.24 checks pass,881seconds. Synthetic32GiB source LP, independent file DM views, readonly/mount/HAL/slot/proc/cleanup/GUI remain models; scratch/daemon disabled. No production change/build or physical mapping/boot/merge/full device OTA.",
+      "previous_report_sha256": "df7b543952271ddf2e5cbd68fb483534ea465fa0a559690f7f9eacbaccc37a44"
     },
     {
       "name": "allocated-model-exit-probe",
       "status": "PASS",
       "cases": 2,
       "failures": 0,
-      "local_report_sha256": "7dbee9d443ea9f7755ea0486e7a0326777309f81ed2878059785d60f72f3fbfe",
-      "scope": "Preserved one-run original OS4.0.4 full ZIP: signature/host parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager allocation10 COWs -> original controller writer/all4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified state then modeled slot. No seeded allocation. Engine subsequently SIGSEGV/exits1 after success callbacks; parent correctly INSTALL_ERROR. INSTALLATION FAILED. Exact-adapter allocation-only probe reproduces crash with process-static controller, exits0 with scoped reset; model lifetime issue, not proven production defect. Synthetic32GiB LP/independent file mappings/readonly/mount/HAL/slot/proc/cleanup/GUI remain models, scratch/daemon disabled. No production changes/build; no full payload replay to hide failure."
+      "local_report_sha256": "8749c589d0a2cc4ae43a93f479431cb0bc28c342c8499a9c2007a0b3dde9393e",
+      "scope": "Preserved one-run original OS4.0.4 full ZIP: signature/host parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager allocation10 COWs -> original controller writer/all4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified state then modeled slot. No seeded allocation. Engine subsequently SIGSEGV/exits1 after success callbacks; parent correctly INSTALL_ERROR. INSTALLATION FAILED. Exact-adapter allocation-only probe reproduces crash with process-static controller, exits0 with scoped reset; model lifetime issue, not proven production defect. Synthetic32GiB LP/independent file mappings/readonly/mount/HAL/slot/proc/cleanup/GUI remain models, scratch/daemon disabled. No production changes/build; no full payload replay to hide failure.",
+      "previous_report_sha256": "7dbee9d443ea9f7755ea0486e7a0326777309f81ed2878059785d60f72f3fbfe"
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
   "current_batch_groups": [
     12
   ],
-  "current_batch_document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-failure",
-  "current_batch_groups_scope": "Preserved one-run original OS4.0.4 full ZIP: signature/host parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager allocation10 COWs -> original controller writer/all4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified state then modeled slot. No seeded allocation. Engine subsequently SIGSEGV/exits1 after success callbacks; parent correctly INSTALL_ERROR. INSTALLATION FAILED. Exact-adapter allocation-only probe reproduces crash with process-static controller, exits0 with scoped reset; model lifetime issue, not proven production defect. Synthetic32GiB LP/independent file mappings/readonly/mount/HAL/slot/proc/cleanup/GUI remain models, scratch/daemon disabled. No production changes/build; no full payload replay to hide failure.",
+  "current_batch_document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success",
+  "current_batch_groups_scope": "After model Cleanup releases controller before process-static destruction, one original OS4.0.4 full ZIP run succeeds in explicit file model: whole-file signature/host ZIP parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager initializes10 COWs -> original controller writer4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified publication -> modeled slot/unmap/Cleanup -> engine0/wait0/parent INSTALL_SUCCESS0.24 checks pass,881seconds. Synthetic32GiB source LP, independent file DM views, readonly/mount/HAL/slot/proc/cleanup/GUI remain models; scratch/daemon disabled. No production change/build or physical mapping/boot/merge/full device OTA.",
   "stock_os4_zip_entry": {
     "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
     "report": "logs/zip-stock-os4-fixed.json",
@@ -1545,6 +1547,32 @@
     "full_ota_install": false,
     "production_changes": false,
     "new_build": false,
-    "scope": "Preserved one-run original OS4.0.4 full ZIP: signature/host parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager allocation10 COWs -> original controller writer/all4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified state then modeled slot. No seeded allocation. Engine subsequently SIGSEGV/exits1 after success callbacks; parent correctly INSTALL_ERROR. INSTALLATION FAILED. Exact-adapter allocation-only probe reproduces crash with process-static controller, exits0 with scoped reset; model lifetime issue, not proven production defect. Synthetic32GiB LP/independent file mappings/readonly/mount/HAL/slot/proc/cleanup/GUI remain models, scratch/daemon disabled. No production changes/build; no full payload replay to hide failure."
+    "scope": "Preserved one-run original OS4.0.4 full ZIP: signature/host parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager allocation10 COWs -> original controller writer/all4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified state then modeled slot. No seeded allocation. Engine subsequently SIGSEGV/exits1 after success callbacks; parent correctly INSTALL_ERROR. INSTALLATION FAILED. Exact-adapter allocation-only probe reproduces crash with process-static controller, exits0 with scoped reset; model lifetime issue, not proven production defect. Synthetic32GiB LP/independent file mappings/readonly/mount/HAL/slot/proc/cleanup/GUI remain models, scratch/daemon disabled. No production changes/build; no full payload replay to hide failure.",
+    "historical_report_replaced_by_confirmation": true
+  },
+  "stock_allocated_zip_success": {
+    "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success",
+    "report": "logs/zip-engine-allocated-finish.json",
+    "report_sha256": "4e6f92f43b1ee7a98d35368967b7bd8dc974d231b37313914ad0b4b671efa0f3",
+    "audit": "logs/zip-engine-allocated-finish-audit.json",
+    "image_sha256": "cc73c3cb1335bc6059a079047da87d044ba7dd1033104458d741a8f995908f8b",
+    "operations": 4933,
+    "partition_hashes": 42,
+    "engine_returncode": 0,
+    "parent_result": "INSTALL_SUCCESS=0",
+    "installation_result": "MODEL_SUCCESS",
+    "checks": 24,
+    "seconds": 881,
+    "actual_snapshot_allocation": true,
+    "actual_controller_preparation": true,
+    "actual_controller_cow_writer": true,
+    "allocation_metadata_seeded": false,
+    "model_lifetime_fixed": true,
+    "synthetic_source_layout": true,
+    "actual_kernel_mapping": false,
+    "full_ota_install": false,
+    "production_changes": false,
+    "new_build": false,
+    "scope": "After model Cleanup releases controller before process-static destruction, one original OS4.0.4 full ZIP run succeeds in explicit file model: whole-file signature/host ZIP parent -> intact ARM64 engine -> actual PreparePartitionsForUpdate/SnapshotManager initializes10 COWs -> original controller writer4933 operations/payload hash/42 final hashes -> exact stock Recovery postinstall guard -> actual Unverified publication -> modeled slot/unmap/Cleanup -> engine0/wait0/parent INSTALL_SUCCESS0.24 checks pass,881seconds. Synthetic32GiB source LP, independent file DM views, readonly/mount/HAL/slot/proc/cleanup/GUI remain models; scratch/daemon disabled. No production change/build or physical mapping/boot/merge/full device OTA."
   }
 }

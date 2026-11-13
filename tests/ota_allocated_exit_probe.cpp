@@ -7,7 +7,7 @@ int main(int argc,char** argv){
  if(std::string(argv[1])=="scoped"){
   // The model controller must die with its owning boot-control adapter, before
   // process-wide logging / property singletons start destruction.
-  struct Owner {~Owner(){allocated_control.reset();}} owner;
+  struct Owner {~Owner(){allocated_control->Cleanup();allocated_control.reset();}} owner;
  }
  puts("PROBE main completed");fflush(stdout);return 0;
 }

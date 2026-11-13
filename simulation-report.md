@@ -19,6 +19,12 @@
 
 正常、路径查询失败、头部同步失败三项定向检查通过；使用同一夹具和镜像库、替换为旧 SnapshotManager 的负向检查仅同步失败项崩溃。正常项真实初始化并解析十份空 COW，发布目标 LP，重建 manager 后持久化 Unverified 状态；两种失败均清除临时映射 / 状态、保持 Initiated，不误报完成。内核映射由独立稀疏普通文件代替，源 LP 为合成 32 GiB，HAL / kernel / ImageManager 为明确边界；测试模式关闭 scratch 和 daemon 启动。**没有重跑整包，不代表真实映射 / 挂载 / 槽位 / 重启合并验收。** 见[初始化与故障范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization)，本地交付核对 `logs/snapshot-cow-init-delivery.json`。
 
+## 整包接入真实分配：模型内成功，设备边界仍未验收
+
+修正测试模型在Cleanup阶段释放controller后，原始OS4.0.4整包单次运行完成真实控制器/十份COW分配、全部4933操作、payload哈希、42最终分区哈希、原厂Recovery脚本、真实Unverified发布、模型槽位与卸载清理；引擎退出0/wait0、父安装器INSTALL_SUCCESS=0。24项断言通过，约881秒，详见[成功运行范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success)。
+
+这是模型生命周期修正和接续证据，无生产修改或新镜像。源LP/DM视图/readonly/挂载/HAL/槽位/proc等仍为明确模型，scratch/daemon关闭；未证明实机启动合并。已完成的整包不再例行重复。
+
 ## 整包接入真实分配：数据及收尾通过，退出仍失败
 
 同次原始 4.0.4 完整 ZIP 运行已移除预置分配状态与独立 COW 创建，执行真实控制器 PreparePartitionsForUpdate / SnapshotManager 初始化十份 COW，再由原 controller writer 执行全部4933操作、payload哈希与42最终分区哈希；原厂脚本 Recovery 分支、真实完成状态及模型槽位接续。约876秒后，在成功回调 / 完成标记后进程SIGSEGV，实际退出1，父安装器INSTALL_ERROR，**本次安装为FAILED**。

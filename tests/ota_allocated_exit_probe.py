@@ -25,11 +25,22 @@ def main():
     engine=ref['engine'];image=Path(ref['image'])
     assert sha(image)==ref['image_sha256']
     adapter=ROOT/'logs/zip-engine-allocated-adapter.cpp'
-    assert sha(adapter)==engine['adapter_sha256']
+    adapter_text=adapter.read_text()
+    old='void Cleanup() override { printf("BOUNDARY Cleanup file model\\n"); }'
+    new='''void Cleanup() override {
+        if (allocated_control) {
+            allocated_control->Cleanup();
+            allocated_control.reset();
+            puts("MODEL released controller during Cleanup");
+        }
+        puts("BOUNDARY Cleanup file model");fflush(stdout);
+    }'''
+    assert adapter_text.count(old)==1
+    adapter_text=adapter_text.replace(old,new)
     fixture=ROOT/'tests/ota_allocated_exit_probe.cpp'
     with tempfile.TemporaryDirectory(prefix='allocated-exit-',dir=ROOT/'logs') as tmp:
         work=Path(tmp);combined=work/'probe.cpp'
-        combined.write_text(adapter.read_text()+'\n'+fixture.read_text())
+        combined.write_text(adapter_text+'\n'+fixture.read_text())
         support=ROOT/'logs/zip-engine-allocated-support.inc'
         shutil.copyfile(support,work/'snapshot_init_support.inc')
         command=engine['compile_command'].copy();command.insert(1,'-I'+str(work))
@@ -59,7 +70,7 @@ def main():
             expected=child.returncode==0 if name=='scoped' else child.returncode!=0 and 'Fatal signal 11 (SIGSEGV)' in child.stderr
             ok=expected and 'PROBE main completed' in child.stdout
             rows.append(dict(name=name,status='PASS' if ok else 'FAIL',returncode=child.returncode,stdout=child.stdout,stderr=child.stderr));print(rows[-1]['status'],name,child.returncode,flush=True)
-        r=dict(status='PASS' if all(c['status']=='PASS' for c in rows) else 'FAIL',scope=__doc__,sources=sources,dependencies=dependencies,image_sha256=sha(image),image_entries=entries,compile_command=command,link_command=link,fixture_sha256=sha(work/'probe'),full_run_report_sha256=sha(ROOT/'logs/zip-engine-allocated-finish.json'),cases=rows,production_changes=False,new_build=False,full_ota_install=False)
+        r=dict(status='PASS' if all(c['status']=='PASS' for c in rows) else 'FAIL',scope=__doc__,sources=sources,dependencies=dependencies,image_sha256=sha(image),image_entries=entries,compile_command=command,link_command=link,fixture_sha256=sha(work/'probe'),adapter_sha256=hashlib.sha256(adapter_text.encode()).hexdigest(),full_run_report_sha256=sha(ROOT/'logs/zip-engine-allocated-finish.json'),cases=rows,production_changes=False,new_build=False,full_ota_install=False)
         (ROOT/'logs/ota-allocated-exit-probe.json').write_text(json.dumps(r,indent=2)+'\n');return 0 if r['status']=='PASS' else 1
 
 
