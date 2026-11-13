@@ -1,0 +1,92 @@
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -3150,22 +3150,24 @@
+ #endif
+ }
+ 
+-void TWPartitionManager::SetActiveSlot(const std::string& slot) {
++bool TWPartitionManager::SetActiveSlot(const std::string& slot) {
+   if (slot != "A" && slot != "B") {
+     LOGERR("SetActiveSlot invalid slot '%s'\n", slot.c_str());
+-    return;
+-  }
+-  if (active_slot_display_ == slot) return;
++    return false;
++  }
++  if (active_slot_display_ == slot) return true;
+   LOGINFO("Setting active slot %s\n", slot.c_str());
+ #ifdef AB_OTA_UPDATER
+   if (!active_slot_display_.empty()) {
+     if (const auto module = BootControlClient::WaitForService(); !module) {
+       LOGERR("Error getting bootctrl module.\n");
++      return false;
+     } else {
+       int32_t slot_number = 0;
+       if (slot == "B") slot_number = 1;
+       if (const auto [success, errMsg] = module->SetActiveBootSlot(slot_number); !success) {
+         gui2_console::log_error("unable_set_boot_slot", slot);
++        return false;
+       }
+     }
+     DataManager::SetValue("tw_active_slot", slot);
+@@ -3173,10 +3175,11 @@
+   }
+ #else
+   LOGERR("Boot slot feature not present\n");
+-  return;
++  return false;
+ #endif
+   active_slot_display_ = slot;
+   if (FstabProcessed()) UpdateSystemDetails();
++  return true;
+ }
+ 
+ std::string TWPartitionManager::GetActiveSlotSuffix() const {
+--- a/partitions.hpp
++++ b/partitions.hpp
+@@ -863,7 +863,7 @@
+   void OverrideActiveSlot(const std::string& slot);
+ 
+   // Sets the active slot to A or B
+-  void SetActiveSlot(const std::string& slot);
++  bool SetActiveSlot(const std::string& slot);
+ 
+   // Returns active slot _a or _b
+   [[nodiscard]] std::string GetActiveSlotSuffix() const;
+--- a/gui2/backend/twrp_reboot_backend.cpp
++++ b/gui2/backend/twrp_reboot_backend.cpp
+@@ -45,6 +45,7 @@
+   // user leaves its page. Never block the UI or change slots under that work.
+   std::unique_lock transaction(twrp_operation_executor::instance().mutex(), std::try_to_lock);
+   if (!transaction.owns_lock()) return false;
++  if (!capabilities().boot_slots) return false;
+   const std::string arg = slot == boot_slot::A ? "A" : "B";
+   operation_start("Set Boot Slot");
+   if (PartitionManager.FindPartitionByPath("/vendor")) {
+@@ -55,9 +56,9 @@
+       PartitionManager.UnmountByPath("/vendor", false, MNT_DETACH);
+     }
+   }
+-  PartitionManager.SetActiveSlot(arg);
+-  operation_end(0);
+-  return true;
++  const bool success = PartitionManager.SetActiveSlot(arg);
++  operation_end(success ? 0 : 1);
++  return success;
+ }
+ 
+ bool twrp_reboot_backend::is_supported(reboot_target target) const {
+--- a/gui2/gui2.cpp
++++ b/gui2/gui2.cpp
+@@ -4131,7 +4131,10 @@
+ static void backup_set_slot(gui2_backend::boot_slot slot) {
+   if (reboot == nullptr) return;
+   page_state.backup_name = textarea_text(page_state.backup_view.name_input);
+-  reboot->set_active_slot(slot);
++  if (!reboot->set_active_slot(slot)) {
++    gui2_console::log_error("unable_set_boot_slot", slot == gui2_backend::boot_slot::A ? "A" : "B");
++    return;
++  }
+   page_state.backup_active_tab = 1;
+   navigate_to(page_kind::BACKUP, nullptr, page_transition::REPLACE);
+ }

@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-reboot-storage-guard.img",
-  "image_sha256": "fb3035146cc80d240804a1d47c6d528c441a1983fae27cbe410c78176e14f81b",
-  "production_sources": 825,
+  "image_name": "recovery-dijun-unified-slot-result.img",
+  "image_sha256": "2df5dfba265081c91564d283389dd4dce21cd9939cf59f529f905feafce4c0d6",
+  "production_sources": 826,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -1749,6 +1749,38 @@
       "failures": 0,
       "local_report_sha256": "a0eaca1c6560e6df8fccf85fcac1f904383032db304ac86bf90b7c9871b45a89",
       "scope": "Original reboot/slot backend with real recursive storage mutex and owner threads: nonblocking busy rejection, no side effects, idle retry. Original sideload core/private processes/GUI poll preserves pending request until idle. HAL/partition/DataManager/USB/sync/final reboot are fixtures. No Binder/TEE cancellation, shutdown reservation, full ARM64 GUI or hardware proof."
+    },
+    {
+      "name": "slot-result",
+      "status": "PASS",
+      "cases": 14,
+      "failures": 0,
+      "local_report_sha256": "69a70eadb1ee1347bef314b15c1183bee9bae770afe2c2ba27f4de98e6d0f7e1",
+      "scope": "Original SetActiveSlot manager, reboot backend and backup/reboot confirmation callbacks; HAL/capabilities/DataManager/partition/navigation are doubles. HAL failure must not publish slot or continue reboot; backup inputs preserved. Fourteen cases; old nine fail. Storage mutex21 and sideload20 regressions. No real HAL/mount/slot/full GUI or device proof."
+    },
+    {
+      "name": "slot-result-negative",
+      "status": "FAIL",
+      "cases": 14,
+      "failures": 9,
+      "local_report_sha256": "e9cc469aa2c1380dab05211634af703c0e2f4a3304b8eef5b5bd6c8fa7f04494",
+      "scope": "Original SetActiveSlot manager, reboot backend and backup/reboot confirmation callbacks; HAL/capabilities/DataManager/partition/navigation are doubles. HAL failure must not publish slot or continue reboot; backup inputs preserved. Fourteen cases; old nine fail. Storage mutex21 and sideload20 regressions. No real HAL/mount/slot/full GUI or device proof."
+    },
+    {
+      "name": "slot-result-storage",
+      "status": "PASS",
+      "cases": 21,
+      "failures": 0,
+      "local_report_sha256": "33b79471434192d0b5fb723e0b3e6109d7732156e43ae0ffceac8cf0fd0c3af3",
+      "scope": "Original SetActiveSlot manager, reboot backend and backup/reboot confirmation callbacks; HAL/capabilities/DataManager/partition/navigation are doubles. HAL failure must not publish slot or continue reboot; backup inputs preserved. Fourteen cases; old nine fail. Storage mutex21 and sideload20 regressions. No real HAL/mount/slot/full GUI or device proof."
+    },
+    {
+      "name": "slot-result-sideload",
+      "status": "PASS",
+      "cases": 20,
+      "failures": 0,
+      "local_report_sha256": "605f7671321a3f2dfb027974b7d5215fcd6a342ffee76bd7965d6049c7a93a82",
+      "scope": "Original SetActiveSlot manager, reboot backend and backup/reboot confirmation callbacks; HAL/capabilities/DataManager/partition/navigation are doubles. HAL failure must not publish slot or continue reboot; backup inputs preserved. Fourteen cases; old nine fail. Storage mutex21 and sideload20 regressions. No real HAL/mount/slot/full GUI or device proof."
     }
   ],
   "refresh_stuck_investigation": {
@@ -1931,6 +1963,13 @@
     "patch": "0100",
     "scope": "Original reboot/slot backend with real recursive storage mutex and owner threads: nonblocking busy rejection, no side effects, idle retry. Original sideload core/private processes/GUI poll preserves pending request until idle. HAL/partition/DataManager/USB/sync/final reboot are fixtures. No Binder/TEE cancellation, shutdown reservation, full ARM64 GUI or hardware proof.",
     "document": "docs/MULTIUSER-ADAPTATION.md#storage-reboot-guard",
+    "production_changes": true,
+    "new_build": true
+  },
+  "slot_result": {
+    "patch": "0101",
+    "scope": "Original SetActiveSlot manager, reboot backend and backup/reboot confirmation callbacks; HAL/capabilities/DataManager/partition/navigation are doubles. HAL failure must not publish slot or continue reboot; backup inputs preserved. Fourteen cases; old nine fail. Storage mutex21 and sideload20 regressions. No real HAL/mount/slot/full GUI or device proof.",
+    "document": "docs/MULTIUSER-ADAPTATION.md#slot-result",
     "production_changes": true,
     "new_build": true
   }

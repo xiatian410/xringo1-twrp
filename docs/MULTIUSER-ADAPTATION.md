@@ -1,5 +1,14 @@
 # 多用户发现与解锁入口
 
+<a id="slot-result"></a>
+## 槽位失败传播
+
+0101修正SetActiveSlot的结果契约：非法槽位、缺失Boot HAL或HAL拒绝返回false；这些路径不发布tw_active_slot、不改active_slot_display_，也不刷新分区详情。启动时从空槽位初始化显示保留原行为，不调用HAL；已选相同槽位直接成功。后台先检查槽位能力，再将核心结果传递给operation_end与调用者。
+
+备份选项页检查返回值：失败记录已有unable_set_boot_slot本地化消息并保留当前页面和输入；重启确认页原有失败分支现在能收到核心失败，保持待切换并显示错误，不请求重启。没有新建UI消息或绕过backend。
+
+tests/slot_result_test.py执行原核心、后台和两个GUI回调14场景：成功、相同槽位、初始显示、非法槽位、无服务、HAL拒绝、无能力及页面失败/成功路径。旧实现9项失败；当前14项、入口锁21项、侧载20项通过。HAL/capability/DataManager/挂载/导航是替身，不是实际Boot HAL或渲染GUI验收；失败前的vendor卸载不回滚。交付审计本地logs/slot-result-delivery-audit.json。此缺陷收尾，不重复上述检查。
+
 <a id="storage-reboot-guard"></a>
 ## 存储忙时的重启与槽位入口
 

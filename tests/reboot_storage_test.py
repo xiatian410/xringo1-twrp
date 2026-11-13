@@ -17,6 +17,7 @@ from nested_partition_path_test import ROOT, SRC, method
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--before', action='store_true')
+    parser.add_argument('--report', type=Path)
     args = parser.parse_args()
     source = (ROOT / 'logs/reboot-storage-before/gui2/backend/twrp_reboot_backend.cpp'
               if args.before else SRC / 'gui2/backend/twrp_reboot_backend.cpp')
@@ -45,7 +46,7 @@ struct DataManager { static int SetValue(const char* k,const char* v){assert(std
 struct Manager {
 bool FindPartitionByPath(const char*){return true;}
 bool UnmountByPath(const char*,bool,int=0){++unmounts;return true;}
-void SetActiveSlot(const std::string& s){slot_set=s;}
+bool SetActiveSlot(const std::string& s){slot_set=s;return true;}
 } PartitionManager;
 namespace gui2_backend {
 twrp_reboot_backend::twrp_reboot_backend()=default;
@@ -125,7 +126,7 @@ int main(int argc,char**argv){
                   scope=__doc__, cases=cases, compile_command=cmd,
                   sources={str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths})
     output = ROOT / ('logs/reboot-storage-negative.json' if args.before else 'logs/reboot-storage.json')
-    output.write_text(json.dumps(report, indent=2) + '\n')
+    (args.report or output).write_text(json.dumps(report, indent=2) + '\n')
     return report['status'] != 'PASS'
 
 

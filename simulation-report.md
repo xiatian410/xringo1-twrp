@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-reboot-storage-guard.img` |
-| SHA-256 | `fb3035146cc80d240804a1d47c6d528c441a1983fae27cbe410c78176e14f81b` |
-| 生产来源绑定 | 825 份 |
+| 文件 | `recovery-dijun-unified-slot-result.img` |
+| SHA-256 | `2df5dfba265081c91564d283389dd4dce21cd9939cf59f529f905feafce4c0d6` |
+| 生产来源绑定 | 826 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：存储忙时的重启与槽位入口
+## 本批生产修正：槽位切换失败返回
+
+0101修正核心在Boot HAL缺失或拒绝时仍发布新槽位的问题：SetActiveSlot现在返回失败，不改内存槽位、DataManager或刷新分区详情；后台传播结果及失败状态。备份页失败时记录本地化错误并保留输入，重启确认页不会继续请求重启。槽位14项通过，旧实现9项失败；相关入口21 / 侧载20项回归通过。最终清理构建、826来源与六profile封装通过，详见[槽位失败传播](docs/MULTIUSER-ADAPTATION.md#slot-result)。
+
+测试使用原核心 / backend / 回调，HAL / 挂载 / DataManager / 导航为替身，没有真实切换槽位或完整GUI验收。不改OTA引擎、触摸或震动；不重复整包安装检查。
+
+## 沿用的存储忙时重启与槽位入口
 
 0100 在重启请求和切换槽位入口非阻塞尝试存储事务锁：其他线程持锁时立即返回失败，不等待、卸载分区或修改重启参数。侧载待处理重启在取得锁后才领取，忙时保留，下一轮空闲轮询可正常交接。原 backend / 真实 mutex 与线程21项通过，旧实现9项忙时检查失败；侧载原核心与轮询20项通过。清理构建后825来源、六profile封装核对通过。
 
