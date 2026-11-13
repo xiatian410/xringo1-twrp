@@ -371,3 +371,24 @@ python3 scripts/audit_snapshot_unmap_delivery.py
 两个主检查的 `--source` 可指定本地保存的完整旧 TU，独立报告路径见机器索引。两份完整原厂 payload 不重跑：仅复用未变执行器源码的原证据；本次变化的校验器与控制器按上表执行，不宣称原完整测试已自动证明新版本整链。
 
 候选 `recovery-dijun-unified-snapshot-unmap.img`，SHA-256 `a37e758364c5755f9823ec37d559b4ebeb50349771e80a7bea2738d6aae3fa00`。已执行 `installclean` 与 `make -j$(nproc)`，30 并发，796 份生产来源 / 六份 profile。相对0078只有 `system/bin/update_engine_sideload`、构建属性和 ramdisk 摘要变化。实际 mapper、snapuserd、快照删除 / 合并、完整安装和断电仍待维护；本批没有操作手机或物理块设备。
+
+<a id="snapshot-device-cleanup"></a>
+
+## 原始 SnapshotManager 设备清理接续
+
+0079 的控制器检查把整段 snapshot 解除作为返回值替身。本节进一步执行实际 AArch64 `UnmapUpdateSnapshot → UnmapPartitionWithSnapshot → UnmapSnapshot / UnmapCowDevices → DeleteDeviceIfExists`，以及原始 `UnmapAllSnapshots` 和两项控制器到实际 manager 的调用。没有追加生产补丁，当前 snapshot-unmap 镜像及796份生产来源保持不变。
+
+真实执行包括私有 metadata 目录锁、状态 protobuf、snapshot 名单读取、清理顺序、部分完成后的重试，以及 `IImageManager::UnmapImageIfExists` 的“已映射则解除”判断。mapper 的设备集合 / 删除结果和 image manager 的映射状态 / 解除结果是有状态替身；其余分区打开、映射创建、表修改、FIEMAP 分配和 HAL 操作均拒绝。绝不连接手机或真实块设备。
+
+15 个场景覆盖：正常、snapshot / COW / image / base / source 删除失败、image manager 打开失败、metadata 缺失、整组成功 / 列表缺失、控制器成功 / COW 失败，以及 userspace device 已无映射 / 尚有映射 / 删除失败。每项逐一核对删除顺序和剩余设备 / image 状态；可恢复故障解除后重试，成功后再次调用不得重复 image 解除。COW 删除失败执行原始四秒重试期限，只有相邻相同尝试在顺序比较中折叠，不替换生产重试函数。
+
+userspace 尚有映射的场景将 table-status 查询明确返回 false：原始分支不会连接 snapuserd，并检查私有 chroot 中不存在的控制节点。它不证明活跃 daemon 通信、`WaitForDeviceDelete`、控制节点延迟消失或内核取消。普通 mapper 的集合变化也不等于真实内核映射已创建 / 删除。snapshot 记录不是 COW 内容，此项不证明快照镜像删除、合并、FIEMAP / Binder 或完整 OTA。
+
+初次夹具因缺少命名空间限定编译失败，随后删除失败场景触发了未放行的诊断路径；两份失败输出仅留本地。修正夹具边界后15项通过，没有把这些夹具问题归为生产缺陷，也没有据此修改驱动。
+
+```bash
+python3 tests/ota_snapshot_finish.py --unmap
+python3 scripts/audit_snapshot_devices.py
+```
+
+来源、archive、QEMU、夹具编译参数及当前镜像 linker / 共享库绑定在本地 `logs/ota-snapshot-devices.json`；公开摘要见 `CURRENT-VALIDATION.json`。这里新增的是执行证据，不是功能修复；相关生产输入未变，不重编镜像，不重复完整 payload 或0079控制器等价场景。下一边界是活跃 snapuserd / 内核 mapper / 实际 image 管理与完整安装接续。

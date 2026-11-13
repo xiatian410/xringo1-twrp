@@ -910,12 +910,20 @@
       "failures": 0,
       "local_report_sha256": "34e08fb70a2bcdfdc33ddd3b21882bc59a88f700842eb9553e0e892658a4829a",
       "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries."
+    },
+    {
+      "name": "actual-SnapshotManager-device-cleanup",
+      "status": "PASS",
+      "cases": 15,
+      "failures": 0,
+      "local_report_sha256": "0d4628620c01f5cf23ea0b5c8d40f456e3273ea10ad922831215123bf5df6d6e",
+      "scope": "Actual ARM64 SnapshotManager UnmapUpdateSnapshot/UnmapAllSnapshots and original controller call. Real locks/state/protobuf/UnmapImageIfExists; device mapper deletes and image mapping state are modeled, other hardware operations denied. Tests cleanup order and retry, NOT real kernel mapping, live snapuserd, FIEMAP/Binder or OTA/merge."
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
   "current_batch_groups": [
     12
   ],
-  "current_batch_document": "docs/OTA-OPERATION-COW.md#snapshot-unmap",
-  "current_batch_groups_scope": "Original ARM64 verifier/controller unmap failure propagation, metadata gating and empty cleanup semantics. Snapshot/logical mapping results are doubles; actual mapper/merge/full OTA pending."
+  "current_batch_document": "docs/OTA-OPERATION-COW.md#snapshot-device-cleanup",
+  "current_batch_groups_scope": "Evidence only: actual ARM64 SnapshotManager cleanup order/partial-state/retry, modeled mapper/image states; production/image unchanged. No live snapuserd or kernel mapping."
 }

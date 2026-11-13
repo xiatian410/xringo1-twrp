@@ -13,6 +13,10 @@
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
+## 后续证据补充
+
+当前镜像未变。原始 ARM64 SnapshotManager 设备解除顺序、部分状态与重试已接续15场景，含原控制器到实际 manager 两场景；mapper / image 状态仍为有状态替身，活跃 snapuserd、内核映射与 FIEMAP / Binder 尚未执行。本批未发现新增生产缺陷、不重编，见[清理接续范围](docs/OTA-OPERATION-COW.md#snapshot-device-cleanup)。
+
 ## 本次候选包含的修正
 
 - **0079**：解除映射结果汇总到控制器与校验器，失败阻止重映射及成功上报；空集合成功，metadata 不可用不调用 snapshot，原哈希错误保留。校验器9 / 控制器8通过，旧2 / 6失败；取消10 / postinstall6必要回归通过。清理构建796来源 / 六profile；仅更新器二进制变化，实际映射及完整安装仍未覆盖。见[范围](docs/OTA-OPERATION-COW.md#snapshot-unmap)。

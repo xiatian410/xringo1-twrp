@@ -3235,6 +3235,14 @@
       "evidence": "logs/ota-snapshot-unmap-postinstall-regression.json",
       "evidence_sha256": "34e08fb70a2bcdfdc33ddd3b21882bc59a88f700842eb9553e0e892658a4829a",
       "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries."
+    },
+    {
+      "name": "actual-SnapshotManager-device-cleanup",
+      "result": "pass",
+      "count": 15,
+      "evidence": "logs/ota-snapshot-devices.json",
+      "evidence_sha256": "0d4628620c01f5cf23ea0b5c8d40f456e3273ea10ad922831215123bf5df6d6e",
+      "scope": "Actual ARM64 SnapshotManager UnmapUpdateSnapshot/UnmapAllSnapshots and original controller call. Real locks/state/protobuf/UnmapImageIfExists; device mapper deletes and image mapping state are modeled, other hardware operations denied. Tests cleanup order and retry, NOT real kernel mapping, live snapuserd, FIEMAP/Binder or OTA/merge."
     }
   ],
   "source_review_followups": [
@@ -4027,6 +4035,19 @@
       ],
       "actual_mapping": false,
       "snapshot_manager_executed": false,
+      "full_ota_install": false
+    },
+    "snapshot_device_cleanup": {
+      "report": "logs/ota-snapshot-devices.json",
+      "report_sha256": "0d4628620c01f5cf23ea0b5c8d40f456e3273ea10ad922831215123bf5df6d6e",
+      "audit": "logs/snapshot-devices-audit.json",
+      "document": "docs/OTA-OPERATION-COW.md#snapshot-device-cleanup",
+      "cases": 15,
+      "production_change": false,
+      "actual_snapshot_manager": true,
+      "actual_kernel_mapping": false,
+      "actual_snapuserd": false,
+      "actual_image_manager": false,
       "full_ota_install": false
     }
   },

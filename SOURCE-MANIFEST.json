@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "f5b9d44df71c426fc18533d391bd4f46fb015e9122b9e2ae55ab133e9b5e0f7a",
+    "sha256": "504ee24dcacf17a0c76a3bf1c92718a831e13e28718524a094d8ab2e1af88f99",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -116,7 +116,7 @@
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
-    "sha256": "739e6437b0a9dea3acb48c2e0762ac5b77ecbeee5725614def8364ce41c9eda9",
+    "sha256": "b6d24f489c0224a4bd4a09c475c373fd781e036e008658d4b4572aec94698cc4",
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
@@ -168,7 +168,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "327d8f795396f67c623a2f62a1c1305dc6b4d14334d7580ead83ab11029e5891",
+    "sha256": "dcefc30fafe974fda66079133d9b07dfcaedefa3e0264b509cadab31c46ee37f",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1259,6 +1259,10 @@
     "sha256": "0fe5f6eb6dbe9a195337c5b2055343b9889f2eb02f1cbab16337060a093a72bc",
     "mode": "0o644"
   },
+  "scripts/audit_snapshot_devices.py": {
+    "sha256": "cc08b103789c3010b6ea218327a4eb955909ee4787a284bc90a42ee07b2e3c2f",
+    "mode": "0o644"
+  },
   "scripts/audit_snapshot_map_delivery.py": {
     "sha256": "ce4589fe70d92720515fe32c7127116cacd9db448ba908967ca2b234e1a9b8b0",
     "mode": "0o644"
@@ -1648,11 +1652,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "b20465b46fd8ab6acbe963166a4a54907610d209c88b4be9f73dbc34c9e1aaf2",
+    "sha256": "28032192c9e6683f5591c8cf3192a8f0255447327984b77a1c251b33942b114b",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "72b2ff078eed785bf259a9ce198e1478f6704c274fc09a0b27c5c4c2181e4d25",
+    "sha256": "012d671e7d25cba37f96387b949307f62f6b1af563282031ddb98ed540eeb340",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2239,12 +2243,16 @@
     "sha256": "c9cb4a4e6499db0241fc29e976b0eb71aaf503c05a889c9b7b40441870e66273",
     "mode": "0o644"
   },
+  "tests/ota_snapshot_devices.cpp": {
+    "sha256": "dee60a8966d202200d234e76fc1da28bd8f33a263262b3791a4209fd20a6cb39",
+    "mode": "0o644"
+  },
   "tests/ota_snapshot_finish.cpp": {
     "sha256": "5490ae03215e7691e4168f4ef2584c44b5d9f8939f9e16c39526bff45801e8b0",
     "mode": "0o644"
   },
   "tests/ota_snapshot_finish.py": {
-    "sha256": "5f862927065bf14643b3af9ac8a515cb8c3847cbf406d4ac85c11d319b0c55e6",
+    "sha256": "d578b41e7130a5d2850aa0ea3a3ff69ce3bd41932cba7b71b0be2dcec8e63027",
     "mode": "0o644"
   },
   "tests/ota_snapshot_map.cpp": {

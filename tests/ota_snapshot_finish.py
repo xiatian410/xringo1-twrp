@@ -31,19 +31,20 @@ def sha(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--report', type=Path)
+    parser.add_argument('--unmap', action='store_true', help='Execute original SnapshotManager device cleanup with modeled mapper/image boundaries')
     parser.add_argument('--cancel', action='store_true', help='Execute original cancellation failure propagation')
     parser.add_argument('--snapshot-source', type=Path, help='Compile explicit snapshot TU for negative comparison')
     parser.add_argument('--postinstall', action='store_true', help='Join original controller/PostinstallRunnerAction with persisted-state retries')
     parser.add_argument('--image', type=Path)
     parser.add_argument('--utility-source', type=Path, help='Compile an explicit helper source for old-source comparison only')
     args = parser.parse_args()
-    if args.cancel and args.postinstall: parser.error('choose one mode')
+    if sum([args.unmap, args.cancel, args.postinstall]) > 1: parser.error('choose one mode')
     if args.snapshot_source and not args.cancel: parser.error('snapshot override is only supported for cancellation')
     if args.report is None:
-        args.report = ROOT/('logs/ota-snapshot-cancel.json' if args.cancel else 'logs/ota-snapshot-postinstall.json' if args.postinstall else 'logs/ota-snapshot-finish.json')
+        args.report = ROOT/('logs/ota-snapshot-devices.json' if args.unmap else 'logs/ota-snapshot-cancel.json' if args.cancel else 'logs/ota-snapshot-postinstall.json' if args.postinstall else 'logs/ota-snapshot-finish.json')
     if args.postinstall and args.utility_source:
         parser.error('old-helper comparison is only supported for leaf cases')
-    fixture = ROOT/('tests/ota_snapshot_cancel.cpp' if args.cancel else 'tests/ota_snapshot_postinstall.cpp' if args.postinstall else 'tests/ota_snapshot_finish.cpp')
+    fixture = ROOT/('tests/ota_snapshot_devices.cpp' if args.unmap else 'tests/ota_snapshot_cancel.cpp' if args.cancel else 'tests/ota_snapshot_postinstall.cpp' if args.postinstall else 'tests/ota_snapshot_finish.cpp')
     if args.image is not None:
         args.image = args.image.resolve()
     reference = json.loads((ROOT/'logs/ota-vabc-session.json').read_text())
@@ -60,7 +61,7 @@ def main():
         ANDROID/'system/core/fs_mgr/libsnapshot/utility.cpp', ROOT/'scripts/firmware_facts.py',
         ROOT/'scripts/acquire_firmware.py']}
     sources[str(fixture)] = sha(fixture)
-    if args.postinstall or args.cancel:
+    if args.postinstall or args.cancel or args.unmap:
         for path in [ANDROID/'system/update_engine/aosp/dynamic_partition_control_android.cc',
                      ANDROID/'system/update_engine/payload_consumer/postinstall_runner_action.cc']:
             sources[str(path)] = sha(path)
@@ -142,6 +143,8 @@ def main():
             names = ['normal', 'boot-sync-retry', 'state-sync-retry', 'state-open-retry', 'merge-status-retry', 'slot-retry']
         if args.cancel:
             names = ['normal', 'missing-metadata', 'missing-snapshots', 'state-open-error', 'state-sync-error', 'state-sync-interrupted', 'merge-status-error', 'reset-normal', 'reset-open-error', 'reset-sync-error']
+        if args.unmap:
+            names = ['normal', 'snapshot-fail', 'cow-fail', 'image-fail', 'base-fail', 'source-fail', 'open-image', 'missing-metadata', 'all-normal', 'all-missing-directory', 'control-normal', 'control-cow-fail', 'userspace-unmapped', 'userspace-active', 'userspace-delete-fail']
         for name in names:
             shutil.rmtree(jail/'work'); (jail/'work').mkdir()
             result = subprocess.run(['/qemu', '-L', '/android', '-E', 'LD_LIBRARY_PATH=/android/system/lib64',
@@ -149,11 +152,11 @@ def main():
                 capture_output=True, text=True, timeout=20)
             cases.append(dict(name=name, status='PASS' if result.returncode == 0 else 'FAIL',
                 returncode=result.returncode, stdout=result.stdout, stderr=result.stderr))
-        report = dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL', scope=('Actual ARM64 SnapshotManager CancelUpdate / cleanup / state-file error propagation, including original DynamicPartitionControlAndroid ResetUpdate and persisted-state retry. Deny-all hardware and no snapshot mappings; None-state publication and Initiated missing-directory cases. Metadata mount token and merge HAL result are explicit boundaries. Not full install, merge or image deletion.' if args.cancel else __doc__) + ('\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries.' if args.postinstall else ''),
+        report = dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL', scope=('Actual ARM64 SnapshotManager UnmapUpdateSnapshot/UnmapAllSnapshots and original controller call. Real locks/state/protobuf/UnmapImageIfExists; device mapper deletes and image mapping state are modeled, other hardware operations denied. Tests cleanup order and retry, NOT real kernel mapping, live snapuserd, FIEMAP/Binder or OTA/merge.' if args.unmap else 'Actual ARM64 SnapshotManager CancelUpdate / cleanup / state-file error propagation, including original DynamicPartitionControlAndroid ResetUpdate and persisted-state retry. Deny-all hardware and no snapshot mappings; None-state publication and Initiated missing-directory cases. Metadata mount token and merge HAL result are explicit boundaries. Not full install, merge or image deletion.' if args.cancel else __doc__) + ('\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries.' if args.postinstall else ''),
             sources=sources, dependencies=dependencies, image=str(image), image_sha256=sha(image),
             image_entries=entries, fixture_elf_machine=183, fixture_sha256=hashlib.sha256(data).hexdigest(),
             compile_template=compile_args, link_command=link, cases=cases,
-            full_payload_install=False, postinstall_connected=args.postinstall, snapshot_manager_executed=True, hardware_effects_denied=True, merge_status_result_boundary=True, cancellation_executed=args.cancel, snapshot_override=str(args.snapshot_source) if args.snapshot_source else None, utility_override=str(args.utility_source) if args.utility_source else None)
+            full_payload_install=False, postinstall_connected=args.postinstall, snapshot_manager_executed=True, hardware_effects_denied=True, merge_status_result_boundary=True, cancellation_executed=args.cancel, snapshot_device_cleanup_executed=args.unmap, snapshot_override=str(args.snapshot_source) if args.snapshot_source else None, utility_override=str(args.utility_source) if args.utility_source else None)
         args.report.write_text(json.dumps(report, indent=2)+'\n')
         print(report['status'], len(cases), 'cases;', sum(c['status']=='FAIL' for c in cases), 'failures')
         return 0 if report['status']=='PASS' else 1
