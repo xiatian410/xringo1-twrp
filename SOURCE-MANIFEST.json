@@ -40,7 +40,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "dcc95d6325c01407c2bf029a64bf8b8141118777d566e8ab6f96e62219f9076a",
+    "sha256": "32604cbd1d2b2fcc24b45053ea1dc5ad3ce82c7e04203033692076515c8951ca",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -68,7 +68,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "00909dd9d7fe6a5e152c583a6c8ca4981132df2e99f7b2967deae673b9420cd8",
+    "sha256": "86e49cb28027048498469f692de4b7e606c956f36238a39072c8188e9ac61379",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -92,7 +92,7 @@
     "mode": "0o644"
   },
   "docs/MTP-ADAPTATION.md": {
-    "sha256": "06af5ef5b525f0e6026f7b3a6c3135e815dc0a861754aceee3e6dda6ceed67b4",
+    "sha256": "74f41387c18cc3098de8b5e2cba162523274d459ba3f03c336046af4c9d4df95",
     "mode": "0o644"
   },
   "docs/MTP-ATOMIC-UPLOAD.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "9746abf741ebf4127cf4ea9b8768b1d58254596036f426724eef51b96c9b00d8",
+    "sha256": "95a070b8aac53772c4ed3edef64b8a82c233e775f1eacc3409bffdfc5c97dbf0",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -607,8 +607,12 @@
     "sha256": "2709a0e4118169c6e0f7a5580a311afc191040d9a6739e99fe8ca574ed92d14b",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0083-mtp-send-error-propagation.patch": {
+    "sha256": "17985e7814703937bd192ef93a7264c71a3b4fd34b1cbbc2742c97c3ba9fa2a2",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "75a7c3e1bfe07a3fbfa5f1e9bb347703797ffc42790fc1d25aa4ffbb35bbcf17",
+    "sha256": "27a98ff9ade8d485e93e097d35adcf5f9d2f5277e3532aa9d71d12eb5d47804b",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -1203,6 +1207,10 @@
     "sha256": "1471b87ffcdf5f714b295967e2b25d7ec77f40e98b747834456ee53d149d9221",
     "mode": "0o644"
   },
+  "scripts/audit_mtp_send_delivery.py": {
+    "sha256": "8ae9ef52bc0aac02cf30288a1266ffa2c30db62ed3dab90237942fd399b2d188",
+    "mode": "0o644"
+  },
   "scripts/audit_mtp_staging_retry.py": {
     "sha256": "b5802020cfcea8244de44f32fedd04f9a57e92d8ab69af93bb7e57e5ad850cf2",
     "mode": "0o644"
@@ -1628,11 +1636,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "398c6d85116b5f91315ed6cb5eca06f168cc143e7b3f883c21eeef362a67eb88",
+    "sha256": "21fd764ebd626b6c6bda8b45b05c75a439f0afdfbe77b3299ab96da6d1f60ae4",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "d39a5e48c33d91a2cdba8b75ed2afd130f4fd8d65d01e80a04119f565f50ef24",
+    "sha256": "8bbeadd4ed80385883b0a5af232c22f1cf222facb20fd5c646e84a3c7de640e8",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2116,7 +2124,7 @@
     "mode": "0o644"
   },
   "tests/mtp_transport_test.cpp": {
-    "sha256": "3e6b58f277e330a6011cd94065f6f7424b5c70b24d622f9272919a2a3101d0f5",
+    "sha256": "0336675fd29970826a023c85ae32d81799c8bf2beac90cfb102bda1f9a93b35d",
     "mode": "0o644"
   },
   "tests/multiuser_backend_test.py": {
@@ -2396,7 +2404,7 @@
     "mode": "0o644"
   },
   "tests/run_mtp_transport.py": {
-    "sha256": "5ece11ea9abcf40f9424d744fb23af5f1c53a728f2ea53e41c8b0b5dde2412a7",
+    "sha256": "d66fa895488eed34eb9d2a7bbd03b00daaf02801ef5e845c12aca0cec02d0315",
     "mode": "0o644"
   },
   "tests/settings_joined_test.cpp": {

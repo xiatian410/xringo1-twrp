@@ -15,6 +15,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--baseline', action='store_true')
 parser.add_argument('--source', type=Path, default=RECOVERY)
 parser.add_argument('--completion-errors', action='store_true')
+parser.add_argument('--send-errors', action='store_true')
 parser.add_argument('--report', type=Path, default=ROOT/'logs/mtp-transport-regression.json')
 args = parser.parse_args()
 with tempfile.TemporaryDirectory(prefix='dijun-mtp-') as directory:
@@ -56,15 +57,25 @@ inline bool SetProperty(const std::string& key, const std::string& value) {
     cmd = ['g++', '-std=gnu++17', '-O1', '-g', '-pthread', '-Wall', '-Wextra',
            '-Wno-sign-compare', '-Wno-unused-parameter', '-Wno-attributes',
            '-include', 'unistd.h', '-Wl,--wrap=write', '-Wl,--wrap=pwrite64',
-           '-Wl,--wrap=io_getevents', '-fno-pie', '-no-pie', '-fsanitize=address,undefined',
+           '-Wl,--wrap=io_getevents', '-Wl,--wrap=pread64', '-fno-pie', '-no-pie', '-fsanitize=address,undefined',
            '-fno-sanitize-recover=all', '-fno-omit-frame-pointer']
     cmd += ['-I' + str(p) for p in includes]
     binary = temp / 'mtp-test'
     subprocess.run(cmd + [str(p) for p in files] + ['-o', str(binary)], check=True)
     cases = []
-    for case in (['completion-eio', 'completion-eagain', 'completion-eintr'] if args.completion_errors else ['roundtrip']):
-        result = subprocess.run([str(binary), str(temp)] + ([] if case == 'roundtrip' else [case]),
-                                capture_output=True, text=True, timeout=30)
+    selected = (['send-'+kind+'-'+error for kind in ['native', 'compat']
+                 for error in ['disk-eio', 'disk-short', 'usb-eio', 'usb-short']]
+                if args.send_errors else ['completion-eio', 'completion-eagain', 'completion-eintr']
+                if args.completion_errors else ['roundtrip'])
+    for case in selected:
+        (temp/'send-file').unlink(missing_ok=True)
+        try:
+            result = subprocess.run([str(binary), str(temp)] + ([] if case == 'roundtrip' else [case]),
+                                    capture_output=True, text=True, timeout=10)
+        except subprocess.TimeoutExpired as error:
+            result = subprocess.CompletedProcess(error.cmd, 124,
+                (error.stdout or b'').decode() if isinstance(error.stdout, bytes) else error.stdout or '',
+                ((error.stderr or b'').decode() if isinstance(error.stderr, bytes) else error.stderr or '') + '\nTIMEOUT')
         cases.append(dict(case=case, status='PASS' if result.returncode == 0 else 'FAIL',
                           returncode=result.returncode, output=result.stdout+result.stderr))
         print(cases[-1], flush=True)

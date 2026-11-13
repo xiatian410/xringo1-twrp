@@ -1,0 +1,90 @@
+--- a/mtp/MtpFfsHandle.cpp
++++ b/mtp/MtpFfsHandle.cpp
+@@ -688,7 +688,7 @@
+     int length, num_read;
+     unsigned i = 0;
+     struct io_event ioevs[AIO_BUFS_MAX];
+-    bool error = false;
++    int write_error = 0;
+     bool has_write = false;
+ 
+     // Send the header data
+@@ -725,9 +725,10 @@
+         if (has_write) {
+             // Wait for usb write. Cancel unwritten portion if there's an error.
+             int num_events = 0;
+-            if (waitEvents(&mIobuf[(i-1)%NUM_IO_BUFS], mIobuf[(i-1)%NUM_IO_BUFS].actual, ioevs,
+-                        &num_events) != ret) {
+-                error = true;
++            const int written = waitEvents(&mIobuf[(i-1)%NUM_IO_BUFS],
++                    mIobuf[(i-1)%NUM_IO_BUFS].actual, ioevs, &num_events);
++            if (written != ret) {
++                write_error = written < 0 ? errno : EIO;
+                 cancelEvents(mIobuf[(i-1)%NUM_IO_BUFS].iocb.data(), ioevs, num_events,
+                         mIobuf[(i-1)%NUM_IO_BUFS].actual, false);
+             }
+@@ -738,17 +739,20 @@
+             // Wait for the previous read to finish
+             aio_suspend(aiol, 1, nullptr);
+             num_read = aio_return(&aio);
+-            if (static_cast<size_t>(num_read) < aio.aio_nbytes) {
+-                errno = num_read == -1 ? aio_error(&aio) : EIO;
++            if (num_read < 0 || static_cast<size_t>(num_read) < aio.aio_nbytes) {
++                const int read_error = num_read == -1 ? aio_error(&aio) : EIO;
++                errno = read_error;
+                 PLOG(ERROR) << "Mtp error reading from disk";
+                 cancelTransaction();
++                errno = write_error ? write_error : read_error;
+                 return -1;
+             }
+ 
+             file_length -= num_read;
+             offset += num_read;
+ 
+-            if (error) {
++            if (write_error) {
++                errno = write_error;
+                 return -1;
+             }
+ 
+@@ -761,6 +765,11 @@
+         }
+ 
+         i = (i + 1) % NUM_IO_BUFS;
++    }
++
++    if (write_error) {
++        errno = write_error;
++        return -1;
+     }
+ 
+     if (ret % packet_size == 0) {
+--- a/mtp/MtpFfsCompatHandle.cpp
++++ b/mtp/MtpFfsCompatHandle.cpp
+@@ -313,7 +313,8 @@
+             write = true;
+         }
+ 
+-        if (error == -1) {
++        if (error) {
++            errno = error;
+             return -1;
+         }
+ 
+@@ -327,10 +328,15 @@
+ 
+         if (write) {
+             if (writeHandle(mBulkIn, data2, ret) == -1) {
+-                error = -1;
++                error = errno;
+             }
+             write = false;
+         }
++    }
++
++    if (error) {
++        errno = error;
++        return -1;
+     }
+ 
+     if (ret % packet_size == 0) {

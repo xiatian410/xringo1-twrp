@@ -5,6 +5,28 @@
 维护补丁：`dtsrc/O1_asic_dual/0008-mtp-ffs-readiness.patch`。
 本轮没有连接手机，也没有用 Windows 做物理 USB 枚举。
 
+<a id="send-errors"></a>
+## 发送失败传播（0083）
+
+原生 `sendFile` 的磁盘异步读取返回 `-1` 时，旧比较先转为 `size_t`，因而绕过短读判断，可能继续使用无效长度。另一个独立遗漏是原生和兼容发送在最后一批 USB 写入失败后退出循环，错误只在下一次循环内部检查，最终仍返回成功。
+
+固定补丁 `patches/0083-mtp-send-error-propagation.patch` 先检查负读取结果，再比较长度；原生磁盘失败仍请求取消，但返回前恢复磁盘错误，避免取消将其覆盖为 `ECANCELED`。原生 USB 完成短写明确使用 `EIO`，真实负完成保留原错误；两条发送路径均在循环结束后检查尾批写入错误。已排队的磁盘读取仍先等待结束，不提前释放栈上 AIO 请求或缓冲区。失败不代表已发送的字节被撤回。
+
+有限检查复用原传输夹具：
+
+```bash
+python3 tests/run_mtp_transport.py --send-errors --report logs/mtp-send-current.json
+python3 tests/run_mtp_transport.py --report logs/mtp-send-roundtrip.json
+python3 tests/run_mtp_transport.py --completion-errors --report logs/mtp-send-completion-regression.json
+python3 scripts/audit_mtp_send_delivery.py
+```
+
+原生 / 兼容各覆盖磁盘 EIO、磁盘短读、尾批 USB EIO 和短写，共八项通过；保留的旧源码在同一夹具中六项失败，其中原生磁盘 EIO 达到十秒截止，兼容磁盘两个对照原已通过。原生 / 兼容正常内容往返、偏移、描述符与 ENOSPC 回归及完成队列三项回归通过。每项独立子进程，ASan / UBSan 启用，只操作私有普通文件与管道。
+
+磁盘错误在 worker 的 `pread64` 边界注入；兼容 USB 错误在 `write` 边界注入。原生 USB 在真实 AIO 完成被取出后修改完成记录，不能据此宣称模拟了物理 USB 的部分送达。当前定向数据仅含一批 body，未证明多批流水线取消、完整 server / Reset / FunctionFS 或 Windows 互操作。
+
+清理构建使用 `installclean` 与 `make -j$(nproc)`，801 份生产来源绑定。相对 0082 仅 MTP 库、构建属性和 ramdisk 摘要改变，六份 profile 和其他资源字节不变；交付审计见本地 `logs/mtp-send-delivery.json`。候选和哈希统一见[交付报告](../simulation-report.md)。本项完成后不重复同类单批发送夹具，完整传输生命周期仍留在工作队列中。
+
 ## 修正内容
 
 - 原生 AIO 和兼容路径共用描述符提交及端点准备流程。兼容路径此前直接打开端点，缺少描述符启动步骤。
