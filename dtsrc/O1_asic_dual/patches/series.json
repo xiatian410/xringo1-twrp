@@ -322,6 +322,10 @@
         {
           "file": "0088-andsec-recreation-result.patch",
           "sha256": "b2652fb1a77e939d0f8fae20be153f1cafdbed4443c4dfc3508ca56e507fdb31"
+        },
+        {
+          "file": "0089-media-recreation-lifecycle.patch",
+          "sha256": "f010c9fb1e6c98442cb3da69454db2a61684b5c9e4e401b38ab041f4b43d4f5b"
         }
       ],
       "result_files": {
@@ -329,7 +333,7 @@
         "etc/init/keystore2.rc": "aa28727dfc718c059b926215f1fcfa9917132265dc01fbd329dcb928a783768e",
         "gui2/app/screen_actions.cpp": "188556ece804fedc23d4d9c2214418de89f49caa4560405dc41e9bcfd5577da1",
         "gui2/gui2_input.cpp": "3504c83906edf8192d0ff717d35a6f6c38770282cba8fd56ec24ebcd55dbe625",
-        "partition.cpp": "298c3c5ec599843990ddb0ed81b62b484d8932cfe13a879649e3895321fda812",
+        "partition.cpp": "ccd47fb2f8b2d4e2b35e65a5ca35970280d1af1156846bbab0ecb749eca134c5",
         "twrpminui/force_feedback.cpp": "f7bdb5f50e5ef9d0ecd2ab161fa8f6143292c1207f064147a2db94b080d86f41",
         "twrpminui/graphics_drm.cpp": "61611757cc147b2f925ed52c6f73334acd7ae11d7fa3954d720cbeb8d47d0447",
         "mtp/MtpFfsHandle.cpp": "e7c9043094d9b7852ad9926cf04a5058d5eb8f83e524796c72de531fb662af79",

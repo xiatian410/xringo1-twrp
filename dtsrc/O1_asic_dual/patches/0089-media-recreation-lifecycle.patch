@@ -1,0 +1,61 @@
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -3113,28 +3113,39 @@
+   }
+   if (!Mount(true)) {
+     gui2_console::log_error("recreate_folder_err", media_path);
+-  } else if (!TWFunc::IsPathExists(media_path)) {
+-    PartitionManager.MountByPath(symlink_mount_point_, true);
+-    LOGINFO("Recreating %s folder.\n", media_path.c_str());
+-    mkdir(media_path.c_str(), 0770);
+-    const std::string internal_path = DataManager::GetStrValue("tw_internal_path");
+-    if (!internal_path.empty()) {
+-      LOGINFO("Recreating %s folder.\n", internal_path.c_str());
+-      mkdir(internal_path.c_str(), 0770);
+-    }
++    return;
++  }
++
++  // Create only on the mounted parent. Do not continue through a failed mkdir
++  // or treat an existing file/symlink as an internal-storage directory.
++  const auto ensure_directory = [](const std::string& path) {
++    struct stat st {};
++    if (lstat(path.c_str(), &st) == 0) {
++      if (S_ISDIR(st.st_mode)) return true;
++    } else if (errno == ENOENT && mkdir(path.c_str(), 0770) == 0) {
++      // Early boot may have no cached metadata (e.g. a new filesystem).
++      // Preserve that best-effort policy, but make failure visible.
++      if (tw_set_default_metadata(path.c_str()) != 0)
++        LOGINFO("Unable to restore default media metadata: %s\n", path.c_str());
++      return true;
++    }
++    gui2_console::log_error("recreate_folder_err", path);
++    return false;
++  };
++
++  if (!ensure_directory(media_path)) return;
++  const std::string internal_path = DataManager::GetStrValue("tw_internal_path");
++  if (!internal_path.empty() && internal_path != media_path &&
++      !ensure_directory(internal_path)) return;
+ #ifdef TW_INTERNAL_STORAGE_PATH
+-    mkdir(TW_INTERNAL_STORAGE_PATH, 0770);
++  if (!ensure_directory(TW_INTERNAL_STORAGE_PATH)) return;
+ #endif
+ 
+-    // Afterwards, we will try to set the
+-    // default metadata that we were hopefully able to get during
+-    // early boot.
+-    tw_set_default_metadata(media_path.c_str());
+-    if (!internal_path.empty()) tw_set_default_metadata(internal_path.c_str());
+-
+-    // Toggle mount to ensure that "internal sdcard" gets mounted
+-    PartitionManager.UnmountByPath(symlink_mount_point_, true);
+-    PartitionManager.MountByPath(symlink_mount_point_, true);
++  // MountFilesystem skipped the bind while the directory did not exist.
++  // Restore it directly, without unmounting the whole data filesystem.
++  if (!symlink_mount_point_.empty() && !IsPathMounted(symlink_mount_point_)) {
++    if (!TWFunc::IsPathExists(symlink_path_) || !BindMount())
++      gui2_console::log_error("recreate_folder_err", symlink_mount_point_);
+   }
+ }
+ 

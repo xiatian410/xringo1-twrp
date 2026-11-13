@@ -32,7 +32,7 @@
 
 ## 验证与交付
 
-当前 0088 交付修正 Android Secure 目录重建与绑定错误返回；实现、有限检查和边界见[目录重建](docs/FILESYSTEM-TOOLS-EXECUTION.md#andsec-recreation)，候选哈希只在交付报告维护。
+当前 0089 交付修正非 FBE 启动媒体目录恢复顺序；实现、有限检查和边界见[启动目录恢复](docs/FILESYSTEM-TOOLS-EXECUTION.md#media-recreation)，候选哈希只在交付报告维护。
 
 1. 明确本批缺陷、改变的生产行为和必要检查范围。
 2. 优先使用真实生产方法；替代设备、HAL、属性、挂载等边界必须写明。能复用的结果不为刷新日期重跑。

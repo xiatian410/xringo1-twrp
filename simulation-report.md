@@ -6,9 +6,9 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-andsec-recreate.img` |
-| SHA-256 | `7ec5926064702eaf0443d6c5e8cf8103d461b345eb334cec7371e03e35050086` |
-| 生产来源绑定 | 806 份 |
+| 文件 | `recovery-dijun-unified-media-recreate.img` |
+| SHA-256 | `cca13c246a7828aa81c707e63789491586e925b7b050d1440146e549f0e2988d` |
+| 生产来源绑定 | 807 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
@@ -23,7 +23,11 @@ scratch保存后，在目标写入前/一块后/ordered块全写后及header提�
 
 实际 client Connect/query、server、SnapshotHandlerManager、ReadWorker 与 replace/zero MergeWorker 已接续八场景。真实COW压缩数据/零块读取、64 KiB合并内容与未改尾部逐字节核对，写入/同步故障均保持失败；容量查询和dm-user端点为明确替身。没有发现新增生产缺陷，不重编0080镜像。该检查点未包含COPY/XOR/RA；后续有序合并见上文，进程退出后的局部续合并见上文，硬件断电、内核映射和完整OTA仍待完成，见[范围](docs/OTA-OPERATION-COW.md#snapuserd-handler)。
 
-## 0088 交付时的定向验证
+## 0089 交付时的定向验证
+
+启动时的非 FBE 媒体目录恢复不再忽略目录查询 / 创建失败，media 根已存在时也补查用户目录；拒绝普通文件及符号链接，目录就绪后只恢复缺失绑定，不卸载整个 data 分区。FBE 跳过及缓存元数据 best-effort 策略保留，元数据失败记录日志。13 个原方法私有 chroot 场景通过，旧实现同组 10 项失败；16 项 manager 清除回归通过。真实普通目录 / uid65534 权限失败配合挂载、bind、元数据和呈现替身，不代表完整启动 / GUI / fscrypt 或设备验证。807 来源清理构建、六 profile 不变，`logs/media-recreate-delivery.json` 核对通过。见[启动媒体目录范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#media-recreation)。
+
+## 0088 交付时的定向验证（历史）
 
 Android Secure 目录重建改为返回结果，七种格式选择与 rm-rf 将创建 / 挂载 / bind 失败传回 manager/backend。目录在父分区挂载后创建，拒绝普通文件及符号链接，已有绑定不重复叠加；原调用不再创建后随意卸载父存储。37 项原 helper/manager/backend 场景通过，旧实现 34 项失败；25 项格式转换、11 项清除错误传播、六项同镜像 ARM64 工具回归通过。实际目录操作只涉及临时普通文件，挂载 / bind / 设备 / 命令有明确替身，不是物理设备或完整 GUI 验收。806 来源清理构建及六 profile 核对通过，证据 `logs/andsec-recreate-delivery.json`。见[目录重建范围](docs/FILESYSTEM-TOOLS-EXECUTION.md#andsec-recreation)。
 
@@ -63,6 +67,7 @@ ext 格式化成功后立即记录新文件系统类型，避免后续临时挂�
 
 ## 本次候选包含的修正
 
+- **0089**：非 FBE 启动媒体目录创建失败立即停止，根存在时也恢复缺失用户目录，仅恢复缺失 bind，不卸载整个 data。
 - **0088**：Android Secure 目录重建返回失败，格式化 / rm-rf 不再忽略创建和绑定错误，已存在绑定不叠加。
 - **0087**：ext 格式化成功立即保留真实新类型；persist 临时挂载 / 删除 / 卸载失败传回调用者，仍挂载时不运行 e2fsdroid。
 - **0086**：离线格式化 helpers 拒绝卸载请求后仍保持挂载的目标，同格式 rm-rf 分派保留。

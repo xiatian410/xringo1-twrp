@@ -249,3 +249,21 @@ python3 scripts/audit_andsec_recreate_delivery.py
 ```
 
 SetupAndSec 的发现阶段仍按原 best-effort 方式记录失败；可选 USE_EXT4 内建格式化的 lost+found 后处理与 media 目录重建不在本修正内。不是完整 MountFilesystem / 真实 bind、GUI、fscrypt 或并发外部目录更改的证明。最终 installclean / 30 并发构建、806 份来源、六份 profile 不变，候选见[交付报告](../simulation-report.md)。
+
+<a id="media-recreation"></a>
+
+## 启动媒体目录恢复顺序（0089）
+
+当前 RecreateMediaFolder 只在 SetupDataPartition 启动初始化调用，不在已保留媒体根的高级清除调用。旧实现忽略 mkdir 失败，在创建前调用别名挂载，并在后面卸载 / 重挂整个父存储；根目录存在时，即使用户目录缺失也直接跳过。本批修启动恢复路径，不将其描述为新的高级清除修正。
+
+0089 保持 FBE 直接跳过，由解密流程管理策略。非 FBE 先挂载父分区，使用 lstat 检查 media 与配置的内部目录；已有普通文件、符号链接、查询失败或 mkdir 失败记录错误后立即停止。根目录已存在也检查用户路径。仅新建目录尝试恢复缓存元数据；缓存可能在新文件系统上不可用，维持既有 best-effort 策略并记录失败。目录就绪后仅在缺少绑定时调用原 BindMount，失败可见，不再卸载整个 data。此方法仍是 void 启动辅助函数，不声称传回完整 GUI 终态。
+
+扩展已有 manager 清除夹具：13 场景覆盖新建、已有目录、已有绑定、FBE、父挂载拒绝、两层真实权限创建拒绝、两层普通文件 / 符号链接、bind失败与元数据失败。原 RecreateMediaFolder / BindMount 执行；目录查询 / 创建使用私有 chroot 普通文件和 uid65534，挂载 / bind / 元数据缓存 / 呈现为明确替身。13 项通过，旧实现 10 项失败；16 项原 manager 清除场景回归通过。
+
+```bash
+python3 tests/manager_wipe_test.py --recreate --report logs/media-recreate-current.json
+python3 tests/manager_wipe_test.py --report logs/media-recreate-wipe-regression.json
+python3 scripts/audit_media_recreate_delivery.py
+```
+
+807 来源 installclean / 30 并发构建、六 profile 不变，候选见[交付报告](../simulation-report.md)。未接续真实 init、挂载、FBE 策略、完整 GUI 或物理设备；外部并发替换目录仍不是本夹具证明范围。可选 USE_EXT4 后处理及完整文件系统生命周期仍未完成。

@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-andsec-recreate.img",
-  "image_sha256": "7ec5926064702eaf0443d6c5e8cf8103d461b345eb334cec7371e03e35050086",
-  "production_sources": 806,
+  "image_name": "recovery-dijun-unified-media-recreate.img",
+  "image_sha256": "cca13c246a7828aa81c707e63789491586e925b7b050d1440146e549f0e2988d",
+  "production_sources": 807,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -1254,6 +1254,30 @@
       "failures": 0,
       "local_report_sha256": "9de737adfd795f968deaee601943621ccbdb91e81690488fd543e17e431684fa",
       "scope": "Patch0088 propagates Android Secure recreation failures through seven format selections and rmrf to manager/backend. Creates directory on mounted parent, rejects non-directory/symlink, restores bind only if not already mounted.37 cases pass; old34 fail;25 format,11 wipe and6 same-image ARM64 tool regressions pass. Mount/bind/device/command boundaries are explicit; ordinary-directory operations do not establish real mounting/full GUI/fscrypt or physical operation."
+    },
+    {
+      "name": "media-recreate-negative",
+      "status": "FAIL",
+      "cases": 13,
+      "failures": 10,
+      "local_report_sha256": "d0e54287ef88d9680f3968db7e7d5e434b8562c43101cb0cd8bb17313c40c0a1",
+      "scope": "Patch0089 startup RecreateMediaFolder stops on directory query/creation failure, rejects non-directory/symlink, repairs missing user path even if media root exists, restores only missing bind without toggling parent mount. FBE skips remain.13 private-chroot cases pass, old10 fail;16 manager wipe regressions pass. Real directory operations/uid65534 permission failures; mounts/bind, metadata cache and presentation explicit fixtures. No full init/GUI/fscrypt/hardware proof."
+    },
+    {
+      "name": "media-recreate-current",
+      "status": "PASS",
+      "cases": 13,
+      "failures": 0,
+      "local_report_sha256": "1920cf5419b1aba3922162cc9227854030448c70c6eca67d7101e95a9919feeb",
+      "scope": "Patch0089 startup RecreateMediaFolder stops on directory query/creation failure, rejects non-directory/symlink, repairs missing user path even if media root exists, restores only missing bind without toggling parent mount. FBE skips remain.13 private-chroot cases pass, old10 fail;16 manager wipe regressions pass. Real directory operations/uid65534 permission failures; mounts/bind, metadata cache and presentation explicit fixtures. No full init/GUI/fscrypt/hardware proof."
+    },
+    {
+      "name": "media-recreate-wipe-regression",
+      "status": "PASS",
+      "cases": 16,
+      "failures": 0,
+      "local_report_sha256": "9f7209194f2b2de9dec7ee39d18b276a292e0b185b63abdb5281571051e50ee5",
+      "scope": "Patch0089 startup RecreateMediaFolder stops on directory query/creation failure, rejects non-directory/symlink, repairs missing user path even if media root exists, restores only missing bind without toggling parent mount. FBE skips remain.13 private-chroot cases pass, old10 fail;16 manager wipe regressions pass. Real directory operations/uid65534 permission failures; mounts/bind, metadata cache and presentation explicit fixtures. No full init/GUI/fscrypt/hardware proof."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
