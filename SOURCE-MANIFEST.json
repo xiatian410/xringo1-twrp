@@ -40,7 +40,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "19501bee68c1c3cb7ea2e6eae04adc133d7b880a70200eb14ee4def2795600c7",
+    "sha256": "dcc95d6325c01407c2bf029a64bf8b8141118777d566e8ab6f96e62219f9076a",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -52,7 +52,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "55c428fc068ba077ef65bd5a9ae400ca85b21ac71ddfadbc241c161b7972263e",
+    "sha256": "5505a5355c194cef5ce40c06a6b268ddc3aeb9f63c681592527095914b6194e5",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -1391,14 +1391,6 @@
     "sha256": "055272d1a77ae2c7a27aa55328e0bf9c07d08f9aeeb969ea7d4dbb8903db8bb8",
     "mode": "0o644"
   },
-  "scripts/build_halfix.py": {
-    "sha256": "7d2b0cd3a2738e5f560020ca4110f3863561a659afde69937ec8a0dd4ad53ce8",
-    "mode": "0o644"
-  },
-  "scripts/build_keystorefix.py": {
-    "sha256": "de81cb7feec8a1136f67a74a985b615cc93e0bdb42c33fb94f8fc6fd64cb7ab8",
-    "mode": "0o644"
-  },
   "scripts/build_mitee.py": {
     "sha256": "7e46b18646cc63fc7ae2fbd7fc0191bc7db6faff931dcc4eb77cf768b8d2c55e",
     "mode": "0o644"
@@ -1599,16 +1591,8 @@
     "sha256": "cc8cfc73cef2d145fef541fa121b69f4f0d018f7b0221f85b17777075973450c",
     "mode": "0o644"
   },
-  "scripts/touch_stack.py": {
-    "sha256": "e821c24b98ea76c176dd3f6c1ddf924672c6115276732cf927ee82f0b9e35e7d",
-    "mode": "0o644"
-  },
   "scripts/unpack_ramdisk.py": {
     "sha256": "a2ab13e58bba2bdf1ece1e95ee7a466d59637df99ff8d728227f7f99d14511ee",
-    "mode": "0o644"
-  },
-  "scripts/vb_inventory.py": {
-    "sha256": "f91362e5b515d3cae41a1790dcc2b15a0f2317463ce61a83bd658baf786f3d86",
     "mode": "0o644"
   },
   "scripts/verify_devicefix.py": {
