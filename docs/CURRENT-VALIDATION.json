@@ -1351,11 +1351,22 @@
       "status": "PASS",
       "cases": 7,
       "failures": 0,
-      "local_report_sha256": "1f2b0c98e509394a45787a0606d0132a436519f57773fcbdafb99f579ac07686",
+      "local_report_sha256": "a9ec20e69aef0e692800f5c602e234b023ca34ca12e5c505bf9b2d081cf7fa88",
       "synthetic_source_layout": true,
       "actual_kernel_mapping": false,
       "full_ota_install": false,
-      "scope": "Actual ARM64 SnapshotManager BeginUpdate/CreateUpdateSnapshots with unchanged OS4.0.4 manifest and explicit synthetic sparse LP layouts. Real SnapshotMetadataUpdater/PartitionCowCreator/liblp plan10 partition sizes and stock COW estimates; map creation deliberately denied, status rollback and unchanged LP prefix checked. Nearly-full layout returns NO_SPACE and forbids data-backed COW in Recovery. Kernel/estimate/version/overlay/state diagnostics checked. No real kernel mapping, actual source LP/free-space, COW initialization, controller fallback join or full OTA. No production change/build."
+      "scope": "Actual ARM64 SnapshotManager BeginUpdate/CreateUpdateSnapshots with unchanged OS4.0.4 manifest and explicit synthetic sparse LP layouts. Real SnapshotMetadataUpdater/PartitionCowCreator/liblp plan10 partition sizes and stock COW estimates; map creation deliberately denied, status rollback and unchanged LP prefix checked. Nearly-full layout returns NO_SPACE and forbids data-backed COW in Recovery. Kernel/estimate/version/overlay/state diagnostics checked. No real kernel mapping, actual source LP/free-space, COW initialization, controller fallback join or full OTA. No production change/build.",
+      "previous_report_sha256": "1f2b0c98e509394a45787a0606d0132a436519f57773fcbdafb99f579ac07686"
+    },
+    {
+      "name": "stock-os4-snapshot-preparation",
+      "status": "PASS",
+      "cases": 5,
+      "failures": 0,
+      "local_report_sha256": "53641e8b59f880b6743db7b9c4fdafd9de7ae2e16617421c726727395efa0900",
+      "synthetic_source_layout": true,
+      "full_ota_install": false,
+      "scope": "Actual ARM64 production PreparePartitionsForUpdate -> SnapshotManager allocation -> CancelUpdate -> intact direct LP preparation, using stock OS4.0.4 manifest and synthetic regular-file source LP. Mapping denial/NO_SPACE fall back only after cancellation succeeds; cancellation fsync failure stops before direct operations, unmap/store failures propagate. Real liblp writes/reads target metadata; source metadata bytes preserved, target/source extents overlap18676176 sectors. Directory/mount token/HAL/AVB-no-op/unmap/store error boundaries explicit; no real devices/payload replay/full OTA. No production change/build."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",

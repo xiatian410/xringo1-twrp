@@ -5,6 +5,7 @@ Synthetic sparse LP layout (32GiB or nearly full), recorded property/kernel/DM
 and ImageManager boundaries. No physical super/free-space/slot/AVB operation.
 Stops at mapping denial or allocation errors, never full snapshot/OTA success.
 """
+import argparse
 import hashlib
 import json
 import os
@@ -28,6 +29,11 @@ def sha(p):
 
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--controller",action="store_true",help="Join actual production preparation/fallback and cancellation; no payload replay")
+    args=parser.parse_args()
+    fixture=ROOT/("tests/ota_snapshot_prepare.cpp" if args.controller else "tests/ota_snapshot_allocate.cpp")
+    prefix="ota-snapshot-prepare" if args.controller else "ota-snapshot-allocate"
     index=json.loads((ROOT/'simulation-report.json').read_text())
     image=Path(index['image']);assert sha(image)==index['image_sha256']
     ref=json.loads((ROOT/'logs/ota-snapshot-postinstall.json').read_text())
@@ -38,6 +44,9 @@ def main():
         ROOT/'tests/ota_snapshot_finish.cpp',ROOT/'tests/ota_vabc_session.py',
         ROOT/'scripts/firmware_facts.py',ROOT/'scripts/acquire_firmware.py',
         *[ANDROID/'system/core/fs_mgr/libsnapshot'/n for n in ['snapshot.cpp','utility.cpp','snapshot_metadata_updater.cpp','partition_cow_creator.cpp']]]}
+    sources[str(fixture)]=sha(fixture)
+    if args.controller:
+        p=ANDROID/'system/update_engine/aosp/dynamic_partition_control_android.cc';sources[str(p)]=sha(p)
     manifest=ROOT/'firmware/samples/os4-stable/payload-manifest.pb'
     inventory=manifest.with_name('inventory.json');inv=json.loads(inventory.read_text())
     assert sha(manifest)==inv['manifest_sha256'] and inv['payload_metadata_hash_verified']
@@ -47,7 +56,7 @@ def main():
         command.insert(1,'-I'+str(ROOT/'tests'));command.insert(-1,'-UNDEBUG')
         command[command.index('-o')+1]=str(work/'fixture.o')
         command[command.index('-MF')+1]=str(work/'fixture.d')
-        command[-1]=str(ROOT/'tests/ota_snapshot_allocate.cpp');build(command)
+        command[-1]=str(fixture);build(command)
         for name in shlex.split((work/'fixture.d').read_text().replace('\\\n',' ').split(':',1)[1]):
             p=ANDROID/name
             if p.is_file():sources[str(p)]=sha(p)
@@ -64,7 +73,8 @@ def main():
         shutil.copyfile(work/'test',jail/'test');(jail/'test').chmod(0o755)
         def isolate():os.chroot(jail);os.chdir('/')
         cases=[]
-        for name in ['map-denied','no-space','no-kernel','missing-estimate','bad-cow-version','overlay','wrong-state']:
+        names=['map-denied','no-space','cancel-sync-error','store-error','unmap-error'] if args.controller else ['map-denied','no-space','no-kernel','missing-estimate','bad-cow-version','overlay','wrong-state']
+        for name in names:
             shutil.rmtree(jail/'work',ignore_errors=True);(jail/'work').mkdir()
             shutil.copyfile(manifest,jail/'work/manifest.pb')
             result=subprocess.run(['/qemu','-L','/android','-E','LD_LIBRARY_PATH=/android/system/lib64','/android/system/bin/linker64','/test',name],preexec_fn=isolate,capture_output=True,text=True,timeout=40)
@@ -75,12 +85,15 @@ def main():
                 'missing-estimate':'Update manifest does not include a COW size',
                 'bad-cow-version':'Manifest cow version is out of bounds',
                 'overlay':'Cannot create update snapshots with overlayfs setup.',
-                'wrong-state':'Cannot create update snapshots in state unverified'}[name]
+                'wrong-state':'Cannot create update snapshots in state unverified',
+                'cancel-sync-error':'cancellation incomplete.',
+                'store-error':'PrepareDynamicPartitionsForUpdate(',
+                'unmap-error':'PrepareDynamicPartitionsForUpdate('}[name]
             observed=diagnostic in result.stderr and (name!='map-denied' or 'PLANNED checked stock sizes and COW estimates=10' in result.stdout)
             cases.append(dict(name=name,expected_diagnostic=diagnostic,diagnostic_observed=observed,status='PASS' if result.returncode==0 and 'PASS '+name in result.stdout and observed else 'FAIL',returncode=result.returncode,stdout=result.stdout,stderr=result.stderr))
             print(cases[-1]['status'],name,flush=True)
-        report=dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL',scope=__doc__,sources=sources,dependencies=deps,image=str(image),image_sha256=sha(image),image_entries=entries,compile_command=command,link_command=link,fixture_sha256=hashlib.sha256(elf).hexdigest(),fixture_elf_machine=183,manifest_sha256=sha(manifest),inventory_sha256=sha(inventory),cases=cases,synthetic_source_layout=True,actual_snapshot_manager=True,actual_snapshot_allocation_attempt=True,actual_kernel_mapping=False,full_ota_install=False,production_changes=False,new_build=False)
-        (ROOT/'logs/ota-snapshot-allocate.json').write_text(json.dumps(report,indent=2)+'\n')
+        report=dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL',scope=__doc__+('\nController mode: intact PreparePartitionsForUpdate -> SnapshotManager -> CancelUpdate -> intact direct LP preparation/update, file-backed metadata loaders/storage; metadata mounted token, no-op AVB effect and inactive-mapping removal boundaries. Full original ZIP/payload not replayed; no actual devices.' if args.controller else ''),sources=sources,dependencies=deps,image=str(image),image_sha256=sha(image),image_entries=entries,compile_command=command,link_command=link,fixture_sha256=hashlib.sha256(elf).hexdigest(),fixture_elf_machine=183,manifest_sha256=sha(manifest),inventory_sha256=sha(inventory),cases=cases,synthetic_source_layout=True,actual_snapshot_manager=True,actual_snapshot_allocation_attempt=True,controller_preparation_joined=args.controller,actual_kernel_mapping=False,full_ota_install=False,production_changes=False,new_build=False)
+        (ROOT/'logs'/(prefix+'.json')).write_text(json.dumps(report,indent=2)+'\n')
         return 0 if report['status']=='PASS' else 1
 
 if __name__=='__main__':sys.exit(main())

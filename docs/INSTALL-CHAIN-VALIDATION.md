@@ -45,6 +45,27 @@ python3 scripts/audit_zip_engine_join.py --model-finish
 
 本地证据为 `logs/ota-snapshot-allocate.json`，核对入口 `python3 scripts/audit_snapshot_allocation.py`。本批属于新增证据，无生产修正或新镜像。尚未接到真实手机 LP、内核映射、COW 初始化、BootControl 和完整安装；也没有证明生产控制器是否会对具体设备走快照成功或直接更新回退。后续只推进这些边界，不复跑不变的整包或等价分配场景。
 
+<a id="stock-snapshot-preparation"></a>
+### 生产控制器的分配失败回退与取消门控
+
+沿用上述分配边界，`tests/ota_snapshot_allocate.py --controller` 接入原 ARM64 `DynamicPartitionControlAndroid::PreparePartitionsForUpdate`，依次执行实际快照准备、SnapshotManager 分配、CancelUpdate、直接 LP 准备和 metadata 更新。没有重新执行 ZIP / payload，也没有把返回成功的替身作为直接分区准备实现。文件后端的 metadata 读写调用真实 liblp；挂载 token、设备目录、空映射卸载、Boot HAL 与 AVB footer 无操作边界仍为明确夹具。
+
+五项检查通过：
+
+| 触发条件 | 原控制器结果 |
+| --- | --- |
+| 快照映射被拒绝 | 成功取消为 None 后回退；十次目标卸载替身调用，真实 LP 更新发布目标槽十个分区，准备返回 true |
+| 合成 super 空间不足以容纳 COW | 实际分配返回 NO_SPACE，取消后直接 LP 准备成功，`required_size` 重置为 0 |
+| 分配失败后注入取消状态文件 fsync 错误 | CancelUpdate 失败，保留 Initiated；准备返回 false，直接卸载 / metadata 写入均未调用 |
+| 直接 LP metadata 保存边界返回失败 | 准备返回 false，不发布目标 LP |
+| 首个直接卸载边界返回失败 | 准备返回 false，不尝试 metadata 保存 |
+
+取消先于直接准备的状态断言、失败后 LP 前 1 MiB 字节不变、源槽 metadata 序列化字节不变、目标分区名称与尺寸、临时快照目录清空均检查。两个成功准备场景的目标布局与源布局重叠 **18,676,176 个扇区**，与原日志 `Will overwrite existing partitions` 一致：**保留源槽 metadata 不表示后续写入会保留源系统内容，也不保证中断后可回到旧系统。** 本批没有写 payload 数据，因此不是掉电 / 回滚测试。原厂完整包的直接更新路径不应被误述为总能同时保留两槽。
+
+空间不足场景的合成 super 使用原包 group 上限加 4 MiB，避免在 group 容量预检就失败；它与上一节的近满布局不同，均不是手机实际容量。原快照成功创建、真实映射 / COW 初始化、实际源 LP、挂载 / Boot HAL / 槽位 / 重启合并依旧未贯通。首次夹具漏列空镜像清理边界、误预期源槽也有卸载调用，保留失败记录后修正测试，没有更改生产实现。
+
+报告 `logs/ota-snapshot-prepare.json`，核对 `python3 scripts/audit_snapshot_allocation.py --controller`。共享夹具抽出布局准备函数并增加取消故障注入后，原七项分配检查做了一次相关回归，旧报告保留为 `logs/ota-snapshot-allocate-before-controller.json`。当前七项与五项均通过，无生产修改 / 新构建。
+
 <a id="stock-os4-zip"></a>
 ## 历史检查：原始完整包入口与证书修正
 

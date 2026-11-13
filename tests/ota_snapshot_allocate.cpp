@@ -15,7 +15,7 @@ using namespace android::fs_mgr;
 using namespace chromeos_update_engine;
 static uint64_t super_size;
 static unsigned map_attempts=0, image_attempts=0;
-static bool no_kernel=false;
+static bool no_kernel=false, cancel_after_map=false;
 static std::string scenario;
 static std::map<std::string,std::pair<uint64_t,uint64_t>> expected;
 extern "C" bool model_kernel(android::dm::DeviceMapper*,const std::string&,android::dm::DmTargetTypeInfo*) __asm__("__wrap__ZN7android2dm12DeviceMapper15GetTargetByNameERKNSt3__112basic_stringIcNS2_11char_traitsIcEENS2_9allocatorIcEEEEPNS0_16DmTargetTypeInfoE");
@@ -57,7 +57,9 @@ class NoMap final:public android::dm::IDeviceMapper {
    ++planned;
   }
   assert(planned==10);printf("PLANNED checked stock sizes and COW estimates=%u\n",planned);
-  printf("BOUNDARY mapping rejected %s targets=%zu\n",n.c_str(),t.num_targets());return false;
+  printf("BOUNDARY mapping rejected %s targets=%zu\n",n.c_str(),t.num_targets());
+  if(cancel_after_map)sync_failure="/work/meta/state.tmp";
+  return false;
  }
  DmDeviceState GetState(const std::string&)const override{return DmDeviceState::INVALID;}
  bool LoadTableAndActivate(const std::string&,const DmTable&)override{denied();}
@@ -85,7 +87,7 @@ class NoImages final:public android::fiemap::IImageManager {
  std::vector<std::string> GetAllBackingImages()override{return {};}
  android::fiemap::FiemapStatus ZeroFillNewImage(const std::string&,uint64_t)override{denied();}
  bool RemoveAllImages()override{return true;}
- bool DisableAllImages()override{denied();}
+ bool DisableAllImages()override{return true;} // empty image inventory
  bool IsImageDisabled(const std::string&)override{denied();}
 };
 class FileInfo final:public ISnapshotManager::IDeviceInfo {
@@ -112,11 +114,7 @@ static std::string metadata_prefix(){
  android::base::unique_fd fd(open("/work/super",O_RDONLY));assert(fd>=0);
  std::string bytes(1024*1024,'\0');assert(pread(fd.get(),bytes.data(),bytes.size(),0)==ssize_t(bytes.size()));return bytes;
 }
-int main(int argc,char**argv){
- android::base::SetLogger(android::base::StderrLogger);
- assert(argc==2);scenario=argv[1];no_kernel=scenario=="no-kernel";
- IPropertyFetcher::OverrideForTesting(std::make_shared<Props>());
- DeltaArchiveManifest m;assert(m.ParseFromString(read("/work/manifest.pb")));
+static void prepare_layout(const DeltaArchiveManifest& m,uint64_t capacity=0){
  const auto& groups=m.dynamic_partition_metadata().groups();assert(groups.size()==1);
  uint64_t occupied=0;std::set<std::string> names;
  for(const auto& g:groups)for(const auto& n:g.partition_names())names.insert(n);
@@ -126,7 +124,7 @@ int main(int argc,char**argv){
   assert(p.has_estimate_cow_size());expected[p.partition_name()+"_b"]={p.new_partition_info().size(),(p.estimate_cow_size()+2*1024*1024+4095)&~uint64_t(4095)};
  }
  // Explicit synthetic layout, not inferred phone free space or source version.
- super_size=scenario=="no-space"?((occupied+4*1024*1024+4095)&~uint64_t(4095)):32ULL*1024*1024*1024;
+ super_size=capacity?capacity:(scenario=="no-space"?((occupied+4*1024*1024+4095)&~uint64_t(4095)):32ULL*1024*1024*1024);
  auto b=MetadataBuilder::New(super_size,65536,2);assert(b);b->SetVirtualABDeviceFlag();
  for(const auto& g:groups){assert(b->AddGroup(g.name()+"_a",g.size()));
   for(const auto& p:m.partitions())if(names.contains(p.partition_name())){
@@ -137,6 +135,14 @@ int main(int argc,char**argv){
  auto metadata=b->Export();assert(metadata);
  {android::base::unique_fd fd(open("/work/super",O_RDWR|O_CREAT|O_TRUNC,0600));assert(fd>=0&&ftruncate(fd.get(),super_size)==0);}
  FileOpener opener;assert(FlashPartitionTable(opener,"super",*metadata));
+}
+#ifndef OTA_ALLOCATION_LIBRARY
+int main(int argc,char**argv){
+ android::base::SetLogger(android::base::StderrLogger);
+ assert(argc==2);scenario=argv[1];no_kernel=scenario=="no-kernel";
+ IPropertyFetcher::OverrideForTesting(std::make_shared<Props>());
+ DeltaArchiveManifest m;assert(m.ParseFromString(read("/work/manifest.pb")));
+ prepare_layout(m);
  fs::create_directories("/work/meta/snapshots");auto manager=SnapshotManager::New(new FileInfo);
  assert(manager->BeginUpdate());
  if(scenario=="missing-estimate")for(auto& p:*m.mutable_partitions())p.clear_estimate_cow_size();
@@ -157,3 +163,5 @@ int main(int argc,char**argv){
  assert(unchanged&&target);for(const auto& p:target->partitions)assert(!GetPartitionName(p).ends_with("_b"));
  printf("PASS %s code=%d required=%llu maps=%u images=%u state=%d source_partitions=%zu\n",argv[1],int(result.error_code()),(unsigned long long)result.required_size(),map_attempts,image_attempts,int(after.state()),unchanged->partitions.size());
 }
+
+#endif

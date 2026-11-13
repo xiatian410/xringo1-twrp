@@ -15,6 +15,8 @@
 
 ## 后续执行证据
 
+原控制器分配失败到回退接续新增五项：真实 `PreparePartitionsForUpdate → SnapshotManager → CancelUpdate → 直接 LP 准备` 在原始 manifest / 普通文件布局中执行；映射失败或空间不足会在取消成功后发布目标 LP，取消 fsync 失败则停止，卸载 / 保存失败也返回 false。两项成功准备的源目标范围重叠，不能据源 metadata 保留宣称中断可回滚。共享布局夹具相关七项回归通过；无生产修改或新构建，见[回退与取消门控](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-preparation)。
+
 分配入口新增有限证据：原始 4.0.4 manifest 接到真实 ARM64 `BeginUpdate / CreateUpdateSnapshots`、LP 更新器与 COW 规划器；合成普通文件 LP 中核对十个分区的快照尺寸 / COW 估算、拒绝映射后的清理，及空间不足、缺少内核能力 / 估算、版本越界、overlayfs、错误状态，共七项通过。检查失败不发布目标 LP、metadata 字节不变、临时状态清理。布局与空间为明确合成输入，不能用于判断设备实际容量；映射 / COW 初始化和控制器回退仍未贯通。无生产修正或新镜像，见[分配入口范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-allocation)。
 
 最新原始 4.0.4 整包模拟在模型内成功：一次运行完成整包验签、真实 ARM64 引擎 4933 操作 / payload 哈希 / 42 分区哈希，接到精确原厂 postinstall 的 Recovery 保护分支及真实 SnapshotManager 的 Unverified 状态发布，再记录模型目标槽。引擎退出 0，原父安装器返回 INSTALL_SUCCESS=0，21 项断言通过，约 861 秒。**结果为 MODEL_SUCCESS，完整设备 OTA 仍未验收**：块只读、挂载、快照分配、HAL / 槽位仍有模型，没有真实启动或合并。无生产修改或新构建；保留此前 FAILED63 记录。见[当前模型范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-model-finish)。以下为各阶段历史证据，不能把阶段边界当作最新队列。

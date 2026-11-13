@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "Full ARM64 Recovery/GUI routes and actual USB/FUSE sideload remain open. Latest original OS4.0.4 full ZIP model joins real whole-file signature verification, original host ZIP parent/A-B/fork/pipe, intact ARM64 engine4933 operations/payload hash/42 final partition hashes, exact stock postinstall Recovery guard using actual ARM64 shell/getprop, actual DynamicPartitionControlAndroid/SnapshotManager FinishedSnapshotWrites publishing Unverified, then modeled target slot B. Engine exit0/wait0/parent INSTALL_SUCCESS0; MODEL_SUCCESS only. Snapshot allocation metadata is seeded, block-readonly/mount/HAL/slot/proc/cleanup/GUI use explicit models; real SnapshotManager allocation, kernel mapping, mounted filesystem, boot slot/reboot/merge and target namespace remain unverified. Historical non-modeled readonly run remains FAILED63; no production change/build. Reuse completed payload execution unless relevant input/source/scope changes. Actual SnapshotManager BeginUpdate/CreateUpdateSnapshots allocation attempt now executes7 stock-manifest/synthetic-LP scenarios:10 partition/COW sizing, modeled mapper rejection cleanup, NO_SPACE and kernel/estimate/version/overlay/state rejection. Real source layout, controller preparation/fallback join, kernel mapping and COW initialization remain open; not full OTA."
+    "Full ARM64 Recovery/GUI routes and actual USB/FUSE sideload remain open. Latest original OS4.0.4 full ZIP model joins real whole-file signature verification, original host ZIP parent/A-B/fork/pipe, intact ARM64 engine4933 operations/payload hash/42 final partition hashes, exact stock postinstall Recovery guard using actual ARM64 shell/getprop, actual DynamicPartitionControlAndroid/SnapshotManager FinishedSnapshotWrites publishing Unverified, then modeled target slot B. Engine exit0/wait0/parent INSTALL_SUCCESS0; MODEL_SUCCESS only. Snapshot allocation metadata is seeded, block-readonly/mount/HAL/slot/proc/cleanup/GUI use explicit models; real SnapshotManager allocation, kernel mapping, mounted filesystem, boot slot/reboot/merge and target namespace remain unverified. Historical non-modeled readonly run remains FAILED63; no production change/build. Reuse completed payload execution unless relevant input/source/scope changes. Actual SnapshotManager BeginUpdate/CreateUpdateSnapshots allocation attempt now executes7 stock-manifest/synthetic-LP scenarios:10 partition/COW sizing, modeled mapper rejection cleanup, NO_SPACE and kernel/estimate/version/overlay/state rejection. Real source layout, controller preparation/fallback join, kernel mapping and COW initialization remain open; not full OTA. Subsequent real controller PreparePartitionsForUpdate joins actual allocation/cancel/direct-LP preparation in5 synthetic-layout cases; cancel fsync failure blocks direct preparation, direct unmap/store errors propagate. Mapping denial/NO_SPACE can publish overlapping target LP only after successful cancellation. This closes controller fallback join at regular-file/interface boundaries, not actual source layout, kernel mapping/COW init/full install or rollback."
   ],
   "hardware_unverified": [
     "motor output",
@@ -3650,8 +3650,18 @@
       "result": "pass",
       "count": 7,
       "evidence": "logs/ota-snapshot-allocate.json",
-      "evidence_sha256": "1f2b0c98e509394a45787a0606d0132a436519f57773fcbdafb99f579ac07686",
-      "scope": "Actual ARM64 SnapshotManager BeginUpdate/CreateUpdateSnapshots with unchanged OS4.0.4 manifest and explicit synthetic sparse LP layouts. Real SnapshotMetadataUpdater/PartitionCowCreator/liblp plan10 partition sizes and stock COW estimates; map creation deliberately denied, status rollback and unchanged LP prefix checked. Nearly-full layout returns NO_SPACE and forbids data-backed COW in Recovery. Kernel/estimate/version/overlay/state diagnostics checked. No real kernel mapping, actual source LP/free-space, COW initialization, controller fallback join or full OTA. No production change/build."
+      "evidence_sha256": "a9ec20e69aef0e692800f5c602e234b023ca34ca12e5c505bf9b2d081cf7fa88",
+      "scope": "Actual ARM64 SnapshotManager BeginUpdate/CreateUpdateSnapshots with unchanged OS4.0.4 manifest and explicit synthetic sparse LP layouts. Real SnapshotMetadataUpdater/PartitionCowCreator/liblp plan10 partition sizes and stock COW estimates; map creation deliberately denied, status rollback and unchanged LP prefix checked. Nearly-full layout returns NO_SPACE and forbids data-backed COW in Recovery. Kernel/estimate/version/overlay/state diagnostics checked. No real kernel mapping, actual source LP/free-space, COW initialization, controller fallback join or full OTA. No production change/build.",
+      "previous_evidence": "logs/ota-snapshot-allocate-before-controller.json",
+      "previous_evidence_sha256": "1f2b0c98e509394a45787a0606d0132a436519f57773fcbdafb99f579ac07686"
+    },
+    {
+      "name": "stock-os4-snapshot-preparation",
+      "result": "pass",
+      "count": 5,
+      "evidence": "logs/ota-snapshot-prepare.json",
+      "evidence_sha256": "53641e8b59f880b6743db7b9c4fdafd9de7ae2e16617421c726727395efa0900",
+      "scope": "Actual ARM64 production PreparePartitionsForUpdate -> SnapshotManager allocation -> CancelUpdate -> intact direct LP preparation, using stock OS4.0.4 manifest and synthetic regular-file source LP. Mapping denial/NO_SPACE fall back only after cancellation succeeds; cancellation fsync failure stops before direct operations, unmap/store failures propagate. Real liblp writes/reads target metadata; source metadata bytes preserved, target/source extents overlap18676176 sectors. Directory/mount token/HAL/AVB-no-op/unmap/store error boundaries explicit; no real devices/payload replay/full OTA. No production change/build."
     }
   ],
   "source_review_followups": [
@@ -4646,7 +4656,7 @@
     "stock_snapshot_allocation": {
       "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-allocation",
       "report": "logs/ota-snapshot-allocate.json",
-      "report_sha256": "1f2b0c98e509394a45787a0606d0132a436519f57773fcbdafb99f579ac07686",
+      "report_sha256": "a9ec20e69aef0e692800f5c602e234b023ca34ca12e5c505bf9b2d081cf7fa88",
       "audit": "logs/snapshot-allocation-audit.json",
       "cases": 7,
       "planned_dynamic_partitions": 10,
@@ -4661,7 +4671,26 @@
       "full_ota_install": false,
       "production_changes": false,
       "new_build": false,
-      "scope": "Actual ARM64 SnapshotManager BeginUpdate/CreateUpdateSnapshots with unchanged OS4.0.4 manifest and explicit synthetic sparse LP layouts. Real SnapshotMetadataUpdater/PartitionCowCreator/liblp plan10 partition sizes and stock COW estimates; map creation deliberately denied, status rollback and unchanged LP prefix checked. Nearly-full layout returns NO_SPACE and forbids data-backed COW in Recovery. Kernel/estimate/version/overlay/state diagnostics checked. No real kernel mapping, actual source LP/free-space, COW initialization, controller fallback join or full OTA. No production change/build."
+      "scope": "Actual ARM64 SnapshotManager BeginUpdate/CreateUpdateSnapshots with unchanged OS4.0.4 manifest and explicit synthetic sparse LP layouts. Real SnapshotMetadataUpdater/PartitionCowCreator/liblp plan10 partition sizes and stock COW estimates; map creation deliberately denied, status rollback and unchanged LP prefix checked. Nearly-full layout returns NO_SPACE and forbids data-backed COW in Recovery. Kernel/estimate/version/overlay/state diagnostics checked. No real kernel mapping, actual source LP/free-space, COW initialization, controller fallback join or full OTA. No production change/build.",
+      "previous_report": "logs/ota-snapshot-allocate-before-controller.json"
+    },
+    "stock_snapshot_preparation": {
+      "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-preparation",
+      "report": "logs/ota-snapshot-prepare.json",
+      "report_sha256": "53641e8b59f880b6743db7b9c4fdafd9de7ae2e16617421c726727395efa0900",
+      "audit": "logs/snapshot-preparation-audit.json",
+      "cases": 5,
+      "image_sha256": "f302ff2193ba406d5100a2829bb9d8e862d549d5c2a693c5e91c91daf5d64931",
+      "synthetic_source_layout": true,
+      "controller_preparation_joined": true,
+      "actual_snapshot_manager": true,
+      "direct_lp_preparation_executed": true,
+      "source_target_extent_overlap_sectors": 18676176,
+      "real_kernel_mapping": false,
+      "full_ota_install": false,
+      "production_changes": false,
+      "new_build": false,
+      "scope": "Actual ARM64 production PreparePartitionsForUpdate -> SnapshotManager allocation -> CancelUpdate -> intact direct LP preparation, using stock OS4.0.4 manifest and synthetic regular-file source LP. Mapping denial/NO_SPACE fall back only after cancellation succeeds; cancellation fsync failure stops before direct operations, unmap/store failures propagate. Real liblp writes/reads target metadata; source metadata bytes preserved, target/source extents overlap18676176 sectors. Directory/mount token/HAL/AVB-no-op/unmap/store error boundaries explicit; no real devices/payload replay/full OTA. No production change/build."
     }
   },
   "os4_haptics_user_confirmation": {
