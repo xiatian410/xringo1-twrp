@@ -8,20 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-mtp-data-boundary.img` |
-| SHA-256 | `d058a7d88cc5928e6cbb2890359aed0dd477408b1ed6aa3bac6e487d192db44c` |
-| 生产来源绑定 | 831 份 |
+| 文件 | `recovery-dijun-unified-backup-source-read.img` |
+| SHA-256 | `cade589fd46dbb5f6d117b2728d4fef42e37ff82b950e32dee477559a6342bd0` |
+| 生产来源绑定 | 832 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：MTP 元数据包对应关系
+## 本批生产修正：备份源文件读取完整性
 
-0104 在通用元数据数据阶段分发前校验 DATA 类型、操作码、事务号和声明长度。旧实现会把错误事务的数据用于重命名 / 上传登记，且继续执行后续命令。现在遇到错误包停止当前连接，统一释放会话状态，不再使用该数据触发文件修改。成功短读明确设置 EPROTO，避免继承旧 ECANCELED 后继续解析。流式 SendObject / SendPartialObject 保留自己的数据阶段校验。
+0105修正libtar最后一块只检查read返回负数、未检查读足的问题。源文件在头部stat后缩短时，旧实现会把未读足部分的残留缓冲写入归档并返回成功。现在逐块读足记录的长度，短读及EINTR重试，提前EOF返回EIO，读取错误传回备份父进程，不发布.info成功信息。没有提供并发源文件快照一致性。
 
-现有 ASan / UBSan 对象套件扩展到198项通过；旧实现新增31项中25项失败。四种元数据操作均覆盖类型 / 操作码 / 事务 / 三种长度错误与短头，另有旧取消错误码及正常重命名、上传控制。检查实际文件、上传登记、连接关闭和后续排队删除未执行。清理构建后831来源与六profile核对通过。
+既有ASan/UBSan套件：libtar101项、完整tar/pigz/OAES/fork编码链140项通过；同组旧实现新增12项有5项失败，编码链新增16项有12项失败。覆盖0/1/511/512/513/1024字节、17字节短读、EINTR、真实源文件截短和读取EIO，四种编码模式均核对成功内容往返或父进程失败。清理构建后832来源、六profile和镜像封装核对通过。真实fscrypt、manager/GUI、ARM64编码和断电仍未验证。
 
-USB、属性、日志及残留errno注入为替身；没有真实端点恢复、ARM64 MTP、Windows或客户端重连验收。完整上传错误排空仍未完成。详见[元数据包校验](docs/MTP-CONTROL-ADAPTATION.md#metadata-data-boundary)。原始4.0.4整包模拟沿用既有报告，本批未重复执行。
+详细范围见[备份源读取](docs/BACKUP-SESSION-ADAPTATION.md#source-read-completion)。MTP0104和4.0.4整包模拟沿用对应既有证据，本批不重复执行。
 
 ## 沿用的槽位切换前 Vendor 卸载失败
 

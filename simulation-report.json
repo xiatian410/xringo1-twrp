@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-data-boundary.img",
-  "image_sha256": "d058a7d88cc5928e6cbb2890359aed0dd477408b1ed6aa3bac6e487d192db44c",
-  "image_status": "Clean installclean + make -j$(nproc); patch0104 rejects malformed/mismatched metadata DATA before mutation. 831 sources/six profiles; objects198 pass; previous25/31 fail. Hardware unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-backup-source-read.img",
+  "image_sha256": "cade589fd46dbb5f6d117b2728d4fef42e37ff82b950e32dee477559a6342bd0",
+  "image_status": "Clean installclean + make -j$(nproc); patch0105 exact backup source read/retry and early EOF error.832 sources/six profiles; libtar101/codec140 pass. Hardware unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1935,7 +1935,7 @@
     "Security services: original six-profile ARM64 relocation18, missing-library6 and undefined-symbol6 covered; actual default namespace fields and config removal/marker12 controls now covered in private chroot (42-case suite). Real init/mount namespace/APEX/property/proc runtime, service initialization/Binder/TEE/key operations and synthetic crypto volumes remain open.",
     "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U. Patch0100 now rejects reboot/slot entry while storage busy and retains pending sideload action until idle; synchronous provider cancellation and a reservation through final reboot remain unimplemented.",
     "MTP patch0099 partial edit packet validation/write retries/response count covered (objects160; old10/11 failures); edits remain in-place, no rollback or complete error-stream drain. MTP patch0098 session gate/close edit cleanup covered (objects149/transfers48; old22/23 failures); remaining media metadata and real client directory-finalization behavior (five post-child explicit SendObjectInfo retry/close/readonly cases covered; no automatic tree completion replay; prior file/date/completion evidence retained), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
-    "Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix. Patch0095 now preserves application user.* binary/empty xattrs with bounded multiblock PAX and errors; existing Android references excluded. libtar64/GNU readback and codec104 pass, old10/14 and20/20fail. Arbitrary privileged namespaces/ACL, live concurrent consistency and complete manager/GUI/powerloss remain outside scope. Patch0096 now bounds ordinary/split extraction to selected root and rejects observed traversal/symlink/shared-inode hazards; libtar79/codec116 pass, old11/15 and12/12 fail. Concurrent ancestor replacement and bind-mount isolation remain open; not complete archive sandboxing. Patch0097 propagates char/block mknod failures before applying metadata to existing files: libtar89/codec124 pass, old8/10 and8/8 fail. mknod is intercepted; no actual device node creation or target kernel success verified.",
+    "0105 source short/EINTR retry and premature EOF rejection covered (libtar101/codec140, previous5/12 and12/16 failures); full concurrent source consistency remains unverified. Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix. Patch0095 now preserves application user.* binary/empty xattrs with bounded multiblock PAX and errors; existing Android references excluded. libtar64/GNU readback and codec104 pass, old10/14 and20/20fail. Arbitrary privileged namespaces/ACL, live concurrent consistency and complete manager/GUI/powerloss remain outside scope. Patch0096 now bounds ordinary/split extraction to selected root and rejects observed traversal/symlink/shared-inode hazards; libtar79/codec116 pass, old11/15 and12/12 fail. Concurrent ancestor replacement and bind-mount isolation remain open; not complete archive sandboxing. Patch0097 propagates char/block mknod failures before applying metadata to existing files: libtar89/codec124 pass, old8/10 and8/8 fail. mknod is intercepted; no actual device node creation or target kernel success verified.",
     "Full filesystem GUI/manager/tool format/write/repair lifecycle, real mounts/fscrypt, concurrent changes and I/O/power-loss cleanup remain pending. Ten original partition-tool page/worker/return-detail cases now cover that handoff with an explicit manager fixture; they do not join the independent ARM64 tool runs into one full lifecycle. Existing deletion/media/conversion/mount/persist/Android Secure/startup media fixes and ext4 labeling evidence are reused. FormatData/WipeEncryption/metadata partition routing/backend run14 cases now cover terminal errors/order with explicit formatter/mount/mapper/merge/hook fixtures. No full GUI/start/thread, mkfs or crypto lifecycle; no production change/build, do not repeat unchanged.",
     "RTC full probe/hctosys and cold-start read-failure integration, actual calendar conversion and physical drift/battery-loss behavior. Six original vendor_boot-bound ARM64 read/set callbacks and OS4 refresh56 cases covered with explicit MMIO/PMIC/reset/calendar fixtures; no production clock offset justified.",
     "video target ARM64 codec/display-shadow sampling integration, real storage/codec fault behavior, hour-scale stability and seek/index performance (bounded12.5s multi-cluster/keyframe correctness covered), GUI player rendering and full-resolution performance; host frames/queue/failure recovery plus independent FFmpeg native decode and72 short input seeks covered",
@@ -4140,6 +4140,38 @@
       "evidence": "logs/mtp-data-negative.json",
       "evidence_sha256": "6f6ad2f512d5ac62b97989ab22daa0f22353dcb33f5c53696255d216e3822f4d",
       "scope": "Host original MTP server/database/storage and packet methods with private files/inotify/threads and ASan/UBSan. Bounded metadata DATA requires exact length/type/operation/transaction; malformed phase closes connection before mutation and leaves next delete unread. Short successful reads set EPROTO, not stale ECANCELED. Current198 pass; previous25/31 fail. Streaming object paths retain own validation. USB/properties/logging/errno are fixtures; ARM64 MTP/Windows, client reconnect and full endpoint recovery unverified."
+    },
+    {
+      "name": "archive-read-restore",
+      "status": "PASS",
+      "count": 101,
+      "evidence": "logs/archive-read-restore.json",
+      "evidence_sha256": "6022bca9173640d5993c1ed37dd5afb048278ee659ebf298f6161e71767c0af7",
+      "scope": "Host original libtar and tar/pigz/OAES/fork with ASan/UBSan and private files. Exact read retries short/EINTR, early EOF is EIO before final block write, read error propagates to backup parent without info publication.101 libtar/140 codec pass; old5/12 and12/16 fail. EOF uses actual source truncation after header stat; other read faults injected. No complete concurrent source snapshot, ARM64 codec, real fscrypt/manager/GUI/physical I/O or power-loss proof."
+    },
+    {
+      "name": "archive-read-negative",
+      "status": "FAIL",
+      "count": 12,
+      "evidence": "logs/archive-read-negative.json",
+      "evidence_sha256": "3090383ee731d7f8c0ca7ea119eb0f54526632719dc850a05949fab0a945f790",
+      "scope": "Host original libtar and tar/pigz/OAES/fork with ASan/UBSan and private files. Exact read retries short/EINTR, early EOF is EIO before final block write, read error propagates to backup parent without info publication.101 libtar/140 codec pass; old5/12 and12/16 fail. EOF uses actual source truncation after header stat; other read faults injected. No complete concurrent source snapshot, ARM64 codec, real fscrypt/manager/GUI/physical I/O or power-loss proof."
+    },
+    {
+      "name": "archive-read-pipeline",
+      "status": "PASS",
+      "count": 140,
+      "evidence": "logs/archive-read-pipeline.json",
+      "evidence_sha256": "c2a51c02c7435334f0e2185674c90fb7f9c7ac8554dd9e18e26d8d3f05a8a809",
+      "scope": "Host original libtar and tar/pigz/OAES/fork with ASan/UBSan and private files. Exact read retries short/EINTR, early EOF is EIO before final block write, read error propagates to backup parent without info publication.101 libtar/140 codec pass; old5/12 and12/16 fail. EOF uses actual source truncation after header stat; other read faults injected. No complete concurrent source snapshot, ARM64 codec, real fscrypt/manager/GUI/physical I/O or power-loss proof."
+    },
+    {
+      "name": "archive-read-pipeline-negative",
+      "status": "FAIL",
+      "count": 16,
+      "evidence": "logs/archive-read-pipeline-negative.json",
+      "evidence_sha256": "c8d7af90a84f029f5d941ead017b2b9026d9a78dcdb71660c3928d3aef04c8f8",
+      "scope": "Host original libtar and tar/pigz/OAES/fork with ASan/UBSan and private files. Exact read retries short/EINTR, early EOF is EIO before final block write, read error propagates to backup parent without info publication.101 libtar/140 codec pass; old5/12 and12/16 fail. EOF uses actual source truncation after header stat; other read faults injected. No complete concurrent source snapshot, ARM64 codec, real fscrypt/manager/GUI/physical I/O or power-loss proof."
     }
   ],
   "source_review_followups": [
@@ -4478,8 +4510,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/mtp-data-delivery-audit.json",
-    "scope": "Host original MTP server/database/storage and packet methods with private files/inotify/threads and ASan/UBSan. Bounded metadata DATA requires exact length/type/operation/transaction; malformed phase closes connection before mutation and leaves next delete unread. Short successful reads set EPROTO, not stale ECANCELED. Current198 pass; previous25/31 fail. Streaming object paths retain own validation. USB/properties/logging/errno are fixtures; ARM64 MTP/Windows, client reconnect and full endpoint recovery unverified.",
+    "evidence": "logs/archive-read-delivery-audit.json",
+    "scope": "Host original libtar and tar/pigz/OAES/fork with ASan/UBSan and private files. Exact read retries short/EINTR, early EOF is EIO before final block write, read error propagates to backup parent without info publication.101 libtar/140 codec pass; old5/12 and12/16 fail. EOF uses actual source truncation after header stat; other read faults injected. No complete concurrent source snapshot, ARM64 codec, real fscrypt/manager/GUI/physical I/O or power-loss proof.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -5572,6 +5604,13 @@
     "patch": "0104",
     "scope": "Host original MTP server/database/storage and packet methods with private files/inotify/threads and ASan/UBSan. Bounded metadata DATA requires exact length/type/operation/transaction; malformed phase closes connection before mutation and leaves next delete unread. Short successful reads set EPROTO, not stale ECANCELED. Current198 pass; previous25/31 fail. Streaming object paths retain own validation. USB/properties/logging/errno are fixtures; ARM64 MTP/Windows, client reconnect and full endpoint recovery unverified.",
     "document": "docs/MTP-CONTROL-ADAPTATION.md#metadata-data-boundary",
+    "production_changes": true,
+    "new_build": true
+  },
+  "archive_source_read": {
+    "patch": "0105",
+    "scope": "Host original libtar and tar/pigz/OAES/fork with ASan/UBSan and private files. Exact read retries short/EINTR, early EOF is EIO before final block write, read error propagates to backup parent without info publication.101 libtar/140 codec pass; old5/12 and12/16 fail. EOF uses actual source truncation after header stat; other read faults injected. No complete concurrent source snapshot, ARM64 codec, real fscrypt/manager/GUI/physical I/O or power-loss proof.",
+    "document": "docs/BACKUP-SESSION-ADAPTATION.md#source-read-completion",
     "production_changes": true,
     "new_build": true
   }

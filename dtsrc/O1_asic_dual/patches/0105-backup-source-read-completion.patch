@@ -1,0 +1,66 @@
+--- a/libtar/append.c
++++ b/libtar/append.c
+@@ -375,6 +375,31 @@
+ }
+ 
+ 
++/* Read exactly the size recorded in the header. A shrinking file must fail
++ * instead of archiving uninitialized/stale bytes in its final block. */
++static int
++append_read_exact(int fd, char *block, size_t size)
++{
++	size_t done = 0;
++	while (done < size)
++	{
++		ssize_t count = read(fd, block + done, size - done);
++		if (count < 0)
++		{
++			if (errno == EINTR)
++				continue;
++			return -1;
++		}
++		if (count == 0)
++		{
++			errno = EIO;
++			return -1;
++		}
++		done += count;
++	}
++	return 0;
++}
++
+ /* add file contents to a tarchive */
+ int
+ tar_append_regfile(TAR *t, const char *realname)
+@@ -382,7 +407,6 @@
+ 	char block[T_BLOCKSIZE];
+ 	int filefd;
+ 	int64_t i, size;
+-	ssize_t j;
+ 	int rv = -1;
+ 
+ #if defined(O_BINARY)
+@@ -401,21 +425,15 @@
+ 	size = th_get_size(t);
+ 	for (i = size; i > T_BLOCKSIZE; i -= T_BLOCKSIZE)
+ 	{
+-		j = read(filefd, &block, T_BLOCKSIZE);
+-		if (j != T_BLOCKSIZE)
+-		{
+-			if (j != -1)
+-				errno = EINVAL;
++		if (append_read_exact(filefd, block, T_BLOCKSIZE) != 0)
+ 			goto fail;
+-		}
+ 		if (tar_block_write(t, &block) == -1)
+ 			goto fail;
+ 	}
+ 
+ 	if (i > 0)
+ 	{
+-		j = read(filefd, &block, i);
+-		if (j == -1)
++		if (append_read_exact(filefd, block, i) != 0)
+ 			goto fail;
+ 		memset(&(block[i]), 0, T_BLOCKSIZE - i);
+ 		if (tar_block_write(t, &block) == -1)

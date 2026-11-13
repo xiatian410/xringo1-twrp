@@ -1,3 +1,4 @@
+#include <atomic>
 #include <algorithm>
 #include <array>
 #include <barrier>
@@ -151,6 +152,22 @@ void transform(bool encrypt,const fs::path& from,const fs::path& to){
   if(encrypt)TWFunc::AesEncryptStream("fixture-password");else TWFunc::AesDecryptStream("fixture-password");_exit(0);
  }
  int status;CHECK(waitpid(child,&status,0)==child);CHECK(WIFEXITED(status)&&WEXITSTATUS(status)==0);
+}
+
+string source_read_fault;
+atomic_bool source_read_injected=false;
+extern "C" ssize_t __real_read(int,void*,size_t);
+extern "C" ssize_t __wrap_read(int fd,void* buffer,size_t size) {
+ struct stat a{},b{};
+ if(!source_read_fault.empty() && fstat(fd,&a)==0 && stat("/src/dir/file0",&b)==0 && a.st_dev==b.st_dev && a.st_ino==b.st_ino) {
+  bool first=!source_read_injected.exchange(true);
+  if(first){int marker=open("/backup/source-read-injected",O_CREAT|O_WRONLY,0600);CHECK(marker>=0);CHECK(close(marker)==0);}
+  if(source_read_fault=="eof" && first)CHECK(truncate("/src/dir/file0",a.st_size-1)==0);
+  if(source_read_fault=="interrupted" && first){errno=EINTR;return -1;}
+  if(source_read_fault=="short" && size>17)size=17;
+  if(source_read_fault=="io-error" && lseek(fd,0,SEEK_CUR)>=1536){errno=EIO;return -1;}
+ }
+ return __real_read(fd,buffer,size);
 }
 int main(int argc,char** argv){
  CHECK(argc==2);string scenario=argv[1];CHECK(fs::exists(".fixture"));CHECK(chroot(".")==0);CHECK(chdir("/")==0);
@@ -322,7 +339,17 @@ int main(int argc,char** argv){
  tar.backup_folder="/backup";tar.partition_name="data";tar.part_settings=&settings;tar.backup_exclusions=&exclude;
  tar.use_compression=compressed;tar.use_encryption=encrypted;tar.userdata_encryption=mixed;
  if(application_xattrs&&scenario.ends_with("-read-error"))application_xattr_fault="read-error";
+ if(auto at=scenario.find("-source-read-");at!=string::npos)source_read_fault=scenario.substr(at+13);
  BackupProcess process;int result=tar.createTarFork(&process);
+ if(!source_read_fault.empty()) {
+  CHECK(fs::exists("/backup/source-read-injected"));
+  if(source_read_fault=="eof" || source_read_fault=="io-error") {
+   CHECK(result!=0);CHECK(!fs::exists("/backup/data.info"));
+   puts("PASS source read failure reaches backup parent; no info publication");return 0;
+  }
+  source_read_fault.clear();
+ }
+
  if(application_xattr_fault=="read-error"){CHECK(result!=0);CHECK(!fs::exists("/backup/data.info"));CHECK(read_file("/backup/security-calls").find("application-xattr-read-error")!=string::npos);puts("PASS application xattr read failure rejects backup publication");return 0;}
  if(missing||no_codec||entropy_fail||volume_limit){CHECK(result!=0);CHECK(!fs::exists("/backup/data.info"));puts("PASS expected backup failure");return 0;}
  CHECK(result==0);CHECK(fs::exists("/backup/data.info"));

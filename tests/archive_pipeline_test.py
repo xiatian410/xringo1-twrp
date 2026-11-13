@@ -27,6 +27,7 @@ CASES += [kind+'-xattr-'+fault for kind in ['plain','gzip','aes','both'] for fau
 CASES += [kind+'-path'+suffix for kind in ['plain','gzip','aes','both'] for suffix in ['', '-split']]
 CASES += [kind+'-path-symlink'+suffix for kind in ['plain','aes'] for suffix in ['', '-split']]
 CASES += [kind+'-special-'+node for kind in ['plain','gzip','aes','both'] for node in ['char','block']]
+CASES += [kind+'-source-read-'+fault for kind in ['plain','gzip','aes','both'] for fault in ['eof','short','interrupted','io-error']]
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source',type=Path,default=SRC)
@@ -77,7 +78,7 @@ def main():
   crypto=ANDROID/'out/soong/.intermediates/external/boringssl/libcrypto/linux_glibc_x86_64_static/libcrypto.a'
   cpp=['twrpTar.cpp','tarWrite.cpp','exclude.cpp','infomanager.cpp','oaes/oaes.cpp','test.cpp']
   cmd=['g++','-std=c++23',*common,'-no-pie',*[str(stage/n) for n in cpp],*[str(p) for p in objects],str(crypto),
-   '-Wl,--wrap=mknod','-Wl,--wrap=llistxattr','-Wl,--wrap=lsetxattr','-Wl,--wrap=open','-Wl,--wrap=futimens','-Wl,--wrap=lgetfilecon','-Wl,--wrap=lsetfilecon','-Wl,--wrap=getxattr','-Wl,--wrap=setxattr',
+   '-Wl,--wrap=read','-Wl,--wrap=mknod','-Wl,--wrap=llistxattr','-Wl,--wrap=lsetxattr','-Wl,--wrap=open','-Wl,--wrap=futimens','-Wl,--wrap=lgetfilecon','-Wl,--wrap=lsetfilecon','-Wl,--wrap=getxattr','-Wl,--wrap=setxattr',
    '-l:libselinux.so.1','-lz','-o',str(tmp/'test')]
   subprocess.run(cmd,check=True);commands.append(cmd)
   pigz=tmp/'pigz';cmd=['gcc','-O2','-static','-DNOZOPFLI',*[str(SRC/'pigz'/n) for n in ['pigz.c','yarn.c','try.c']],'-pthread','-lz','-lm','-o',str(pigz)]

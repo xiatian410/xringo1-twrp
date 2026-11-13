@@ -1,5 +1,22 @@
 # 备份会话、目录管理与摘要发布
 
+<a id="source-read-completion"></a>
+
+## 源文件读取完整性（0105）
+
+`tar_append_regfile`的最后一块原先仅检查`read == -1`。若文件在header的stat之后缩短，成功短读或EOF仍被当成已读足；未读到的缓冲区字节会进入归档，父进程可能发布成功信息。0105统一每块的精确读取：保留累积字节，短读和EINTR继续，提前EOF设为EIO，读取错误立即传回原addFile/tar线程/createTarFork，父进程不发布.info。没有用补零掩盖源读取失败，也不宣称完整并发快照一致性；文件增长、同长修改或头部/打开间身份替换仍有边界。
+
+现有libtar套件101项、tar/pigz/OAES/fork套件140项通过。新增libtar12场景覆盖0/1/511/512/513/1024边界、17字节短读、单次EINTR、511/512/513大小的真实truncate和末块EIO；成功必须按内容/权限/时间往返一致，失败核对返回值与errno。旧源码5/12失败。编码链四模式（普通、gzip、AES、两者）各覆盖EOF、短读、EINTR、EIO，共16项；旧12/16失败。EOF在已完成header的源read边界实际截短文件；其他read故障由syscall wrapper注入。失败必须到达父进程且无data.info，成功恢复逐文件核对内容。
+
+本地报告`logs/archive-read-restore.json`、`logs/archive-read-negative.json`、`logs/archive-read-pipeline.json`、`logs/archive-read-pipeline-negative.json`与`logs/archive-read-delivery-audit.json`。生产代码在主机ASan/UBSan执行，使用私有普通文件；Android界面/进度、fscrypt provider和少量libbase接口为替身，codec非ARM64，未覆盖真实manager/GUI/块I/O或断电。来源未变时复用这组结果，不例行重跑。
+
+```bash
+# 已执行，来源和输入不变时复用。
+python3 tests/archive_restore_test.py --report logs/archive-read-restore.json
+python3 tests/archive_pipeline_test.py --report logs/archive-read-pipeline.json
+python3 scripts/audit_archive_read_delivery.py
+```
+
 2026-11-12 补充：独立digest sidecar原子发布现由维护补丁0046实现；补丁0047增加新备份INCOMPLETE/COMPLETE文件清单以及恢复枚举/写入前校验。17项manifest检查、RunBackup55项、RunRestore56项通过；旧版无清单备份仍按legacy接受，不宣称有完整性证明。新镜像、构建和同镜像检查见[任务进度](../ADAPTATION-GOALS.md)。原始archive编码/真实断电和文件系统耐久性仍未验证。
 
 以下会话检查记录对应 2026-11-11 阶段；后续修正见本文各小节，历史未完成描述不覆盖后续交付。实现位于设备树固定补丁 [0019](../dtsrc/O1_asic_dual/0019-backup-session-cancellation.patch)。当前镜像、哈希与构建证据见[模拟报告](../simulation-report.md)。本轮没有连接手机。

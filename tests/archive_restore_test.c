@@ -40,6 +40,25 @@ void bytes_to_hex(const uint8_t *p, size_t n, char *r) {
 
 static const char *fault;
 static unsigned fault_calls;
+ssize_t __real_read(int,void*,size_t);
+static int append_source_fd(int fd) {
+    struct stat a,b;
+    return fstat(fd,&a)==0 && stat("input/payload",&b)==0 && a.st_dev==b.st_dev && a.st_ino==b.st_ino;
+}
+ssize_t __wrap_read(int fd,void *buf,size_t size) {
+    if(fault && !strncmp(fault,"append-read-",12) && append_source_fd(fd)) {
+        ++fault_calls;
+        if(strstr(fault,"eof-") && fault_calls==1) {
+            struct stat st; CHECK(stat("input/payload",&st)==0);
+            CHECK(truncate("input/payload",st.st_size-1)==0);
+        }
+        if(!strcmp(fault,"append-read-interrupted") && fault_calls==1){errno=EINTR;return -1;}
+        if(!strcmp(fault,"append-read-short") && size>17)size=17;
+        if(!strcmp(fault,"append-read-io-error") && lseek(fd,0,SEEK_CUR)>=512){errno=EIO;return -1;}
+    }
+    return __real_read(fd,buf,size);
+}
+
 /* Never create a character/block node in this host suite. */
 int __wrap_mknod(const char *path, mode_t mode, dev_t device) {
     CHECK(fault && !strncmp(fault,"special-",8));
@@ -298,6 +317,19 @@ int main(int argc,char **argv) {
     CHECK(access(".fixture",F_OK)==0);
     CHECK(mkdir("input",0700)==0); CHECK(mkdir("restore",0700)==0);
     const char *c=argv[1];
+    if(!strncmp(c,"append-read-",12)) {
+        size_t size=513;
+        if(strstr(c,"size-"))size=strtoul(strstr(c,"size-")+5,NULL,10);
+        if(strstr(c,"eof-"))size=strtoul(strstr(c,"eof-")+4,NULL,10);
+        putfile("input/payload",size); TAR *t=writer();fault=c;
+        int result=tar_append_file(t,"input/payload","payload"),saved=errno;fault=NULL;
+        if(strstr(c,"eof-") || strstr(c,"io-error")) {
+            CHECK(result==-1 && saved==EIO && fault_calls>0);CHECK(tar_close(t)==0);
+            puts("PASS source read failure rejects append without success");return 0;
+        }
+        CHECK(result==0);finish(t);CHECK(restore("restore")==0);compare("input/payload","restore/payload");
+        puts("PASS source reads preserve exact bytes through archive and restore");return 0;
+    }
     if(!strncmp(c,"special-",8)) {
         const int fifo=strstr(c,"-fifo-")!=NULL;
         const int exists=strstr(c,"-exists")||strstr(c,"-pipeline");

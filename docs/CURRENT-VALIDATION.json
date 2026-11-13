@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-data-boundary.img",
-  "image_sha256": "d058a7d88cc5928e6cbb2890359aed0dd477408b1ed6aa3bac6e487d192db44c",
-  "production_sources": 831,
+  "image_name": "recovery-dijun-unified-backup-source-read.img",
+  "image_sha256": "cade589fd46dbb5f6d117b2728d4fef42e37ff82b950e32dee477559a6342bd0",
+  "production_sources": 832,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -1829,6 +1829,38 @@
       "failures": 25,
       "local_report_sha256": "6f6ad2f512d5ac62b97989ab22daa0f22353dcb33f5c53696255d216e3822f4d",
       "scope": "Host original MTP server/database/storage and packet methods with private files/inotify/threads and ASan/UBSan. Bounded metadata DATA requires exact length/type/operation/transaction; malformed phase closes connection before mutation and leaves next delete unread. Short successful reads set EPROTO, not stale ECANCELED. Current198 pass; previous25/31 fail. Streaming object paths retain own validation. USB/properties/logging/errno are fixtures; ARM64 MTP/Windows, client reconnect and full endpoint recovery unverified."
+    },
+    {
+      "name": "archive-read-restore",
+      "status": "PASS",
+      "cases": 101,
+      "failures": 0,
+      "local_report_sha256": "6022bca9173640d5993c1ed37dd5afb048278ee659ebf298f6161e71767c0af7",
+      "scope": "Host original libtar and tar/pigz/OAES/fork with ASan/UBSan and private files. Exact read retries short/EINTR, early EOF is EIO before final block write, read error propagates to backup parent without info publication.101 libtar/140 codec pass; old5/12 and12/16 fail. EOF uses actual source truncation after header stat; other read faults injected. No complete concurrent source snapshot, ARM64 codec, real fscrypt/manager/GUI/physical I/O or power-loss proof."
+    },
+    {
+      "name": "archive-read-negative",
+      "status": "FAIL",
+      "cases": 12,
+      "failures": 5,
+      "local_report_sha256": "3090383ee731d7f8c0ca7ea119eb0f54526632719dc850a05949fab0a945f790",
+      "scope": "Host original libtar and tar/pigz/OAES/fork with ASan/UBSan and private files. Exact read retries short/EINTR, early EOF is EIO before final block write, read error propagates to backup parent without info publication.101 libtar/140 codec pass; old5/12 and12/16 fail. EOF uses actual source truncation after header stat; other read faults injected. No complete concurrent source snapshot, ARM64 codec, real fscrypt/manager/GUI/physical I/O or power-loss proof."
+    },
+    {
+      "name": "archive-read-pipeline",
+      "status": "PASS",
+      "cases": 140,
+      "failures": 0,
+      "local_report_sha256": "c2a51c02c7435334f0e2185674c90fb7f9c7ac8554dd9e18e26d8d3f05a8a809",
+      "scope": "Host original libtar and tar/pigz/OAES/fork with ASan/UBSan and private files. Exact read retries short/EINTR, early EOF is EIO before final block write, read error propagates to backup parent without info publication.101 libtar/140 codec pass; old5/12 and12/16 fail. EOF uses actual source truncation after header stat; other read faults injected. No complete concurrent source snapshot, ARM64 codec, real fscrypt/manager/GUI/physical I/O or power-loss proof."
+    },
+    {
+      "name": "archive-read-pipeline-negative",
+      "status": "FAIL",
+      "cases": 16,
+      "failures": 12,
+      "local_report_sha256": "c8d7af90a84f029f5d941ead017b2b9026d9a78dcdb71660c3928d3aef04c8f8",
+      "scope": "Host original libtar and tar/pigz/OAES/fork with ASan/UBSan and private files. Exact read retries short/EINTR, early EOF is EIO before final block write, read error propagates to backup parent without info publication.101 libtar/140 codec pass; old5/12 and12/16 fail. EOF uses actual source truncation after header stat; other read faults injected. No complete concurrent source snapshot, ARM64 codec, real fscrypt/manager/GUI/physical I/O or power-loss proof."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2039,6 +2071,13 @@
     "patch": "0104",
     "scope": "Host original MTP server/database/storage and packet methods with private files/inotify/threads and ASan/UBSan. Bounded metadata DATA requires exact length/type/operation/transaction; malformed phase closes connection before mutation and leaves next delete unread. Short successful reads set EPROTO, not stale ECANCELED. Current198 pass; previous25/31 fail. Streaming object paths retain own validation. USB/properties/logging/errno are fixtures; ARM64 MTP/Windows, client reconnect and full endpoint recovery unverified.",
     "document": "docs/MTP-CONTROL-ADAPTATION.md#metadata-data-boundary",
+    "production_changes": true,
+    "new_build": true
+  },
+  "archive_source_read": {
+    "patch": "0105",
+    "scope": "Host original libtar and tar/pigz/OAES/fork with ASan/UBSan and private files. Exact read retries short/EINTR, early EOF is EIO before final block write, read error propagates to backup parent without info publication.101 libtar/140 codec pass; old5/12 and12/16 fail. EOF uses actual source truncation after header stat; other read faults injected. No complete concurrent source snapshot, ARM64 codec, real fscrypt/manager/GUI/physical I/O or power-loss proof.",
+    "document": "docs/BACKUP-SESSION-ADAPTATION.md#source-read-completion",
     "production_changes": true,
     "new_build": true
   }
