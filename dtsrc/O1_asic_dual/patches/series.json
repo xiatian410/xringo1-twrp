@@ -294,6 +294,10 @@
         {
           "file": "0081-mtp-staging-retry.patch",
           "sha256": "9729ac8247c4b861e68a2275e3681c1f9b9252242832ad52d1c34276a302decc"
+        },
+        {
+          "file": "0082-mtp-aio-completion-error.patch",
+          "sha256": "2709a0e4118169c6e0f7a5580a311afc191040d9a6739e99fe8ca574ed92d14b"
         }
       ],
       "result_files": {
@@ -304,7 +308,7 @@
         "partition.cpp": "63937dfb14da3b0a71762c7398fa61dcfab933f993e8f3ddd71b66ea4189edd4",
         "twrpminui/force_feedback.cpp": "f7bdb5f50e5ef9d0ecd2ab161fa8f6143292c1207f064147a2db94b080d86f41",
         "twrpminui/graphics_drm.cpp": "61611757cc147b2f925ed52c6f73334acd7ae11d7fa3954d720cbeb8d47d0447",
-        "mtp/MtpFfsHandle.cpp": "65f9c45e4cc3ac14dcf8c03aa96c94c59983a10d80bf29b38d2d1e3f15836fe3",
+        "mtp/MtpFfsHandle.cpp": "6a62bbc344cf8f3600379e09b4febf2e14cd118eb5094f8731786b1c20b43155",
         "mtp/MtpFfsHandle.h": "9b50fd469f77b356be35a23a322ca090d3506f7cf822772900a72ed902d46782",
         "mtp/MtpFfsCompatHandle.cpp": "cb07a57987f6d3933395e044ba095343074b53ed9fc22ecd342b6e11eb70c5e9",
         "mtp/MtpDescriptors.cpp": "7b24102682e809c455ed1ebcef0a2defdab37abefd1ba692485b650d87a77025",

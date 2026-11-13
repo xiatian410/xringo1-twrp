@@ -4,7 +4,27 @@
 
 本文按控制报文、活动事务匹配和 Reset 会话释放收录实现记录。各阶段的未覆盖项只代表当时边界；后续补充见对应小节，完整 USB 集成状态以工作队列为准。
 
-导航：[控制报文](#修复内容) · [活动事务取消](#transaction-cancel) · [Reset 会话释放](#reset-session) · [事件生命周期](#event-lifecycle)。
+导航：[控制报文](#修复内容) · [活动事务取消](#transaction-cancel) · [Reset 会话释放](#reset-session) · [事件生命周期](#event-lifecycle) · [bulk 完成队列错误](#bulk-completion-error)。
+
+<a id="bulk-completion-error"></a>
+
+## 原生 bulk 完成队列错误（0082）
+
+原 `MtpFfsHandle::waitEvents` 在 `io_getevents` 返回 `-1` 后只保存 errno，随后仍将负值转换为无符号循环上限，逐项访问未返回的事件数组。一次完成队列报错即可触发栈缓冲区越界；这与此前 interrupt 事件 worker 的错误处理是不同路径。
+
+0082 在错误返回时立即退出，保留原 errno，不解析事件、不将 `-1` 加入完成计数。`TEMP_FAILURE_RETRY` 对 EINTR 的既有重试保持不变。此修正不宣称 EAGAIN 会自动续传，也不更改取消、端点重置或控制器策略。
+
+现有 `tests/run_mtp_transport.py` 增加 `--completion-errors` 和 `--source`。使用原生产 native handle、真实主机 Linux AIO / 管道 / 普通文件，仅对该 bulk context 的 `io_getevents` 注入一次错误。EIO / EAGAIN 两场景在旧实现触发 ASan `stack-buffer-overflow`，修正后安全返回 `-1` 并保持 errno；EINTR 对照真实重试成功、内容一致。测试在错误后关闭并销毁 AIO context，不假称遗留完成记录已恢复为可继续传输。
+
+```bash
+python3 tests/run_mtp_transport.py --completion-errors --report logs/mtp-aio-error-current.json
+python3 tests/run_mtp_transport.py --report logs/mtp-aio-error-roundtrip.json
+python3 scripts/audit_mtp_aio_error.py
+```
+
+同一夹具的原生 / 兼容模式往返、文件偏移、容器头、空文件、错误源 fd、ENOSPC、未知长度接收、描述符失败及启停回归通过，启用 ASan / UBSan。旧报告 `logs/mtp-aio-error-negative.json` 保留两项越界和一项 EINTR 通过；原始历史报告不改写。主机属性和日志是替身；管道不是实际 FunctionFS / UDC，本项不验证 Windows 或完整 server / cancel / reset 接续。
+
+固定补丁为 `0082-mtp-aio-completion-error.patch`。最终清理构建 `installclean` + `make -j$(nproc)`，800 份来源、六份 profile；相对 0081 仅 MTP 库、构建属性和 ramdisk 摘要变化。未变的数据库、组件选择与模块结果按原范围复用；没有重跑震动或其他无关功能。镜像及 SHA-256 见[交付报告](../simulation-report.md)。
 
 补丁：[0025-mtp-control-framing.patch](../dtsrc/O1_asic_dual/0025-mtp-control-framing.patch)。当前候选和哈希见[模拟报告](../simulation-report.md)。本阶段不连接手机。
 

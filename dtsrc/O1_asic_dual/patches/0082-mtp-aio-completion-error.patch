@@ -1,0 +1,16 @@
+--- a/mtp/MtpFfsHandle.cpp
++++ b/mtp/MtpFfsHandle.cpp
+@@ -428,8 +428,12 @@
+             // wait for. Thus we never want io_getevents to block.
+             int this_events = TEMP_FAILURE_RETRY(io_getevents(mCtx, 0, AIO_BUFS_MAX, events, &ZERO_TIMEOUT));
+             if (this_events == -1) {
++                const int completion_error = errno;
+                 PLOG(ERROR) << "Mtp error getting events";
+-                error = errno;
++                // No event records were returned. Never interpret -1 as an
++                // unsigned array bound or count it as a completed request.
++                errno = completion_error;
++                return -1;
+             }
+             // Add up the total amount of data and find errors on the way.
+             for (unsigned j = 0; j < static_cast<unsigned>(this_events); j++) {

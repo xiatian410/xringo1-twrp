@@ -13,6 +13,8 @@ RECOVERY = AOSP / 'bootable/recovery'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseline', action='store_true')
+parser.add_argument('--source', type=Path, default=RECOVERY)
+parser.add_argument('--completion-errors', action='store_true')
 parser.add_argument('--report', type=Path, default=ROOT/'logs/mtp-transport-regression.json')
 args = parser.parse_args()
 with tempfile.TemporaryDirectory(prefix='dijun-mtp-') as directory:
@@ -40,7 +42,7 @@ inline bool SetProperty(const std::string& key, const std::string& value) {
 #define PLOG(x) std::cerr
 #define CHECK(x) assert(x)
 ''')
-    source = RECOVERY / 'mtp'
+    source = args.source / 'mtp'
     if args.baseline:
         source = temp / 'baseline'
         source.mkdir()
@@ -53,14 +55,21 @@ inline bool SetProperty(const std::string& key, const std::string& value) {
     includes = [shim, source, AOSP / 'system/libbase/include', AOSP / 'system/core/libasyncio/include']
     cmd = ['g++', '-std=gnu++17', '-O1', '-g', '-pthread', '-Wall', '-Wextra',
            '-Wno-sign-compare', '-Wno-unused-parameter', '-Wno-attributes',
-           '-include', 'unistd.h', '-Wl,--wrap=write', '-Wl,--wrap=pwrite64']
+           '-include', 'unistd.h', '-Wl,--wrap=write', '-Wl,--wrap=pwrite64',
+           '-Wl,--wrap=io_getevents', '-fno-pie', '-no-pie', '-fsanitize=address,undefined',
+           '-fno-sanitize-recover=all', '-fno-omit-frame-pointer']
     cmd += ['-I' + str(p) for p in includes]
     binary = temp / 'mtp-test'
     subprocess.run(cmd + [str(p) for p in files] + ['-o', str(binary)], check=True)
-    result = subprocess.run([str(binary), str(temp)], capture_output=True, text=True, timeout=30)
-    print(result.stdout + result.stderr)
+    cases = []
+    for case in (['completion-eio', 'completion-eagain', 'completion-eintr'] if args.completion_errors else ['roundtrip']):
+        result = subprocess.run([str(binary), str(temp)] + ([] if case == 'roundtrip' else [case]),
+                                capture_output=True, text=True, timeout=30)
+        cases.append(dict(case=case, status='PASS' if result.returncode == 0 else 'FAIL',
+                          returncode=result.returncode, output=result.stdout+result.stderr))
+        print(cases[-1], flush=True)
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
-    report = dict(status='PASS' if result.returncode == 0 else 'FAIL', scope=__doc__,
+    report = dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL', scope=__doc__, cases=cases,
                   returncode=result.returncode, output=result.stdout+result.stderr,
                   sources={str(p):sha(p) for p in source.glob('*') if p.suffix in ['.cpp','.h']},
                   shared_sources={str(p):sha(p) for base in [AOSP/'system/libbase/include',AOSP/'system/core/libasyncio'] for p in base.rglob('*') if p.suffix in ['.cpp','.h']},
@@ -69,4 +78,4 @@ inline bool SetProperty(const std::string& key, const std::string& value) {
                   boundaries=['Real host Linux AIO/pipes/files, substituted Android properties/logging.',
                               'No physical FunctionFS/UDC or Windows enumeration.'])
     args.report.write_text(json.dumps(report, indent=2)+'\n')
-    raise SystemExit(result.returncode)
+    raise SystemExit(0 if report['status']=='PASS' else 1)

@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-staging-retry.img",
-  "image_sha256": "7924a46062a8f6d806cdb28ad62baccb376dcdf298c818601bca51784e2c2d29",
-  "image_status": "Clean installclean + make -j$(nproc) build; patch0081 permits upload retry after failed staging unlink.799 production sources/six profiles; full goal in progress.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-mtp-aio-error.img",
+  "image_sha256": "1fc5068de7919da8b8069aa5a6a243145e2ef2bc2bbb7add367822cc5af33b3a",
+  "image_status": "Clean installclean + make -j$(nproc); patch0082 prevents MTP AIO completion-error stack overflow.800 production bindings/six profiles; full goal in progress.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -3315,6 +3315,30 @@
       "evidence": "logs/mtp-staging-retry-transfers.json",
       "evidence_sha256": "18dcc1e8ab5f365d2194c5a3604bd67d8585592a80705f66f1220f8c6e6cda99",
       "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles."
+    },
+    {
+      "name": "MTP-AIO-completion-negative",
+      "result": "expected-failure",
+      "count": 3,
+      "evidence": "logs/mtp-aio-error-negative.json",
+      "evidence_sha256": "1478a0aa0393496d6209181598a4f7c28c965837c752f86205f7e3faa8d4854c",
+      "scope": "Patch0082: native waitEvents returns immediately with original errno when io_getevents fails; no negative-to-unsigned event-array iteration. Real host AIO/pipes/files + one-shot completion fault. EIO/EAGAIN old ASan stack overflow, fixed safe -1; EINTR real retry control; native/compat transport regression. Properties/logging substituted; no physical UDC/Windows, live transfer recovery or full cancel/reset."
+    },
+    {
+      "name": "MTP-AIO-completion-current",
+      "result": "pass",
+      "count": 3,
+      "evidence": "logs/mtp-aio-error-current.json",
+      "evidence_sha256": "91254061c4e2eabe2ea76573598897ae279789c1aec6ddc729d6223ec9ddb922",
+      "scope": "Patch0082: native waitEvents returns immediately with original errno when io_getevents fails; no negative-to-unsigned event-array iteration. Real host AIO/pipes/files + one-shot completion fault. EIO/EAGAIN old ASan stack overflow, fixed safe -1; EINTR real retry control; native/compat transport regression. Properties/logging substituted; no physical UDC/Windows, live transfer recovery or full cancel/reset."
+    },
+    {
+      "name": "MTP-AIO-completion-roundtrip",
+      "result": "pass",
+      "count": 1,
+      "evidence": "logs/mtp-aio-error-roundtrip.json",
+      "evidence_sha256": "671dce8ae9cc1beaac1b136b16a6cb478e95d6acaff8c055750088cfba540e21",
+      "scope": "Patch0082: native waitEvents returns immediately with original errno when io_getevents fails; no negative-to-unsigned event-array iteration. Real host AIO/pipes/files + one-shot completion fault. EIO/EAGAIN old ASan stack overflow, fixed safe -1; EINTR real retry control; native/compat transport regression. Properties/logging substituted; no physical UDC/Windows, live transfer recovery or full cancel/reset."
     }
   ],
   "source_review_followups": [
@@ -3630,8 +3654,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/mtp-staging-retry-delivery.json",
-    "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles.",
+    "evidence": "logs/mtp-aio-error-delivery.json",
+    "scope": "Patch0082: native waitEvents returns immediately with original errno when io_getevents fails; no negative-to-unsigned event-array iteration. Real host AIO/pipes/files + one-shot completion fault. EIO/EAGAIN old ASan stack overflow, fixed safe -1; EINTR real retry control; native/compat transport regression. Properties/logging substituted; no physical UDC/Windows, live transfer recovery or full cancel/reset.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -4368,5 +4392,12 @@
     "transfers": 48,
     "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles.",
     "limits": "Orphans remain hidden by exact path for storage lifetime; no deletion or ownership persistence across restart."
+  },
+  "mtp_aio_completion_error": {
+    "patch": "0082-mtp-aio-completion-error.patch",
+    "scope": "Patch0082: native waitEvents returns immediately with original errno when io_getevents fails; no negative-to-unsigned event-array iteration. Real host AIO/pipes/files + one-shot completion fault. EIO/EAGAIN old ASan stack overflow, fixed safe -1; EINTR real retry control; native/compat transport regression. Properties/logging substituted; no physical UDC/Windows, live transfer recovery or full cancel/reset.",
+    "old_overflows": 2,
+    "completed_checks": 3,
+    "regression": "logs/mtp-aio-error-roundtrip.json"
   }
 }

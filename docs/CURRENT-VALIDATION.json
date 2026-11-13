@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-staging-retry.img",
-  "image_sha256": "7924a46062a8f6d806cdb28ad62baccb376dcdf298c818601bca51784e2c2d29",
-  "production_sources": 799,
+  "image_name": "recovery-dijun-unified-mtp-aio-error.img",
+  "image_sha256": "1fc5068de7919da8b8069aa5a6a243145e2ef2bc2bbb7add367822cc5af33b3a",
+  "production_sources": 800,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -1006,12 +1006,36 @@
       "failures": 0,
       "local_report_sha256": "18dcc1e8ab5f365d2194c5a3604bd67d8585592a80705f66f1220f8c6e6cda99",
       "scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles."
+    },
+    {
+      "name": "MTP-AIO-completion-negative",
+      "status": "EXPECTED_FAILURE",
+      "cases": 3,
+      "failures": 2,
+      "local_report_sha256": "1478a0aa0393496d6209181598a4f7c28c965837c752f86205f7e3faa8d4854c",
+      "scope": "Patch0082: native waitEvents returns immediately with original errno when io_getevents fails; no negative-to-unsigned event-array iteration. Real host AIO/pipes/files + one-shot completion fault. EIO/EAGAIN old ASan stack overflow, fixed safe -1; EINTR real retry control; native/compat transport regression. Properties/logging substituted; no physical UDC/Windows, live transfer recovery or full cancel/reset."
+    },
+    {
+      "name": "MTP-AIO-completion-current",
+      "status": "PASS",
+      "cases": 3,
+      "failures": 0,
+      "local_report_sha256": "91254061c4e2eabe2ea76573598897ae279789c1aec6ddc729d6223ec9ddb922",
+      "scope": "Patch0082: native waitEvents returns immediately with original errno when io_getevents fails; no negative-to-unsigned event-array iteration. Real host AIO/pipes/files + one-shot completion fault. EIO/EAGAIN old ASan stack overflow, fixed safe -1; EINTR real retry control; native/compat transport regression. Properties/logging substituted; no physical UDC/Windows, live transfer recovery or full cancel/reset."
+    },
+    {
+      "name": "MTP-AIO-completion-roundtrip",
+      "status": "PASS",
+      "cases": 1,
+      "failures": 0,
+      "local_report_sha256": "671dce8ae9cc1beaac1b136b16a6cb478e95d6acaff8c055750088cfba540e21",
+      "scope": "Patch0082: native waitEvents returns immediately with original errno when io_getevents fails; no negative-to-unsigned event-array iteration. Real host AIO/pipes/files + one-shot completion fault. EIO/EAGAIN old ASan stack overflow, fixed safe -1; EINTR real retry control; native/compat transport regression. Properties/logging substituted; no physical UDC/Windows, live transfer recovery or full cancel/reset."
     }
   ],
   "refresh_stuck_investigation": "Unresolved. Original GUI tick/app loop reaches DONE with returning submit boundary; controlled submit wait postpones GUI ticks despite worker DONE. Does not prove field DRM hang. No production change/rebuild.",
   "current_batch_groups": [
     4
   ],
-  "current_batch_document": "docs/MTP-ATOMIC-UPLOAD.md#staging-retry",
-  "current_batch_groups_scope": "Patch0081 separates completed-handle reservation from exact-path orphan visibility. Failed unlink no longer blocks same-object overwrite; no prefix deletion/restart cleanup. Host production MTP, ordinary files/inotify/ASan/UBSan; USB peer/properties fixtures.116 object cases, old overwrite fails/new control passes,48 transfers. Clean build799 sources/six profiles."
+  "current_batch_document": "docs/MTP-CONTROL-ADAPTATION.md#bulk-completion-error",
+  "current_batch_groups_scope": "Patch0082: native waitEvents returns immediately with original errno when io_getevents fails; no negative-to-unsigned event-array iteration. Real host AIO/pipes/files + one-shot completion fault. EIO/EAGAIN old ASan stack overflow, fixed safe -1; EINTR real retry control; native/compat transport regression. Properties/logging substituted; no physical UDC/Windows, live transfer recovery or full cancel/reset."
 }

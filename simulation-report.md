@@ -6,9 +6,9 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-mtp-staging-retry.img` |
-| SHA-256 | `7924a46062a8f6d806cdb28ad62baccb376dcdf298c818601bca51784e2c2d29` |
-| 生产来源绑定 | 799 份 |
+| 文件 | `recovery-dijun-unified-mtp-aio-error.img` |
+| SHA-256 | `1fc5068de7919da8b8069aa5a6a243145e2ef2bc2bbb7add367822cc5af33b3a` |
+| 生产来源绑定 | 800 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
@@ -23,7 +23,11 @@ scratch保存后，在目标写入前/一块后/ordered块全写后及header提�
 
 实际 client Connect/query、server、SnapshotHandlerManager、ReadWorker 与 replace/zero MergeWorker 已接续八场景。真实COW压缩数据/零块读取、64 KiB合并内容与未改尾部逐字节核对，写入/同步故障均保持失败；容量查询和dm-user端点为明确替身。没有发现新增生产缺陷，不重编0080镜像。该检查点未包含COPY/XOR/RA；后续有序合并见上文，进程退出后的局部续合并见上文，硬件断电、内核映射和完整OTA仍待完成，见[范围](docs/OTA-OPERATION-COW.md#snapuserd-handler)。
 
-## 0081 交付时的定向验证
+## 0082 交付时的定向验证
+
+原生 bulk `waitEvents` 在完成队列报错时不再将 `-1` 转成数组循环上限。旧 EIO / EAGAIN 两项由 ASan 复现栈越界，修正后三项通过，含 EINTR 真实重试和内容检查；原生 / 兼容模式传输往返与故障回归通过。实际主机 AIO / 管道 / 普通文件配合单次完成错误注入，不是物理 FunctionFS / UDC 或完整取消复位验收。交付审计 `logs/mtp-aio-error-delivery.json` 通过；清理构建仅 MTP 库、构建属性和 ramdisk 摘要变化，未变证据复用。见[范围](docs/MTP-CONTROL-ADAPTATION.md#bulk-completion-error)。
+
+## 0081 交付时的定向验证（历史）
 
 上传失败且临时文件无法删除时，当前 handle 不再被遗留路径占用。覆盖 / 新建各连续两次失败后可成功上传，旧目标保持、两份遗留内容及用户同前缀文件均核对；116 项对象与 48 项移动 / 复制通过，旧覆盖对照失败、新建对照通过。清理构建相对 0080 仅改变 `libtwrpmtp-ffs.so`、构建属性和 ramdisk 摘要，六份 profile 保留；未变结果按原范围复用。交付审计 `logs/mtp-staging-retry-delivery.json` 通过。不是跨重启清理或 USB / Windows 验收，详见[范围](docs/MTP-ATOMIC-UPLOAD.md#staging-retry)。
 
@@ -35,6 +39,7 @@ scratch保存后，在目标写入前/一块后/ordered块全写后及header提�
 
 ## 本次候选包含的修正
 
+- **0082**：bulk 完成队列报错立即保留 errno 返回，避免负计数导致栈数组越界。
 - **0081**：分离当前传输 handle 与遗留临时路径，修正删除失败后无法再次覆盖同对象；保留精确路径隐藏，不按前缀删除文件。
 - **0080**：recv EOF 不再依赖 POLLHUP，解析器拒绝空命令，避免半关闭连接使服务端访问空 vector 崩溃。实际 ARM64 server八项 / 旧三项 SIGSEGV；清理构建798来源 / 六profile，交付核对通过。
 

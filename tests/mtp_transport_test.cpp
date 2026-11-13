@@ -8,6 +8,8 @@
 #include <iostream>
 #include <string>
 #include <sys/stat.h>
+#include <poll.h>
+#include <asyncio/AsyncIO.h>
 #include <type_traits>
 #include <vector>
 #include <unistd.h>
@@ -16,6 +18,17 @@
 #include "MtpFfsHandle.h"
 #include "MtpFfsCompatHandle.h"
 
+static aio_context_t fault_context = 0;
+static std::atomic<int> getevents_fault{0};
+static std::atomic<int> getevents_calls{0};
+extern "C" int __real_io_getevents(aio_context_t,long,long,io_event*,timespec*);
+extern "C" int __wrap_io_getevents(aio_context_t ctx,long min,long max,io_event* events,timespec* timeout) {
+    if (ctx == fault_context) {
+        ++getevents_calls;
+        if (const int error = getevents_fault.exchange(0)) { errno = error; return -1; }
+    }
+    return __real_io_getevents(ctx,min,max,events,timeout);
+}
 static int fault_fd = -1;
 static bool short_write = false;
 static std::atomic<int> full_file_fd{-1};
@@ -116,6 +129,26 @@ public:
         }
         std::cout << "PASS: bulk and file roundtrip, offsets, header, empty file, bad source, ENOSPC" << std::endl;
     }
+    void completion_error(const std::string& mode) {
+        fault_context = handle.mCtx;
+        getevents_calls = 0;
+        getevents_fault = mode == "completion-eintr" ? EINTR :
+                          mode == "completion-eagain" ? EAGAIN : EIO;
+        const int expected_error = getevents_fault;
+        const int result = handle.write("abcdefg", 7);
+        if (mode == "completion-eintr") {
+            require(result == 7 && getevents_calls >= 2, "completion EINTR retries");
+            char data[7];
+            require(::read(bulk_in,data,7)==7 && memcmp(data,"abcdefg",7)==0, "retry content");
+        } else {
+            require(result == -1 && errno == expected_error, "completion error preserved");
+        }
+        // close destroys the AIO context before releasing its request buffers.
+        // No claim of continued traffic after an unconsumed completion error.
+        handle.close();
+        fault_context = 0;
+        std::cout << "PASS: " << mode << " calls=" << getevents_calls << " result=" << result << std::endl;
+    }
     void disconnected() {
         bulk_out.reset();
         char byte = 0;
@@ -144,7 +177,11 @@ template<class T> void run(const std::string& prefix) {
     { android::MtpFfsHandleTest<T> test; test.bad_start(true); }
 }
 int main(int argc, char** argv) {
-    require(argc == 2, "fixture directory argument");
+    require(argc == 2 || argc == 3, "fixture directory argument");
+    if (argc == 3) {
+        android::MtpFfsHandleTest<android::MtpFfsHandle> test;
+        test.descriptors(false); test.completion_error(argv[2]); return 0;
+    }
     signal(SIGPIPE, SIG_IGN);
     run<android::MtpFfsHandle>(std::string(argv[1]) + "/native-file");
     run<android::MtpFfsCompatHandle>(std::string(argv[1]) + "/compat-file");
