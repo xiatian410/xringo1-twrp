@@ -450,11 +450,15 @@
         {
           "file": "0069-snapshot-state-sync-errors.patch",
           "sha256": "e40deb1c47d7b7ec2d2461ac4f9d8b2cab9fbb1cdfaa56752bebce2685a30536"
+        },
+        {
+          "file": "0078-snapshot-cancel-cleanup-errors.patch",
+          "sha256": "e258154722f5dea41e8520431956308363bed4aeb28fd8de1fbc9500a0dac378"
         }
       ],
       "result_files": {
         "fs_mgr/libsnapshot/utility.cpp": "744f52f9c8ee2f13b097fb3f72b23e731801a6513790db789bda19d0639cc351",
-        "fs_mgr/libsnapshot/snapshot.cpp": "4918ef117d71be77ac27e9c60f9f4655201c3dfcc6ca304dc5bd28b7362d3ebb"
+        "fs_mgr/libsnapshot/snapshot.cpp": "99752c6d274c3ee8594fc19fb543b2c0cfcb3eb98f50cb8c22c949245a6f275c"
       }
     }
   }

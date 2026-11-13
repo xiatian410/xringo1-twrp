@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. New candidate not hardware tested.",
-  "image": "imgs/built/recovery-dijun-unified-cli-fifo.img",
-  "image_sha256": "dcfa299609bd178ac048e8bcc968fb4c4ee17225e8720804e87d7ee7403c4c48",
-  "image_status": "Clean-built patch0077: CLI output FIFO handshake/writes nonblocking, pending request expires after5s and resets on restart; length-bounded command input.793 sources/six profiles; field refresh root cause and full adaptation remain open.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-snapshot-cancel.img",
+  "image_sha256": "9f9ff19483402f3c4b4081ea79e966d2791605492678c52a1d6676b80c0345df",
+  "image_status": "Clean installclean + make -j$(nproc) build; patch0078 cancellation cleanup failures propagate. 794 production source bindings / six profiles; full goal in progress.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -3155,6 +3155,38 @@
       "evidence": "logs/f2fs-readback.json",
       "evidence_sha256": "49c9ad158c4984310bd598a0b98f369cf9836ed2d78547e02d1dfb255d089e3a",
       "scope": "Read ARM64-created F2FS files through a separately packaged host reader.\n\nCurrent-image make_f2fs/sload_f2fs run via pinned QEMU/linker in a private chroot.\nDebian amd64 dump.f2fs reads ordinary image files; compare every exported byte\nand require unchanged image SHA. Not a mount, fscrypt, full Recovery caller/GUI,\nmetadata fidelity, sparse allocation, compressed filesystem or power-loss test.\n"
+    },
+    {
+      "name": "snapshot-cancel-0078",
+      "result": "pass",
+      "count": 10,
+      "evidence": "logs/ota-snapshot-cancel.json",
+      "evidence_sha256": "9fa0336f25e5ca4bab884c8590b1ee35d0b94b18734eb77a07586a3ec71513c8",
+      "scope": "Actual ARM64 SnapshotManager CancelUpdate / cleanup / state-file error propagation, including original DynamicPartitionControlAndroid ResetUpdate and persisted-state retry. Deny-all hardware and no snapshot mappings; None-state publication and Initiated missing-directory cases. Metadata mount token and merge HAL result are explicit boundaries. Not full install, merge or image deletion."
+    },
+    {
+      "name": "snapshot-cancel-before-0078",
+      "result": "expected-failure",
+      "count": 10,
+      "evidence": "logs/ota-snapshot-cancel-before.json",
+      "evidence_sha256": "c1ea2bb99543582d4787a90f60bdd9d1722259712d61f91b1c4acdc108ee3e46",
+      "scope": "Actual ARM64 SnapshotManager CancelUpdate / cleanup / state-file error propagation, including original DynamicPartitionControlAndroid ResetUpdate and persisted-state retry. Deny-all hardware and no snapshot mappings; None-state publication and Initiated missing-directory cases. Metadata mount token and merge HAL result are explicit boundaries. Not full install, merge or image deletion."
+    },
+    {
+      "name": "snapshot-cancel-completion-regression",
+      "result": "pass",
+      "count": 16,
+      "evidence": "logs/ota-snapshot-cancel-finish-regression.json",
+      "evidence_sha256": "a00d82fa975458de081df110eb56f81fb1e0cb72e0193ec45db625967a734434",
+      "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n"
+    },
+    {
+      "name": "snapshot-cancel-postinstall-regression",
+      "result": "pass",
+      "count": 6,
+      "evidence": "logs/ota-snapshot-cancel-postinstall-regression.json",
+      "evidence_sha256": "67904e68a6ab55a7d46886870ba516245019f2c304e7d88c6085c3293371b950",
+      "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries."
     }
   ],
   "source_review_followups": [
@@ -3367,7 +3399,7 @@
   "partition_operation_paths": {
     "status": "software_fix_built_hardware_unverified",
     "patch": "dtsrc/O1_asic_dual/patches/0029-nested-partition-operations.patch",
-    "documentation": "docs/PARTITION-ACTIONS.md#嵌套分区操作路径",
+    "documentation": "docs/PARTITION-ACTIONS.md#\u5d4c\u5957\u5206\u533a\u64cd\u4f5c\u8def\u5f84",
     "scope": "Real manager routing methods, private partition doubles, no real filesystem tools, wipes, mounts or device access. Nested paths,system alias,subpartition failure propagation and cache fallback result. Underlying WipeDataCache removal error checking remains incomplete."
   },
   "filesystem_tools": {
@@ -3470,8 +3502,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/cli-fifo-delivery.json",
-    "scope": "Patch0077; CLI FIFO handshake/read/output nonblocking; pending timeout5s/restart; twelve original listener cases, old seven failures. Clean build793 sources/six profiles. No complete CLI/GUI or field-refresh root cause proof.",
+    "evidence": "logs/snapshot-cancel-delivery.json",
+    "scope": "Patch0078 propagates RemoveAllUpdateState failure through CancelUpdate and original ResetUpdate. Actual ARM64 cancellation10, old6 false-success cases; completion16/postinstall6 regressions. Clean build794 sources/six profiles. No real mappings, snapshot deletion, merge or full OTA.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -3821,7 +3853,7 @@
       "decision": "Do not change mapping gate based on isolated MapAllPartitions failure; actual verifier/factory gate on compression mode. Real SnapshotManager integration remains open."
     },
     "snapshot_state_publication": {
-      "document": "docs/OTA-OPERATION-COW.md#快照状态文件同步失败0069",
+      "document": "docs/OTA-OPERATION-COW.md#\u5feb\u7167\u72b6\u6001\u6587\u4ef6\u540c\u6b65\u5931\u8d250069",
       "report": "logs/ota-snapshot-finish.json",
       "report_sha256": "3fcf7d0314531b7b1e843146d242e2b498953c48844824f654466ce5861fb627",
       "before": "logs/ota-snapshot-finish-before.json",
@@ -3836,7 +3868,7 @@
       "old_missing_eintr_retries": 2
     },
     "snapshot_postinstall_retry": {
-      "document": "docs/OTA-OPERATION-COW.md#实际收尾调用链与失败后重试",
+      "document": "docs/OTA-OPERATION-COW.md#\u5b9e\u9645\u6536\u5c3e\u8c03\u7528\u94fe\u4e0e\u5931\u8d25\u540e\u91cd\u8bd5",
       "report": "logs/ota-snapshot-postinstall.json",
       "report_sha256": "70fc597e733529af2f5360a364dd8797d3986f80d8e964b1e277205752088bda",
       "review": "logs/ota-snapshot-postinstall-review.json",
@@ -3849,7 +3881,7 @@
       "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries."
     },
     "postinstall_program_lifecycle": {
-      "document": "docs/OTA-OPERATION-COW.md#postinstall-程序退出与取消接续",
+      "document": "docs/OTA-OPERATION-COW.md#postinstall-\u7a0b\u5e8f\u9000\u51fa\u4e0e\u53d6\u6d88\u63a5\u7eed",
       "report": "logs/ota-postinstall-program.json",
       "review": "logs/ota-postinstall-program-review.json",
       "report_sha256": "35f7052678683909ebfc552cf4ec99e2ba1b2d9f648d39d41082fc630b816730",
@@ -3908,7 +3940,7 @@
       "scope": "Actual ARM64 postinstall program and original PostinstallRunnerAction/Subprocess.\n\nPrivate chroot, real clone/pipes/signalfd/wait and harmless dynamic ARM64 child.\nExplicit execv QEMU bridge preserves script argv; mounts/readonly/boot/hardware\nare recorded fixtures. No devices, actual OTA scripts, snapshots or full OTA.\n"
     },
     "stock_postinstall_recovery_guard": {
-      "document": "docs/OTA-OPERATION-COW.md#os4-原厂脚本的-recovery-退出条件",
+      "document": "docs/OTA-OPERATION-COW.md#os4-\u539f\u5382\u811a\u672c\u7684-recovery-\u9000\u51fa\u6761\u4ef6",
       "report": "logs/ota-stock-postinstall.json",
       "review": "logs/ota-stock-postinstall-review.json",
       "report_sha256": "a2d10e5199d6ba70b785a1cbec677a38a55c2fd682ddad7af3d2a7de8e53a8f7",
@@ -3920,6 +3952,19 @@
       "full_ota_install": false,
       "scope": "Execute exact OS4 otapreopt scripts with delivered ARM64 shell and getprop.\n\nPrivate ordinary-file chroot only. Native static command adapters explicitly\nbridge shell exec to packaged getprop through QEMU, or supply named property\nfixtures. ART/pm calls are rejected and recorded; no real Android property area,\nBinder, mounts, original dexopt execution or complete OTA integration.\n",
       "decision": "Keep stock dev.bootcomplete guard; do not add ART service or rewrite script because Recovery lacks Android framework."
+    },
+    "snapshot_cancellation": {
+      "document": "docs/OTA-OPERATION-COW.md#snapshot-cancel",
+      "patch": "0078-snapshot-cancel-cleanup-errors.patch",
+      "report": "logs/ota-snapshot-cancel.json",
+      "before": "logs/ota-snapshot-cancel-before.json",
+      "cases": 10,
+      "old_false_successes": 6,
+      "actual_reset_update": true,
+      "actual_mapping": false,
+      "actual_snapshot_deletion": false,
+      "full_ota_install": false,
+      "transaction_rollback": false
     }
   },
   "os4_haptics_user_confirmation": {

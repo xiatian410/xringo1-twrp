@@ -14,7 +14,7 @@
 ## 优先事项
 
 1. **容量刷新页面停留**：已有现场日志显示后台约 5.15 秒完成，但界面没有结束，根因仍未定位。0070 / 0072 已修正日志窗口与页面生命周期，0077 已修正 CLI FIFO 阻塞；现场尚未证明这些路径参与故障，不据此认定已修复。已有结果保持，不要求重复触发采集。下一步仅针对能解释后台完成与界面停留之间差异的新证据推进。见 [调查记录](REFRESH-STUCK-INVESTIGATION.md)。
-2. **OTA / A/B 快照生命周期**：两份完整原厂 OS4 payload 已由实际 ARM64 DeltaPerformer、静态 / VABC writer 与最终校验器执行；分区映射仍为普通文件替身。0069 已修正实际 SnapshotManager 状态文件同步失败误成功，后续接续原始 PostinstallRunnerAction、控制器重建与持久状态重试。原厂 otapreopt 的 Recovery 退出条件已有独立执行证据。下一边界是实际映射 / 取消 / 合并，以及 payload 到 SnapshotManager 收尾的完整接续；不重复完整 payload、解析、格式或退出条件检查。详见 [OTA 实现与证据](OTA-OPERATION-COW.md)。本地尚未完成的修改不列为交付。
+2. **OTA / A/B 快照生命周期**：两份完整原厂 OS4 payload 已由实际 ARM64 DeltaPerformer、静态 / VABC writer 与最终校验器执行；分区映射仍为普通文件替身。0069 已修正实际 SnapshotManager 状态文件同步失败误成功，后续接续原始 PostinstallRunnerAction、控制器重建与持久状态重试。原厂 otapreopt 的 Recovery 退出条件已有独立执行证据。下一边界是实际映射 / 取消 / 合并，以及 payload 到 SnapshotManager 收尾的完整接续；不重复完整 payload、解析、格式或退出条件检查。详见 [OTA 实现与证据](OTA-OPERATION-COW.md)。0078 已修正取消清理失败仍报告成功，实际 ARM64 取消十项及相关收尾 / postinstall 回归通过，清理构建794来源 / 六profile；下一步不重复取消状态文件检查，仍聚焦实际映射 / 删除 / 合并接续，见[取消错误传播](OTA-OPERATION-COW.md#snapshot-cancel)。
 3. **文件系统完整生命周期**：0073～0076 的清除失败传播、媒体排除语义、Dalvik / 内部存储与转换分派已维护。实际 ARM64 ext4 / F2FS 工具已接 manager / backend；F2FS 六份文件的独立内容读回及破坏对照已完成。下一边界是完整挂载 / GUI / 加密与 I/O 故障收尾，不重复已通过的命令和内容检查。见 [文件系统说明](FILESYSTEM-TOOLS-EXECUTION.md)。
 4. **其他具体缺陷**：触摸自动启动、安全服务、多用户、备份恢复和 USB 集成按下表剩余边界及新证据排序。扩大范围不等于启动全量审计；每批明确实现决定和结束条件。
 

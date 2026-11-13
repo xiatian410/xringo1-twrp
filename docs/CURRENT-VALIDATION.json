@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-cli-fifo.img",
-  "image_sha256": "dcfa299609bd178ac048e8bcc968fb4c4ee17225e8720804e87d7ee7403c4c48",
-  "production_sources": 793,
+  "image_name": "recovery-dijun-unified-snapshot-cancel.img",
+  "image_sha256": "9f9ff19483402f3c4b4081ea79e966d2791605492678c52a1d6676b80c0345df",
+  "production_sources": 794,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "checks": [
@@ -830,12 +830,44 @@
       "failures": 0,
       "local_report_sha256": "49c9ad158c4984310bd598a0b98f369cf9836ed2d78547e02d1dfb255d089e3a",
       "scope": "Read ARM64-created F2FS files through a separately packaged host reader.\n\nCurrent-image make_f2fs/sload_f2fs run via pinned QEMU/linker in a private chroot.\nDebian amd64 dump.f2fs reads ordinary image files; compare every exported byte\nand require unchanged image SHA. Not a mount, fscrypt, full Recovery caller/GUI,\nmetadata fidelity, sparse allocation, compressed filesystem or power-loss test.\n"
+    },
+    {
+      "name": "snapshot-cancel-0078",
+      "status": "PASS",
+      "cases": 10,
+      "failures": 0,
+      "local_report_sha256": "9fa0336f25e5ca4bab884c8590b1ee35d0b94b18734eb77a07586a3ec71513c8",
+      "scope": "Actual ARM64 SnapshotManager CancelUpdate / cleanup / state-file error propagation, including original DynamicPartitionControlAndroid ResetUpdate and persisted-state retry. Deny-all hardware and no snapshot mappings; None-state publication and Initiated missing-directory cases. Metadata mount token and merge HAL result are explicit boundaries. Not full install, merge or image deletion."
+    },
+    {
+      "name": "snapshot-cancel-before-0078",
+      "status": "FAIL",
+      "cases": 10,
+      "failures": 6,
+      "local_report_sha256": "c1ea2bb99543582d4787a90f60bdd9d1722259712d61f91b1c4acdc108ee3e46",
+      "scope": "Actual ARM64 SnapshotManager CancelUpdate / cleanup / state-file error propagation, including original DynamicPartitionControlAndroid ResetUpdate and persisted-state retry. Deny-all hardware and no snapshot mappings; None-state publication and Initiated missing-directory cases. Metadata mount token and merge HAL result are explicit boundaries. Not full install, merge or image deletion."
+    },
+    {
+      "name": "snapshot-cancel-completion-regression",
+      "status": "PASS",
+      "cases": 16,
+      "failures": 0,
+      "local_report_sha256": "a00d82fa975458de081df110eb56f81fb1e0cb72e0193ec45db625967a734434",
+      "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n"
+    },
+    {
+      "name": "snapshot-cancel-postinstall-regression",
+      "status": "PASS",
+      "cases": 6,
+      "failures": 0,
+      "local_report_sha256": "67904e68a6ab55a7d46886870ba516245019f2c304e7d88c6085c3293371b950",
+      "scope": "Run original ARM64 SnapshotManager completion on private metadata files.\n\nActual protobuf, directory locks, indicator updates and atomic helper execute.\nDevice mapping, partition access, image management and slot effects are denied;\nboot merge status is a recorded result boundary. fsync can fail for one file.\nNo snapshot data writing, real metadata mount, merge, reboot or full OTA.\n\nOriginal PostinstallRunnerAction -> DynamicPartitionControlAndroid -> actual SnapshotManager completion and persistent-state retry. Synthetic plan skips scripts; metadata mount token, merge HAL, boot slot and hardware remain boundaries."
     }
   ],
   "refresh_stuck_investigation": "Unresolved: user log refresh ended successfully; presentation/terminal-state observation pending. No fix claim.",
   "current_batch_groups": [
-    6
+    12
   ],
-  "current_batch_document": "docs/FILESYSTEM-TOOLS-EXECUTION.md",
-  "current_batch_groups_scope": "Requested-format conversion dispatch/fallback/state only; formatter command execution and device/mount metadata are fixtures. Whole goal unrestricted, actual conversion lifecycle pending."
+  "current_batch_document": "docs/OTA-OPERATION-COW.md#snapshot-cancel",
+  "current_batch_groups_scope": "SnapshotManager cancellation cleanup failure propagation through CancelUpdate and original ResetUpdate. No real mapping, image deletion, merge or complete OTA."
 }

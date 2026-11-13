@@ -6,14 +6,16 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-cli-fifo.img` |
-| SHA-256 | `dcfa299609bd178ac048e8bcc968fb4c4ee17225e8720804e87d7ee7403c4c48` |
-| 生产来源绑定 | 793 份 |
+| 文件 | `recovery-dijun-unified-snapshot-cancel.img` |
+| SHA-256 | `9f9ff19483402f3c4b4081ea79e966d2791605492678c52a1d6676b80c0345df` |
+| 生产来源绑定 | 794 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
 ## 本次候选包含的修正
+
+- **0078**：快照必要清理失败向 CancelUpdate / 原始 ResetUpdate 返回失败，防止取消误成功。实际 ARM64 十场景通过、旧六场景误成功；共享代码收尾十六项 / postinstall 六项回归通过，清理构建794来源 / 六profile。实际映射、快照删除与合并仍未覆盖，不表示完整 OTA。见[范围](docs/OTA-OPERATION-COW.md#snapshot-cancel)。
 
 - **0077**：CLI 输出 FIFO 握手与写入不再阻塞 GUI；读取端缺失时保留请求最多五秒，超时不执行并重建监听；按实际输入长度终止命令，重启监听清除旧请求。12 场景通过、旧七场景失败，清理构建 793 来源 / 六 profile。只有 Recovery 主程序、构建属性与 ramdisk 摘要相对0076改变；GUI库、工具worker、容量计算及profile字节不变。现场刷新根因未证明，见[边界](docs/REFRESH-STUCK-INVESTIGATION.md#cli-fifo)。
 

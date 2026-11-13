@@ -1,0 +1,16 @@
+diff --git a/fs_mgr/libsnapshot/snapshot.cpp b/fs_mgr/libsnapshot/snapshot.cpp
+index ca9390d..20ad51c 100644
+--- a/fs_mgr/libsnapshot/snapshot.cpp
++++ b/fs_mgr/libsnapshot/snapshot.cpp
+@@ -254,7 +254,10 @@ CancelResult SnapshotManager::TryCancelUpdate() {
+     switch (result) {
+         case CancelResult::OK:
+             LOG(INFO) << "Cancelling update from state: " << state;
+-            RemoveAllUpdateState(lock.get());
++            if (!RemoveAllUpdateState(lock.get())) {
++                LOG(ERROR) << "Failed to remove update state; cancellation incomplete.";
++                return CancelResult::ERROR;
++            }
+             RemoveInvalidSnapshots(lock.get());
+             break;
+         case CancelResult::NEEDS_MERGE:

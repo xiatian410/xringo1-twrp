@@ -305,3 +305,33 @@ python3 scripts/review_stock_postinstall.py
 exec 命令 adapter 为私有编译的静态主机程序，显式将 shell 对 getprop 的 exec 转为 QEMU 加载候选 toolbox，或提供上述属性夹具；它不是 Android 属性服务。原厂脚本字节保持不变，不发布到仓库。报告 `logs/ota-stock-postinstall.json` 与 `logs/ota-stock-postinstall-review.json` 绑定输入、镜像内库、shell / toolbox、QEMU 和工具摘要。
 
 **维护决定：** 没有依据因 Recovery 缺 ART/Binder 就补入这些系统服务或修改原厂脚本，保留原退出逻辑。本批仅新增证据，沿用 snapshot-sync / 784 来源，无新构建。此执行尚未从真实挂载点由原 PostinstallRunnerAction 启动，不证明真实属性区、SELinux、mount namespace、原厂 ART 分支、完整 payload 或快照合并通过；前节的子进程测试与本节脚本执行不冒充已贯通。
+
+<a id="snapshot-cancel"></a>
+
+## 快照取消清理失败传播（0078）
+
+`SnapshotManager::TryCancelUpdate()` 原先忽略 `RemoveAllUpdateState()` 的布尔结果，清理快照目录、写入状态文件或更新 merge HAL 失败后，仍返回 `CancelResult::OK`。因此 `CancelUpdate()` 可以误报成功，原始 `DynamicPartitionControlAndroid::ResetUpdate()` 的取消失败门控也失效。安装准备在 metadata 已挂载时要求取消成功，以免残留快照覆盖后续分区写入；这使错误传播具有实际调用意义。
+
+0078 在必要清理返回失败时立即返回 `CancelResult::ERROR`，保留错误状态给调用方。没有改变 Recovery 对取消安全状态的既有覆盖策略，也没有把原实现明确允许失败的辅助 marker 删除改为强制成功。清理可能已经部分完成：例如状态文件发布后 merge HAL 失败仍应返回失败；这不是事务回滚保证。
+
+### 执行与结束条件
+
+实际 AArch64 `SnapshotManager`、protobuf、锁、状态文件原子发布，以及 `ResetUpdate → ResetUpdateProgress → CancelUpdate` 在私有 chroot 普通文件上执行。十个场景覆盖正常 / metadata 缺失 / 快照目录缺失 / 状态临时文件打开失败 / fsync EIO / EINTR / merge HAL 失败及原始 ResetUpdate 成功与两种写入失败。可恢复故障解除后重新创建 manager 或控制器，验证持久状态重试。
+
+- 新构建十项通过；相同夹具执行完整旧 snapshot.cpp 时六项失败，均实际观察到 `cancelled=1 expected=0`。
+- 共享 snapshot.cpp 与测试驱动变化相关的收尾十六项、PostinstallRunnerAction 接续六项通过；检查通过后不扩增等价场景。
+- 设备 mapper、分区 opener 和 image manager 调用均拒绝。多数取消输入是 None 状态以覆盖状态发布；Initiated 输入仅执行缺失快照目录失败，不证明实际快照删除。
+- metadata 挂载 token 和 merge HAL 返回是明确替身；没有实际映射、合并、切槽、断电或完整 OTA 安装。两份原厂完整 payload 的未变 update_engine 源码证据复用，不重新执行。
+
+复现需要完整工作区、当前 Android 编译 archive 和固定 QEMU：
+
+```bash
+python3 tests/ota_snapshot_finish.py --cancel
+python3 tests/ota_snapshot_finish.py --report logs/ota-snapshot-cancel-finish-regression.json
+python3 tests/ota_snapshot_finish.py --postinstall --report logs/ota-snapshot-cancel-postinstall-regression.json
+python3 scripts/audit_snapshot_cancel_delivery.py
+```
+
+旧源码对照使用 `--cancel --snapshot-source logs/snapshot-cancel-before/snapshot.cpp --report logs/ota-snapshot-cancel-before.json`，预期六项失败。原始报告、旧源码和编译产物仅保存在本地。
+
+候选 `recovery-dijun-unified-snapshot-cancel.img`，SHA-256 `9f9ff19483402f3c4b4081ea79e966d2791605492678c52a1d6676b80c0345df`。已执行 `installclean` 和 `make -j$(nproc)`（30 并发），794 份生产来源 / 六份 profile。相对0077只有 init、fastbootd、Recovery、update_engine_sideload 四个可执行文件及构建属性 / ramdisk 摘要变化；profile 和 GUI 库不变。当前交付统一见[验证报告](../simulation-report.md)。
