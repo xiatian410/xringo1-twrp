@@ -16,10 +16,12 @@ from nested_partition_path_test import ROOT, SRC, method
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--before', action='store_true')
+    ap.add_argument('--backend-source', type=Path)
+    ap.add_argument('--report', type=Path)
     args = ap.parse_args()
     base = ROOT / 'logs/slot-result-before' if args.before else SRC
     manager = base / 'partitionmanager.cpp'
-    backend = base / 'gui2/backend/twrp_reboot_backend.cpp'
+    backend = args.backend_source or base / 'gui2/backend/twrp_reboot_backend.cpp'
     gui = base / 'gui2/gui2.cpp'
     signature = ('void' if args.before else 'bool') + ' TWPartitionManager::SetActiveSlot('
     methods = method(manager.read_text(), signature)
@@ -38,6 +40,7 @@ def main():
 #define LOGERR(...) ((void)0)
 #define LOGINFO(...) ((void)0)
 static bool service_ok=true,hal_ok=true,processed=true,slots=true;
+static bool vendor_present=true,normal_unmount=true,lazy_unmount=true;
 static int hal_calls=0,publishes=0,updates=0,end_status=-1,starts=0,unmounts=0,errors=0,navigations=0,requests=0;
 static std::string published;
 namespace gui2_console {template<class... T>void log_error(T...){++errors;}}
@@ -51,8 +54,8 @@ struct TWPartitionManager {
  // DECLARATION
  bool FstabProcessed(){return processed;}
  void UpdateSystemDetails(){++updates;}
- bool FindPartitionByPath(const char*){return true;}
- bool UnmountByPath(const char*,bool,int=0){++unmounts;return true;}
+ bool FindPartitionByPath(const char*){return vendor_present;}
+ bool UnmountByPath(const char*,bool,int flags=0){++unmounts;return flags==MNT_DETACH?lazy_unmount:normal_unmount;}
 } PartitionManager;
 namespace gui2_backend {
 enum class boot_slot {A,B};enum class reboot_target {SYSTEM};
@@ -79,7 +82,10 @@ int main(int argc,char**argv){
  hal_ok=name.find("hal-fail")==std::string::npos;
  if(name=="initial") {PartitionManager.active_slot_display_.clear();processed=false;}
  if(name=="unsupported")slots=false;
- const bool expected_failure=!service_ok||!hal_ok||name=="invalid"||name=="unsupported";
+ if(name.find("detach")!=std::string::npos)normal_unmount=false;
+ if(name.find("detach-fail")!=std::string::npos)lazy_unmount=false;
+ if(name=="backend-no-vendor")vendor_present=false;
+ const bool expected_failure=!service_ok||!hal_ok||name=="invalid"||name=="unsupported"||!lazy_unmount;
  if(name.starts_with("backup-")){
   backup_set_slot(gui2_backend::boot_slot::B);
   if(expected_failure)assert(errors>0&&navigations==0&&page_state.backup_name=="keep-name"&&page_state.backup_active_tab==0);
@@ -88,14 +94,16 @@ int main(int argc,char**argv){
   gui2_pages::reboot_page_state state;reboot_confirmation_complete(&state);
   if(expected_failure)assert(state.has_error&&state.slot_pending&&!reboot_requested&&requests==0&&navigations==1);
   else assert(!state.has_error&&!state.slot_pending&&reboot_requested&&requests==1);
- }else if(name=="backend-hal-fail"||name=="unsupported"){
-  result=reboot->set_active_slot(gui2_backend::boot_slot::B);assert(!result);
-  if(name=="unsupported")assert(starts==0&&unmounts==0);else assert(end_status==1);
+ }else if(name.starts_with("backend-")||name=="unsupported"){
+  result=reboot->set_active_slot(gui2_backend::boot_slot::B);assert(result==!expected_failure);
+  if(name=="unsupported")assert(starts==0&&unmounts==0);else assert(end_status==(expected_failure?1:0));
  }else {
   const std::string slot=name=="same"?"A":name=="invalid"?"C":"B";
   result=invoke([&]{return PartitionManager.SetActiveSlot(slot);});
   if(expected_failure)assert(!result);else assert(result);
  }
+ if(!normal_unmount)assert(unmounts==2);
+ if(!lazy_unmount)assert(hal_calls==0&&end_status==1);
  if(expected_failure)assert(PartitionManager.active_slot_display_=="A"&&publishes==0&&updates==0);
  else if(name=="same")assert(hal_calls==0&&publishes==0&&updates==0);
  else if(name=="initial")assert(PartitionManager.active_slot_display_=="B"&&hal_calls==0&&publishes==0&&updates==0);
@@ -105,7 +113,9 @@ int main(int argc,char**argv){
 '''
     code = code.replace('// DECLARATION', ('void' if args.before else 'bool') + ' SetActiveSlot(const std::string&);').replace('// METHODS', methods)
     names = ['success','same','initial','invalid','no-service','hal-fail','backend-hal-fail','unsupported',
-             'backup-success','backup-no-service','backup-hal-fail','reboot-success','reboot-no-service','reboot-hal-fail']
+             'backup-success','backup-no-service','backup-hal-fail','reboot-success','reboot-no-service','reboot-hal-fail',
+             'backend-detach','backend-detach-fail','backend-no-vendor',
+             'backup-detach','backup-detach-fail','reboot-detach','reboot-detach-fail']
     rows = []
     with tempfile.TemporaryDirectory(prefix='slot-result-') as temp:
         w = Path(temp); (w/'test.cpp').write_text(code)
@@ -119,7 +129,7 @@ int main(int argc,char**argv){
     paths = [manager,backend,gui,Path(__file__),ROOT/'tests/nested_partition_path_test.py',SRC/'twrp_operation_executor.h',SRC/'twrp_operation_executor.cpp',base/'partitions.hpp']
     report = dict(status='PASS' if all(c['status']=='PASS' for c in rows) else 'FAIL',scope=__doc__,cases=rows,
                   sources={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths})
-    (ROOT/('logs/slot-result-negative.json' if args.before else 'logs/slot-result.json')).write_text(json.dumps(report,indent=2)+'\n')
+    (args.report or ROOT/('logs/slot-result-negative.json' if args.before else 'logs/slot-result.json')).write_text(json.dumps(report,indent=2)+'\n')
     return report['status']!='PASS'
 
 

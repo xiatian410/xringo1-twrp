@@ -1,0 +1,15 @@
+--- a/gui2/backend/twrp_reboot_backend.cpp
++++ b/gui2/backend/twrp_reboot_backend.cpp
+@@ -53,7 +53,11 @@
+       // PartitionManager failed to unmount /vendor, this should not happen,
+       // but in case it does, do a lazy unmount
+       LOGINFO("WARNING: vendor partition could not be unmounted normally!\n");
+-      PartitionManager.UnmountByPath("/vendor", false, MNT_DETACH);
++      if (!PartitionManager.UnmountByPath("/vendor", false, MNT_DETACH)) {
++        LOGERR("Unable to unmount vendor before switching boot slots\n");
++        operation_end(1);
++        return false;
++      }
+     }
+   }
+   const bool success = PartitionManager.SetActiveSlot(arg);

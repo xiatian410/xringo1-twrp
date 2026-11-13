@@ -370,6 +370,10 @@
         {
           "file": "0101-slot-hal-failure-propagation.patch",
           "sha256": "c6b80225239a4fc1832c98abfbcbc00db11999107d80cc24b072d05469ad0f04"
+        },
+        {
+          "file": "0102-slot-vendor-unmount-failure.patch",
+          "sha256": "f2e3e5c9c7e8cd79644100d2cc10e873b77bc3958538adf8cc4306471a14db17"
         }
       ],
       "result_files": {
@@ -465,7 +469,7 @@
         "openrecoveryscript.cpp": "a9b5d99e2af4266b50ceae67a487ef40fb97e7422b2015e76873f1dff0027134",
         "gui2/backend/reboot_backend.h": "49c74edd83b63ee28fc70e34ba58268df9107bc379ab9e65f2e662f3303b109d",
         "gui2/backend/twrp_reboot_backend.h": "4c6767ff062d6b0885d0b9c9bff626fdf29ddb73b1d47ce1eff135d2bb0d925a",
-        "gui2/backend/twrp_reboot_backend.cpp": "7fcea956c1dcc366b4b05d39857dd533eca77b2379825946024d51c82631754f",
+        "gui2/backend/twrp_reboot_backend.cpp": "e770e730da8d83ef7ad7db7562fb74c7ef9384c6a5009d32eaa74ee96de582e1",
         "gui2/backend/twrp_wipe_backend.cpp": "0cfc499ccf3e0296bbdc028eedb8e43c5f1b722edbd43a380a1106311c6c0e73",
         "gui2/backend/twrp_tools_backend.cpp": "52dfe873375bf6fb9726337872b9b6b629fd6b81193638b26d683f79401ad3a8",
         "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a",

@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-slot-result.img` |
-| SHA-256 | `2df5dfba265081c91564d283389dd4dce21cd9939cf59f529f905feafce4c0d6` |
-| 生产来源绑定 | 826 份 |
+| 文件 | `recovery-dijun-unified-slot-unmount.img` |
+| SHA-256 | `ebf73e3dc5ae11e7263c4518ab2a872f8274e896a9ab5252a38f448660c954f2` |
+| 生产来源绑定 | 827 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：槽位切换失败返回
+## 本批生产修正：槽位切换前的 Vendor 卸载失败
+
+0102在Vendor普通卸载和MNT_DETACH都失败时结束操作并返回false，不再调用Boot HAL或发布新槽位。沿用0101的备份页错误与输入保留、重启确认页失败分支。既有槽位套件扩展到21项全部通过；上一版在后台 / 备份 / 重启三个卸载失败场景中失败。正常卸载、延迟卸载成功和无Vendor路径保留。清理构建后827来源与六profile封装通过。
+
+HAL / 卸载 / DataManager / 导航为测试替身，没有真实挂载或槽位切换；延迟卸载成功不代表所有旧引用已释放。详见[卸载失败边界](docs/MULTIUSER-ADAPTATION.md#slot-unmount)。其他未改功能沿用原证据，没有重复整包或震动检查。
+
+## 沿用的槽位切换失败返回
 
 0101修正核心在Boot HAL缺失或拒绝时仍发布新槽位的问题：SetActiveSlot现在返回失败，不改内存槽位、DataManager或刷新分区详情；后台传播结果及失败状态。备份页失败时记录本地化错误并保留输入，重启确认页不会继续请求重启。槽位14项通过，旧实现9项失败；相关入口21 / 侧载20项回归通过。最终清理构建、826来源与六profile封装通过，详见[槽位失败传播](docs/MULTIUSER-ADAPTATION.md#slot-result)。
 

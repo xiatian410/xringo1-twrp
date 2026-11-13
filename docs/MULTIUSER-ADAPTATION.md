@@ -1,5 +1,12 @@
 # 多用户发现与解锁入口
 
+<a id="slot-unmount"></a>
+## 槽位切换前的 Vendor 卸载失败
+
+0102补齐Vendor普通卸载失败后的MNT_DETACH结果检查。两者都失败时operation_end(1)并返回false，不进入SetActiveSlot；备份页和重启确认页沿用0101的错误处理。保留现有延迟卸载成功后继续行为；没有Vendor分区时也继续。延迟卸载并不证明旧引用已全部释放，本次未添加这种声明。
+
+现有tests/slot_result_test.py扩展到21场景：新增后台 / 备份 / 重启三处延迟卸载成功与失败，以及无Vendor路径。当前21项通过；保存的0101后台同夹具三个双卸载失败场景失败。原核心和回调执行，HAL / 卸载 / DataManager / 导航是替身，没有真实设备操作。报告本地logs/slot-unmount.json、logs/slot-unmount-negative.json；交付审计logs/slot-unmount-delivery-audit.json。既有报告不覆写，其哈希继续绑定历史执行。
+
 <a id="slot-result"></a>
 ## 槽位失败传播
 

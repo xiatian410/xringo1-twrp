@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-slot-result.img",
-  "image_sha256": "2df5dfba265081c91564d283389dd4dce21cd9939cf59f529f905feafce4c0d6",
-  "production_sources": 826,
+  "image_name": "recovery-dijun-unified-slot-unmount.img",
+  "image_sha256": "ebf73e3dc5ae11e7263c4518ab2a872f8274e896a9ab5252a38f448660c954f2",
+  "production_sources": 827,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -1781,6 +1781,22 @@
       "failures": 0,
       "local_report_sha256": "605f7671321a3f2dfb027974b7d5215fcd6a342ffee76bd7965d6049c7a93a82",
       "scope": "Original SetActiveSlot manager, reboot backend and backup/reboot confirmation callbacks; HAL/capabilities/DataManager/partition/navigation are doubles. HAL failure must not publish slot or continue reboot; backup inputs preserved. Fourteen cases; old nine fail. Storage mutex21 and sideload20 regressions. No real HAL/mount/slot/full GUI or device proof."
+    },
+    {
+      "name": "slot-unmount",
+      "status": "PASS",
+      "cases": 21,
+      "failures": 0,
+      "local_report_sha256": "208916dd864feaedaca46eb9705da735e7d0e380595268f4afe4852b2adcafbc",
+      "scope": "Original slot manager/backend and backup/reboot confirmation callbacks; 21 cases including normal/lazy unmount success, both unmounts failing and missing vendor. Previous0101 fails three refusal cases. HAL, unmount, DataManager and navigation are explicit doubles; no real mounts/slot/full GUI or device proof."
+    },
+    {
+      "name": "slot-unmount-negative",
+      "status": "FAIL",
+      "cases": 21,
+      "failures": 3,
+      "local_report_sha256": "49fe74a29fc484987ebaab81a32e6b37ee11d293ac90553cd4342599dec900eb",
+      "scope": "Original slot manager/backend and backup/reboot confirmation callbacks; 21 cases including normal/lazy unmount success, both unmounts failing and missing vendor. Previous0101 fails three refusal cases. HAL, unmount, DataManager and navigation are explicit doubles; no real mounts/slot/full GUI or device proof."
     }
   ],
   "refresh_stuck_investigation": {
@@ -1970,6 +1986,13 @@
     "patch": "0101",
     "scope": "Original SetActiveSlot manager, reboot backend and backup/reboot confirmation callbacks; HAL/capabilities/DataManager/partition/navigation are doubles. HAL failure must not publish slot or continue reboot; backup inputs preserved. Fourteen cases; old nine fail. Storage mutex21 and sideload20 regressions. No real HAL/mount/slot/full GUI or device proof.",
     "document": "docs/MULTIUSER-ADAPTATION.md#slot-result",
+    "production_changes": true,
+    "new_build": true
+  },
+  "slot_unmount": {
+    "patch": "0102",
+    "scope": "Original slot manager/backend and backup/reboot confirmation callbacks; 21 cases including normal/lazy unmount success, both unmounts failing and missing vendor. Previous0101 fails three refusal cases. HAL, unmount, DataManager and navigation are explicit doubles; no real mounts/slot/full GUI or device proof.",
+    "document": "docs/MULTIUSER-ADAPTATION.md#slot-unmount",
     "production_changes": true,
     "new_build": true
   }
