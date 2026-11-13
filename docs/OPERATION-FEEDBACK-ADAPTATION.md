@@ -40,7 +40,7 @@
 
 接口要求同一工作线程成对调用 start/end；同线程重复 start 延续同一任务，不是可嵌套的任务栈。线程异常退出而没有 end 的清理不在本补丁范围内。共享进度仍是全局值，本修改只避免其他任务尚在运行时被置为完成，并不提供多个进度条。
 
-后续[恢复会话预检](RESTORE-SESSION-ADAPTATION.md)已独立修复并回放取消标志残留、子分区 digest 和分卷清单，共 54 项通过。本项完成反馈回放仍不覆盖底层分区工作；后续[备份会话 55 项](BACKUP-SESSION-ADAPTATION.md)另行执行了 start/acknowledge/destructor、取消与 `.info` 顺序。压缩/加密分卷内容另由[46 项管道回放](ARCHIVE-PIPELINE-ADAPTATION.md)覆盖；完整管理器、digest 原子发布和强杀/断电清理仍待完成。
+后续[恢复会话预检](RESTORE-SESSION-ADAPTATION.md)已独立修复并回放取消标志残留、子分区 digest 和分卷清单，共 54 项通过。本项完成反馈回放仍不覆盖底层分区工作；后续[备份会话 55 项](BACKUP-SESSION-ADAPTATION.md)另行执行了 start/acknowledge/destructor、取消与 `.info` 顺序。压缩/加密分卷内容另由[46 项管道回放](BACKUP-DATA-PATHS.md#archive-pipeline)覆盖；完整管理器、digest 原子发布和强杀/断电清理仍待完成。
 
 其他页面的完整业务流程、设备初始化时序、内核驱动队列、供电与实际电机效果仍未验证。硬件状态保持 U，不要求用户提供新的实机结果。
 

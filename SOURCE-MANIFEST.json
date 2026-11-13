@@ -32,7 +32,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "e957582a5250d10be1c6ee8948b2bc20167716948d3114882d8b27a1d4bd75dd",
+    "sha256": "2403ce1e22dca7589da7792ad66ed31bbe11da738fc933ff38ca5da1c491b5f6",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -44,23 +44,19 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "4850528bf6280c0e031ce127ccbdcb359c061ec3240e5f72fe59d8087d29d47d",
+    "sha256": "f2d23c15b5e8599c1fc664184124cf8fdc0f2fc46c62bcb9dd3c775933ad6fb6",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
     "sha256": "ea2ff2b70416b2c899c99c1025c431ca2d3e847d62274f73c126ca884818baeb",
     "mode": "0o644"
   },
-  "docs/ARCHIVE-PIPELINE-ADAPTATION.md": {
-    "sha256": "75033b40f89bb2f7e4f5a978b9d58bf31ac6763b1d1dc84562b851cba9c7b42a",
-    "mode": "0o644"
-  },
-  "docs/ARCHIVE-RESTORE-ADAPTATION.md": {
-    "sha256": "0dcc81ad2b9dcdc189cb5d1fbd0f0977dbc9862e5adbc23313d78e2b07e6aa05",
+  "docs/BACKUP-DATA-PATHS.md": {
+    "sha256": "a1aff968c29e273c8a551036e587676f6f0b8e14921245afa41098a57a251a97",
     "mode": "0o644"
   },
   "docs/BACKUP-SESSION-ADAPTATION.md": {
-    "sha256": "7eb3ad255572fbb497f446303852c84b61a7b3a476dd3e81f8b0c49a813d610a",
+    "sha256": "96d3b5d1181f9930710bad0d2c4978049f34cfb19b063e2d571ab4ef8c72b28f",
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
@@ -76,7 +72,7 @@
     "mode": "0o644"
   },
   "docs/INSTALL-CHAIN-VALIDATION.md": {
-    "sha256": "a92e9ad36c183039e4cf5b0015df9ea11d604d87f556affcd91dcc2b4ae3cc15",
+    "sha256": "73feb75d0e6d60d557af185a341ee84658df672555b0f95eb5d02c9b84cff64f",
     "mode": "0o644"
   },
   "docs/MODULE-STATE-ADAPTATION.md": {
@@ -108,7 +104,7 @@
     "mode": "0o644"
   },
   "docs/OPERATION-FEEDBACK-ADAPTATION.md": {
-    "sha256": "6a65c1a0d1f42a4377bd384bdd120ef2661d47c3488790adb79141795f88a41f",
+    "sha256": "75e2406f8aff0098ed40a2d6fcbe5652cfeebfcd65f786949a389829db9b5596",
     "mode": "0o644"
   },
   "docs/OS4-TOUCH-FAILURE.md": {
@@ -131,12 +127,8 @@
     "sha256": "c0f47438e99a02b6de82abb7066b554802e5c5dc89e8d5e1ae9b3559106ac92a",
     "mode": "0o644"
   },
-  "docs/RAW-IMAGE-ADAPTATION.md": {
-    "sha256": "e522dbd867a4659d3a9301905de13b994f7d908ddf97be350b882aad370672ed",
-    "mode": "0o644"
-  },
   "docs/README.md": {
-    "sha256": "2283e305a106d62cd633693f87401578b02a56a9d56d3fb68ff64c9833bf605c",
+    "sha256": "b1e1a845f10ba9396952a17420583ecabb5d4543481b8d06b976607b002a92e3",
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
@@ -144,15 +136,11 @@
     "mode": "0o644"
   },
   "docs/RESTORE-SESSION-ADAPTATION.md": {
-    "sha256": "1cad042ca46b858f45507d2e66b24ad605ad9bf0369600b811978c7eabbd2c3e",
+    "sha256": "c10f74462979780cb18b459abe2a2ecdf2825520cebb8c857401abe4980144b0",
     "mode": "0o644"
   },
   "docs/SETTINGS-ADAPTATION.md": {
     "sha256": "5fad07f94027b8fd91a6af73dfad1be32c8fcfa7b356499ea35e4ca6a17e6601",
-    "mode": "0o644"
-  },
-  "docs/SIDELOAD-LIFECYCLE.md": {
-    "sha256": "ac32945f133cdc403bfbe9d68c4964d1987a08ada2e7e72fe68747b0845fc49c",
     "mode": "0o644"
   },
   "docs/STATUS-ADAPTATION.md": {
@@ -168,7 +156,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "2a92f53ac0fc69094de924c8aa2f4c6e82e03fca6596c1419563abd5be3d9762",
+    "sha256": "3e1903c9bf79e3f53ef859ef661dc0db70ccdd6c4b65232e4a8b88fc8248395b",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1244,15 +1232,15 @@
     "mode": "0o644"
   },
   "scripts/audit_sideload_completion_delivery.py": {
-    "sha256": "44498962508cfca9d9e2c0caa5ea3193e11acfba000c10c1d88e8122de32eca0",
+    "sha256": "f6f78e84b03012ea234311fa4377f3eaba9c7a6b0385378cb889ba351af1ad64",
     "mode": "0o644"
   },
   "scripts/audit_sideload_delivery.py": {
-    "sha256": "e9030b47349ca97283801d82df8c57e9408e59464f3a6ad7e9d8386997fb03c3",
+    "sha256": "9a2f6d791988b88a25c8e100858be5f083fb8c19f3d5c7ad4b8abcc7e4c0c9f7",
     "mode": "0o644"
   },
   "scripts/audit_sideload_reboot_delivery.py": {
-    "sha256": "8a76659c86a3ee95b1d2ce09f9bb053c428f6d8f00771401d1a7869db4f83a3c",
+    "sha256": "cdca920c7a4e721fe2a4227e8b5335d42357cc0996f8d20b2509ae694c3d0601",
     "mode": "0o644"
   },
   "scripts/audit_snapshot_cancel_delivery.py": {
@@ -1332,7 +1320,7 @@
     "mode": "0o644"
   },
   "scripts/audit_unified_delivery.py": {
-    "sha256": "88239bc3dc74af823cb40a7a0ae0bdf1fc7082165fa15c7d5d5481ea9e972f1a",
+    "sha256": "4ef861b4e83c9fab66065ff28cd5f259c7bcece0f6787206a49f2248f5f93182",
     "mode": "0o644"
   },
   "scripts/audit_updater_protocol_delivery.py": {
@@ -1384,7 +1372,7 @@
     "mode": "0o644"
   },
   "scripts/check_documentation.py": {
-    "sha256": "d28a90d846d9e86f0cdd50bad8c95e3b929f03104d36edd41a527431b2faa2c2",
+    "sha256": "68719c72b231c89493223d8c730e4070318a9973f59b99211f26577d652c824b",
     "mode": "0o644"
   },
   "scripts/check_public_tree.py": {
@@ -1577,18 +1565,6 @@
   },
   "scripts/setup_haptics_emulator.py": {
     "sha256": "35c15446e7f6c0d477d775fe613b520db430b1dd4b9bfa9b22e013ddb2db9539",
-    "mode": "0o644"
-  },
-  "scripts/show_fstab.py": {
-    "sha256": "73f28a4f78470b2770941f564966be2bd6ec9cd7831d5a0f937ea8af2fe88118",
-    "mode": "0o644"
-  },
-  "scripts/show_list.py": {
-    "sha256": "9216b5450f8bb0cd1ce3b09f569e598603579bdba87f6f0e3775d3a0a3d09506",
-    "mode": "0o644"
-  },
-  "scripts/show_stock_fstab.py": {
-    "sha256": "ce750fbc7d0b47565c9781e181dcf94a90cbb7e92823b99ba7e3427fab4a2643",
     "mode": "0o644"
   },
   "scripts/simulate_loader.py": {

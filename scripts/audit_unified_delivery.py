@@ -1118,9 +1118,9 @@ def main():
 
     docs=['ADAPTATION-GOALS.md','FEATURE-USAGE.md','MAINTENANCE.md','compatibility-matrix.md',
           'simulation-report.md','docs/HAPTICS-ADAPTATION.md',
-          'docs/ARCHIVE-RESTORE-ADAPTATION.md','docs/RAW-IMAGE-ADAPTATION.md',
+          'docs/BACKUP-DATA-PATHS.md',
           'docs/OPERATION-FEEDBACK-ADAPTATION.md','docs/RESTORE-SESSION-ADAPTATION.md',
-          'docs/BACKUP-SESSION-ADAPTATION.md','docs/ARCHIVE-PIPELINE-ADAPTATION.md',
+          'docs/BACKUP-SESSION-ADAPTATION.md',
           'docs/MTP-OBJECTS-ADAPTATION.md','docs/MTP-ADAPTATION.md',
           'docs/USB-CONFIGFS-ADAPTATION.md','docs/MTP-CONTROL-ADAPTATION.md','docs/PROFILE-SELECTION.md',
           'docs/archive/haptics/HAPTICS-DRIVER-EMULATION.md','docs/archive/haptics/HAPTICS-LIFECYCLE-EMULATION.md','docs/archive/haptics/HAPTICS-WORKER-ADAPTATION.md',
@@ -1133,9 +1133,9 @@ def main():
                 assert Path(link[1:-1]).exists(),(name,link)
                 continue
             assert (p.parent/link.split('#')[0]).exists(),(name,link)
-        if name not in ['FEATURE-USAGE.md','docs/ARCHIVE-RESTORE-ADAPTATION.md','docs/RAW-IMAGE-ADAPTATION.md',
+        if name not in ['FEATURE-USAGE.md','docs/BACKUP-DATA-PATHS.md',
                         'docs/OPERATION-FEEDBACK-ADAPTATION.md','docs/RESTORE-SESSION-ADAPTATION.md',
-                        'docs/BACKUP-SESSION-ADAPTATION.md','docs/ARCHIVE-PIPELINE-ADAPTATION.md',
+                        'docs/BACKUP-SESSION-ADAPTATION.md',
                         'docs/MTP-OBJECTS-ADAPTATION.md','docs/MTP-ADAPTATION.md',
                         'docs/USB-CONFIGFS-ADAPTATION.md','docs/MTP-CONTROL-ADAPTATION.md','docs/PROFILE-SELECTION.md',
                         'docs/archive/haptics/HAPTICS-DRIVER-EMULATION.md','docs/archive/haptics/HAPTICS-LIFECYCLE-EMULATION.md']:

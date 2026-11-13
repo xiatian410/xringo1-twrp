@@ -75,7 +75,7 @@ def main():
  inherited=['logs/sideload-zip-queue-regression.json','logs/nv-mount-policy.json']
  for p in inherited:
   r=read(p);assert r['status']=='PASS';bindings(r['sources'])
- docs=['ADAPTATION-GOALS.md','MAINTENANCE.md','FEATURE-USAGE.md','simulation-report.json','simulation-report.md','README.md','docs/SIDELOAD-LIFECYCLE.md','docs/CURRENT-VALIDATION.json']
+ docs=['ADAPTATION-GOALS.md','MAINTENANCE.md','FEATURE-USAGE.md','simulation-report.json','simulation-report.md','README.md','docs/INSTALL-CHAIN-VALIDATION.md','docs/CURRENT-VALIDATION.json']
  result=dict(status='PASS',scope=__doc__,image=str(image),image_sha256=digest,production_sources=760,package_cases=27,old_failed_cases=19,lifecycle_cases=33,profile_groups=9,module_groups=4,evidence={p:sha(ROOT/p) for p in evidence},documents={p:sha(ROOT/p) for p in docs},audit_source_sha256=sha(Path(__file__)),limitations='Real private process/socket lifecycle; property/FUSE/mount/MTP/cache doubles, not USB package installation. Full goal12 groups and historical source drift remain open.')
  (ROOT/'logs/sideload-completion-delivery.json').write_text(json.dumps(result,indent=2)+'\n');print('PASS: sideload-package27/old19 failures;lifecycle33;760 sources;six profiles;profile9/module4. Full goal remains in progress.')
 if __name__=='__main__':main()

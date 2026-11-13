@@ -20,7 +20,7 @@ ENTRY_POINTS = (
     'docs/PROFILE-LINKER-ARM64.md', 'docs/PARTITION-ACTIONS.md',
     'docs/MTP-ATOMIC-UPLOAD.md', 'docs/MTP-CONTROL-ADAPTATION.md',
     'docs/MTP-ADAPTATION.md', 'docs/MTP-OBJECTS-ADAPTATION.md',
-    'docs/BACKUP-SESSION-ADAPTATION.md',
+    'docs/BACKUP-SESSION-ADAPTATION.md', 'docs/BACKUP-DATA-PATHS.md',
     'docs/firmware-compatibility.md',
     'docs/PROFILE-SELECTION.md', 'docs/HAPTICS-ADAPTATION.md',
     'docs/OPERATION-FEEDBACK-ADAPTATION.md', 'docs/archive/README.md',

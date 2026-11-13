@@ -77,7 +77,7 @@ def main():
     assert index['status'] == 'in_progress' and len(index['not_yet_completed']) == 12
     documents = ['ADAPTATION-GOALS.md', 'MAINTENANCE.md', 'FEATURE-USAGE.md',
                  'simulation-report.json', 'simulation-report.md', 'README.md',
-                 'docs/SIDELOAD-LIFECYCLE.md', 'docs/CURRENT-VALIDATION.json',
+                 'docs/INSTALL-CHAIN-VALIDATION.md', 'docs/CURRENT-VALIDATION.json',
                  'AGENTS.md']
     result = dict(status='PASS', scope=__doc__, image=str(image), image_sha256=digest,
                   production_sources=764, reboot_cases=19, old_failed_cases=15,

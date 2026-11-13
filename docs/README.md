@@ -7,8 +7,7 @@
 ## 安装、分区与存储
 
 - [OTA payload、VABC / COW 与最终校验](OTA-OPERATION-COW.md)
-- [镜像刷写、ZIP / A/B 命令与 ARM64 updater](INSTALL-CHAIN-VALIDATION.md)
-- [ADB sideload 子进程与取消生命周期](SIDELOAD-LIFECYCLE.md)
+- [镜像刷写、ZIP / A/B、ARM64 updater 与 ADB sideload](INSTALL-CHAIN-VALIDATION.md)
 - [分区界面修正：镜像目标与 NV 操作](PARTITION-ACTIONS.md)
 - [分区列表、OTG 发现、挂载模式与存储选择](MOUNT-LIST-EXPLANATION.md)
 - [文件系统工具执行与修复结果](FILESYSTEM-TOOLS-EXECUTION.md)
@@ -24,9 +23,7 @@
 
 ## 备份与恢复
 
-- [tar、压缩、加密与分卷管道适配](ARCHIVE-PIPELINE-ADAPTATION.md)
-- [文件归档恢复：实际代码离线验证](ARCHIVE-RESTORE-ADAPTATION.md)
-- [原始分区镜像备份与恢复的离线验证](RAW-IMAGE-ADAPTATION.md)
+- [数据路径：归档编解码、元数据恢复与原始镜像复制](BACKUP-DATA-PATHS.md)
 - [备份会话、取消、目录管理与摘要发布](BACKUP-SESSION-ADAPTATION.md)
 - [恢复会话预检与分卷校验](RESTORE-SESSION-ADAPTATION.md)
 
