@@ -1,5 +1,17 @@
 # 备份会话、目录管理与摘要发布
 
+<a id="nested-root-paths"></a>
+
+## 嵌套挂载根的单卷路径（0119）
+
+单卷旧逻辑只删除源路径的第一层，而非完整选定根。对fstab中`/mnt/vendor/persist`这样的嵌套挂载点，`/mnt/vendor/persist/dir/file`保存为`/vendor/persist/dir/file`，恢复后多出`vendor/persist`子目录。普通和gzip单卷均复现；加密、混合与分卷使用绝对路径，原本不受此缺陷影响。此问题独立于0118根属性保存。
+
+0119将单卷保存名改为相对完整备份根的路径，根本身为`.`；删除根末尾斜杠后按组件边界匹配，拒绝不在该根下的条目。文件、目录与链接共用该转换，分卷沿用原绝对路径约定，不修改NV界面限制或分区选择策略。旧备份中已经保存错的条目不被自动猜测或改写。
+
+原tar/libtar/pigz/OAES在私有普通文件、ASan/UBSan下执行33项：24项覆盖嵌套根和尾部斜杠、六种普通/压缩/加密/混合模式及分卷；九项保留根属性/失败/空目录、codec及越界/链接拒绝控制。逐项读回内容、权限、链接和属性，并拒绝额外祖先目录。同夹具旧版十项中两项失败，其余八项原本正常，不计为新修复。本地报告为`logs/archive-path-current.json`与`logs/archive-path-old.json`；交付检查为`python3 scripts/audit_backup_root.py --nested-paths`。
+
+此验证没有真实挂载、root fscrypt策略、完整manager/GUI或设备断电范围。0118的39项结果保留原运行时来源，不为脚本摘要变化重复运行；此次九项控制覆盖实际相关路径。完整OTA结果沿用，没有重跑整包。
+
 <a id="root-metadata"></a>
 
 ## 挂载根目录元数据（0118）

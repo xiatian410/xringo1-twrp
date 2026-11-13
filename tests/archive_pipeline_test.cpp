@@ -190,11 +190,12 @@ extern "C" int __wrap_futimens(int fd,const struct timespec times[2]){
 }
 static bool root_metadata=false;
 static string root_fault;
+static string source_root="/src";
 static bool application_xattrs=false;
 static string application_xattr_fault;
 extern "C" ssize_t __real_llistxattr(const char*,char*,size_t);
 extern "C" ssize_t __wrap_llistxattr(const char* path,char* names,size_t size){
- if(root_metadata&&root_fault=="read-error"&&fs::path(path).lexically_normal()=="/src"){
+ if(root_metadata&&root_fault=="read-error"&&fs::path(path).lexically_normal()==source_root){
   metadata_call("root-read-error\n");errno=EIO;return -1;
  }
  if(application_xattrs&&application_xattr_fault=="read-error"&&string(path)=="/src/dir/file0"){
@@ -205,7 +206,7 @@ extern "C" ssize_t __wrap_llistxattr(const char* path,char* names,size_t size){
 extern "C" int __real_lsetxattr(const char*,const char*,const void*,size_t,int);
 extern "C" int __wrap_lsetxattr(const char* path,const char* name,const void* data,size_t size,int flags){
  if(root_metadata&&!strcmp(name,"user.root_fixture")){
-  CHECK(fs::path(path).lexically_normal()=="/src/" || fs::path(path).lexically_normal()=="/src");
+  CHECK(fs::path(path).lexically_normal()==source_root+"/" || fs::path(path).lexically_normal()==source_root);
   metadata_call("root-write\n");
   if(root_fault=="write-error"){errno=ENOSPC;return -1;}
  }
@@ -427,15 +428,19 @@ int main(int argc,char** argv){
  if(no_codec)fs::remove("/bin/pigz");
  if(scenario=="aes-random-missing")fs::remove("/dev/urandom");
  if(scenario=="both-random-short")fs::resize_file("/dev/urandom",7);
+ if(scenario.find("-nested")!=string::npos){
+  source_root="/mnt/vendor/persist";fs::create_directories("/mnt/vendor");fs::rename("/src",source_root);
+ }
+ const string configured_root=source_root+(scenario.find("-trailing")!=string::npos?"/":"");
  if(root_metadata){
-  CHECK(chmod("/src",0710)==0&&chown("/src",1234,2345)==0);
-  CHECK(__real_lsetxattr("/src","user.root_fixture","root-metadata",13,0)==0);
-  struct utimbuf times{root_time,root_time};CHECK(utime("/src",&times)==0);
+  CHECK(chmod(source_root.c_str(),0710)==0&&chown(source_root.c_str(),1234,2345)==0);
+  CHECK(__real_lsetxattr(source_root.c_str(),"user.root_fixture","root-metadata",13,0)==0);
+  struct utimbuf times{root_time,root_time};CHECK(utime(source_root.c_str(),&times)==0);
   if(scenario.ends_with("-read-error"))root_fault="read-error";
  }
- TWExclude exclude;uint64_t size=missing?12:exclude.Get_Folder_Size("/src");
+ TWExclude exclude;uint64_t size=missing?12:exclude.Get_Folder_Size(source_root);
  ProgressTracking progress(size);PartitionSettings settings;settings.progress=&progress;
- twrpTar tar;tar.setdir("/src");tar.setfn(archive);tar.setpassword("fixture-password");tar.setsize(size);
+ twrpTar tar;tar.setdir(configured_root);tar.setfn(archive);tar.setpassword("fixture-password");tar.setsize(size);
  tar.backup_folder="/backup";tar.partition_name="data";tar.part_settings=&settings;tar.backup_exclusions=&exclude;
  tar.use_compression=compressed;tar.use_encryption=encrypted;tar.userdata_encryption=mixed;
  if(application_xattrs&&scenario.ends_with("-read-error"))application_xattr_fault="read-error";
@@ -501,8 +506,8 @@ int main(int argc,char** argv){
  } else if(scenario.find("truncated")!=string::npos){
   auto n=fs::file_size(archives[0]);CHECK(n>7);fs::resize_file(archives[0],n-7);
  }
- fs::remove_all("/src");fs::create_directory("/src");
- twrpTar restore;restore.setdir("/src");restore.setfn(archive);restore.part_settings=&settings;
+ fs::remove_all(source_root);fs::create_directory(source_root);
+ twrpTar restore;restore.setdir(configured_root);restore.setfn(archive);restore.part_settings=&settings;
  bool wrong=scenario.find("wrong-password")!=string::npos;restore.setpassword(wrong?"incorrect":"fixture-password");
  if(directory_fixture){
   if(scenario.ends_with("-error"))directory_fault="error";
@@ -518,11 +523,16 @@ int main(int argc,char** argv){
    CHECK(result!=0&&read_file("/backup/security-calls").find("root-write")!=string::npos);
    puts("PASS root metadata write error reaches restore parent");return 0;
   }
-  CHECK(result==0);struct stat st{};CHECK(stat("/src",&st)==0);
+  CHECK(result==0);struct stat st{};CHECK(stat(source_root.c_str(),&st)==0);
   CHECK((st.st_mode&07777)==0710&&st.st_uid==1234&&st.st_gid==2345&&st.st_mtime==root_time);
-  char value[32]{};CHECK(lgetxattr("/src","user.root_fixture",value,sizeof value)==13&&!memcmp(value,"root-metadata",13));
+  char value[32]{};CHECK(lgetxattr(source_root.c_str(),"user.root_fixture",value,sizeof value)==13&&!memcmp(value,"root-metadata",13));
   CHECK(read_file("/backup/security-calls")=="root-write\n");
   puts("PASS root mode owner time xattr restored once after all volumes/workers");
+ }
+ if(source_root!="/src"){
+  CHECK(!fs::exists(source_root+"/vendor"));
+  fs::rename(source_root,"/src");
+  puts("PASS nested mount root has no duplicated ancestor components");
  }
  if(application_xattrs){
   if(!application_xattr_fault.empty()){

@@ -1,0 +1,52 @@
+--- a/twrpTar.cpp
++++ b/twrpTar.cpp
+@@ -1394,23 +1394,20 @@
+ }
+ 
+ string twrpTar::Strip_Root_Dir(string Path) {
+-	string temp;
+-	size_t slash;
+-
+-	if (Path.substr(0, 1) == "/")
+-		temp = Path.substr(1, Path.size() - 1);
+-	else
+-		temp = Path;
+-	slash = temp.find("/");
+-	if (slash == string::npos)
+-		return temp;
+-	else {
+-		string stripped;
+-
+-		stripped = temp.substr(slash, temp.size() - slash);
+-		return stripped;
+-	}
+-	return temp;
++	// Single-volume entries are relative to the complete selected root, which
++	// may have several components (for example /mnt/vendor/persist).
++	string root = tardir;
++	while (root.size() > 1 && root.back() == '/') root.pop_back();
++	if (root.empty()) { errno = EINVAL; return ""; }
++	if (Path == root || Path == tardir) return ".";
++	const string prefix = root == "/" ? root : root + "/";
++	if (Path.compare(0, prefix.size(), prefix) != 0) {
++		errno = EINVAL;
++		return "";
++	}
++	string relative = Path.substr(prefix.size());
++	const auto first = relative.find_first_not_of('/');
++	return first == string::npos ? "." : relative.substr(first);
+ }
+ 
+ int twrpTar::addFile(string fn, bool include_root) {
+@@ -1419,9 +1416,8 @@
+ 		if (tar_append_file(t, charTarFile, NULL) == -1)
+ 			return -1;
+ 	} else {
+-		// A single-volume archive is relative to the selected restore root.
+-		// Stripping /data itself would produce "data", a child directory.
+-		string temp = fn == tardir ? "." : Strip_Root_Dir(fn);
++		string temp = Strip_Root_Dir(fn);
++		if (temp.empty()) return -1;
+ 		char* charTarPath = (char*) temp.c_str();
+ 		if (tar_append_file(t, charTarFile, charTarPath) == -1)
+ 			return -1;

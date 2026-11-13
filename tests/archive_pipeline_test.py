@@ -41,6 +41,10 @@ ROOT_CASES = [kind+'-root'+suffix for kind in ['plain','gzip','aes','both','mixe
 ROOT_CASES += [kind+'-root-empty' for kind in ['plain','gzip','aes','both']]
 ROOT_CASES += [kind+'-root-'+fault for kind in ['plain','gzip','aes','both'] for fault in ['read-error','write-error']]
 CASES += ROOT_CASES
+ROOT_PATH_CASES = [kind+'-root-'+layout+suffix
+                  for kind in ['plain','gzip','aes','both','mixed','mixed-gzip']
+                  for layout in ['nested','trailing'] for suffix in ['', '-split']]
+CASES += ROOT_PATH_CASES
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source',type=Path,default=SRC)

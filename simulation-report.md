@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-backup-root.img` |
-| SHA-256 | `0bf6a9349d7b632d3bdd83d62ae5d56c16f2e10ffd25f86ab2b596c8488a6157` |
-| 生产来源绑定 | 847 份 |
+| 文件 | `recovery-dijun-unified-backup-paths.img` |
+| SHA-256 | `68fc2a973945cc4589856ff50381e20a13c01c476b75f6679957391ddd79a1dd` |
+| 生产来源绑定 | 848 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：备份根目录元数据
+## 本批生产修正：嵌套挂载根的单卷路径
+
+0119将单卷条目相对完整备份根保存，修正`/mnt/vendor/persist`等嵌套目录恢复后多出`vendor/persist`子目录的问题；分卷/加密原约定不变。24项路径场景及九项相关控制通过，同夹具旧版两项失败，其他八项原本正常。清理构建绑定848来源及六profile，核对入口为`python3 scripts/audit_backup_root.py --nested-paths`。
+
+这是离线私有普通文件与真实host codec结果，真实挂载/fscrypt/完整manager/GUI及断电仍未验证。详见[嵌套根路径](docs/BACKUP-SESSION-ADAPTATION.md#nested-root-paths)。0118与完整OTA保留历史运行证据，不重复执行。
+
+## 沿用的备份根目录元数据
 
 0118补齐此前未归档的挂载根，空目录亦保留权限、属主、时间与user扩展属性。根条目只进入一个流；跨分卷和加密线程完成后沿用目录时间收尾，读取/写入属性失败传回父进程。根元数据24项及相关控制15项通过，同夹具旧10/10失败。清理构建绑定847来源及六profile，交付核对见`python3 scripts/audit_backup_root.py`。
 
