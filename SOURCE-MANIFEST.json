@@ -1,4 +1,12 @@
 {
+  ".editorconfig": {
+    "sha256": "057460f629f70a74833078edd3bdd795e21f2f69e2acbf18cb993a495c505bd5",
+    "mode": "0o644"
+  },
+  ".gitattributes": {
+    "sha256": "11cd29b80348e95223b1884ec9ce7ce9bbe3dcc853a4ee5fa7d319df21b6cf3d",
+    "mode": "0o644"
+  },
   ".github/workflows/source-check.yml": {
     "sha256": "a76fa07b4984b061be7c9f53a516e1785ec4d19dc3766fdeeda4b5d0239a1a2e",
     "mode": "0o644"
@@ -20,7 +28,7 @@
     "mode": "0o644"
   },
   "CONTRIBUTING.md": {
-    "sha256": "7976c16e42a7b1daf6891c9a3196294b1cb49777026a9b2bfa9ba83767788a4e",
+    "sha256": "83322e5b68e9d236868e5d341b315818f41bd0f7d1b0ef12bbf19d3c73e52f89",
     "mode": "0o644"
   },
   "FEATURE-USAGE.md": {
@@ -32,7 +40,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "bdfcd44264767d7308fd4f0679ba44efa2815964923df4a1bbcbb96f4e27232b",
+    "sha256": "03c8c94cb7b3d0866da85a0a3a454f4a9859e5c3a2aaadf611f50fc8cb403af1",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -44,11 +52,11 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "f2d23c15b5e8599c1fc664184124cf8fdc0f2fc46c62bcb9dd3c775933ad6fb6",
+    "sha256": "55c428fc068ba077ef65bd5a9ae400ca85b21ac71ddfadbc241c161b7972263e",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
-    "sha256": "ea2ff2b70416b2c899c99c1025c431ca2d3e847d62274f73c126ca884818baeb",
+    "sha256": "356ab3244a485b311a7156e50c1e8697a2f1111580f24037d4eb3267a2dafc8c",
     "mode": "0o644"
   },
   "docs/BACKUP-DATA-PATHS.md": {
@@ -156,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "a6a7c283f456c8585cb0e3ba9d1e569af546d8afcf79d31743c32a6bdd0e7969",
+    "sha256": "6b200592d62327865bd16ec899fa3b6a353cf39b18c72e98b79f14fe9f6d7467",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1399,10 +1407,6 @@
     "sha256": "133bfc7a5969979173c311e11d0026e6640b9853139def31ac622aee66cf7c72",
     "mode": "0o644"
   },
-  "scripts/cmp_imgs.py": {
-    "sha256": "19649ba3507f136d14ccd1599d567be8601337dd32b204fa795d4d741faf4267",
-    "mode": "0o644"
-  },
   "scripts/collect-haptics-state.ps1": {
     "sha256": "f60434fcba11d3a853f8bf192374cef9f3b90b4f260d3dbd9710ff988c21267b",
     "mode": "0o644"
@@ -1451,14 +1455,6 @@
     "sha256": "48ccc7e79b7cd2436361a6353b50d7661cd265ed291cea14721772dc72a47012",
     "mode": "0o644"
   },
-  "scripts/dbg_tail.py": {
-    "sha256": "f8c910691ec50c8f0f545f06a0bf2c454bf7b3d1c8dacb58f91225b08fc6fc7b",
-    "mode": "0o644"
-  },
-  "scripts/dump_hdr.py": {
-    "sha256": "58a0e74553be01baee1ad8ed7d0cd08aa8def8a16682fd6f4aa3d745a2b78b41",
-    "mode": "0o644"
-  },
   "scripts/extract_payload_partition.py": {
     "sha256": "de76c9be96524a8fb8c5c338e9a2c7a41e4251178583392cef86ec3d6a01a335",
     "mode": "0o644"
@@ -1469,14 +1465,6 @@
   },
   "scripts/f2fs-reader-source.json": {
     "sha256": "325bdca4a9d26b7f42913d86a984901fb938e0ba3005235edea320dcf05fe460",
-    "mode": "0o644"
-  },
-  "scripts/find_avb.py": {
-    "sha256": "e20cd2225908b2b1d6ff4d7dd7d6c330bf562e5ff0b29f398e8f6c056927c09c",
-    "mode": "0o644"
-  },
-  "scripts/find_literal.py": {
-    "sha256": "8e8668932b885dc7789e9412ab01f702e62729fb2d9270da233023e0fa1805f1",
     "mode": "0o644"
   },
   "scripts/firmware_facts.py": {
@@ -1533,10 +1521,6 @@
   },
   "scripts/prepare_f2fs_reader.py": {
     "sha256": "7d15144007b4c84ecf222e21735aad5157e925c44fe2292e149837c034a0e9fc",
-    "mode": "0o644"
-  },
-  "scripts/prove_identical.py": {
-    "sha256": "2a0fd4be1a2fa1c41f5b2145eb1aed6b92b5c1d0a46f82bd9cc1774e2ee006d1",
     "mode": "0o644"
   },
   "scripts/record_build_sources.py": {
@@ -1596,7 +1580,7 @@
     "mode": "0o644"
   },
   "scripts/sync_github.py": {
-    "sha256": "ca03fd8fc4ff7eee1b522dfdd2cfda461d23d157210bf32872b68df692eb803e",
+    "sha256": "cc8cfc73cef2d145fef541fa121b69f4f0d018f7b0221f85b17777075973450c",
     "mode": "0o644"
   },
   "scripts/touch_stack.py": {

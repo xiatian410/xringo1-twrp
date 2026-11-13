@@ -31,7 +31,7 @@
 | OTG | 修正内部 UFS 误枚举，列表 / 选择离线覆盖 | manager / USB、写入中移除 |
 | MTP | 时间、原子上传、目录与会话 / 取消 / 重置修正 | 临时文件崩溃归属、完整端点 / Windows 集成 |
 | ZIP / sideload | 原始安装链、真实 ARM64 无害 updater、协议与收尾 | 完整 ARM64 Recovery / USB / FUSE |
-| OTA / A/B | payload ZIP 与 headers 检查，同步拒绝修正 | 完整原厂 payload / 分区 / 快照写入与合并 |
+| OTA / A/B | 两份 OS4 完整 payload 离线执行；快照错误传播、snapuserd EOF 修正及指定合并 / 进程恢复证据 | 完整 SnapshotManager / 服务端 / init / 内核映射接续及设备安装验收；见 [OTA 范围](docs/OTA-OPERATION-COW.md) |
 | 备份 / 恢复 | 编解码、摘要发布、完成清单、失败恢复路径 | GUI 全流程、稀疏空洞、断电与内容真实性 |
 | 文件系统工具 | 普通文件上的 ARM64 工具及修复返回值；扩容尺寸修正 | 完整格式化 / 写入 / 修复接续 |
 | 截图 / 录屏 | 像素、队列、VP8 / WebM 时间轴与故障检查 | 目标 ARM64 codec / 显示接续、全分辨率长期性能 |

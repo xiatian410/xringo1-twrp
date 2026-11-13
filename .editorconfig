@@ -1,0 +1,21 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.py]
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Pinned patches must retain their exact bytes and context whitespace.
+[*.patch]
+trim_trailing_whitespace = false
+insert_final_newline = unset
+end_of_line = unset

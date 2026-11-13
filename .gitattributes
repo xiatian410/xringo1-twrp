@@ -1,0 +1,12 @@
+# Preserve bytes by default: SOURCE-MANIFEST.json fingerprints exported files.
+* -text
+
+# Normalize only maintained entry documents and repository settings.
+/*.md text eol=lf
+/.editorconfig text eol=lf
+/.gitattributes text eol=lf
+/.gitignore text eol=lf
+/.github/**/*.yml text eol=lf
+
+# Never normalize pinned patches; series.json checks their exact SHA-256.
+*.patch -text
