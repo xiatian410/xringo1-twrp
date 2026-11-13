@@ -19,6 +19,12 @@
 
 正常、路径查询失败、头部同步失败三项定向检查通过；使用同一夹具和镜像库、替换为旧 SnapshotManager 的负向检查仅同步失败项崩溃。正常项真实初始化并解析十份空 COW，发布目标 LP，重建 manager 后持久化 Unverified 状态；两种失败均清除临时映射 / 状态、保持 Initiated，不误报完成。内核映射由独立稀疏普通文件代替，源 LP 为合成 32 GiB，HAL / kernel / ImageManager 为明确边界；测试模式关闭 scratch 和 daemon 启动。**没有重跑整包，不代表真实映射 / 挂载 / 槽位 / 重启合并验收。** 见[初始化与故障范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization)，本地交付核对 `logs/snapshot-cow-init-delivery.json`。
 
+## 分配到 payload 片段的交接证据
+
+同一执行中，真实 SnapshotManager 创建的 COW 已交给原 `DynamicPartitionControlAndroid::OpenCowWriter → OpenSnapshotWriter → VABCPartitionWriter`，执行原始 4.0.4 `mi_ext` 前两条操作（REPLACE_XZ / REPLACE），4 MiB 读回与独立原厂分区切片一致。重新创建 manager / controller / writer 后从 label1 续写通过；损坏头部时 Init 拒绝，显式卸载映射后保持 Initiated，不发布完成。共三项通过，见[交接边界](docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-payload-handoff)。
+
+这是新接续证据，无生产修改或新构建。DM 基础分区 / COW 由持久普通文件视图替代，基础映射和 procfs realpath 有明确边界，测试模式关闭 scratch / daemon。只执行两条操作，没有整分区 / 全量 payload / 完成状态，不把它与历史整包运行合并为完整 OTA 验收；镜像仍为上表 0090 候选。
+
 ## 历史阶段证据
 
 以下条目保留各轮执行时的镜像与边界；“无新构建”仅指该轮，当前候选以上表为准。

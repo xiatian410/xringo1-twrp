@@ -16,7 +16,7 @@
 | 优先事项 | 已知情况 | 下一步与边界 |
 | --- | --- | --- |
 | 容量刷新页面停留 | 现场后台约 5.15 秒完成；原 GUI tick / 主循环接续已核对，提交等待会延迟 DONE 呈现，但现场根因未定位 | 后续只追提交等待与实际呈现的新证据；不重复扫描 / DONE 夹具，不根据模拟等待修改 DRM，不要求重复触发采集。见[主循环范围](REFRESH-STUCK-INVESTIGATION.md#gui-loop) |
-| OTA / A/B 安装入口与快照生命周期 | 原始 4.0.4 ZIP 模型内接续成功；原 manifest / 合成 LP 分配及控制器回退已有证据；0090 修复 COW 初始化失败空指针崩溃，当前三项覆盖十份空 COW 初始化 / 解析与失败清理 | 真实源 LP / 内核映射、完整分配到 payload 接续、scratch / snapuserd 启动、挂载 / Boot HAL / 槽位 / 启动合并仍未贯通。输入与相关源码未变时不重跑完整包。见[模型范围](INSTALL-CHAIN-VALIDATION.md#stock-zip-model-finish)、[控制器回退](INSTALL-CHAIN-VALIDATION.md#stock-snapshot-preparation)、[COW 初始化](INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization)及[OTA 范围](OTA-OPERATION-COW.md) |
+| OTA / A/B 安装入口与快照生命周期 | 原始 4.0.4 ZIP 模型内接续成功；原 manifest / 合成 LP 分配及控制器回退已有证据；0090 修复 COW 初始化失败空指针崩溃，初始化三项覆盖十份空 COW 与失败清理；另已接通原控制器 / VABC 写入两条真实操作及检查点续写 | 真实源 LP / 内核映射、完整分配到全量 payload 接续、scratch / snapuserd 启动、挂载 / Boot HAL / 槽位 / 启动合并仍未贯通。输入与相关源码未变时不重跑完整包。见[模型范围](INSTALL-CHAIN-VALIDATION.md#stock-zip-model-finish)、[控制器回退](INSTALL-CHAIN-VALIDATION.md#stock-snapshot-preparation)、[COW 初始化](INSTALL-CHAIN-VALIDATION.md#stock-snapshot-initialization)及[OTA 范围](OTA-OPERATION-COW.md) |
 | 文件系统完整生命周期 | 清除错误传播、媒体保留、格式转换和 ARM64 工具接续已维护 | persist / and-sec 后处理与非 FBE 启动媒体目录恢复已由 0087–0089 收尾；接续可选内建 ext4 后处理及 GUI / 加密与 I/O 故障收尾，不重复已通过的命令和内容检查。见[文件系统说明](FILESYSTEM-TOOLS-EXECUTION.md) |
 | 其他具体缺陷 | 触摸自动启动、安全服务、多用户、备份恢复和 USB 集成仍有缺口 | 按下表剩余边界及新证据排序，每批明确实现决定和结束条件，不启动全量重复审计 |
 
@@ -56,6 +56,6 @@ README 只保留项目简介、状态、构建入口与导航；历史流水账�
 | 9 OTG | 完整 manager / USB 接续、写入中移除；不重复 UFS 排除夹具 |
 | 10 启动 / LP | 完整 ramdisk 合并、kernel / init / LP 启动；脚本回放不等同完整启动 |
 | 11 温度 | 传感器精度 / Android 注册；摄像头避让已交付，不再重复同类布局检查 |
-| 12 安装 / GUI / OTA | 原始 4.0.4 ZIP / 引擎 / 脚本 / 快照完成状态已在模型内接续；另有独立普通文件快照分配 / 初始化与失败清理证据；真实源布局 / 内核映射、完整接续 / 挂载 / 槽位与启动合并、完整页面及实际 USB / FUSE 侧载仍未验收 |
+| 12 安装 / GUI / OTA | 原始 4.0.4 ZIP / 引擎 / 脚本 / 快照完成状态已在模型内接续；另有普通文件快照分配 / 初始化、两条原包操作写入 / 续写与失败清理证据；真实源布局 / 内核映射、完整接续 / 挂载 / 槽位与启动合并、完整页面及实际 USB / FUSE 侧载仍未验收 |
 
 精确输入与历史结果保留在 `simulation-report.json`；当前简表见 [兼容状态](../compatibility-matrix.md)。

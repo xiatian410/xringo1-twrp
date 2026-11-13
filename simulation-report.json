@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "Full ARM64 Recovery/GUI and actual USB/FUSE sideload remain open. Original OS4.0.4 full ZIP MODEL_SUCCESS covers signature, host ZIP parent, intact ARM64 engine4933 operations/payload hash/42 final hashes, exact stock Recovery postinstall guard, actual SnapshotManager completion and modeled slot. That full-payload run seeds snapshot allocation and models readonly/mount/HAL/slot. Separate current-image stock-manifest tests now execute real BeginUpdate/CreateUpdateSnapshots, LP planning, ten COW initializations/readers and recreated completion, plus failure cleanup; patch0090 fixes null writer crash. Controller cancellation/direct-LP fallback also covered separately. Actual source layout, kernel mappings, mounted filesystems, full-chain allocation-to-payload join, scratch/snapuserd startup, boot slot/reboot/merge and target namespace remain unverified. Historical readonly run remains FAILED63. Reuse completed payload run; separate tests do not become one full device OTA acceptance."
+    "Full ARM64 Recovery/GUI and actual USB/FUSE sideload remain open. Original OS4.0.4 full ZIP MODEL_SUCCESS covers signature, host ZIP parent, intact ARM64 engine4933 operations/payload hash/42 final hashes, exact stock Recovery postinstall guard, actual SnapshotManager completion and modeled slot. That full-payload run seeds snapshot allocation and models readonly/mount/HAL/slot. Separate current-image stock-manifest tests now execute real BeginUpdate/CreateUpdateSnapshots, LP planning, ten COW initializations/readers and recreated completion, plus failure cleanup; patch0090 fixes null writer crash. Controller cancellation/direct-LP fallback also covered separately. Actual source layout, kernel mappings, mounted filesystems, full-chain allocation-to-payload join, scratch/snapuserd startup, boot slot/reboot/merge and target namespace remain unverified. Historical readonly run remains FAILED63. Reuse completed payload run; separate tests do not become one full device OTA acceptance. Subsequent finite handoff executes real controller OpenCowWriter/OpenSnapshotWriter/VABC on allocated COWs for two exact stock mi_ext operations, 4MiB readback, label1 resume and corrupt-header rejection. This removes the isolated empty-COW handoff gap for that fragment only; complete PreparePartitionsForUpdate/allocation/full payload/verification/finalization in one run, real mapping, scratch/daemon and boot/merge still open. No new production change/build."
   ],
   "hardware_unverified": [
     "motor output",
@@ -3678,6 +3678,14 @@
       "evidence": "logs/ota-snapshot-initialize-negative.json",
       "evidence_sha256": "2419f29761916e63d61c62688411f4d42a99f530ecbf8fa3eb3f06a590773636",
       "scope": "Patch0090 handles CreateCowWriter initialization failure before Finalize; original old implementation crashes on null after injected header fsync EIO. Actual ARM64 SnapshotManager with unchanged OS4.0.4 manifest initializes and CowReader parses10 empty COWs, publishes target LP, recreates manager and finishes to Unverified2/HAL1. Normal/path error/header-sync error3 pass; same harness and image libraries with old snapshot TU reproduces exactly1 null crash. Explicit synthetic32GiB source LP and separate sparse file DM views, HAL/kernel/ImageManager boundaries; IsTestDevice disables scratch and daemon. No payload replay, real mapping/mount/slot/boot/merge or full OTA. Production patch and clean build809; six profiles unchanged."
+    },
+    {
+      "name": "stock-os4-snapshot-payload-handoff",
+      "result": "pass",
+      "count": 3,
+      "evidence": "logs/ota-snapshot-payload-handoff.json",
+      "evidence_sha256": "1d13df087caf60a50b5b75926a991d0d796a50d094e4a83ed560906c9596fd4e",
+      "scope": "Actual ARM64 SnapshotManager creates10 COWs from stock OS4.0.4 manifest on synthetic32GiB LP; original DynamicPartitionControlAndroid OpenCowWriter/OpenSnapshotWriter/VABC writes exact mi_ext operations0(REPLACE_XZ) and1(REPLACE). Four MiB readback matches independently sliced hash-verified stock partition. New writer/controller/manager resumes at label1 using persisted mappings; corrupt header rejects Init and explicit unmap leaves Initiated, no completion. Three cases pass. DM base/COW views, base CreateLogicalPartition/Realpath and HAL/kernel are explicit file boundaries; scratch/daemon disabled. Not full payload/partition/OTA, physical mapping/mount/slot/merge. No production change/build."
     }
   ],
   "source_review_followups": [
@@ -4728,6 +4736,31 @@
       "production_changes": true,
       "new_build": true,
       "scope": "Patch0090 handles CreateCowWriter initialization failure before Finalize; original old implementation crashes on null after injected header fsync EIO. Actual ARM64 SnapshotManager with unchanged OS4.0.4 manifest initializes and CowReader parses10 empty COWs, publishes target LP, recreates manager and finishes to Unverified2/HAL1. Normal/path error/header-sync error3 pass; same harness and image libraries with old snapshot TU reproduces exactly1 null crash. Explicit synthetic32GiB source LP and separate sparse file DM views, HAL/kernel/ImageManager boundaries; IsTestDevice disables scratch and daemon. No payload replay, real mapping/mount/slot/boot/merge or full OTA. Production patch and clean build809; six profiles unchanged."
+    },
+    "stock_snapshot_payload_handoff": {
+      "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-snapshot-payload-handoff",
+      "report": "logs/ota-snapshot-payload-handoff.json",
+      "report_sha256": "1d13df087caf60a50b5b75926a991d0d796a50d094e4a83ed560906c9596fd4e",
+      "audit": "logs/snapshot-payload-handoff-audit.json",
+      "image_sha256": "cc73c3cb1335bc6059a079047da87d044ba7dd1033104458d741a8f995908f8b",
+      "cases": 3,
+      "stock_partition": "mi_ext",
+      "stock_operations": [
+        0,
+        1
+      ],
+      "verified_bytes_per_success": 4194304,
+      "actual_snapshot_manager": true,
+      "actual_controller_open_writer": true,
+      "actual_vabc_writer": true,
+      "synthetic_source_layout": true,
+      "file_mapping_model": true,
+      "scratch_and_daemon_disabled_for_test": true,
+      "actual_kernel_mapping": false,
+      "full_ota_install": false,
+      "production_changes": false,
+      "new_build": false,
+      "scope": "Actual ARM64 SnapshotManager creates10 COWs from stock OS4.0.4 manifest on synthetic32GiB LP; original DynamicPartitionControlAndroid OpenCowWriter/OpenSnapshotWriter/VABC writes exact mi_ext operations0(REPLACE_XZ) and1(REPLACE). Four MiB readback matches independently sliced hash-verified stock partition. New writer/controller/manager resumes at label1 using persisted mappings; corrupt header rejects Init and explicit unmap leaves Initiated, no completion. Three cases pass. DM base/COW views, base CreateLogicalPartition/Realpath and HAL/kernel are explicit file boundaries; scratch/daemon disabled. Not full payload/partition/OTA, physical mapping/mount/slot/merge. No production change/build."
     }
   },
   "os4_haptics_user_confirmation": {

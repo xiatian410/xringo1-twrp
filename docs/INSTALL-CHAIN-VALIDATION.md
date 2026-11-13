@@ -25,6 +25,29 @@ python3 tests/ota_snapshot_initialize.py
 python3 scripts/audit_snapshot_cow_init_delivery.py
 ```
 
+<a id="stock-snapshot-payload-handoff"></a>
+## 已分配 COW 到原控制器 / VABC 的真实片段交接
+
+此前整包模型自行创建 COW，0090 检查只接到空 COW 初始化。这一命名缺口会遗漏交接时的路径、格式与续写参数，因此新增有限接续：`tests/ota_snapshot_payload_handoff.py/.cpp` 使用当前镜像 ARM64 库，在一次执行中完成真实分配并把其结果交给原控制器与 writer。没有重放整个包，也没有新增生产修改或构建。
+
+| 场景 | 执行及断言 |
+| --- | --- |
+| 正常片段 | 原始 4.0.4 manifest 驱动真实 BeginUpdate / CreateUpdateSnapshots，初始化十份 COW，发布目标 LP；原 OpenCowWriter / OpenSnapshotWriter / VABC 打开 `mi_ext_b`，执行原包 operations0(REPLACE_XZ)和1(REPLACE)，写入检查点1/2；原压缩快照 reader 的4 MiB读回与独立原厂分区切片逐字节相等 |
+| 检查点续写 | 完成 operation0 后关闭 writer、显式卸载映射；重建 manager / controller / writer，以原 `is_resume / next_op_index=1` 再打开持久 COW，执行 operation1；检查两段均完整，排除重映射截断前段 |
+| 头部损坏 | 分配成功后仅损坏 `mi_ext_b` COW 头部；原 OpenCompressedSnapshotWriter / VABC Init 拒绝，不发布安装完成；显式卸载映射成功 |
+
+三项通过，正常与续写最终均保持 Initiated=1、HAL 完成调用0次。**仅两条操作执行，不调用 FinishedInstallOps 或 FinishedSnapshotWrites 宣称整分区成功。** 输入直接读取原始 ZIP 对应范围，并对照 manifest 的 operation data hash；预期字节来自完整 SHA-256 匹配 manifest 的 `mi_ext.img`，不是由同一解压器生成。
+
+实际执行包括原 SnapshotManager 的 defaults、状态检查、COW 表构造、OpenCompressedSnapshotWriter、原 controller OpenCowWriter 和 VABC 写入 / label 续写。剩余替身为：合成32 GiB源 LP、持久独立稀疏普通文件 base/COW视图、HAL / 内核能力与 ImageManager；全局 CreateLogicalPartition 的内核映射边界转到私有文件，保留原 defaults / CreateDmTable，且只对已存在的普通 `/work/super` 替代依赖 procfs 的 Realpath。视图并不与 super extent 共享数据。测试模式仍关闭 scratch / daemon，没有 dm-user、实际挂载、槽位 / 启动 / 合并，也没有整包从分配到最终验证的单次接续。头部损坏后的映射由调用方显式清理，不宣称 Init 内部自动清理。
+
+本地报告 `logs/ota-snapshot-payload-handoff.json` 绑定代码、原库、镜像、输入和读回摘要；初次缺失 realpath 边界的失败报告保留为 `logs/ota-snapshot-payload-handoff-before-realpath.json`，它是夹具环境问题，没有据此修改生产代码。
+
+```bash
+# 三项已执行，相关输入未变时复用结果。
+python3 tests/ota_snapshot_payload_handoff.py
+python3 scripts/audit_snapshot_payload_handoff.py
+```
+
 <a id="stock-zip-model-finish"></a>
 ## 原始 OS4.0.4 完整包：模型内安装链成功，完整设备安装尚未验收
 
