@@ -1,5 +1,14 @@
 # 多用户发现与解锁入口
 
+<a id="reboot-worker-drain"></a>
+## 最终重启前等待已接收任务退出
+
+0109将GUI后台对象的生命周期放在最终UpdateIntentFile / Reboot之前结束，等待已接收的备份、恢复、安装、侧载、工具、解密及清除任务退出。background stop同时等待热插拔和CLI线程；没有热插拔线程时也不能提前返回而漏掉CLI。等待线程时不持有存储或命令互斥锁。
+
+原main作用域、七个原析构函数及background stop以真实主机线程和存储锁执行，ASan/UBSan下GUI成功/错误与有/无热插拔四场景通过。相同夹具旧main在两个正常退出场景失败，旧background四场景全部失败；CLI十二项、重启入口二十一项通过。清理构建后的836份生产来源与六profile核对通过，本地交付审计为`logs/reboot-quiescence-delivery-audit.json`。
+
+这是最终重启前的任务收尾顺序修正。构造、任务内容、GUI、控制器、intent和重启是明确替身；没有新增请求入口到最终重启的停止预约，也不能安全中断同步Binder/TEE调用。同步provider仍可能无限等待，完整MTP/USB关闭及真实CE驱逐没有由此获得验收。此项有限检查已结束，整包OTA沿用其历史运行范围。
+
 <a id="slot-unmount"></a>
 ## 槽位切换前的 Vendor 卸载失败
 

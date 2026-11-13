@@ -398,6 +398,10 @@
         {
           "file": "0108-backup-source-classification.patch",
           "sha256": "9e8999784b397e89d0e2b2dab8534a3bd8585590ce19332249be7d942c897137"
+        },
+        {
+          "file": "0109-reboot-worker-quiescence.patch",
+          "sha256": "f828a01f70b353a260c6cd8ac036dcbc2bbffb44640ed80d104584d985065c4d"
         }
       ],
       "result_files": {
@@ -429,7 +433,7 @@
         "gui2/pages/decrypt_page.h": "a0b337a0813d646af6f70dea67b122063f819d6917ee8b311c64c9ca8e081897",
         "gui2/pages/page_router.h": "4b3850d8f395fb7944eec077e2b4715ab8e7dc3743f17d6eabfcca8fb0ff7326",
         "gui2/pages/page_state.h": "a2985e2a3b3fdd1fd9ca7405670af8d565002e4e43851df7b03c7310d2c10824",
-        "twrp.cpp": "9e5a1a5c0b967847ed56b512f6811859c73bee03aeae6aac118181049761f63d",
+        "twrp.cpp": "2f8f8bd6ef5b2f9be493f5de47cc9eb78702d67514c68f157fa502f779a48eee",
         "gui2/backend/status_backend.cpp": "5b62ad4a677ea2c1ad53f670a737c7813406c1a88b837972ce56f43a68918a3e",
         "twrpminui/haptics.cpp": "62399d18e29969e4a27bf37c6fe924dd8536912a8c6e0f548d56fb3e5230a0af",
         "gui2/backend/twrp_hardware_settings.cpp": "98863b74240108e4734a4e638bc4b6e0ec77d2eaa2bab98abdcea71cab936bf2",
@@ -497,7 +501,7 @@
         "gui2/backend/twrp_wipe_backend.cpp": "0cfc499ccf3e0296bbdc028eedb8e43c5f1b722edbd43a380a1106311c6c0e73",
         "gui2/backend/twrp_tools_backend.cpp": "52dfe873375bf6fb9726337872b9b6b629fd6b81193638b26d683f79401ad3a8",
         "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a",
-        "gui2/backend/twrp_background_backend.cpp": "2459e31f131aef5cfd9fe977b55b5611744809ab6e8d954496f1c8872a900bb5",
+        "gui2/backend/twrp_background_backend.cpp": "e70068bce5cbac87fb91fb7fd505d5b9e9efcfd9c3677c53c2536a9c666923bf",
         "libtar/libtar.h": "bc3cde522f301eb0c7ff532159752640eb5dcf65281b4e63c63a8b0f75c9e838",
         "libtar/internal.h": "dec002f630564d0f77c49fa9af5d0a553e5af5d37926f775f59d6a25c62eebd5",
         "libtar/android_utils.c": "dfa8967e239e97c27c4d4db2e3951de316ab3f9307eb0add7446919c613c5c65",

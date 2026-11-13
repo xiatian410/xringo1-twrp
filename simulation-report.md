@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-backup-source-types.img` |
-| SHA-256 | `9ccac23647e936a1f954ebf4a796ce909ab635f895a6fd83c2518117b955db16` |
-| 生产来源绑定 | 835 份 |
+| 文件 | `recovery-dijun-unified-reboot-worker-drain.img` |
+| SHA-256 | `ff1d2e023942cdb1f68345639627458850c3d15e8040c3d378cefcdaf30c5128` |
+| 生产来源绑定 | 836 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：未知目录条目类型与属性读取失败
+## 本批生产修正：最终重启前等待后台任务退出
+
+0109调整GUI后台生命周期：已接收任务的析构/线程等待先完成，再执行最终intent及重启；background stop即使没有热插拔线程，也等待CLI退出。原作用域/七个析构函数及stop在真实主机线程与锁、ASan/UBSan下四场景通过；旧main在两个正常退出场景失败，旧background四场景全部失败。CLI十二项、重启入口二十一项通过，清理构建后836来源及六profile核对通过。
+
+构造、任务内容、GUI、控制器及最终重启仍是替身；不提供同步Binder/TEE安全取消、停止新任务预约或完整MTP/USB关闭保证。详见[任务收尾顺序](docs/MULTIUSER-ADAPTATION.md#reboot-worker-drain)。没有重复执行完整OTA；原始OS4.0.4整包的4933操作/42分区哈希及父安装成功属于历史snapshot-cow-init镜像的软件模型，不能替代当前候选或实际启动/合并验收，见[整包运行范围](docs/INSTALL-CHAIN-VALIDATION.md#stock-zip-allocated-success)。
+
+## 沿用的未知目录条目类型与属性读取失败修正
 
 0108将普通递归及加密路径的两次顶层收集改为检查lstat后的类型/大小。DT_UNKNOWN不再静默漏文件或目录；符号链接不跟随目标，属性读取EIO/ENOENT立即传回父进程且不发布data.info。排除项先于属性访问，现有设备节点/特殊类型筛选保持。
 

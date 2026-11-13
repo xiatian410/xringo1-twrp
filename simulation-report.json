@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-backup-source-types.img",
-  "image_sha256": "9ccac23647e936a1f954ebf4a796ce909ab635f895a6fd83c2518117b955db16",
-  "image_status": "Clean installclean + make -j$(nproc); patch0108 handles DT_UNKNOWN using checked lstat and rejects source metadata failure.835 sources/six profiles; codec216 pass. Hardware unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-reboot-worker-drain.img",
+  "image_sha256": "ff1d2e023942cdb1f68345639627458850c3d15e8040c3d378cefcdaf30c5128",
+  "image_status": "Clean installclean + make -j$(nproc); patch0109 joins GUI-owned work before final intent/reboot and joins CLI even without hotplug.836 sources/six profiles; worker4/CLI12/entry21 pass. Hardware unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1933,7 +1933,7 @@
   "not_yet_completed": [
     "OS4 stable automatic ordinary-report startup candidate is built; 9 private policy cases and ramdisk delivery audit pass. Prior manual raw0 user capture observed215 Linux input events. Automatic candidate controller response/event delivery, GUI and wake remain unverified.",
     "Security services: original six-profile ARM64 relocation18, missing-library6 and undefined-symbol6 covered; actual default namespace fields and config removal/marker12 controls now covered in private chroot (42-case suite). Real init/mount namespace/APEX/property/proc runtime, service initialization/Binder/TEE/key operations and synthetic crypto volumes remain open.",
-    "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U. Patch0100 now rejects reboot/slot entry while storage busy and retains pending sideload action until idle; synchronous provider cancellation and a reservation through final reboot remain unimplemented.",
+    "parent-bound work-profile/child-profile key protocol and safe synchronous-call cancellation; original Recovery/vold CE cache/failure eviction/retry and lock/reunlock15 scenarios now covered with key ioctl/prepare/mount fixtures. Real kernel CE eviction and remount remain U. Patch0100 now rejects reboot/slot entry while storage busy and retains pending sideload action until idle; synchronous provider cancellation and a reservation through final reboot remain unimplemented. Patch0109 now destroys/joins GUI-owned backends and CLI before final intent/reboot, including queued work and absent hotplug; original ordering4/CLI12/entry21 pass. No admission reservation or safe synchronous cancellation; full MTP/USB shutdown remains unproven.",
     "MTP patch0099 partial edit packet validation/write retries/response count covered (objects160; old10/11 failures); edits remain in-place, no rollback or complete error-stream drain. MTP patch0098 session gate/close edit cleanup covered (objects149/transfers48; old22/23 failures); remaining media metadata and real client directory-finalization behavior (five post-child explicit SendObjectInfo retry/close/readonly cases covered; no automatic tree completion replay; prior file/date/completion evidence retained), atomic upload orphan recovery and target power-loss semantics, decrypted-media publication, complete DeviceBusy/reset endpoint and queued-event semantics/compat ep0 dispatch/bulk AIO cancellation and full MTP caller/mount/decrypted-storage integration; class Reset now signals server session cleanup at I/O boundaries, closes session, releases pending upload/edits, preserves storage and terminal disconnect errors. Control80/server78/transfers48/events62 are separate host suites, not a real USB Reset session.",
     "0108 resolves DT_UNKNOWN omission/source-stat failure (codec216 pass, old32/32 fail); capacity estimates/concurrent source identity and full lifecycle remain open. 0107 closes the directory-enumeration failure gap (libtar111/codec184 pass, old3/4 and21/32 fail); size estimation, real source consistency, security namespaces/ACL, full manager/GUI and power-loss remain open. 0106 source ENOKEY must fail backup rather than skip success; link metadata not opened (libtar107/codec152, old4/6 and4/12 failures). 0105 source short/EINTR retry and premature EOF rejection covered (libtar101/codec140, previous5/12 and12/16 failures); full concurrent source consistency remains unverified. Backup/restore full GUI/manager/codec lifecycle, original extent topology, actual filesystem power-loss durability and content authenticity. Patch0092 zero-run ordinary-file restoration covered by40 libtar and50 codec cases, old9/10fail; not full sparse tar or physical filesystem proof. Existing completion manifest/manager evidence retained. Patch0093 now propagates archived SELinux/capability errors through libtar/codecs/fork with explicit security syscall fixtures; actual enforcement and arbitrary xattrs remain unverified. Patch0094 now finalizes archived directory mtimes after all volumes/workers/codecs succeed; identity and time-write errors fail restore. Pipeline84/libtar50pass, old20/22fail; no repeated audit required. Unarchived mount root time, arbitrary xattrs and full manager/GUI remain outside this fix. Patch0095 now preserves application user.* binary/empty xattrs with bounded multiblock PAX and errors; existing Android references excluded. libtar64/GNU readback and codec104 pass, old10/14 and20/20fail. Arbitrary privileged namespaces/ACL, live concurrent consistency and complete manager/GUI/powerloss remain outside scope. Patch0096 now bounds ordinary/split extraction to selected root and rejects observed traversal/symlink/shared-inode hazards; libtar79/codec116 pass, old11/15 and12/12 fail. Concurrent ancestor replacement and bind-mount isolation remain open; not complete archive sandboxing. Patch0097 propagates char/block mknod failures before applying metadata to existing files: libtar89/codec124 pass, old8/10 and8/8 fail. mknod is intercepted; no actual device node creation or target kernel success verified.",
     "Full filesystem GUI/manager/tool format/write/repair lifecycle, real mounts/fscrypt, concurrent changes and I/O/power-loss cleanup remain pending. Ten original partition-tool page/worker/return-detail cases now cover that handoff with an explicit manager fixture; they do not join the independent ARM64 tool runs into one full lifecycle. Existing deletion/media/conversion/mount/persist/Android Secure/startup media fixes and ext4 labeling evidence are reused. FormatData/WipeEncryption/metadata partition routing/backend run14 cases now cover terminal errors/order with explicit formatter/mount/mapper/merge/hook fixtures. No full GUI/start/thread, mkfs or crypto lifecycle; no production change/build, do not repeat unchanged.",
@@ -4252,6 +4252,46 @@
       "evidence": "logs/archive-types-negative.json",
       "evidence_sha256": "3727bb6748dd8d99cdd915d6b379a6020c8a10b85134147535d8e01d46431ce3",
       "scope": "Host original tar/pigz/OAES/fork with ASan/UBSan, private files and injected dirent DT_UNKNOWN/source stat EIO/ENOENT. Checked lstat classifies files/directories/links without following link targets, excludes skipped paths before metadata access, propagates source metadata errors without info publication.216 codec cases pass; previous32/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/concurrent identity/power-loss proof; size estimation remains approximate."
+    },
+    {
+      "name": "reboot-quiescence",
+      "status": "PASS",
+      "count": 4,
+      "evidence": "logs/reboot-quiescence.json",
+      "evidence_sha256": "76cf511a1369c1259d803bc7fc06af88d1a0308332994f142a25fa9aba38d196",
+      "scope": "Original main backend scope and seven original worker destructors plus background stop/destructor; real host threads and storage mutex under ASan/UBSan. Four cases cover GUI success/error and hotplug present/absent; isolated old main fails2/4, old background fails4/4. CLI12 and reboot entry21 regressions pass. Constructors/work/GUI/controllers/intent/reboot are fixtures; no full Android/Binder/TEE/USB/MTP shutdown or safe synchronous cancellation proof. Already accepted work drains before final reboot; no new admission reservation."
+    },
+    {
+      "name": "reboot-quiescence-old-main",
+      "status": "FAIL",
+      "count": 4,
+      "evidence": "logs/reboot-quiescence-old-main.json",
+      "evidence_sha256": "30027c349c6e17c7a5dd06e1a5cbe60869610f8aed3baf9d6b5338bd6d7a95fb",
+      "scope": "Original main backend scope and seven original worker destructors plus background stop/destructor; real host threads and storage mutex under ASan/UBSan. Four cases cover GUI success/error and hotplug present/absent; isolated old main fails2/4, old background fails4/4. CLI12 and reboot entry21 regressions pass. Constructors/work/GUI/controllers/intent/reboot are fixtures; no full Android/Binder/TEE/USB/MTP shutdown or safe synchronous cancellation proof. Already accepted work drains before final reboot; no new admission reservation."
+    },
+    {
+      "name": "reboot-quiescence-old-background",
+      "status": "FAIL",
+      "count": 4,
+      "evidence": "logs/reboot-quiescence-old-background.json",
+      "evidence_sha256": "cea19b5548ee33c697a1ead43770a36d191269dbc31a85930a1907637cc29b0c",
+      "scope": "Original main backend scope and seven original worker destructors plus background stop/destructor; real host threads and storage mutex under ASan/UBSan. Four cases cover GUI success/error and hotplug present/absent; isolated old main fails2/4, old background fails4/4. CLI12 and reboot entry21 regressions pass. Constructors/work/GUI/controllers/intent/reboot are fixtures; no full Android/Binder/TEE/USB/MTP shutdown or safe synchronous cancellation proof. Already accepted work drains before final reboot; no new admission reservation."
+    },
+    {
+      "name": "reboot-quiescence-cli",
+      "status": "PASS",
+      "count": 12,
+      "evidence": "logs/reboot-quiescence-cli.json",
+      "evidence_sha256": "9ff99c1d466237ef06058e8df72749f9df1b19cc91c5ebf2011a23faf7c21f41",
+      "scope": "Original main backend scope and seven original worker destructors plus background stop/destructor; real host threads and storage mutex under ASan/UBSan. Four cases cover GUI success/error and hotplug present/absent; isolated old main fails2/4, old background fails4/4. CLI12 and reboot entry21 regressions pass. Constructors/work/GUI/controllers/intent/reboot are fixtures; no full Android/Binder/TEE/USB/MTP shutdown or safe synchronous cancellation proof. Already accepted work drains before final reboot; no new admission reservation."
+    },
+    {
+      "name": "reboot-quiescence-entry",
+      "status": "PASS",
+      "count": 21,
+      "evidence": "logs/reboot-quiescence-entry.json",
+      "evidence_sha256": "f6dc24b92047f244895a258f4e5e1b8453cb267f0f6a9361992973a4485dd397",
+      "scope": "Original main backend scope and seven original worker destructors plus background stop/destructor; real host threads and storage mutex under ASan/UBSan. Four cases cover GUI success/error and hotplug present/absent; isolated old main fails2/4, old background fails4/4. CLI12 and reboot entry21 regressions pass. Constructors/work/GUI/controllers/intent/reboot are fixtures; no full Android/Binder/TEE/USB/MTP shutdown or safe synchronous cancellation proof. Already accepted work drains before final reboot; no new admission reservation."
     }
   ],
   "source_review_followups": [
@@ -4590,8 +4630,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/archive-types-delivery-audit.json",
-    "scope": "Host original tar/pigz/OAES/fork with ASan/UBSan, private files and injected dirent DT_UNKNOWN/source stat EIO/ENOENT. Checked lstat classifies files/directories/links without following link targets, excludes skipped paths before metadata access, propagates source metadata errors without info publication.216 codec cases pass; previous32/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/concurrent identity/power-loss proof; size estimation remains approximate.",
+    "evidence": "logs/reboot-quiescence-delivery-audit.json",
+    "scope": "Original main backend scope and seven original worker destructors plus background stop/destructor; real host threads and storage mutex under ASan/UBSan. Four cases cover GUI success/error and hotplug present/absent; isolated old main fails2/4, old background fails4/4. CLI12 and reboot entry21 regressions pass. Constructors/work/GUI/controllers/intent/reboot are fixtures; no full Android/Binder/TEE/USB/MTP shutdown or safe synchronous cancellation proof. Already accepted work drains before final reboot; no new admission reservation.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -5712,6 +5752,13 @@
     "patch": "0108",
     "scope": "Host original tar/pigz/OAES/fork with ASan/UBSan, private files and injected dirent DT_UNKNOWN/source stat EIO/ENOENT. Checked lstat classifies files/directories/links without following link targets, excludes skipped paths before metadata access, propagates source metadata errors without info publication.216 codec cases pass; previous32/32 fail. No real fscrypt/ARM64 codec/full manager/GUI/concurrent identity/power-loss proof; size estimation remains approximate.",
     "document": "docs/BACKUP-SESSION-ADAPTATION.md#source-type-classification",
+    "production_changes": true,
+    "new_build": true
+  },
+  "reboot_worker_drain": {
+    "patch": "0109",
+    "scope": "Original main backend scope and seven original worker destructors plus background stop/destructor; real host threads and storage mutex under ASan/UBSan. Four cases cover GUI success/error and hotplug present/absent; isolated old main fails2/4, old background fails4/4. CLI12 and reboot entry21 regressions pass. Constructors/work/GUI/controllers/intent/reboot are fixtures; no full Android/Binder/TEE/USB/MTP shutdown or safe synchronous cancellation proof. Already accepted work drains before final reboot; no new admission reservation.",
+    "document": "docs/MULTIUSER-ADAPTATION.md#reboot-worker-drain",
     "production_changes": true,
     "new_build": true
   }

@@ -39,6 +39,7 @@ def main():
 #include "twrp_operation_executor.h"
 #include "twrp_reboot_backend.h"
 #define LOGINFO(...) ((void)0)
+#define LOGERR(...) ((void)0)
 static int starts=0,ends=0,syncs=0,sets=0,unmounts=0;
 static bool enabled=true,write_ok=true;
 static std::string argument,slot_set;
