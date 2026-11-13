@@ -461,3 +461,23 @@ python3 scripts/audit_snapuserd_handler.py
 报告 `logs/ota-snapuserd-handler.json` 绑定实际源码、archive、编译器与固定QEMU；审计为 `logs/snapuserd-handler-audit.json`，公开摘要见 `CURRENT-VALIDATION.json`。修改共享测试入口使0080旧报告的 runner 哈希成为历史值，保留其原始报告，不改写旧摘要，也不因为无关可选模式增加而重复EOF套件。
 
 范围：仅dm-user模式、小型合成COW和普通目标文件，scratch_space=false；未覆盖COPY/XOR/read-ahead、有序合并、io_uring、持久化重启续合并、真正内核节点、属性/init/SELinux启动、SnapshotManager到本套服务端及完整OTA。私有chroot缺proc与task profile的警告保留，不能宣称Android线程策略已验证。至此不再重复replace/zero读取/合并夹具；后续应聚焦原厂操作需要的有序COPY/XOR/RA或持久状态接续。
+
+<a id="snapuserd-ordered"></a>
+
+## COPY/XOR 有序合并与 read-ahead
+
+前节仅覆盖 replace/zero。本节沿用同一 client/server/handler 入口，以可选 `--ordered` 执行实际 ARM64 ReadAhead、带依赖的合并窗口、ReadWorker、MergeWorker 和 COW 进度提交；不替换解析器、解压、预读、顺序或状态实现。容量及dm-user端点继续是前述普通文件/socket替身，当前0080生产镜像及798份来源不变。
+
+六个场景：COPY 双块互换、单XOR（源偏移21字节）、COPY/XOR/replace/zero混合、同组启用scratch区、ordered写入EIO、ordered fsync EIO。源文件按块和字节填充不同内容，COPY互换和混合操作会读取其他目标即将覆盖的旧数据；独立预期始终从初始字节计算。每个操作先通过原始dm-user头请求核对快照内容，再触发合并并读取整个64 KiB目标，包含未修改尾部。实际ReadAhead启动、处理和终止记录及有序MergeWorker执行均被审计核对。
+
+成功场景的完整内容一致，重新打开COW后读到的num_merge_ops分别为2/1/4/4；scratch场景走真实mmap/msync提交。写入失败时目标未改、进度0、状态failed；fsync失败时两个ordered目标已可读但后续replace/zero未执行、进度仍0、状态failed。错误注入只匹配此目标的inode，其余真实调用保持原样。不能以可见字节或进度读回推断掉电持久性。
+
+```bash
+python3 tests/ota_snapuserd_server.py --ordered
+python3 tests/ota_snapuserd_server.py --handler --report logs/ota-snapuserd-ordered-handler-regression.json
+python3 scripts/audit_snapuserd_handler.py --ordered
+```
+
+六项及共享夹具受影响的原handler八项回归通过。报告为 `logs/ota-snapuserd-ordered.json`、`logs/ota-snapuserd-ordered-handler-regression.json`、`logs/snapuserd-ordered-audit.json`；公开摘要见CURRENT-VALIDATION。旧handler报告保持原始哈希，新增可选模式不自动使历史报告成为当前来源一致。没有新增生产缺陷或重编镜像，也不重复0080 EOF与其他未变功能。
+
+本批只覆盖一个小型read-ahead窗口、同步I/O与合成COW。多窗口、大规模依赖、io_uring、预读持久区的进程死亡/重启重建、SnapshotManager到实际服务端完整接续、内核映射和完整OTA仍未覆盖。不能将scratch正常写入读回称为断电恢复。后续优先针对持久续合并这一独立边界推进，不重复同类COPY/XOR正常场景。

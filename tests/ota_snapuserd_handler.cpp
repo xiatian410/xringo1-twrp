@@ -17,6 +17,7 @@
 #include <android-base/logging.h>
 #include <android-base/unique_fd.h>
 #include <libsnapshot/cow_writer.h>
+#include <libsnapshot/cow_reader.h>
 #include <snapuserd/snapuserd_client.h>
 #include <snapuserd/snapuserd_kernel.h>
 #include "snapuserd_server.h"
@@ -88,24 +89,59 @@ int main(int argc, char** argv) {
     android::base::InitLogging(argv, android::base::StderrLogger);
     if (argc != 2) return 2;
     const std::string name = argv[1];
-    const bool merge = name.rfind("merge-", 0)==0;
-    fail_write = name=="merge-write-error"; fail_sync = name=="merge-sync-error";
+    const bool ordered = name.rfind("ordered-", 0)==0;
+    const bool merge = name.rfind("merge-", 0)==0 || ordered;
+    const bool scratch = name=="ordered-scratch";
+    fail_write = name=="merge-write-error" || name=="ordered-write-error";
+    fail_sync = name=="merge-sync-error" || name=="ordered-sync-error";
     std::vector<char> raw(4096);
     for (size_t i=0; i<raw.size(); ++i) raw[i] = (i*7)%113;
+    std::vector<char> initial(65536, 0x5a), expected_ordered;
+    if (ordered) {
+        for (size_t i=0; i<initial.size(); ++i) initial[i]=(i/4096*29+i%107)%251;
+        expected_ordered=initial;
+        std::copy(initial.begin()+4096, initial.begin()+8192, expected_ordered.begin());
+        if (name=="ordered-xor") {
+            for (size_t i=0; i<4096; ++i) expected_ordered[i]=initial[4096+21+i]^raw[i];
+        } else {
+            // Swap sources: neither destination may consume already-overwritten data.
+            std::copy(initial.begin(), initial.begin()+4096, expected_ordered.begin()+4096);
+            if (name!="ordered-copy") {
+                for (size_t i=0; i<4096; ++i) expected_ordered[4096+i]=initial[21+i]^raw[i];
+                std::copy(raw.begin(), raw.end(), expected_ordered.begin()+8192);
+                std::fill(expected_ordered.begin()+12288, expected_ordered.begin()+16384, 0);
+            }
+        }
+    }
     {
         unique_fd base(open("/work/base", O_CREAT|O_RDWR|O_TRUNC, 0600));
-        std::vector<char> initial(65536, 0x5a);
         struct stat st{};
         if (base < 0 || !android::base::WriteFully(base, initial.data(), initial.size()) || fstat(base, &st)) return 3;
         base_dev=st.st_dev; base_ino=st.st_ino;
         CowOptions options;
         options.compression = "lz4"; options.compression_factor = 65536;
         options.op_count_max = 128; options.max_blocks = 16; options.num_compress_threads = 1;
-        options.scratch_space = false;
+        options.scratch_space = scratch;
         unique_fd cow(open("/work/cow", O_CREAT|O_RDWR|O_TRUNC, 0600));
         auto writer = CreateCowWriter(3, options, std::move(cow));
-        if (!writer || !writer->AddRawBlocks(0, raw.data(), raw.size()) ||
-            !writer->AddZeroBlocks(1, 1) || !writer->Finalize()) return 4;
+        if (!writer) return 4;
+        if (ordered) {
+            uint32_t sequence[]={0, 1};
+            const size_t ops=name=="ordered-xor" ? 1 : 2;
+            if (!writer->AddSequenceData(ops, sequence)) return 4;
+            if (name=="ordered-xor") {
+                if (!writer->AddXorBlocks(0, raw.data(), raw.size(), 1, 21)) return 4;
+            } else {
+                if (!writer->AddCopy(0, 1)) return 4;
+                if (name=="ordered-copy") {
+                    if (!writer->AddCopy(1, 0)) return 4;
+                } else {
+                    if (!writer->AddXorBlocks(1, raw.data(), raw.size(), 0, 21) ||
+                        !writer->AddRawBlocks(2, raw.data(), raw.size()) || !writer->AddZeroBlocks(3, 1)) return 4;
+                }
+            }
+        } else if (!writer->AddRawBlocks(0, raw.data(), raw.size()) || !writer->AddZeroBlocks(1, 1)) return 4;
+        if (!writer->Finalize()) return 4;
     }
     if (name == "corrupt-cow") {
         unique_fd cow(open("/work/cow", O_RDWR));
@@ -141,8 +177,16 @@ int main(int argc, char** argv) {
     if (ok && !reject) {
         ok = client->QuerySnapshotStatus("offline") == "snapshot";
         if (ok && (name=="active-read-delete" || merge)) {
-            ok = client->AttachDmUser("offline") && read_block(kernel, 0, raw) &&
-                 read_block(kernel, 8, std::vector<char>(4096));
+            ok = client->AttachDmUser("offline");
+            if (ordered) {
+                const size_t blocks=name=="ordered-xor" ? 1 : name=="ordered-copy" ? 2 : 4;
+                for (size_t block=0; ok && block<blocks; ++block) {
+                    std::vector<char> expected(expected_ordered.begin()+block*4096, expected_ordered.begin()+(block+1)*4096);
+                    ok = read_block(kernel, block*8, expected);
+                }
+            } else {
+                ok = ok && read_block(kernel, 0, raw) && read_block(kernel, 8, std::vector<char>(4096));
+            }
             if (ok && merge) {
                 ok = client->InitiateMerge("offline");
                 bool complete = false, failed = false;
@@ -158,10 +202,20 @@ int main(int argc, char** argv) {
                     std::copy(raw.begin(), raw.end(), expected.begin());
                     std::fill(expected.begin()+4096, expected.begin()+8192, 0);
                 }
+                if (ordered) {
+                    expected=expected_ordered;
+                    if (fail_write) expected=initial;
+                    if (fail_sync) std::copy(initial.begin()+8192, initial.end(), expected.begin()+8192);
+                }
                 const bool expected_fail = fail_write || fail_sync;
                 ok = ok && complete==!expected_fail && failed==expected_fail && base>=0 &&
                      android::base::ReadFully(base, content.data(), content.size()) && content==expected;
-                printf("merge_complete=%d merge_failed=%d independent_base_readback=%d\n", int(complete), int(failed), int(ok));
+                CowReader persisted;
+                bool parsed=persisted.Parse(unique_fd(open("/work/cow", O_RDONLY)));
+                const uint64_t wanted = expected_fail ? 0 : ordered && name!="ordered-copy" && name!="ordered-xor" ? 4 : name=="ordered-xor" ? 1 : 2;
+                ok = ok && parsed && persisted.GetHeader().num_merge_ops==wanted;
+                printf("persisted_merge_ops=%llu expected=%llu\n", parsed ? static_cast<unsigned long long>(persisted.GetHeader().num_merge_ops) : 999ULL, static_cast<unsigned long long>(wanted));
+                printf("merge_complete=%d merge_failed=%d independent_base_readback=%d ordered=%d scratch=%d\n", int(complete), int(failed), int(ok), int(ordered), int(scratch));
             }
             // Emulate kernel control removal only after the original worker served reads.
             ok = shutdown(kernel, SHUT_RDWR)==0 && ok;

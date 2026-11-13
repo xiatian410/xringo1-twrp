@@ -15,7 +15,9 @@
 
 ## 后续执行证据
 
-实际 client Connect/query、server、SnapshotHandlerManager、ReadWorker 与 replace/zero MergeWorker 已接续八场景。真实COW压缩数据/零块读取、64 KiB合并内容与未改尾部逐字节核对，写入/同步故障均保持失败；容量查询和dm-user端点为明确替身。没有发现新增生产缺陷，不重编0080镜像。COPY/XOR/RA、持久续合并、内核映射和完整OTA仍待完成，见[范围](docs/OTA-OPERATION-COW.md#snapuserd-handler)。
+有序COPY/XOR与实际ReadAhead已补六场景，覆盖双块依赖、XOR偏移21、混合操作、scratch区和写入/同步失败；整文件与重新打开COW进度核对通过，共享handler八项回归通过。无生产修改或重编，持久区进程死亡续合并、多窗口与内核接续仍未验证，见[有序合并范围](docs/OTA-OPERATION-COW.md#snapuserd-ordered)。
+
+实际 client Connect/query、server、SnapshotHandlerManager、ReadWorker 与 replace/zero MergeWorker 已接续八场景。真实COW压缩数据/零块读取、64 KiB合并内容与未改尾部逐字节核对，写入/同步故障均保持失败；容量查询和dm-user端点为明确替身。没有发现新增生产缺陷，不重编0080镜像。该检查点未包含COPY/XOR/RA；后续有序合并见上文，持久续合并、内核映射和完整OTA仍待完成，见[范围](docs/OTA-OPERATION-COW.md#snapuserd-handler)。
 
 ## 0080交付时的定向验证
 
