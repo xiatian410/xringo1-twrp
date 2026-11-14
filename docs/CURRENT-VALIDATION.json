@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-mtp-upload-tail.img",
-  "image_sha256": "6188be47e6f3cae9680b1e9f9732a2b5da391aefbe71c3c6497d7d3d7054a4a3",
-  "production_sources": 851,
+  "image_name": "recovery-dijun-unified-mtp-receive-boundary.img",
+  "image_sha256": "7d26ec1ffcd20b8df4f8a4d25d9a4df46abf8fd2d7613afdc0f43115b8dd69f8",
+  "production_sources": 852,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2277,6 +2277,22 @@
       "failures": 8,
       "local_report_sha256": "f1fd169a86ec97f9f0cc6911015e1964570833e31f0cb662f4760ddaa015cf5d",
       "scope": "Patch0122 terminates an MTP session when local SendObject setup/initial-write failure bypasses receiveFile and object bytes or a terminating packet remain unread. It cleans staging, retains old destination and does not dispatch command-shaped payload or queued command; explicit modeled reconnect/open/upload succeeds. Host production objects ASan/UBSan271 pass; same-harness old8/8 fail with actual victim deletion for new/overwrite chown/chmod/create/write errors. Small fully buffered errors retain ordinary responses. USB transport/reset/properties are fixtures; no actual ARM64/Windows/endpoint reconnect, receiveFile-internal error recovery, pathname race isolation or powerloss proof. Historical OTA reused."
+    },
+    {
+      "name": "mtp-receive-tail-final",
+      "status": "PASS",
+      "cases": 285,
+      "failures": 0,
+      "local_report_sha256": "c6caf2121a55a27230ba371560257ef61937530c46e9a04cbf1d8190dfc80851",
+      "scope": "Patch0123 retires a connection on generic receiveFile errors when payload/terminator may remain, and on initial partial-edit write failures with unread data. Success and ECANCELED/reset keep existing handling; fully buffered small failures retain ordinary responses. Host production server/database/storage with ordinary files/inotify/threads and ASan/UBSan285 pass; same-harness old14/14 execute command-shaped tail and delete victim. New/overwrite/partial ENOSPC/EIO/midwrite/terminator plus partial zero/error initial writes covered. Explicit reconnect fixture uploads successfully; partial edits remain in-place without rollback. USB/properties/cancellation transport are fixtures; no actual ARM64 MTP/Windows/full endpoint recovery, pathname race isolation or powerloss/cross-restart proof. Historical full OTA reused, not rerun."
+    },
+    {
+      "name": "mtp-receive-tail-old-final",
+      "status": "FAIL",
+      "cases": 14,
+      "failures": 14,
+      "local_report_sha256": "5b40aa5941b96abef6665edefed6968a331b98af4a92eb542461eefad33d3424",
+      "scope": "Patch0123 retires a connection on generic receiveFile errors when payload/terminator may remain, and on initial partial-edit write failures with unread data. Success and ECANCELED/reset keep existing handling; fully buffered small failures retain ordinary responses. Host production server/database/storage with ordinary files/inotify/threads and ASan/UBSan285 pass; same-harness old14/14 execute command-shaped tail and delete victim. New/overwrite/partial ENOSPC/EIO/midwrite/terminator plus partial zero/error initial writes covered. Explicit reconnect fixture uploads successfully; partial edits remain in-place without rollback. USB/properties/cancellation transport are fixtures; no actual ARM64 MTP/Windows/full endpoint recovery, pathname race isolation or powerloss/cross-restart proof. Historical full OTA reused, not rerun."
     }
   ],
   "refresh_stuck_investigation": {

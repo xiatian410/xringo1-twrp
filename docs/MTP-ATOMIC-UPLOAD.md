@@ -1,5 +1,16 @@
 # MTP 上传、日期与目录元数据
 
+<a id="receive-error-boundary"></a>
+## 接收内部错误与分段写入边界（0123）
+
+原FFS接收函数在异步写入失败、短读或端点错误时可能提前返回；compat接收函数也在写失败时直接返回，均不保证文件数据/终止包已全部消费。原SendObject在调用receiveFile后无条件清除未读标记；SendPartialObject首段写失败和接收失败后也允许返回命令循环，文件尾部可能被执行为下一条命令。
+
+0123仅在接收成功或ECANCELED时清除SendObject已有未读标记；其他错误且边界未确定时结束连接。分段编辑也在首段写失败或普通接收错误、仍有数据/终止包可能未读时结束连接。取消/Reset保留原处理，不增加无上限排空；小文件已完整缓冲错误仍返回普通错误。普通上传保留原目标并清理临时文件；分段编辑不回滚已写入内容，断开释放编辑fd。
+
+既有对象套件扩展14项，将合法DeleteObject字节放在未读尾部：新建/覆盖/分段各自ENOSPC、EIO、读写中途失败、终止包边界，加分段首段零写/写失败。旧版14项实际删除夹具文件；修正版保留文件和未读尾部、不响应排队命令、释放资源，显式清空模拟传输队列/重连后上传成功。主机生产server/database/storage、真实普通文件/inotify/线程在ASan/UBSan下285项通过，包含原取消、Reset及小文件错误响应。历史11项原本等待普通错误响应，现改为断开预期；首次冲突报告保留。
+
+本地证据`logs/mtp-receive-tail-final.json`与`logs/mtp-receive-tail-old-final.json`；交付入口`python3 scripts/audit_mtp_receive_tail.py`。USB、属性、取消时排空和客户端重连为替身；未执行真实FFS端点或ARM64 MTP/Windows，不能将服务器边界修正记作完整USB恢复。未变完整OTA沿用历史证据。
+
 本文集中说明文件上传提交、日期解析与目录上传状态。当前交付见[交付报告](../simulation-report.md)；各补丁的历史候选与报告哈希保留在机器索引和 Git 历史中，不作为完整 USB 验收。
 
 <a id="upload-unread-tail"></a>

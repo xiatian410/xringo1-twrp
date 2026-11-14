@@ -8,14 +8,22 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-mtp-upload-tail.img` |
-| SHA-256 | `6188be47e6f3cae9680b1e9f9732a2b5da391aefbe71c3c6497d7d3d7054a4a3` |
-| 生产来源绑定 | 851 份 |
+| 文件 | `recovery-dijun-unified-mtp-receive-boundary.img` |
+| SHA-256 | `7d26ec1ffcd20b8df4f8a4d25d9a4df46abf8fd2d7613afdc0f43115b8dd69f8` |
+| 生产来源绑定 | 852 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：上传提前失败后不解析未读数据
+## 本批生产修正：接收失败后的数据边界
+
+0123补齐receiveFile内部普通错误及分段编辑首段写入失败后的边界处理：仍可能有文件数据或终止包未读时结束连接，避免尾部被继续当作命令。成功及ECANCELED/Reset保留原行为；小文件已完整缓冲的普通错误仍正常响应。分段编辑已写入内容不回滚。
+
+主机生产对象链ASan/UBSan285项通过。同夹具旧版14个新增场景全部执行尾部删除命令并删除测试文件；修正后保留测试文件，清理临时文件/编辑fd，显式重连后可上传。覆盖新建/覆盖/分段编辑的ENOSPC、EIO、中途失败与终止包边界，以及分段首段零写/写入失败。历史11个接收失败场景改为期望断开，首次预期冲突报告保留。
+
+清理构建绑定852来源及六profile；交付核对为`python3 scripts/audit_mtp_receive_tail.py`。USB/属性/取消排空和重连是替身，未执行真实端点、Windows或ARM64 MTP。详见[接收错误边界](docs/MTP-ATOMIC-UPLOAD.md#receive-error-boundary)。完整OTA沿用历史模型结果，未重跑。
+
+## 沿用的上传提前失败后不解析未读数据
 
 0122在SendObject本地准备或首段写入失败、未调用receiveFile且仍有数据/终止包未读时，关闭当前会话并清理上传，不将文件尾部继续当命令。小文件完全缓冲的错误仍返回普通错误。此修正不改变已经调用receiveFile后的传输错误处理。
 

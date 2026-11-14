@@ -55,7 +55,7 @@ extern "C" int __wrap_open(const char*p,int flags,...){
  if(directory_open_fault&&string(p)=="/one/new-dir"&&(flags&O_DIRECTORY)){errno=EACCES;return -1;}
  if(flags&O_CREAT){va_list args;va_start(args,flags);auto mode=va_arg(args,int);va_end(args);return __real_open(p,flags,mode);}
  int fd=__real_open(p,flags);
- if(string(p)=="/one/a.txt"&&(flags&O_ACCMODE)==O_RDWR&&fd>=0){edit_fd=fd;++edit_opens;}
+ if((string(p)=="/one/a.txt"||string(p)=="/one/dir/b.txt")&&(flags&O_ACCMODE)==O_RDWR&&fd>=0){edit_fd=fd;++edit_opens;}
  return fd;
 }
 bool upload_directory(int fd){struct stat a{},b{};return fstat(fd,&a)==0&&S_ISDIR(a.st_mode)&&stat("/one/new-dir",&b)==0&&a.st_dev==b.st_dev&&a.st_ino==b.st_ino;}
@@ -143,6 +143,20 @@ struct Session {
   Reply result;for(size_t i=first;i<peer.output.size();++i){auto& b=peer.output[i];if(word(b,8)!=tx)continue;if((word(b,4)&0xffff)==3){result.code=word(b,4)>>16;result.response=b;}else result.data=b;}return result;
  }
  void open(){REQUIRE(call(MTP_OPERATION_OPEN_SESSION,{1}).code==MTP_RESPONSE_OK);}
+ // Receive errors with an unfinished data phase close the connection. Clear
+ // stale bytes only as an explicit transport reconnect fixture, never as a
+ // server drain or a claim about real USB host recovery.
+ void disconnectedReceive(uint16_t op, const Bytes& data, uint32_t headerLength=0){
+  const auto transaction=++tx;size_t first;int previous;
+  {lock_guard l(peer.mutex);first=peer.output.size();previous=peer.closes;
+   auto p=packet(2,op,transaction,data);if(headerLength)for(int i=0;i<4;++i)p[i]=headerLength>>(8*i);
+   peer.input.push_back(packet(1,op,transaction));peer.input.push_back(p);peer.cv.notify_all();}
+  {unique_lock l(peer.mutex);REQUIRE(peer.cv.wait_for(l,2s,[&]{return peer.closes>previous;}));
+   for(size_t i=first;i<peer.output.size();++i)REQUIRE(word(peer.output[i],8)!=transaction);}
+  stop();{lock_guard l(peer.mutex);peer.input.clear();}
+  start();open();
+ }
+
  void rejectStream(uint16_t op, const Bytes& params, Bytes data, const string& kind, uint32_t target){
   const auto transaction=++tx;
   auto bad=packet(kind=="wrong-type"?1:2,kind=="wrong-code"?MTP_OPERATION_DELETE_OBJECT:op,
@@ -187,7 +201,7 @@ int main(int argc,char** argv){
   {lock_guard l(peer.mutex);peer.receive_fail=kind!="empty";}
   // Large transfers stop at the explicit transport error, without allocating
   // gigabytes or claiming actual large/unknown USB packet completion.
-  auto r=s.call(MTP_OPERATION_SEND_OBJECT,{},&content,2,0,0,kind=="empty"?12:UINT32_MAX);
+  Reply r;if(kind=="empty")r=s.call(MTP_OPERATION_SEND_OBJECT,{},&content);else {s.disconnectedReceive(MTP_OPERATION_SEND_OBJECT,content,UINT32_MAX);r.code=MTP_RESPONSE_GENERAL_ERROR;}
   receiving_probe={};{lock_guard l(peer.mutex);peer.receive_fail=false;}
   REQUIRE(receives==1&&r.code==(kind=="empty"?MTP_RESPONSE_OK:MTP_RESPONSE_GENERAL_ERROR));
   REQUIRE(kind=="empty"?fs::exists("/one/new.txt")&&fs::file_size("/one/new.txt")==0:!fs::exists("/one/new.txt"));
@@ -623,6 +637,48 @@ int main(int argc,char** argv){
   data=info("retry.txt",3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
   Bytes payload{'o','k','!'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&payload).code==MTP_RESPONSE_OK);
   REQUIRE(stat("/one/retry.txt",&st)==0&&st.st_mtime>=before&&readfile("/one/retry.txt")=="ok!");
+ }else if(test.starts_with("receive-tail-")){
+  const auto label=test.substr(13);const auto split=label.find('-');
+  const auto kind=label.substr(0,split), fault=label.substr(split+1);
+  const bool partial=kind=="partial", replacing=kind=="overwrite";
+  const string name=replacing?"a.txt":"new.txt",target=partial?"/one/dir/b.txt":"/one/"+name;
+  const uint32_t object=partial?find(s.db,0x10001,"b.txt",dir):0;
+  const uint16_t op=partial?MTP_OPERATION_SEND_PARTIAL_OBJECT:MTP_OPERATION_SEND_OBJECT;
+  const uint32_t initial=MTP_BUFFER_SIZE-MTP_CONTAINER_HEADER_SIZE;
+  const Bytes tail=packet(1,MTP_OPERATION_DELETE_OBJECT,900,words({a,0}));
+  const Bytes middle(fault=="midwrite"?4096:0,'M');
+  const uint32_t length=initial+middle.size()+(fault=="terminator"?0:tail.size());
+  if(partial)REQUIRE(object&&s.call(MTP_OPERATION_BEGIN_EDIT_OBJECT,{object}).code==MTP_RESPONSE_OK);
+  else {auto data=info(name,length);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);}
+  int receives=0;receiving_probe=[&](int){++receives;};
+  edit_write_fault=fault=="zero"?3:fault=="write"?4:0;
+  {lock_guard l(peer.mutex);peer.receive_fail=fault!="midwrite"&&fault!="zero"&&fault!="write";
+   peer.receive_errno=fault=="eio"?EIO:ENOSPC;peer.receive_fail_after=middle.size();}
+  const auto transfer=++s.tx,next=++s.tx;size_t first;
+  auto header=packet(2,op,transfer,Bytes(initial,'N'));
+  const uint32_t total=MTP_CONTAINER_HEADER_SIZE+length;
+  for(int i=0;i<4;++i)header[i]=total>>(8*i);
+  {lock_guard l(peer.mutex);first=peer.output.size();
+   peer.input.push_back(packet(1,op,transfer,partial?words({object,0,0,length}):Bytes{}));
+   peer.input.push_back(header);if(!middle.empty())peer.input.push_back(middle);
+   peer.input.push_back(tail);peer.input.push_back(packet(1,MTP_OPERATION_GET_STORAGE_IDS,next));peer.cv.notify_all();}
+  {unique_lock l(peer.mutex);REQUIRE(peer.cv.wait_for(l,2s,[&]{
+   if(peer.closes)return true;
+   for(size_t i=first;i<peer.output.size();++i)if(word(peer.output[i],8)==next)return true;
+   return false;}));}
+  s.stop();receiving_probe={};edit_write_fault=0;
+  cout<<"receive_tail_victim_present="<<fs::exists("/one/a.txt")<<" receives="<<receives<<endl;
+  REQUIRE(readfile("/one/a.txt")=="alpha");
+  REQUIRE(receives==((fault=="zero"||fault=="write")?0:1));
+  if(partial){REQUIRE(edit_closes==1);REQUIRE(readfile(target)==((fault=="zero"||fault=="write")?"bravo":string(initial,'N')+string(middle.begin(),middle.end())));}
+  else REQUIRE(replacing?readfile(target)=="alpha":!fs::exists(target));
+  {lock_guard l(peer.mutex);REQUIRE(peer.closes==1&&peer.input.size()==2&&peer.input.front()==tail);
+   for(size_t i=first;i<peer.output.size();++i)REQUIRE(word(peer.output[i],8)!=900&&word(peer.output[i],8)!=next&&word(peer.output[i],8)!=transfer);
+   peer.input.clear();peer.receive_fail=false;peer.receive_fail_after=0;peer.receive_errno=ENOSPC;}
+  for(const auto&e:fs::directory_iterator("/one"))REQUIRE(!e.path().filename().string().starts_with(".mtp-upload-"));
+  s.start();s.open();auto data=info("retry.txt",3);REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data).code==MTP_RESPONSE_OK);
+  Bytes retry{'o','k','!'};REQUIRE(s.call(MTP_OPERATION_SEND_OBJECT,{},&retry).code==MTP_RESPONSE_OK&&readfile("/one/retry.txt")=="ok!");
+  cout<<"receive_tail_not_dispatched=1 resources_released=1 explicit_reconnect_upload=1 partial_rollback=0\n";
  }else if(test.starts_with("upload-tail-")){
   const bool replacing=test.starts_with("upload-tail-overwrite-");
   const auto kind=test.substr(test.find_last_of('-')+1);
@@ -772,7 +828,7 @@ int main(int argc,char** argv){
   auto data=info(name,60000);auto r=s.call(MTP_OPERATION_SEND_OBJECT_INFO,{0x10001,0xffffffff},&data);
   REQUIRE(r.code==MTP_RESPONSE_OK);Bytes content(60000,'N');
   {lock_guard l(peer.mutex);peer.receive_fail=receive_error;}
-  r=s.call(MTP_OPERATION_SEND_OBJECT,{},&content);receiving_probe={};
+  if(receive_error){s.disconnectedReceive(MTP_OPERATION_SEND_OBJECT,content);r.code=MTP_RESPONSE_GENERAL_ERROR;}else r=s.call(MTP_OPERATION_SEND_OBJECT,{},&content);receiving_probe={};
   REQUIRE(r.code==MTP_RESPONSE_GENERAL_ERROR);
   REQUIRE(replacing?readfile(path)==old:!fs::exists(path));
   if(!receive_error)REQUIRE(readfile("/one/detached-upload")==string(60000,'N'));
@@ -811,6 +867,8 @@ int main(int argc,char** argv){
    // explicitly; an ordinary error response would permit command misframing.
    {lock_guard l(peer.mutex);REQUIRE(!peer.input.empty());peer.input.clear();}
    s.start();s.open();
+  }else if(test.ends_with("receive-error")){
+   s.disconnectedReceive(MTP_OPERATION_SEND_OBJECT,content);r.code=MTP_RESPONSE_GENERAL_ERROR;
   }else if(test.ends_with("cancel")){
    uint32_t cancelled;size_t first;
    {lock_guard l(peer.mutex);cancelled=++s.tx;first=peer.output.size();peer.input.push_back(packet(1,MTP_OPERATION_SEND_OBJECT,cancelled));peer.input.push_back(packet(2,MTP_OPERATION_SEND_OBJECT,cancelled,content));peer.cv.notify_all();}

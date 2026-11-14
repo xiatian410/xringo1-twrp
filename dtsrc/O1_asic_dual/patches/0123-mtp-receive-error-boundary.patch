@@ -1,0 +1,42 @@
+--- a/mtp/MtpServer.cpp
++++ b/mtp/MtpServer.cpp
+@@ -1348,9 +1348,11 @@
+         // transfer the file
+         ret = mHandle->receiveFile(mfr, mfr.length == 0 &&
+                 initialData == MTP_BUFFER_SIZE - MTP_CONTAINER_HEADER_SIZE);
+-        // Once invoked, the transport owns its receive/cancel/reset semantics.
+-        // This guard covers failures that bypassed the receive entirely.
+-        unreadData = false;
++        // A generic receive error does not guarantee a data boundary: disk
++        // writes and endpoint reads can fail before the remaining payload or
++        // terminator is consumed. Only success or transport cancellation/reset
++        // permits the existing command/cancel handling to continue.
++        if (ret >= 0 || errno == ECANCELED) unreadData = false;
+         if ((ret < 0) && (errno == ECANCELED)) {
+             isCanceled = true;
+         }
+@@ -1513,6 +1515,8 @@
+     if (ret < MTP_CONTAINER_HEADER_SIZE)
+         return MTP_RESPONSE_GENERAL_ERROR;
+     const size_t initialData = ret - MTP_CONTAINER_HEADER_SIZE;
++    const bool unreadData = length > initialData ||
++                           initialData == MTP_BUFFER_SIZE - MTP_CONTAINER_HEADER_SIZE;
+ 
+     size_t written = 0;
+     while (written < initialData) {
+@@ -1520,6 +1524,7 @@
+                                      initialData - written, offset + written);
+         if (count < 0 && errno == EINTR) continue;
+         if (count <= 0) {
++            if (unreadData) mProtocolError = true;
+             mData.reset();
+             mResponse.setParameter(1, 0);
+             return MTP_RESPONSE_GENERAL_ERROR;
+@@ -1540,6 +1545,7 @@
+     // write/transport failure. Bytes already written are not rolled back.
+     mData.reset();
+     if (ret < 0) {
++        if (unreadData && savedErrno != ECANCELED) mProtocolError = true;
+         mResponse.setParameter(1, 0);
+         return savedErrno == ECANCELED ? MTP_RESPONSE_TRANSACTION_CANCELLED
+                                       : MTP_RESPONSE_GENERAL_ERROR;

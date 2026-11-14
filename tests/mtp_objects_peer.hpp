@@ -18,7 +18,7 @@ inline Bytes packet(uint16_t type,uint16_t code,uint32_t tx,const Bytes& payload
 }
 struct Peer {
  std::mutex mutex;std::condition_variable cv;std::deque<Bytes> input;
- std::vector<Bytes> output,events;bool disconnected=false;bool receive_fail=false;bool receive_cancel=false;bool receive_short_success=false;int starts=0,closes=0;
+ std::vector<Bytes> output,events;bool disconnected=false;bool receive_fail=false;int receive_errno=ENOSPC;size_t receive_fail_after=0;bool receive_cancel=false;bool receive_short_success=false;int starts=0,closes=0;
  std::vector<uint64_t> transaction_lifetimes;
  uint64_t active_transaction=0;
  bool transaction_lifetime_error=false;
@@ -66,9 +66,9 @@ class FixtureHandle:public IMtpHandle {
    size_t left=r.length;
    while(left&&!peer.input.empty()){auto&b=peer.input.front();size_t n=std::min(left,b.size());b.erase(b.begin(),b.begin()+n);left-=n;if(b.empty())peer.input.pop_front();}
    errno=ECANCELED;return -1;
-  }if(peer.receive_fail){errno=ENOSPC;return -1;}if(peer.receive_short_success)return 0;}
+  }if(peer.receive_fail){errno=peer.receive_errno;return -1;}if(peer.receive_short_success)return 0;}
   char b[4096];size_t left=r.length;off_t off=r.offset;
-  while(left){int n=read(b,std::min(left,sizeof(b)));if(n<=0)return -1;if(pwrite(r.fd,b,n,off)!=n)return -1;left-=n;off+=n;}return 0;
+  while(left){int n=read(b,std::min(left,sizeof(b)));if(n<=0)return -1;if(pwrite(r.fd,b,n,off)!=n)return -1;left-=n;off+=n;{std::lock_guard l(peer.mutex);if(peer.receive_fail_after&&r.length-left>=peer.receive_fail_after){errno=peer.receive_errno;return -1;}}}return 0;
  }
  int sendFile(mtp_file_range r) override {
   {std::lock_guard l(peer.mutex);if(peer.reset_send){peer.reset_send=false;peer.reset_pending=true;errno=ECANCELED;return -1;}}

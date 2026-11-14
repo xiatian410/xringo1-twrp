@@ -454,6 +454,10 @@
         {
           "file": "0122-mtp-upload-unread-tail.patch",
           "sha256": "10f0048c73f9cbe5139ace7e048c9730cf12a734244c42746958a062e6dd34e6"
+        },
+        {
+          "file": "0123-mtp-receive-error-boundary.patch",
+          "sha256": "cf726c66ef84469bf83aadff5dc6c7e64515da1b883fd7a89c71a887dd514d84"
         }
       ],
       "result_files": {
@@ -510,7 +514,7 @@
         "oaes/oaes.cpp": "306acbfddd40512ba8c0ad0b7ad8afc86533425625e6a875f95d0a3ae4e1e356",
         "oaes/oaes.hpp": "256c988afbd924a12db4bdaa4c9c35475dda92b53676cf7693f64e36de0ed3c4",
         "mtp/IMtpDatabase.h": "fc1882a4836fe013c6871b5ff6be7cccadcf370b132ab58755d17dadb5a96c71",
-        "mtp/MtpServer.cpp": "99b1417d22e7f26792c6316c041ae871ab3e76a7949078ce78ce6bf158c092a2",
+        "mtp/MtpServer.cpp": "5bbd0d2448b4822fe3725fff1aa272c6d685b9c4a5c66597965cea1f0498ea69",
         "mtp/MtpServer.h": "8ee134a2913fe80785e6255c13bd2e270135ea69469e6f1a24211d5d2d144e4c",
         "mtp/twrp/TwrpMtpDatabase.cpp": "bf3de21de83287eb857cd9c723acd2dfb6ff47dac5ccf38e49c26958f402fa22",
         "mtp/twrp/TwrpMtpDatabase.hpp": "fa4c2eeddfe32c8c936d6669a40c8528ce7de2086296a8c9ea2430171e64bc0c",

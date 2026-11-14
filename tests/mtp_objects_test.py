@@ -55,6 +55,10 @@ STREAM_CASES = ['stream-boundary-'+op+'-'+kind for op in ['new','overwrite','par
 CASES += STREAM_CASES
 STREAM_VALID_CASES = ['stream-valid-'+kind for kind in ['empty','limit','overflow','unknown']]
 CASES += STREAM_VALID_CASES
+RECEIVE_TAIL_CASES = ['receive-tail-'+kind+'-'+fault for kind in ['new','overwrite','partial']
+                      for fault in ['enospc','eio','midwrite','terminator']]
+RECEIVE_TAIL_CASES += ['receive-tail-partial-'+fault for fault in ['zero','write']]
+CASES += RECEIVE_TAIL_CASES
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 
 def main():
