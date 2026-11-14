@@ -1,0 +1,139 @@
+--- a/openrecoveryscript.cpp
++++ b/openrecoveryscript.cpp
+@@ -524,6 +524,10 @@
+ 		LOGINFO("Inserting '%s'\n", Command.c_str());
+ 		ORSfile << Command.c_str() << endl;
+ 		ORSfile.close();
++		if (ORSfile.fail()) {
++			LOGERR("Unable to write ORS command\n");
++			return 0;
++		}
+ 		return 1;
+ 	}
+ 	LOGERR("Unable to append '%s' to '%s'\n", Command.c_str(), SCRIPT_FILE_TMP);
+@@ -711,58 +715,56 @@
+ }
+ 
+ // Runs commands received by the background ORS FIFO listener.
+-void OpenRecoveryScript::Run_CLI_Command(const char* command) {
+-	string tmp = command;
+-	std::vector<string> parts =
+-		TWFunc::SplitString(tmp, " ");  // pats[0] is cmd, parts[1...] is args
+-	string cmd_str = parts[0];
+-
+-	if (cmd_str == "runscript") {
+-		if (parts.size() > 1) {
+-			string filename = parts[1];
+-			if (OpenRecoveryScript::copy_script_file(filename) == 0) {
+-				LOGINFO("Unable to copy script file\n");
+-			} else {
+-				OpenRecoveryScript::run_script_file();
+-			}
++int OpenRecoveryScript::Run_CLI_Command(const char* command) {
++	int result = 1;
++	auto admission = twrp_operation_executor::instance().admit_job();
++	const std::string input = command ? command : "";
++	const auto parts = TWFunc::SplitString(input, " ");
++	if (!admission) {
++		LOGERR("Unable to run CLI command during shutdown\n");
++	} else if (parts.empty()) {
++		LOGERR("Missing CLI command\n");
++	} else if (parts[0] == "runscript") {
++		if (parts.size() < 2) {
++			LOGERR("Missing parameter: script file name\n");
++		} else if (OpenRecoveryScript::copy_script_file(parts[1]) == 0) {
++			LOGERR("Unable to copy script file\n");
+ 		} else {
+-			LOGINFO("Missing parameter: script file name\n");
+-		}
+-	} else if (cmd_str == "get") {
+-		if (parts.size() > 1) {
+-			string varname = parts[1];
+-			string value;
+-			DataManager::GetValue(varname, value);
+-			gui_print("%s = %s\n", varname.c_str(), value.c_str());
++			result = OpenRecoveryScript::run_script_file();
++			if (result == 2) result = 0;
++		}
++	} else if (parts[0] == "get") {
++		if (parts.size() < 2) {
++			LOGERR("Missing parameter: variable name\n");
+ 		} else {
+-			LOGINFO("Missing parameter: var name\n");
+-		}
+-	} else if (cmd_str == "decrypt") {
+-		// twrp cmd cannot decrypt a password with space, should decrypt on gui
+-		if (parts.size() == 1) {
++			std::string value;
++			result = DataManager::GetValue(parts[1], value);
++			if (result == 0) gui_print("%s = %s\n", parts[1].c_str(), value.c_str());
++		}
++	} else if (parts[0] == "decrypt") {
++		if (parts.size() < 2) {
+ 			gui2_console::log_error("no_pwd");
+ 		} else {
+-			string pass = parts[1];
+-			string userid = "0";
+-			if (parts.size() > 2)
+-				userid = parts[2];
+-
++			const std::string userid = parts.size() > 2 ? parts[2] : "0";
+ 			gui2_console::info("decrypt_cmd");
+-			if (PartitionManager.DecryptDevice(pass, atoi(userid.c_str())) == 0) {
+-				// set_page_done = 1;  // done by singleaction_page anyway
+-				std::string orsFile = TWFunc::GetLogDir() + "/openrecoveryscript";
+-				if (TWFunc::IsPathExists(orsFile)) {
+-					Run_OpenRecoveryScript_Action();
+-				}
++			result = PartitionManager.DecryptDevice(parts[1], atoi(userid.c_str()));
++			if (result == 0) {
++				std::string directory = TWFunc::GetLogDir();
++				if (directory == DATA_LOGS_DIR) directory = "/data/cache";
++				if (TWFunc::IsPathExists(directory + "/recovery/openrecoveryscript"))
++					result = Run_OpenRecoveryScript_Action();
+ 			}
+ 		}
+-	} else if (OpenRecoveryScript::Insert_ORS_Command(command)) {
+-		OpenRecoveryScript::run_script_file();
+-	}
+-
+-	// let the GUI close the output fd and restart the command listener
+-	call_after_cli_command();
+-	LOGINFO("Done reading ORS command from command line\n");
++	} else if (OpenRecoveryScript::Insert_ORS_Command(input)) {
++		result = OpenRecoveryScript::run_script_file();
++		if (result == 2) result = 0;
++	}
++
++	result = result == 0 ? 0 : 1;
++	// Close output and restart the listener even for rejected/failed commands.
++	if (call_after_cli_command) call_after_cli_command();
++	LOGINFO("Done reading ORS command from command line: status=%d\n", result);
++	return result;
+ }
+ 
+ int OpenRecoveryScript::remountrw(void)
+--- a/openrecoveryscript.hpp
++++ b/openrecoveryscript.hpp
+@@ -41,7 +41,7 @@
+ 	static int Insert_ORS_Command(string Command);                                 // Inserts the Command into the SCRIPT_FILE_TMP file
+ 	static int Run_OpenRecoveryScript_Action();                                    // Runs startup and queued ORS scripts
+ 	static void Call_After_CLI_Command(VoidFunction fn) { call_after_cli_command = fn; }
+-	static void Run_CLI_Command(const char* command);                              // Runs a command for orscmd (twrp binary)
++	static int Run_CLI_Command(const char* command);                              // Runs a command for orscmd (twrp binary)
+ 	static int remountrw();                                                        // Remount system and vendor rw
+ };
+ 
+--- a/gui2/backend/twrp_background_backend.cpp
++++ b/gui2/backend/twrp_background_backend.cpp
+@@ -82,8 +82,8 @@
+ // GUIAction::twcmd
+ void twcmd(std::string arg) {
+   operation_start("TWRP CLI Command");
+-  OpenRecoveryScript::Run_CLI_Command(arg.c_str());
+-  operation_end(0);
++  const int result = OpenRecoveryScript::Run_CLI_Command(arg.c_str());
++  operation_end(result);
+   command_active.store(false);
+ }
+ 

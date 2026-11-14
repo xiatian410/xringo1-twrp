@@ -30,11 +30,11 @@ struct DataManager {
 struct OpenRecoveryScript {
  static inline void(*callback)()=nullptr;
  static void Call_After_CLI_Command(void(*cb)()){callback=cb;}
- static void Run_CLI_Command(const char* text){executed=text;++executions;command_entered=true;while(hold_command.load())std::this_thread::yield();if(mirrored){
+ static int Run_CLI_Command(const char* text){executed=text;++executions;command_entered=true;while(hold_command.load())std::this_thread::yield();if(mirrored){
  if(std::string(text)=="saturated"){
   std::string chunk(1024,'z');for(int i=0;i<256;++i)fputs(chunk.c_str(),mirrored);
  }else fputs("fixture completed\n",mirrored);
-}if(callback)callback();}
+}if(callback)callback();return 0;}
 };
 struct PartitionFixture {
  struct {int fd=-1;} uevent_pfd;

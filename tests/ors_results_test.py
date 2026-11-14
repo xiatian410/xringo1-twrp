@@ -24,6 +24,7 @@ def main():
     modes.add_argument('--arguments', action='store_true', help='Test missing backup options and setting names without crashing')
     modes.add_argument('--input', action='store_true', help='Test stream errors and complete-command line boundaries')
     modes.add_argument('--reboot', action='store_true', help='Test deferred reboot and executor handoff')
+    modes.add_argument('--cli', action='store_true', help='Test CLI wrapper and listener completion result')
     args = ap.parse_args()
     text = args.source.read_text()
     production = '\n'.join(method(text, s) for s in ['int OpenRecoveryScript::run_script_file(', 'int OpenRecoveryScript::Run_OpenRecoveryScript_Action('])
@@ -358,6 +359,79 @@ static int checked_close(FILE* fp){int result=::fclose(fp);if(close_fault){errno
 #define fclose checked_close
 static bool succeeds=false;''')
         fixture = fixture.replace('auto& executor=twrp_operation_executor::instance();', 'close_fault=label=="close-error";auto& executor=twrp_operation_executor::instance();')
+    if args.cli:
+        # Keep parser/action/append real; copy/cache discovery and partition,
+        # settings and callback output are explicit boundary fixtures.
+        fixture = fixture[:fixture.index('int main(int argc,char** argv)')]
+        cli_signature = 'int OpenRecoveryScript::Run_CLI_Command(' if 'int OpenRecoveryScript::Run_CLI_Command(' in text else 'void OpenRecoveryScript::Run_CLI_Command('
+        wrapper = method(text, cli_signature)
+        return_type = 'int' if cli_signature.startswith('int') else 'void'
+        fixture = fixture.replace('#include <cassert>', '#include <atomic>\n#include <sys/resource.h>\n#include <csignal>\n#include <string_view>\n#include <sstream>\n#include <cassert>', 1)
+        fixture = fixture.replace('static bool succeeds=false;', '''
+#define DATA_LOGS_DIR "data-logs"
+static int callbacks=0, completions=0, completion=-1, decrypt_code=0, decrypt_calls=0, lookup_code=0;
+static bool cache_present=false, cache_failure=false, copy_ok=true;
+static bool succeeds=false;''')
+        fixture = fixture.replace('template<class T>static void GetValue(const string&,T& out){out=T{};}', 'template<class T>static int GetValue(const string&,T& out){out=T{};return lookup_code;}')
+        fixture = fixture.replace('int FixContexts(){return 0;}int DecryptDevice(const string&,int){return 0;}', 'int FixContexts(){return 0;}int DecryptDevice(const string&,int){++decrypt_calls;return decrypt_code;}')
+        fixture = fixture.replace('bool IsPathExists(const string& p){return filesystem::exists(p);}', 'string GetLogDir(){return "cache";}\n bool IsPathExists(const string& p){if(p=="cache/recovery/openrecoveryscript")return cache_present;return filesystem::exists(p);}')
+        fixture = fixture.replace('vector<string> SplitString(const string&,const string&){return {"fixture"};}', 'vector<string> SplitString(const string&,const string&,bool=true);')
+        fixture = fixture.replace(' static int run_script_file();', f''' static inline void(*call_after_cli_command)()=nullptr;
+ static {return_type} Run_CLI_Command(const char*);
+ static int Insert_ORS_Command(string);
+ static int copy_script_file(string p){{if(!copy_ok)return 0;filesystem::copy_file(p,SCRIPT_FILE_TMP,filesystem::copy_options::overwrite_existing);filesystem::remove(p);return 1;}}
+ static int run_script_file();''')
+        fixture = fixture.replace('static int check_for_script_file(){return 0;}', '''static int check_for_script_file(){
+ if(!cache_present)return 0;if(cache_failure)return -1;
+ {ofstream script(SCRIPT_FILE_TMP);script<<"wipe cache\\n";}return 1;
+}''')
+        function_source = (SRC/'twrp_functions.cpp').read_text()
+        tokenizer = method(function_source, 'static std::vector<std::string> SplitByCharset(')
+        splitter = method(function_source, 'std::vector<std::string> TWFunc::SplitString(const std::string& str, const std::string& delimiter,')
+        fixture += '\n'+tokenizer+'\n'+splitter+'\n'+method(text,'int OpenRecoveryScript::Insert_ORS_Command(')+'\n'+wrapper
+        backend_source = args.source.parent/'gui2/backend/twrp_background_backend.cpp' if args.source != SRC/'openrecoveryscript.cpp' else SRC/'gui2/backend/twrp_background_backend.cpp'
+        fixture += r'''
+static std::atomic<bool> command_active=true;
+static void operation_start(const char*){}
+static void operation_end(int value){++completions;completion=value;}
+// TWCMD
+static void closed(){++callbacks;}
+int main(int argc,char**argv){
+ assert(argc==2);string label=argv[1],command;expected_operation="wipe:/cache";succeeds=true;
+ bool fail=false;
+ if(label=="wipe-success")command="wipe cache";
+ else if(label=="wipe-failure"){command="wipe cache";succeeds=false;fail=true;}
+ else if(label=="unknown"){command="unknown";fail=true;}
+ else if(label=="empty"){command="";fail=true;}
+ else if(label=="spaces"){command="   ";fail=true;}
+ else if(label=="missing-script"){command="runscript";fail=true;}
+ else if(label=="copy-failure"){command="runscript source.txt";copy_ok=false;fail=true;}
+ else if(label=="script-success"||label=="script-failure"||label=="script-reboot"){
+  command="runscript source.txt";ofstream script("source.txt");script<<(label=="script-reboot"?"reboot recovery\n":"wipe cache\n");succeeds=label!="script-failure";fail=!succeeds;
+ }else if(label=="append-failure"){filesystem::create_directory(SCRIPT_FILE_TMP);command="wipe cache";fail=true;}
+ else if(label=="write-failure"){signal(SIGXFSZ,SIG_IGN);rlimit limit{0,0};assert(setrlimit(RLIMIT_FSIZE,&limit)==0);command="wipe cache";fail=true;}
+ else if(label=="get-success"||label=="get-failure"){command="get fixture";lookup_code=label=="get-failure"?-1:0;fail=lookup_code!=0;}
+ else if(label=="get-missing"){command="get";fail=true;}
+ else if(label=="decrypt-missing"){command="decrypt";fail=true;}
+ else if(label=="decrypt-failure"||label=="decrypt-code2"||label=="decrypt-success"||label=="decrypt-cache-success"||label=="decrypt-cache-failure"){
+  command="decrypt fixture 0";decrypt_code=label=="decrypt-failure"?1:label=="decrypt-code2"?2:0;
+  cache_present=label.starts_with("decrypt-cache");cache_failure=label=="decrypt-cache-failure";fail=decrypt_code!=0||cache_failure;
+ }else if(label=="reserved"){command="wipe cache";assert(twrp_operation_executor::instance().reserve_shutdown());fail=true;}
+ else if(label=="reboot")command="reboot recovery";
+ else if(label=="no-callback")command="wipe cache";
+ else assert(false);
+ OpenRecoveryScript::call_after_cli_command=label=="no-callback"?nullptr:closed;
+ twcmd(command);
+ printf("completion=%d callbacks=%d calls=%d decrypt=%d reboots=%d\n",completion,callbacks,calls,decrypt_calls,reboots);fflush(stdout);
+ assert(completions==1&&completion==(fail?1:0));assert(!command_active);
+ assert(callbacks==(label=="no-callback"?0:1));
+ if(label=="reserved"||label=="empty"||label=="spaces")assert(calls==0&&!filesystem::exists(SCRIPT_FILE_TMP));
+ if(label=="decrypt-cache-success")assert(calls==1&&reboots==1);
+ if(label=="script-reboot"||label=="reboot")assert(reboots==1);
+ puts("cli_execution_failure_reaches_listener_completion=1");
+}
+'''
+        fixture = fixture.replace('// TWCMD',method(backend_source.read_text(),'void twcmd('))
     rows = []
     commands = [('wipe cache','wipe:/cache'),('wipe /cache','wipe:/cache'),
                 ('wipe system','wipe:/system'),('wipe /system_root','wipe:/system'),
@@ -371,13 +445,20 @@ static bool succeeds=false;''')
         compile_command = ['g++','-std=c++23','-O1','-g','-fsanitize=address,undefined','-fno-pie','-no-pie','-pthread','-I'+str(SRC),'-I'+str(SRC/'gui2/backend'),str(p/'test.cpp'),str(SRC/'twrp_operation_executor.cpp'),'-o',str(p/'test')]
         subprocess.run(compile_command, check=True)
         for command, operation in commands:
-            if args.sequence or args.staging or args.arguments or args.input or args.reboot:
+            if args.sequence or args.staging or args.arguments or args.input or args.reboot or args.cli:
                 break
             for outcome in ['success','failure'] if command!='cmd' else ['failure']:
                 for entry in ['direct','startup']:
                     run = subprocess.run([str(p/'test'),command,operation,outcome,entry],cwd=p,capture_output=True,text=True,timeout=5)
                     row = dict(case=f'{command}-{outcome}-{entry}',status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,output=run.stdout+run.stderr)
                     rows.append(row);print(row['status'],row['case'],flush=True)
+        if args.cli:
+            labels=['wipe-success','wipe-failure','unknown','empty','spaces','missing-script','copy-failure','script-success','script-failure','script-reboot','append-failure','write-failure','get-success','get-failure','get-missing','decrypt-missing','decrypt-failure','decrypt-code2','decrypt-success','decrypt-cache-success','decrypt-cache-failure','reserved','reboot','no-callback']
+            for label in labels:
+                case_dir=p/label;case_dir.mkdir()
+                run=subprocess.run([str(p/'test'),label],cwd=case_dir,capture_output=True,text=True,timeout=5)
+                rows.append(dict(case=label,status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,output=run.stdout+run.stderr))
+                print(rows[-1]['status'],label,flush=True)
         if args.reboot:
             for label in ['system','recovery','poweroff','bootloader','download','edl','fastboot','default','automatic','startup-explicit','invalid','reserved','write-retry','busy-retry','capability-retry','close-error']:
                 case_dir=p/label;case_dir.mkdir()
@@ -418,11 +499,13 @@ static bool succeeds=false;''')
                     rows.append(row);print(row['status'],row['case'],flush=True)
     sources = [args.source,Path(__file__).resolve(),ROOT/'tests/nested_partition_path_test.py',SRC/'twrp_operation_executor.h',SRC/'twrp_operation_executor.cpp']
     if args.reboot:sources.extend([SRC/'openrecoveryscript.cpp',reboot_source,SRC/'openrecoveryscript.hpp',SRC/'gui2/backend/twrp_reboot_backend.h',SRC/'gui2/backend/reboot_backend.h'])
+    if args.cli:sources.extend([backend_source,SRC/'twrp_functions.cpp',SRC/'openrecoveryscript.hpp'])
     if args.staging:sources.append(SRC/'twrp_functions.cpp')
     scope = __doc__ + (' Reboot mode executes original queue, parser/action and GUI consumer with real executor; settings/capabilities/sync/sideload absent and final reboot are fixtures. Explicit request stops tail/cache; reject reserved shutdown, retain on busy/write/capability failure, reject close errors.' if args.reboot else '') + (' Temporary/cache scripts: absent/success/failure combinations; first failure leaves cache unconsumed, second failure blocks automatic reboot after first success.' if args.sequence else '')
     if args.staging:scope += ' Original check/copy/parser/action and TWFunc::CopyFile with private files; mount/chmod/unlink faults injected; checks source bytes and partial temporary cleanup. No mount, crash durability, concurrent pathname replacement or actual shell/reboot.'
     if args.arguments:scope += ' Missing/space-only backup options and setting names: reject before null strcpy, stop tail and startup automatic reboot; valid backup options and set empty/value controls preserved. Full original parser/action under ASan/UBSan; backup operation is an explicit fixture.'
     if args.input:scope += ' Original stdio parser/action with private files, actual directory-read error and fopencookie EIO at first read/partial command/after command/lookahead; fclose result injected after actual close. Reject overlong lines before executing prefix; accept511-byte command at EOF or followed by newline. ASan/UBSan; manager/shell/reboot fixtures, no physical I/O bound, rollback, concurrent file stability or full GUI.'
+    if args.cli:scope += ' CLI mode executes original wrapper/parser/action/append/tokenizer/listener twcmd with private files and real executor. Copy/cache discovery, get/decrypt/partition/shell and completion sink are fixtures; append write failure uses a regular private file with RLIMIT_FSIZE zero and SIGXFSZ ignored. Checks command/decrypt/get/staging failures reach operation_end, callbacks/null callback, reserved admission and deferred reboot normalization. No whole FIFO/GUI or client command exit-status protocol.'
     report = dict(status='PASS' if all(r['status']=='PASS' for r in rows) else 'FAIL',scope=scope,cases=rows,
                   sources={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},compile_command=compile_command)
     args.report.write_text(json.dumps(report,indent=2)+'\n')

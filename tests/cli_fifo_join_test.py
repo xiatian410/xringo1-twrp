@@ -26,12 +26,12 @@ def main():
     for include in ['twrp_background_backend.h','data.hpp','openrecoveryscript.hpp','orscmd/orscmd.h','partitions.hpp','twcommon.h','twrp_operation.h']:
         original = original.replace('#include "'+include+'"','')
     server = harness.read_text().split('int main(int argc,char**argv)')[0]
-    start = server.index(' static void Run_CLI_Command(')
+    start = server.index(' static int Run_CLI_Command(')
     end = server.index('\n};',start)
-    server = server[:start]+''' static void Run_CLI_Command(const char* text){executed=text;++executions;
+    server = server[:start]+''' static int Run_CLI_Command(const char* text){executed=text;++executions;
  std::string bytes;size_t size=std::strtoul(std::getenv("CLI_RESPONSE_BYTES"),nullptr,10);
  for(size_t i=0;i<size;++i)bytes.push_back('A'+i%26);
- assert(mirrored);assert(fwrite(bytes.data(),1,bytes.size(),mirrored)==bytes.size());if(callback)callback();}
+ assert(mirrored);assert(fwrite(bytes.data(),1,bytes.size(),mirrored)==bytes.size());if(callback)callback();return 0;}
 '''+server[end:]
     server += r'''
 int main(int argc,char**argv){

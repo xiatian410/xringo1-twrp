@@ -514,6 +514,10 @@
         {
           "file": "0137-cli-output-byte-count.patch",
           "sha256": "968f4e58043721c4baebccf94090c85594cd497c44be692303c3af50c57b2ec5"
+        },
+        {
+          "file": "0138-cli-command-result-propagation.patch",
+          "sha256": "de319f63bba34eacaee649c8a32c5776af197d6da44e949f473b7a8dd1b4345b"
         }
       ],
       "result_files": {
@@ -606,14 +610,14 @@
         "twrpinstall/include/twinstall/adb_install.h": "e6677a337acfeac973859517c97fa2ab15b46d9a49a7a64ab53142ab6f026328",
         "gui2/backend/twrp_sideload_backend.cpp": "cf92ba6c55ff99a797d4348c4c4480badd2d97729342f195f9458f6d8f6199cd",
         "gui2/backend/twrp_sideload_backend.h": "df5ef8d68dd5e6101482ba26cb944bc822c8643e0656193227956a9085a1812e",
-        "openrecoveryscript.cpp": "827470b76830361eedb99cd3441f194596bae88458ec52fab9bff9c0d28b29ee",
+        "openrecoveryscript.cpp": "9985d3438a45b7d2fd505fe38148d3b6c8d3dfde4ae0ec1bc4088323dd037be2",
         "gui2/backend/reboot_backend.h": "49c74edd83b63ee28fc70e34ba58268df9107bc379ab9e65f2e662f3303b109d",
         "gui2/backend/twrp_reboot_backend.h": "4c6767ff062d6b0885d0b9c9bff626fdf29ddb73b1d47ce1eff135d2bb0d925a",
         "gui2/backend/twrp_reboot_backend.cpp": "5a3661a2bcbf644522f3b6a8a66d11a3618903a2725ed2773ab19f107a2881ea",
         "gui2/backend/twrp_wipe_backend.cpp": "1b18100a7991392888956a8664f9f69cd8a250a1b5d54b3da75f8e51a717e252",
         "gui2/backend/twrp_tools_backend.cpp": "5b451bb11a74ba47aa9ddec138837737beffc6154c5f22ae147f0353507ae33e",
         "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a",
-        "gui2/backend/twrp_background_backend.cpp": "a697345d2b7e3fc72be8cba248433e994a0c0ba8d43ecbf35ecc566da1a8ab4a",
+        "gui2/backend/twrp_background_backend.cpp": "6880aba55240e45fca85b26d9fd4bb67ad9cddbb8797d66874c1ad99fc39bc08",
         "libtar/libtar.h": "bc3cde522f301eb0c7ff532159752640eb5dcf65281b4e63c63a8b0f75c9e838",
         "libtar/internal.h": "dec002f630564d0f77c49fa9af5d0a553e5af5d37926f775f59d6a25c62eebd5",
         "libtar/android_utils.c": "dfa8967e239e97c27c4d4db2e3951de316ab3f9307eb0add7446919c613c5c65",
@@ -631,7 +635,7 @@
         "gui2/backend/terminal_engine.h": "933100ba35790f1a31b54d6be50c6f0539a8e23d0280a269f2a31c59edf194a7",
         "gui2/backend/twrp_terminal_backend.cpp": "e2c468a48e9a94ffcf4badfd32f8cb1a8b77a84bb8b7820bfd11299ebf880fb9",
         "gui2/backend/twrp_terminal_backend.h": "add7b766832c51e85f4de261b604f636e025cfaf8a1663363abb611cd4e44672",
-        "openrecoveryscript.hpp": "6612bda3d584f66d2f8808a320c18b9f3a8cc35bac73858c4843c44ce2bb21cb",
+        "openrecoveryscript.hpp": "94073afb66720e3b802405536e75c6fe855727d9bd4417fc4f4d28e493ee12d7",
         "orscmd/orscmd.cpp": "da74a71efa862ccafefeb1ad0bbb7f11fba078a1ad9f257cc1ead3f721257b9f"
       }
     },

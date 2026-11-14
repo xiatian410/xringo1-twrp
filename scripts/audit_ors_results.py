@@ -15,12 +15,15 @@ def main():
     modes.add_argument('--arguments', action='store_true')
     modes.add_argument('--input', action='store_true')
     modes.add_argument('--reboot', action='store_true')
+    modes.add_argument('--cli', action='store_true')
     args = parser.parse_args()
     sequence, staging = args.sequence, args.staging
     arguments = args.arguments
     input_mode = args.input
     if args.reboot:
         return audit_reboot()
+    if args.cli:
+        return audit_cli()
     batch = 'ors-input' if input_mode else 'ors-arguments' if arguments else 'ors-staging' if staging else 'ors-sequence' if sequence else 'ors-results'
     number = '0134' if input_mode else '0133' if arguments else '0130' if staging else '0129' if sequence else '0128'
     index = read(ROOT/'simulation-report.json')
@@ -158,6 +161,58 @@ def audit_reboot():
         limits='Original ORS parser/action/queue and GUI consumer with real executor; private files, final close error injection, DataManager/capability/sync/absent minadbd fixtures. Startup prompt bypass statically checked. No full GUI/USB, descendant/process-wide shutdown, staging concurrency or physical reboot. Historical OTA reused.')
     (ROOT/'logs/ors-reboot-delivery-audit.json').write_text(json.dumps(result,indent=2)+'\n')
     print('PASS: patch0135; ORS16/old16 failures; input28/commands58/arguments20/sequence9/sideload23; clean image/six profiles')
+
+
+def audit_cli():
+    index = read(ROOT/'simulation-report.json')
+    image = Path(index['image'])
+    assert image.name == 'recovery-dijun-unified-cli-results.img'
+    assert sha(image) == index['image_sha256']
+    provenance = read(image.with_name(image.stem+'-sources.json'))
+    assert provenance['image_sha256'] == sha(image)
+    for name, digest in provenance['files'].items():
+        assert sha(name) == digest, name
+    build = ROOT/provenance['build_log']
+    assert sha(build) == provenance['build_log_sha256']
+    assert build.read_text().count('build completed successfully') == 2
+    assert 'Deleted images and staging directories' in build.read_text()
+    assert manifest(TREE) == manifest(ANDROID/'device/xiaomi/O1_asic')
+    patch = read(TREE/'patches/series.json')['repositories']['bootable/recovery']['patches'][-1]
+    assert patch['file'] == '0138-cli-command-result-propagation.patch'
+    assert sha(TREE/'patches'/patch['file']) == patch['sha256']
+    reports = {}
+    for suffix, count, failures in [('current',24,0),('old',24,18),('commands',58,0),('reboot',16,0),('input',28,0),('fifo',16,0),('joined',13,0)]:
+        path = ROOT/f'logs/cli-results-{suffix}.json'
+        report = read(path)
+        assert len(report['cases']) == count
+        assert sum(c['status']=='FAIL' for c in report['cases']) == failures
+        for name, digest in report['sources'].items():
+            assert sha(name) == digest, name
+        item = next(c for c in index['additional_checks'] if c['evidence']==str(path.relative_to(ROOT)))
+        assert item['evidence_sha256'] == sha(path)
+        if suffix!='old':
+            assert not any('AddressSanitizer' in c['output'] or 'runtime error:' in c['output'] for c in report['cases'])
+        if suffix=='current':
+            assert all('cli_execution_failure_reaches_listener_completion=1' in c['output'] for c in report['cases'])
+        if suffix=='old':
+            normal = {'wipe-success','script-success','script-reboot','get-success','decrypt-success','reboot'}
+            assert all(c['status']==('PASS' if c['case'] in normal else 'FAIL') for c in report['cases'])
+            cases = {c['case']:c for c in report['cases']}
+            assert all('runtime error:' in cases[n]['output'] for n in ['empty','spaces'])
+            assert 'AddressSanitizer: SEGV' in cases['no-callback']['output']
+            assert 'completion=0' in cases['wipe-failure']['output']
+        reports[suffix] = dict(cases=count,failures=failures,sha256=sha(path))
+    before = entries(ROOT/'imgs/built/recovery-dijun-unified-cli-output.img')
+    after = entries(image)
+    changed = sorted(n for n in set(before)|set(after) if before.get(n)!=after.get(n))
+    assert changed == ['prop.default','ramdisk-files.sha256sum','system/bin/recovery'], changed
+    package = read(image.with_suffix('.json'))
+    assert package['sha256']==sha(image) and len(package['profiles'])==6
+    assert index['status']=='in_progress' and len(index['not_yet_completed'])==12
+    result = dict(status='PASS',image_sha256=sha(image),production_sources=len(provenance['files']),jobs=provenance['jobs'],reports=reports,changed_ramdisk_entries=changed,
+        limits='Host original CLI wrapper/parser/action/append/tokenizer/listener twcmd and real executor; private regular files, RLIMIT_FSIZE append failure. Copy/cache discovery/get/decrypt/partition/shell/completion sink are fixtures. Separate real FIFO/client regression retains ORS-body fixture. No same-run complete client/FIFO/ORS/GUI, command exit-status wire protocol, privileged services or physical device proof. Historical OTA reused.')
+    (ROOT/'logs/cli-results-delivery-audit.json').write_text(json.dumps(result,indent=2)+'\n')
+    print('PASS: patch0138; CLI24/old18 failures; command58/reboot16/input28/FIFO16/join13; clean image/six profiles')
 
 
 if __name__ == '__main__':

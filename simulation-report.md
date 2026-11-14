@@ -8,14 +8,22 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-cli-output.img` |
-| SHA-256 | `e6b2bc79a68fd6fdcbbbdd34e9475e322d483487b854cd03a5daafed497c4dba` |
-| 生产来源绑定 | 875 份 |
+| 文件 | `recovery-dijun-unified-cli-results.img` |
+| SHA-256 | `edbe45e627cc5582e36d210613b4eaf016721bfc77bcda9ac543290cec085f96` |
+| 生产来源绑定 | 876 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：CLI 输出按实际字节数传递
+## 本批生产修正：CLI 执行结果传到后台完成记录
+
+0138将Run_CLI_Command改为返回真实状态，监听线程传给operation_end，不再固定记录status=0。脚本/复制/追加/变量查询/解密及解密后缓存脚本失败传回失败；空命令及缺参明确拒绝，未设置回调不再崩溃。追加流关闭后检查失败，解密后查找正确的`cache/recovery/openrecoveryscript`路径；直接CLI持有准入票。仅解析器的延迟重启返回2视为成功，解密错误2仍为失败。
+
+原wrapper/解析器/action/追加/tokenizer/twcmd及真实executor24项通过，同夹具旧版18项失败；命令58、重启16、读取28、FIFO16、客户端监听接续13项通过。私有普通文件及RLIMIT_FSIZE写失败；manager/解密/get/复制/缓存发现/完成sink为替身。operation_end目前记录状态并结束忙状态，不是新增GUI结果页；文本协议未扩展，客户端尚不能返回远端命令退出码。完整client/FIFO/ORS同次接合、真实解密及并发暂存仍未完成。
+
+清理构建绑定876份来源和六profile，镜像只改变recovery程序与构建属性/摘要。核对`python3 scripts/audit_ors_results.py --cli`，见[CLI执行结果](docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-execution-results)。完整OTA、震动及无关功能沿用，不重复检查。
+
+## 沿用的 CLI 输出按实际字节数传递
 
 0137修正客户端固定改写读取缓冲区510/511字节导致的输出丢字与额外换行。读取到多少字节就输出多少，保留跨块及嵌入NUL；read遇EINTR重试，读取/fwrite/最终fflush失败返回失败，输出FIFO打开失败关闭输入fd。
 

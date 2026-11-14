@@ -1,5 +1,25 @@
 # 操作反馈与页面生命周期
 
+<a id="cli-execution-results"></a>
+## CLI 执行结果传到后台完成记录（0138）
+
+原Run_CLI_Command丢弃解析器、复制、变量查询、解密与缓存action返回值，监听线程又固定operation_end(0)。空命令直接访问parts[0]，缺回调会跳转空指针；解密后还用错误路径漏掉`recovery/openrecoveryscript`。Insert_ORS_Command未核对ofstream写入/关闭失败。
+
+[0138补丁](../dtsrc/O1_asic_dual/patches/0138-cli-command-result-propagation.patch)返回归一化0/1，监听线程把它交给原operation_end；其作用是准确记录完成状态和结束忙状态，没有增加新的GUI结果页面。解析器延迟重启2在相应调用点归为成功，其他错误含解密2仍为失败。缺命令/参数及关机预约拒绝执行，已有回调在成功/失败各执行一次，空回调安全跳过。追加后关闭并检查流错误；解密后使用与启动一致的`/recovery/openrecoveryscript`路径，DATA_LOGS_DIR对应/data/cache。
+
+复用ORS检查器的`--cli`模式执行原wrapper、完整解析器/action、ofstream追加、真实SplitByCharset/tokenizer、原监听twcmd及真实executor，共24项通过。覆盖普通清除成功/失败、未知/空命令、runscript复制/执行/重启、追加打开/写入失败、get成功/失败/缺参、解密成功/失败/错误2/缺参及缓存成功/失败、已预约拒绝、延迟重启和空回调。普通私有文件写失败由RLIMIT_FSIZE=0及忽略SIGXFSZ触发；未访问物理块设备。复制/缓存发现/get/解密/manager/shell/完成sink是显式替身，不证明实际解密或清除。
+
+同夹具旧版24项中18项失败：空/全空格命令触发UBSan，空回调触发ASan跳转0，其余复现错误记录成功或漏执行缓存。命令58/重启16/读取28/FIFO16/客户端监听接续13因相关源码或测试接口改变而回归通过；没有重跑整包、震动或无关功能。独立FIFO接续仍替代ORS执行体，不能拼成完整client/FIFO/ORS同次证明。
+
+有限后台结果修正收尾。原FIFO文本协议没有结构化退出状态，外部`twrp`客户端的进程退出码仍只表示本地传输结果；完整GUI、真实解密/TEE、并发暂存、进程级停止及设备验证未完成。
+
+```bash
+python3 tests/ors_results_test.py --cli --report logs/cli-results-current.json
+python3 scripts/audit_ors_results.py --cli
+```
+
+本地证据`logs/cli-results-{current,old,commands,reboot,input,fifo,joined}.json`及`logs/cli-results-delivery-audit.json`；当前镜像见[交付报告](../simulation-report.md)。
+
 <a id="cli-output-bytes"></a>
 ## CLI 输出跨读取边界保真（0137）
 

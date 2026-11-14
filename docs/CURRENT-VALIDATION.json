@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-cli-output.img",
-  "image_sha256": "e6b2bc79a68fd6fdcbbbdd34e9475e322d483487b854cd03a5daafed497c4dba",
-  "production_sources": 875,
+  "image_name": "recovery-dijun-unified-cli-results.img",
+  "image_sha256": "edbe45e627cc5582e36d210613b4eaf016721bfc77bcda9ac543290cec085f96",
+  "production_sources": 876,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2709,6 +2709,62 @@
       "failures": 0,
       "local_report_sha256": "3d7a90c8ed5726754ec095895a947fc7f3bc95f04f08c1140f384fea96abdcc8",
       "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused."
+    },
+    {
+      "name": "cli-results-current",
+      "status": "PASS",
+      "cases": 24,
+      "failures": 0,
+      "local_report_sha256": "e86b399f2e0cf316f2b2e35d7476f614ec03e754efeed41787c6efc663dbfe79",
+      "scope": "Patch0138 returns actual CLI wrapper result through listener operation_end, propagates parser/copy/append/get/decrypt/cache-action failures, rejects empty token vector and shutdown admission, checks append stream close, guards absent callback and fixes cache recovery script path after decryption. Deferred parser reboot2 is normalized only at parser call sites, not decryption result2. Original wrapper/parser/action/append/tokenizer/twcmd and real executor24 pass/old18 fail (empty/spaces null vector; null callback crash; false success and skipped cache). Commands58/reboot16/input28/FIFO16/join13 pass. Private regular files/RLIMIT_FSIZE; manager/get/decrypt/copy/cache discovery/shell/completion sink fixtures. Separate FIFO join still substitutes ORS body. No full GUI or same-run client/FIFO/ORS, command exit-status protocol, privileged decryption, concurrent staging or physical device proof. Historical OTA reused."
+    },
+    {
+      "name": "cli-results-old",
+      "status": "FAIL",
+      "cases": 24,
+      "failures": 18,
+      "local_report_sha256": "59a54bb72037ca00aa35342f6f0bb3e6d68bec87ba0bcd2fe86a6c5871e36811",
+      "scope": "Patch0138 returns actual CLI wrapper result through listener operation_end, propagates parser/copy/append/get/decrypt/cache-action failures, rejects empty token vector and shutdown admission, checks append stream close, guards absent callback and fixes cache recovery script path after decryption. Deferred parser reboot2 is normalized only at parser call sites, not decryption result2. Original wrapper/parser/action/append/tokenizer/twcmd and real executor24 pass/old18 fail (empty/spaces null vector; null callback crash; false success and skipped cache). Commands58/reboot16/input28/FIFO16/join13 pass. Private regular files/RLIMIT_FSIZE; manager/get/decrypt/copy/cache discovery/shell/completion sink fixtures. Separate FIFO join still substitutes ORS body. No full GUI or same-run client/FIFO/ORS, command exit-status protocol, privileged decryption, concurrent staging or physical device proof. Historical OTA reused."
+    },
+    {
+      "name": "cli-results-commands",
+      "status": "PASS",
+      "cases": 58,
+      "failures": 0,
+      "local_report_sha256": "2333fe449eeea1538f425802a4677300fc080876a66d2efba1b47507826fa798",
+      "scope": "Patch0138 returns actual CLI wrapper result through listener operation_end, propagates parser/copy/append/get/decrypt/cache-action failures, rejects empty token vector and shutdown admission, checks append stream close, guards absent callback and fixes cache recovery script path after decryption. Deferred parser reboot2 is normalized only at parser call sites, not decryption result2. Original wrapper/parser/action/append/tokenizer/twcmd and real executor24 pass/old18 fail (empty/spaces null vector; null callback crash; false success and skipped cache). Commands58/reboot16/input28/FIFO16/join13 pass. Private regular files/RLIMIT_FSIZE; manager/get/decrypt/copy/cache discovery/shell/completion sink fixtures. Separate FIFO join still substitutes ORS body. No full GUI or same-run client/FIFO/ORS, command exit-status protocol, privileged decryption, concurrent staging or physical device proof. Historical OTA reused."
+    },
+    {
+      "name": "cli-results-reboot",
+      "status": "PASS",
+      "cases": 16,
+      "failures": 0,
+      "local_report_sha256": "d1c15d91781f5a85419723307f406baa03cdba033cb5aef0e8c5eb8ae9d048c3",
+      "scope": "Patch0138 returns actual CLI wrapper result through listener operation_end, propagates parser/copy/append/get/decrypt/cache-action failures, rejects empty token vector and shutdown admission, checks append stream close, guards absent callback and fixes cache recovery script path after decryption. Deferred parser reboot2 is normalized only at parser call sites, not decryption result2. Original wrapper/parser/action/append/tokenizer/twcmd and real executor24 pass/old18 fail (empty/spaces null vector; null callback crash; false success and skipped cache). Commands58/reboot16/input28/FIFO16/join13 pass. Private regular files/RLIMIT_FSIZE; manager/get/decrypt/copy/cache discovery/shell/completion sink fixtures. Separate FIFO join still substitutes ORS body. No full GUI or same-run client/FIFO/ORS, command exit-status protocol, privileged decryption, concurrent staging or physical device proof. Historical OTA reused."
+    },
+    {
+      "name": "cli-results-input",
+      "status": "PASS",
+      "cases": 28,
+      "failures": 0,
+      "local_report_sha256": "4c490a3376fa3d8490cd34bde1a5cb13fd11610c081762e0b2e228ceb696aaaa",
+      "scope": "Patch0138 returns actual CLI wrapper result through listener operation_end, propagates parser/copy/append/get/decrypt/cache-action failures, rejects empty token vector and shutdown admission, checks append stream close, guards absent callback and fixes cache recovery script path after decryption. Deferred parser reboot2 is normalized only at parser call sites, not decryption result2. Original wrapper/parser/action/append/tokenizer/twcmd and real executor24 pass/old18 fail (empty/spaces null vector; null callback crash; false success and skipped cache). Commands58/reboot16/input28/FIFO16/join13 pass. Private regular files/RLIMIT_FSIZE; manager/get/decrypt/copy/cache discovery/shell/completion sink fixtures. Separate FIFO join still substitutes ORS body. No full GUI or same-run client/FIFO/ORS, command exit-status protocol, privileged decryption, concurrent staging or physical device proof. Historical OTA reused."
+    },
+    {
+      "name": "cli-results-fifo",
+      "status": "PASS",
+      "cases": 16,
+      "failures": 0,
+      "local_report_sha256": "fa7556b8245a4b977778522d3252a0138b06c0494323e239077ab5280da08819",
+      "scope": "Patch0138 returns actual CLI wrapper result through listener operation_end, propagates parser/copy/append/get/decrypt/cache-action failures, rejects empty token vector and shutdown admission, checks append stream close, guards absent callback and fixes cache recovery script path after decryption. Deferred parser reboot2 is normalized only at parser call sites, not decryption result2. Original wrapper/parser/action/append/tokenizer/twcmd and real executor24 pass/old18 fail (empty/spaces null vector; null callback crash; false success and skipped cache). Commands58/reboot16/input28/FIFO16/join13 pass. Private regular files/RLIMIT_FSIZE; manager/get/decrypt/copy/cache discovery/shell/completion sink fixtures. Separate FIFO join still substitutes ORS body. No full GUI or same-run client/FIFO/ORS, command exit-status protocol, privileged decryption, concurrent staging or physical device proof. Historical OTA reused."
+    },
+    {
+      "name": "cli-results-joined",
+      "status": "PASS",
+      "cases": 13,
+      "failures": 0,
+      "local_report_sha256": "76fde34dec4820932b01cd3463a4ad165d6f72b23c74e78e41d6d577368c7e5d",
+      "scope": "Patch0138 returns actual CLI wrapper result through listener operation_end, propagates parser/copy/append/get/decrypt/cache-action failures, rejects empty token vector and shutdown admission, checks append stream close, guards absent callback and fixes cache recovery script path after decryption. Deferred parser reboot2 is normalized only at parser call sites, not decryption result2. Original wrapper/parser/action/append/tokenizer/twcmd and real executor24 pass/old18 fail (empty/spaces null vector; null callback crash; false success and skipped cache). Commands58/reboot16/input28/FIFO16/join13 pass. Private regular files/RLIMIT_FSIZE; manager/get/decrypt/copy/cache discovery/shell/completion sink fixtures. Separate FIFO join still substitutes ORS body. No full GUI or same-run client/FIFO/ORS, command exit-status protocol, privileged decryption, concurrent staging or physical device proof. Historical OTA reused."
     }
   ],
   "refresh_stuck_investigation": {
@@ -3030,6 +3086,13 @@
     "patch": "0137",
     "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused.",
     "document": "docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-output-bytes",
+    "production_changes": true,
+    "new_build": true
+  },
+  "cli_execution_results": {
+    "patch": "0138",
+    "scope": "Patch0138 returns actual CLI wrapper result through listener operation_end, propagates parser/copy/append/get/decrypt/cache-action failures, rejects empty token vector and shutdown admission, checks append stream close, guards absent callback and fixes cache recovery script path after decryption. Deferred parser reboot2 is normalized only at parser call sites, not decryption result2. Original wrapper/parser/action/append/tokenizer/twcmd and real executor24 pass/old18 fail (empty/spaces null vector; null callback crash; false success and skipped cache). Commands58/reboot16/input28/FIFO16/join13 pass. Private regular files/RLIMIT_FSIZE; manager/get/decrypt/copy/cache discovery/shell/completion sink fixtures. Separate FIFO join still substitutes ORS body. No full GUI or same-run client/FIFO/ORS, command exit-status protocol, privileged decryption, concurrent staging or physical device proof. Historical OTA reused.",
+    "document": "docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-execution-results",
     "production_changes": true,
     "new_build": true
   }
