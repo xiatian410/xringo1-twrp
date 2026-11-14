@@ -1,5 +1,18 @@
 # 操作反馈与页面生命周期
 
+<a id="terminal-shutdown-boundary"></a>
+## 终端重启预约与最终回收（0127）
+
+此前终端不参与0124任务准入，重启预约后仍能创建shell或向已存在的PTY写入。GUI最终退出又仅调用非阻塞stop，未等待0125后台reaper，可能在直接shell尚未回收时继续最终同步/卸载。
+
+[0127补丁](../dtsrc/O1_asic_dual/patches/0127-terminal-shutdown-boundary.patch)将PTY start及write接入原executor短期ticket：预约后拒绝新入口，正在写入时不能预约重启。启动结果经完整engine和GUI adapter返回，不以旧shell仍运行误报新start成功。GUI最终退出和adapter析构调用幂等shutdown，关闭PTY并等待直接子进程reaper；主题切换等日常stop保持非阻塞。最终GUI调用位于图形资源释放之前。
+
+沿现有PTY测试扩展准入五项及完整engine/adapter五项，并回归原回收七项，ASan/UBSan全部通过。准入覆盖预约后启动/写入拒绝、写入与预约衔接、预约回滚及延迟wait；完整引擎覆盖字符/按键/整行输入、start返回、最终join及adapter析构。相同夹具旧owner新增五项中四项失败，预约回滚原本通过。原PTY/fork/setsid/ioctl/kill/wait/线程/executor实际执行，shell exec为无害native等待程序，写入/等待时序与部分错误有替身。GUI最终调用只静态核对，未执行完整页面/Android shell或物理重启。
+
+本修正不为整个交互shell持有长寿命ticket，否则仅打开终端就会永久拒绝重启；它阻止预约后的新启动/写入，最终join保证直接shell回收。已执行命令的所有后台后代、直接ORS、完整MTP/USB关闭和进程级静止仍未解决。不可中断内核等待也可能使最终join等待，不宣称有物理I/O超时保证。
+
+本地证据为`logs/terminal-shutdown-{current,old,engine,reap}.json`，交付核对为`python3 scripts/audit_terminal_shutdown.py`。当前镜像及哈希见[交付报告](../simulation-report.md)，无关完整OTA沿用已有模型结果。
+
 <a id="terminal-child-reaping"></a>
 ## 终端关闭后的直接子进程回收
 

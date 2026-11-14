@@ -1,0 +1,176 @@
+--- a/gui2/backend/terminal_backend.h
++++ b/gui2/backend/terminal_backend.h
+@@ -22,6 +22,8 @@
+   virtual int cursor_x() { return 0; }
+   virtual int cursor_y() { return 0; }
+   virtual void stop() = 0;
++  // Final GUI exit may wait; ordinary stop remains nonblocking.
++  virtual void shutdown() { stop(); }
+ 
+   // How wide and tall the buffer should wrap, in characters.
+   virtual void set_size(int columns, int rows) = 0;
+--- a/gui2/backend/terminal_engine.cpp
++++ b/gui2/backend/terminal_engine.cpp
+@@ -43,6 +43,7 @@
+ using std::max;
+ 
+ #include "terminal_engine.h"
++#include "twrp_operation_executor.h"
+ 
+ #include <sys/select.h>
+ 
+@@ -81,6 +82,8 @@
+ 
+ 	bool start()
+ 	{
++		auto admission = twrp_operation_executor::instance().admit_job();
++		if (!admission) return false;
+ 		if (started()) return true;
+ 		// A previous shell still belongs to the reaper. Never overwrite its
+ 		// ownership or block the GUI waiting for it to leave the kernel.
+@@ -164,6 +167,8 @@
+ 
+ 	int write(const char* buffer, size_t size)
+ 	{
++		auto admission = twrp_operation_executor::instance().admit_job();
++		if (!admission) return -1;
+ 		if (!started()) {
+ 			LOGERR("someone tried to write to pty, but it was not started\n");
+ 			return -1;
+@@ -211,6 +216,12 @@
+ 			while (waitpid(child, &status, 0) < 0 && errno == EINTR) {}
+ 			reaped.store(true);
+ 		});
++	}
++
++	void shutdown()
++	{
++		stop();
++		if (reaper.joinable()) reaper.join();
+ 	}
+ 
+ private:
+@@ -396,12 +407,12 @@
+ 		debug_printf("setSize: %d*%d chars, %d*%d pixels\n", xChars, yChars, w, h);
+ 	}
+ 
+-	void initPty()
+-	{
+-		if (!pty.started())
+-		{
+-			if (pty.start()) pty.resize(width, height, 0, 0);
+-		}
++	bool initPty()
++	{
++		const bool was_started = pty.started();
++		if (!pty.start()) return false;
++		if (!was_started) pty.resize(width, height, 0, 0);
++		return true;
+ 	}
+ 
+ 	void readPty()
+@@ -423,6 +434,10 @@
+ 	void stop() {
+ 		alternateScreen = false;
+ 		pty.stop();
++	}
++	void shutdown() {
++		alternateScreen = false;
++		pty.shutdown();
+ 	}
+ 
+ 	void clear()
+@@ -851,9 +866,9 @@
+ 
+ namespace twrp_terminal {
+ 
+-void start()
+-{
+-	gEngine.initPty();
++bool start()
++{
++	return gEngine.initPty();
+ }
+ 
+ bool running()
+@@ -864,6 +879,11 @@
+ void stop()
+ {
+ 	gEngine.stop();
++}
++
++void shutdown()
++{
++	gEngine.shutdown();
+ }
+ 
+ bool alternate_screen()
+--- a/gui2/backend/terminal_engine.h
++++ b/gui2/backend/terminal_engine.h
+@@ -26,13 +26,15 @@
+ namespace twrp_terminal {
+ 
+ // Starts the shell if it is not already running.
+-void start();
++bool start();
+ bool running();
+ bool alternate_screen();
+ bool foreground_job();
+ int cursor_x();
+ int cursor_y();
+ void stop();
++// Final exit only: stop and wait for the owned direct shell to be reaped.
++void shutdown();
+ 
+ // In characters. The engine wraps and scrolls against this.
+ void set_size(int columns, int rows);
+--- a/gui2/backend/twrp_terminal_backend.cpp
++++ b/gui2/backend/twrp_terminal_backend.cpp
+@@ -4,9 +4,16 @@
+ 
+ namespace gui2_backend {
+ 
++twrp_terminal_backend::~twrp_terminal_backend() {
++  shutdown();
++}
++
++void twrp_terminal_backend::shutdown() {
++  twrp_terminal::shutdown();
++}
++
+ bool twrp_terminal_backend::start() {
+-  twrp_terminal::start();
+-  return twrp_terminal::running();
++  return twrp_terminal::start();
+ }
+ 
+ bool twrp_terminal_backend::running() {
+--- a/gui2/backend/twrp_terminal_backend.h
++++ b/gui2/backend/twrp_terminal_backend.h
+@@ -11,6 +11,7 @@
+ // Adapts the recovery PTY engine to GUI2 terminal pages.
+ class twrp_terminal_backend final : public terminal_backend {
+  public:
++  ~twrp_terminal_backend() override;
+   bool start() override;
+   bool running() override;
+   bool alternate_screen() override;
+@@ -18,6 +19,7 @@
+   int cursor_x() override;
+   int cursor_y() override;
+   void stop() override;
++  void shutdown() override;
+   void set_size(int columns, int rows) override;
+   void pump() override;
+   int update_counter() override;
+--- a/gui2/gui2.cpp
++++ b/gui2/gui2.cpp
+@@ -6242,7 +6242,7 @@
+   }
+   if (screen != nullptr && screen->is_recording()) screen->stop_recording();
+   status_controller.stop();
+-  if (terminal != nullptr && terminal->running()) terminal->stop();
++  if (terminal != nullptr) terminal->shutdown();
+   page_state.reboot.confirmation_slider.detach();
+   page_host.clear();
+ 

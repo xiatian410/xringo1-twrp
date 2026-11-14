@@ -470,6 +470,10 @@
         {
           "file": "0126-restore-digest-bounded-read.patch",
           "sha256": "e76fd1cd447b8d7e68033265b90148a9bf42d3a7505948f2769e9c0e1fdc8a72"
+        },
+        {
+          "file": "0127-terminal-shutdown-boundary.patch",
+          "sha256": "54738440f43c45a2553a7cc87478d89c000f54cda90bcda5174cc388fb2e5436"
         }
       ],
       "result_files": {
@@ -491,7 +495,7 @@
         "gui2/backend/decrypt_backend.h": "a6ec26538be3ba26af9c449960752b4ad91bcdf6fa15a2027cfdb915c0fc7945",
         "gui2/backend/twrp_decrypt_backend.cpp": "02d0547d9efbebbd011ac459e7878d6ec1e2dc1f0a1d400303add2d1b9a12388",
         "gui2/backend/twrp_decrypt_backend.h": "04981432ab630686863a3ba810b8cb5bb2d05884e0ebe82a0b401a1af5e8beab",
-        "gui2/gui2.cpp": "f243b6f15377c0c5e00eeee3033d323988ec2979ffb416d38d81f3aff8c356ed",
+        "gui2/gui2.cpp": "3891b0caadae6e50b8ad4298da90bd7846a585be0bc805b1fc9e141311630e85",
         "gui2/i18n/en.cpp": "f5e87f8bf67a3e2926578e39d6a2999c59474080b7b8bf93e1377b6b2143762b",
         "gui2/i18n/i18n.h": "aa9b311694cc4cc200d458353201e341d86dd23ff40c7aa537f7ae64f06ec2cc",
         "gui2/i18n/ru.cpp": "b64f01c049be61f69b5ef082fea16a591c1ae064d184815df16650e28f609a89",
@@ -582,7 +586,11 @@
         "exclude.hpp": "e0b0435e7952fcae99460b69460abd13ff54fddcbf5d611c3517ae9b5a09992e",
         "gui2/backend/twrp_restore_backend.cpp": "85e57056d8f51e927b7c5da951722342fa87f85545acad3e3b3941332571b234",
         "twrp_operation_executor.h": "72c2f644f7a1d32dc2cad006fc7ceb8fd257d9970321f7971c4b08c4e06b16b8",
-        "gui2/backend/terminal_engine.cpp": "521df63b449994637f7922edaddac7f14c4c21c7f918831bd498ee01f08bc4f6"
+        "gui2/backend/terminal_engine.cpp": "3733d62b4d23d4ea7cf04c6264fea6d177bd8e5694394bdea4cd83f0861ae8af",
+        "gui2/backend/terminal_backend.h": "d31c3f69659c52b2f8dc3ff48bd7b4324b23793a4d698299bdac37529aadfe9e",
+        "gui2/backend/terminal_engine.h": "933100ba35790f1a31b54d6be50c6f0539a8e23d0280a269f2a31c59edf194a7",
+        "gui2/backend/twrp_terminal_backend.cpp": "e2c468a48e9a94ffcf4badfd32f8cb1a8b77a84bb8b7820bfd11299ebf880fb9",
+        "gui2/backend/twrp_terminal_backend.h": "add7b766832c51e85f4de261b604f636e025cfaf8a1663363abb611cd4e44672"
       }
     },
     "system/sepolicy": {

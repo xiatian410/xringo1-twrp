@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-digest-preflight.img",
-  "image_sha256": "97ec844bc06466e177898f7e716fda664d02450fbd5aecd94c5bb66a2f65c07e",
-  "production_sources": 858,
+  "image_name": "recovery-dijun-unified-terminal-shutdown.img",
+  "image_sha256": "db7a4dab233780f77b5e9a7c98f2d734b8c545714adf4e3f0d885bd8f7e405d7",
+  "production_sources": 863,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2389,6 +2389,38 @@
       "failures": 7,
       "local_report_sha256": "26ed9dd0fbaf094bb4c84d6268fec3ad76b5d8cb89e32b7424fe5401b74e9eb8",
       "scope": "Patch0126 opens digest sidecars nonblocking, requires an opened regular file, rejects files larger than64KiB and bounds actual reads. Legacy missing-sidecar warning and symlinks to regular sidecars remain compatible. Host original restore planning/raw-copy/digest with BoringSSL/private files:66 pass; old7/7 fail including five FIFO timeouts. Second-target errors prevent every target write. Mounts/device metadata/ioctl/archive extraction/GUI remain fixtures; no authentication, concurrent source stability, physical I/O deadline or full OTA claim."
+    },
+    {
+      "name": "terminal-shutdown-current",
+      "status": "PASS",
+      "cases": 5,
+      "failures": 0,
+      "local_report_sha256": "3081238941c866c643f6b559e0e17fc1cb9fd49cb50047bdcf56a4c470b7ef46",
+      "scope": "Patch0127 gates PTY start/write through executor tickets, returns admission failure through full engine/GUI adapter, and final GUI exit/adapter destruction join the direct-shell reaper. Normal stop remains nonblocking. Host private PTY/executor5, full engine/adapter5, reap7 pass; old4/5 admission cases fail. Native harmless exec/write/wait scheduling fixtures; final GUI call statically inspected, not full GUI. No descendants/direct ORS/full USB/process-wide quiescence or physical I/O deadlines. Existing OTA reused."
+    },
+    {
+      "name": "terminal-shutdown-old",
+      "status": "FAIL",
+      "cases": 5,
+      "failures": 4,
+      "local_report_sha256": "3f1620154770b4b29081858b21819b5925bec2fd76174c9fec5a9f358e922423",
+      "scope": "Patch0127 gates PTY start/write through executor tickets, returns admission failure through full engine/GUI adapter, and final GUI exit/adapter destruction join the direct-shell reaper. Normal stop remains nonblocking. Host private PTY/executor5, full engine/adapter5, reap7 pass; old4/5 admission cases fail. Native harmless exec/write/wait scheduling fixtures; final GUI call statically inspected, not full GUI. No descendants/direct ORS/full USB/process-wide quiescence or physical I/O deadlines. Existing OTA reused."
+    },
+    {
+      "name": "terminal-shutdown-engine",
+      "status": "PASS",
+      "cases": 5,
+      "failures": 0,
+      "local_report_sha256": "1d455aa4e0aaac1aece10903483bb9152364bc56427c3c8dcfbd1b4c2a16a74b",
+      "scope": "Patch0127 gates PTY start/write through executor tickets, returns admission failure through full engine/GUI adapter, and final GUI exit/adapter destruction join the direct-shell reaper. Normal stop remains nonblocking. Host private PTY/executor5, full engine/adapter5, reap7 pass; old4/5 admission cases fail. Native harmless exec/write/wait scheduling fixtures; final GUI call statically inspected, not full GUI. No descendants/direct ORS/full USB/process-wide quiescence or physical I/O deadlines. Existing OTA reused."
+    },
+    {
+      "name": "terminal-shutdown-reap",
+      "status": "PASS",
+      "cases": 7,
+      "failures": 0,
+      "local_report_sha256": "779e897f570cb6cb3f0278e8d03210d89f504eb55b51bc935d6ed13833727caa",
+      "scope": "Patch0127 gates PTY start/write through executor tickets, returns admission failure through full engine/GUI adapter, and final GUI exit/adapter destruction join the direct-shell reaper. Normal stop remains nonblocking. Host private PTY/executor5, full engine/adapter5, reap7 pass; old4/5 admission cases fail. Native harmless exec/write/wait scheduling fixtures; final GUI call statically inspected, not full GUI. No descendants/direct ORS/full USB/process-wide quiescence or physical I/O deadlines. Existing OTA reused."
     }
   ],
   "refresh_stuck_investigation": {

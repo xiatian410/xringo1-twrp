@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-digest-preflight.img` |
-| SHA-256 | `97ec844bc06466e177898f7e716fda664d02450fbd5aecd94c5bb66a2f65c07e` |
-| 生产来源绑定 | 858 份 |
+| 文件 | `recovery-dijun-unified-terminal-shutdown.img` |
+| SHA-256 | `db7a4dab233780f77b5e9a7c98f2d734b8c545714adf4e3f0d885bd8f7e405d7` |
+| 生产来源绑定 | 863 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：恢复摘要读取限制
+## 本批生产修正：终端重启入口与最终回收
+
+0127将PTY启动/写入接入短期任务准入，重启预约后拒绝新shell或命令输入，并把启动失败传回完整engine/GUI adapter。GUI最终退出及adapter析构等待直接shell后台回收；普通stop保持非阻塞。准入五项、完整engine/adapter五项和原回收七项通过，同夹具旧owner四/五项失败。
+
+清理构建、863份来源及六profile打包核对通过，详见[终端最终退出](docs/OPERATION-FEEDBACK-ADAPTATION.md#terminal-shutdown-boundary)，核对为`python3 scripts/audit_terminal_shutdown.py`。不保证所有后台后代、直接ORS/USB停止、物理I/O时限或完整页面/Android shell；无关完整OTA沿用历史结果。
+
+## 沿用的恢复摘要读取限制
 
 0126修正旧备份摘要被替换为FIFO时恢复预检阻塞的问题。摘要使用非阻塞打开，核对已打开对象为普通文件，限制文件大小和实际读取总量为64KiB；非法摘要明确失败。缺少摘要的旧备份仍警告后兼容，指向普通摘要文件的链接仍可读取。
 
