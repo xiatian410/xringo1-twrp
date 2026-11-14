@@ -16,7 +16,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "021ecffd635133f047ef320a7185d1956ac623054437f1aa643a6965f02e93ee",
+    "sha256": "bd093ec3c5117492579f729e5204d76fde4b3575d558090077fb27fb5e57c54d",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "1ed47d7cc00b7ee9e61434b836ccefe2cd73cb1010bf2b89e0a4e3dc45dac06f",
+    "sha256": "0b5bf325b88290021a82f9637ded2a83912e622e11302c397f3dadb3e8b37346",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
