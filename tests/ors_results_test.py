@@ -22,6 +22,7 @@ def main():
     modes.add_argument('--sequence', action='store_true', help='Test temporary/cache script ordering and failure aggregation')
     modes.add_argument('--staging', action='store_true', help='Test source preservation and failure propagation during script staging')
     modes.add_argument('--arguments', action='store_true', help='Test missing backup options and setting names without crashing')
+    modes.add_argument('--input', action='store_true', help='Test stream errors and complete-command line boundaries')
     args = ap.parse_args()
     text = args.source.read_text()
     production = '\n'.join(method(text, s) for s in ['int OpenRecoveryScript::run_script_file(', 'int OpenRecoveryScript::Run_OpenRecoveryScript_Action('])
@@ -223,6 +224,67 @@ int main(int argc,char** argv){
  puts("ors_missing_argument_rejected_without_crash=1");
 }
 '''
+    if args.input:
+        fixture = fixture.replace('static bool succeeds=false;', r'''
+static string fault_mode, fault_bytes;
+static size_t fault_offset=0;
+static int stream_errors=0;
+static ssize_t fault_read(void*,char* buffer,size_t size){
+ if(fault_offset==fault_bytes.size()){++stream_errors;errno=EIO;return -1;}
+ size_t count=min(size,fault_bytes.size()-fault_offset);
+ memcpy(buffer,fault_bytes.data()+fault_offset,count);fault_offset+=count;return count;
+}
+static FILE* script_open(const char* path,const char* mode){
+ if(fault_mode=="read"){
+  cookie_io_functions_t io{};io.read=fault_read;
+  return fopencookie(nullptr,mode,io);
+ }
+ return ::fopen(path,mode);
+}
+static int script_close(FILE* stream){
+ int result=::fclose(stream);
+ if(fault_mode=="close"){++stream_errors;errno=EIO;return EOF;}
+ return result;
+}
+#define fopen script_open
+#define fclose script_close
+static bool succeeds=false;''')
+        fixture = fixture[:fixture.index('int main(int argc,char** argv)')] + r'''
+int main(int argc,char** argv){
+ assert(argc==3);string name=argv[1];bool startup=string(argv[2])=="startup";
+ bool valid=false;int expected_calls=0,expected_tail=0;string script;
+ expected_operation="cmd";succeeds=true;
+ if(name=="read-first"){fault_mode="read";fault_bytes="";}
+ else if(name=="read-after-command"){fault_mode="read";fault_bytes="cmd fixture-command\n";expected_calls=1;}
+ else if(name=="read-partial"){fault_mode="read";fault_bytes="cmd fixture";}
+ else if(name=="read-lookahead"){fault_mode="read";fault_bytes="cmd "+string(507,'x');}
+ else if(name=="close-error"){fault_mode="close";script="cmd fixture-command\n";expected_calls=1;}
+ else if(name=="directory"){}
+ else if(name=="long-line"||name=="long-after-command"){
+  script=(name=="long-after-command"?"cmd fixture-command\n":"")+string("cmd ")+string(508,'x')+"\nset sentinel reached\n";
+  expected_calls=name=="long-after-command"?1:0;
+ }else{
+  valid=true;
+  if(name=="empty")script="";
+  else if(name=="blank")script="\n\n";
+  else if(name=="short-eof"){script="cmd fixture-command";expected_calls=1;}
+  else if(name=="boundary-eof"){script="cmd "+string(507,'x');expected_calls=1;}
+  else if(name=="boundary-newline"){script="cmd "+string(507,'x')+"\nset sentinel reached\n";expected_calls=1;expected_tail=1;}
+  else if(name=="buffer-newline"){script="cmd "+string(506,'x')+"\nset sentinel reached\n";expected_calls=1;expected_tail=1;}
+  else assert(false);
+ }
+ if(name=="directory")filesystem::create_directory(SCRIPT_FILE_TMP);
+ else {ofstream file(SCRIPT_FILE_TMP);file<<script;}
+ int result=startup?OpenRecoveryScript::Run_OpenRecoveryScript_Action():OpenRecoveryScript::run_script_file();
+ printf("result=%d calls=%d tail=%d reboots=%d stream_errors=%d\n",result,calls,tail,reboots,stream_errors);fflush(stdout);
+ assert(result==(valid?0:1));assert(calls==expected_calls);assert(tail==expected_tail);
+ assert(reboots==(valid&&startup?1:0));assert(disabled==reboots);assert(done==(!valid&&startup?1:0));
+ if(fault_mode=="read"||fault_mode=="close")assert(stream_errors>0);
+ assert(filesystem::exists(SCRIPT_FILE_TMP)==(name=="directory"));
+ if(name=="directory")filesystem::remove(SCRIPT_FILE_TMP);
+ puts("ors_input_failure_blocks_success_and_truncated_execution=1");
+}
+'''
     rows = []
     commands = [('wipe cache','wipe:/cache'),('wipe /cache','wipe:/cache'),
                 ('wipe system','wipe:/system'),('wipe /system_root','wipe:/system'),
@@ -236,12 +298,20 @@ int main(int argc,char** argv){
         compile_command = ['g++','-std=c++23','-O1','-g','-fsanitize=address,undefined','-fno-pie','-no-pie',str(p/'test.cpp'),'-o',str(p/'test')]
         subprocess.run(compile_command, check=True)
         for command, operation in commands:
-            if args.sequence or args.staging or args.arguments:
+            if args.sequence or args.staging or args.arguments or args.input:
                 break
             for outcome in ['success','failure'] if command!='cmd' else ['failure']:
                 for entry in ['direct','startup']:
                     run = subprocess.run([str(p/'test'),command,operation,outcome,entry],cwd=p,capture_output=True,text=True,timeout=5)
                     row = dict(case=f'{command}-{outcome}-{entry}',status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,output=run.stdout+run.stderr)
+                    rows.append(row);print(row['status'],row['case'],flush=True)
+        if args.input:
+            for name in ['read-first', 'read-after-command', 'read-partial', 'read-lookahead', 'close-error', 'directory', 'long-line', 'long-after-command', 'empty', 'blank', 'short-eof', 'boundary-eof', 'boundary-newline', 'buffer-newline']:
+                for entry in ['direct', 'startup']:
+                    case_dir = p/f'{name}-{entry}'
+                    case_dir.mkdir()
+                    run = subprocess.run([str(p/'test'), name, entry], cwd=case_dir, capture_output=True, text=True, timeout=5)
+                    row = dict(case=f'{name}-{entry}', status='PASS' if run.returncode==0 else 'FAIL', returncode=run.returncode, output=run.stdout+run.stderr)
                     rows.append(row);print(row['status'],row['case'],flush=True)
         if args.arguments:
             for command in ['backup', 'backup ', 'backup    ', 'set', 'set ', 'set    ', 'backup S', 'backup S label', 'set option', 'set option value']:
@@ -272,6 +342,7 @@ int main(int argc,char** argv){
     scope = __doc__ + (' Temporary/cache scripts: absent/success/failure combinations; first failure leaves cache unconsumed, second failure blocks automatic reboot after first success.' if args.sequence else '')
     if args.staging:scope += ' Original check/copy/parser/action and TWFunc::CopyFile with private files; mount/chmod/unlink faults injected; checks source bytes and partial temporary cleanup. No mount, crash durability, concurrent pathname replacement or actual shell/reboot.'
     if args.arguments:scope += ' Missing/space-only backup options and setting names: reject before null strcpy, stop tail and startup automatic reboot; valid backup options and set empty/value controls preserved. Full original parser/action under ASan/UBSan; backup operation is an explicit fixture.'
+    if args.input:scope += ' Original stdio parser/action with private files, actual directory-read error and fopencookie EIO at first read/partial command/after command/lookahead; fclose result injected after actual close. Reject overlong lines before executing prefix; accept511-byte command at EOF or followed by newline. ASan/UBSan; manager/shell/reboot fixtures, no physical I/O bound, rollback, concurrent file stability or full GUI.'
     report = dict(status='PASS' if all(r['status']=='PASS' for r in rows) else 'FAIL',scope=scope,cases=rows,
                   sources={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},compile_command=compile_command)
     args.report.write_text(json.dumps(report,indent=2)+'\n')

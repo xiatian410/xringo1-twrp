@@ -1,5 +1,23 @@
 # 分区界面修正：镜像目标与 NV 操作
 
+<a id="ors-input-boundaries"></a>
+## ORS 读取错误和超长命令（0134）
+
+原解析器把`fgets`失败都视为EOF，并忽略`fclose`失败；读取脚本目录或发生EIO时可能返回成功，启动action还会自动重启。固定缓冲区读不下一整行时，会先执行被截断的命令，再把剩余内容当作下一条命令。
+
+[0134补丁](../dtsrc/O1_asic_dual/patches/0134-ors-input-error-boundaries.patch)在执行前及循环结束后检查流错误，关闭失败也传回失败。达到511字节命令上限时，先检查下一字节为换行或EOF才执行，否则整行失败且不执行截断前缀。合法上限、末行无换行、空文件与空行保留。已有操作不回滚；不是物理I/O超时或完整ORS关机准入修正。
+
+复用原解析器/action检查器的`--input`模式共28项：原私有文件/目录，`fopencookie`向真实stdio注入首读、部分命令、完整命令之后和上限探测EIO，真实关闭后注入关闭返回错误；检查超长首行及前一命令成功后的失败，另有12项正常边界控制。当前全通过；同夹具旧版16个错误场景全失败，含自动重启和截断前缀执行。原命令58、缺参20、启动顺序9因解析器变更复查通过，此项有限收尾。
+
+检查使用ASan/UBSan；manager、shell、配置、console、sleep与最终重启为替身，没有实际设备操作、完整GUI/FIFO退出码、物理I/O时限、并发路径稳定性或回滚保证。旧版故障进程各用独立目录，避免失败遗留污染后续控制场景。完整OTA沿用既有原包模型结果。
+
+```bash
+python3 tests/ors_results_test.py --input --report logs/ors-input-current.json
+python3 scripts/audit_ors_results.py --input
+```
+
+本地报告为`logs/ors-input-{current,old,commands,arguments,sequence}.json`与`logs/ors-input-delivery-audit.json`。当前镜像见[交付报告](../simulation-report.md)。
+
 <a id="ors-missing-arguments"></a>
 ## ORS 缺少参数时停止解析（0133）
 

@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-ors-arguments.img",
-  "image_sha256": "05cbd17df3d56991ad507c380f86395f7f9a20ad08856c2741247eca274a5113",
-  "image_status": "Clean-built patch0133 ORS missing-argument handling candidate; hardware-unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-ors-input.img",
+  "image_sha256": "37a742613b87b818dd150cf32d5ef6c4c72eb969b20cac5d2fc060957d229f9f",
+  "image_status": "Clean-built patch0134 ORS stream-error and command-line boundary candidate; hardware-unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "0133 rejects missing backup/set arguments without null strcpy and stops tail/startup reboot;20 pass/old12 fail, command58/sequence9 pass. Finite parser fix closed; ORS shutdown admission still pending. 0130 preserves source and rejects execution/reboot after ORS copy/unlink staging failure;23 pass/old11 fail, sequence9/commands58 pass. Finite fix closed; no durability/race or full shutdown-admission proof. 0129 stops startup action after either script fails and leaves unconsumed cache intact; sequence9 pass/old4 fail, commands58 pass. No rollback or full ORS shutdown admission. 0128 propagates ORS partition/shell operation errors, stops subsequent commands and prevents startup automatic reboot on failure;58 pass/old30 fail with manager/shell/reboot fixtures. This finite fix is closed; complete ORS shutdown admission, rollback and full GUI/manager lifecycle are not proven. 0127 gates terminal start/write after shutdown reservation and joins owned direct-shell reaper at final exit; owner5/engine5/reap7 pass, old4/5 fail. Descendants/direct ORS/full USB/process-wide stop remain unverified. Patch0124: GUI worker/FIFO CLI shutdown admission implemented; original launch29/CLI16/reboot21/sideload23/lifecycle33/decrypt12/drain4 pass, old launch wiring18/29 fail. 0120 preserves sideload reboot retry/cancellation until successful GUI acceptance (handoff23/lifecycle33 pass, old4/4 fail); Patch0124 now reserves GUI worker/FIFO CLI admission through GUI reboot publication; terminal descendants/direct ORS and full MTP/USB shutdown are outside this gate. One original OS4.0.4 full ZIP file-model run now joins real controller preparation/SnapshotManager initialization10 COWs, original writer4933 ops/payload hash/42 hashes, stock Recovery script, real Unverified publication, modeled slot/unmap and scoped Cleanup; engine0/wait0/parent INSTALL_SUCCESS0.24checks/881sec; no seeded allocation. Model lifecycle fixed, no production change/build. Real source LP/kernel maps/readonly/mount/HAL/slot/scratch/daemon/boot/merge, full ARM64 Recovery/GUI and actual USB/FUSE sideload remain unverified. Do not repeat this full run without relevant changes. Earlier failed raw report was overwritten by fixed-path runner; previous digest and documented outcome retained, not raw bytes."
+    "0134 propagates ORS read/close failures and rejects overlong commands before executing prefixes;28 pass/old16 fail,12 normal controls pass; command58/argument20/sequence9 pass. Finite input boundary fix closed; complete ORS shutdown admission remains pending. 0133 rejects missing backup/set arguments without null strcpy and stops tail/startup reboot;20 pass/old12 fail, command58/sequence9 pass. Finite parser fix closed; ORS shutdown admission still pending. 0130 preserves source and rejects execution/reboot after ORS copy/unlink staging failure;23 pass/old11 fail, sequence9/commands58 pass. Finite fix closed; no durability/race or full shutdown-admission proof. 0129 stops startup action after either script fails and leaves unconsumed cache intact; sequence9 pass/old4 fail, commands58 pass. No rollback or full ORS shutdown admission. 0128 propagates ORS partition/shell operation errors, stops subsequent commands and prevents startup automatic reboot on failure;58 pass/old30 fail with manager/shell/reboot fixtures. This finite fix is closed; complete ORS shutdown admission, rollback and full GUI/manager lifecycle are not proven. 0127 gates terminal start/write after shutdown reservation and joins owned direct-shell reaper at final exit; owner5/engine5/reap7 pass, old4/5 fail. Descendants/direct ORS/full USB/process-wide stop remain unverified. Patch0124: GUI worker/FIFO CLI shutdown admission implemented; original launch29/CLI16/reboot21/sideload23/lifecycle33/decrypt12/drain4 pass, old launch wiring18/29 fail. 0120 preserves sideload reboot retry/cancellation until successful GUI acceptance (handoff23/lifecycle33 pass, old4/4 fail); Patch0124 now reserves GUI worker/FIFO CLI admission through GUI reboot publication; terminal descendants/direct ORS and full MTP/USB shutdown are outside this gate. One original OS4.0.4 full ZIP file-model run now joins real controller preparation/SnapshotManager initialization10 COWs, original writer4933 ops/payload hash/42 hashes, stock Recovery script, real Unverified publication, modeled slot/unmap and scoped Cleanup; engine0/wait0/parent INSTALL_SUCCESS0.24checks/881sec; no seeded allocation. Model lifecycle fixed, no production change/build. Real source LP/kernel maps/readonly/mount/HAL/slot/scratch/daemon/boot/merge, full ARM64 Recovery/GUI and actual USB/FUSE sideload remain unverified. Do not repeat this full run without relevant changes. Earlier failed raw report was overwritten by fixed-path runner; previous digest and documented outcome retained, not raw bytes."
   ],
   "hardware_unverified": [
     "MiTEE/RPMB/wrapped-key actual decryption",
@@ -4868,6 +4868,46 @@
       "evidence": "logs/ors-arguments-sequence.json",
       "evidence_sha256": "ff954a53e5a397546fde2e7f5df7f4a9b0c69d1c41c94ee06b161a7c2b967d2c",
       "scope": "Patch0133 rejects missing/whitespace-only backup options or setting names before null strcpy, stops subsequent commands and startup automatic reboot. Full original parser/action with private files and ASan/UBSan:20 pass; old12/20 fail (8 null crashes,4 false success); command58/startup sequence9 pass. Backup/manager/settings/console/sleep/reboot fixtures. No actual backup, full GUI/FIFO status, ORS shutdown admission or device operations; existing full OTA reused."
+    },
+    {
+      "name": "ors-input-current",
+      "status": "PASS",
+      "count": 28,
+      "evidence": "logs/ors-input-current.json",
+      "evidence_sha256": "088c71b93c681662c878b0f4b36dec8bf5908b5bcb35e6a074eecb5b363fa7f4",
+      "scope": "Patch0134 propagates ORS stdio read/close errors and checks511-byte line lookahead before executing any truncated command; valid boundary/EOF/empty controls preserved. Full original parser/action under ASan/UBSan with private files/directory and fopencookie EIO, close-result injection after actual close:28 pass; old16/28 fail,12 controls pass. Command58/argument20/sequence9 pass. Manager/shell/settings/console/sleep/reboot fixtures; no physical I/O bound, rollback, concurrent pathname stability, full GUI/FIFO status or ORS shutdown admission. Existing full OTA reused."
+    },
+    {
+      "name": "ors-input-old",
+      "status": "FAIL",
+      "count": 28,
+      "evidence": "logs/ors-input-old.json",
+      "evidence_sha256": "d88c613bec7348156ef76790fac6beb536e14bf26da02d250e7c72fd0928a2db",
+      "scope": "Patch0134 propagates ORS stdio read/close errors and checks511-byte line lookahead before executing any truncated command; valid boundary/EOF/empty controls preserved. Full original parser/action under ASan/UBSan with private files/directory and fopencookie EIO, close-result injection after actual close:28 pass; old16/28 fail,12 controls pass. Command58/argument20/sequence9 pass. Manager/shell/settings/console/sleep/reboot fixtures; no physical I/O bound, rollback, concurrent pathname stability, full GUI/FIFO status or ORS shutdown admission. Existing full OTA reused."
+    },
+    {
+      "name": "ors-input-commands",
+      "status": "PASS",
+      "count": 58,
+      "evidence": "logs/ors-input-commands.json",
+      "evidence_sha256": "65766a15b8bb09bb5a7caecaa97788304b878dd918b8719ec430572f3d2d13ca",
+      "scope": "Patch0134 propagates ORS stdio read/close errors and checks511-byte line lookahead before executing any truncated command; valid boundary/EOF/empty controls preserved. Full original parser/action under ASan/UBSan with private files/directory and fopencookie EIO, close-result injection after actual close:28 pass; old16/28 fail,12 controls pass. Command58/argument20/sequence9 pass. Manager/shell/settings/console/sleep/reboot fixtures; no physical I/O bound, rollback, concurrent pathname stability, full GUI/FIFO status or ORS shutdown admission. Existing full OTA reused."
+    },
+    {
+      "name": "ors-input-arguments",
+      "status": "PASS",
+      "count": 20,
+      "evidence": "logs/ors-input-arguments.json",
+      "evidence_sha256": "6da43012c9e287aa1df0b9ed9dceca1cb933c59ad61dc2e9e413b786c1c4cd9d",
+      "scope": "Patch0134 propagates ORS stdio read/close errors and checks511-byte line lookahead before executing any truncated command; valid boundary/EOF/empty controls preserved. Full original parser/action under ASan/UBSan with private files/directory and fopencookie EIO, close-result injection after actual close:28 pass; old16/28 fail,12 controls pass. Command58/argument20/sequence9 pass. Manager/shell/settings/console/sleep/reboot fixtures; no physical I/O bound, rollback, concurrent pathname stability, full GUI/FIFO status or ORS shutdown admission. Existing full OTA reused."
+    },
+    {
+      "name": "ors-input-sequence",
+      "status": "PASS",
+      "count": 9,
+      "evidence": "logs/ors-input-sequence.json",
+      "evidence_sha256": "ac174f829f242d7eb8edb6ba0db19c01f9b2aa6afd94c15ef658247172bc00aa",
+      "scope": "Patch0134 propagates ORS stdio read/close errors and checks511-byte line lookahead before executing any truncated command; valid boundary/EOF/empty controls preserved. Full original parser/action under ASan/UBSan with private files/directory and fopencookie EIO, close-result injection after actual close:28 pass; old16/28 fail,12 controls pass. Command58/argument20/sequence9 pass. Manager/shell/settings/console/sleep/reboot fixtures; no physical I/O bound, rollback, concurrent pathname stability, full GUI/FIFO status or ORS shutdown admission. Existing full OTA reused."
     }
   ],
   "source_review_followups": [
@@ -6510,5 +6550,13 @@
     "current_cases": 20,
     "old_failures": 12,
     "scope": "Patch0133 rejects missing/whitespace-only backup options or setting names before null strcpy, stops subsequent commands and startup automatic reboot. Full original parser/action with private files and ASan/UBSan:20 pass; old12/20 fail (8 null crashes,4 false success); command58/startup sequence9 pass. Backup/manager/settings/console/sleep/reboot fixtures. No actual backup, full GUI/FIFO status, ORS shutdown admission or device operations; existing full OTA reused."
+  },
+  "ors_input_boundaries": {
+    "patch": "0134-ors-input-error-boundaries.patch",
+    "document": "docs/PARTITION-ACTIONS.md#ors-input-boundaries",
+    "audit": "scripts/audit_ors_results.py --input",
+    "current_cases": 28,
+    "old_failures": 16,
+    "scope": "Patch0134 propagates ORS stdio read/close errors and checks511-byte line lookahead before executing any truncated command; valid boundary/EOF/empty controls preserved. Full original parser/action under ASan/UBSan with private files/directory and fopencookie EIO, close-result injection after actual close:28 pass; old16/28 fail,12 controls pass. Command58/argument20/sequence9 pass. Manager/shell/settings/console/sleep/reboot fixtures; no physical I/O bound, rollback, concurrent pathname stability, full GUI/FIFO status or ORS shutdown admission. Existing full OTA reused."
   }
 }

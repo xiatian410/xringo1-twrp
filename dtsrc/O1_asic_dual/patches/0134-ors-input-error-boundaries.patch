@@ -1,0 +1,44 @@
+--- a/openrecoveryscript.cpp
++++ b/openrecoveryscript.cpp
+@@ -122,9 +122,24 @@
+ 	if (fp != NULL) {
+ 		DataManager::SetValue(TW_SIMULATE_ACTIONS, 0);
+ 		DataManager::SetValue("ui_progress", 0); // Reset the progress bar
+-		while (fgets(script_line, SCRIPT_COMMAND_SIZE, fp) != NULL && ret_val == 0) {
++		while (ret_val == 0 && fgets(script_line, SCRIPT_COMMAND_SIZE, fp) != NULL) {
+ 			cindex = 0;
+ 			line_len = strlen(script_line);
++			if (ferror(fp)) {
++				LOGERR("Unable to read ORS script\n");
++				ret_val = 1;
++				break;
++			}
++			// Never execute a truncated prefix as a complete command. A line
++			// filling the buffer is valid only if its next byte is EOL or EOF.
++			if (line_len == SCRIPT_COMMAND_SIZE - 1 && script_line[line_len - 1] != '\n') {
++				const int next = fgetc(fp);
++				if (ferror(fp) || (next != '\n' && next != EOF)) {
++					LOGERR("ORS command exceeds the line limit or cannot be read\n");
++					ret_val = 1;
++					break;
++				}
++			}
+ 			if (line_len < 2)
+ 				continue; // there's a blank line or line is too short to contain a command
+ 			//gui_print("script line: '%s'\n", script_line);
+@@ -454,7 +469,14 @@
+ 				ret_val = 1;
+ 			}
+ 		}
+-		fclose(fp);
++		if (ferror(fp)) {
++			LOGERR("Unable to read ORS script\n");
++			ret_val = 1;
++		}
++		if (fclose(fp) != 0) {
++			LOGERR("Unable to close ORS script\n");
++			ret_val = 1;
++		}
+ 		unlink(SCRIPT_FILE_TMP);
+ 		gui2_console::info("done_ors");
+ 	} else {

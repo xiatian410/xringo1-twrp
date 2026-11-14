@@ -498,6 +498,10 @@
         {
           "file": "0133-ors-missing-arguments.patch",
           "sha256": "097215aa3d93a2e23e4ae8d9792dcfe54bb44ec91f0302cb727f0d49e791e791"
+        },
+        {
+          "file": "0134-ors-input-error-boundaries.patch",
+          "sha256": "0262472dccbf5b2c99c4f8b7288a7aeaa741a8cbcfb69380e15b4ab00f9e81ac"
         }
       ],
       "result_files": {
@@ -590,7 +594,7 @@
         "twrpinstall/include/twinstall/adb_install.h": "e6677a337acfeac973859517c97fa2ab15b46d9a49a7a64ab53142ab6f026328",
         "gui2/backend/twrp_sideload_backend.cpp": "cf92ba6c55ff99a797d4348c4c4480badd2d97729342f195f9458f6d8f6199cd",
         "gui2/backend/twrp_sideload_backend.h": "df5ef8d68dd5e6101482ba26cb944bc822c8643e0656193227956a9085a1812e",
-        "openrecoveryscript.cpp": "33959c190bd4683e6bf5bedc3374a7d38892423990fa6692d87644a08d342fb2",
+        "openrecoveryscript.cpp": "dc8550c8f73252c270e7858bc2fb062d4ae5227a7eb4873dc18a4a3e3570f4e3",
         "gui2/backend/reboot_backend.h": "49c74edd83b63ee28fc70e34ba58268df9107bc379ab9e65f2e662f3303b109d",
         "gui2/backend/twrp_reboot_backend.h": "4c6767ff062d6b0885d0b9c9bff626fdf29ddb73b1d47ce1eff135d2bb0d925a",
         "gui2/backend/twrp_reboot_backend.cpp": "445688f58b94ab736a087276166c54047136e72e517c2598659211525673e0dc",

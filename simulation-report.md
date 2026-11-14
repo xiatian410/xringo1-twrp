@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-ors-arguments.img` |
-| SHA-256 | `05cbd17df3d56991ad507c380f86395f7f9a20ad08856c2741247eca274a5113` |
-| 生产来源绑定 | 869 份 |
+| 文件 | `recovery-dijun-unified-ors-input.img` |
+| SHA-256 | `37a742613b87b818dd150cf32d5ef6c4c72eb969b20cac5d2fc060957d229f9f` |
+| 生产来源绑定 | 870 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：ORS 缺少参数不再崩溃
+## 本批生产修正：ORS 读取失败与超长命令边界
+
+0134将脚本读取/关闭失败传回失败，防止误报成功及启动自动重启；超长命令在执行截断前缀之前被拒绝。合法511字节边界、EOF无换行、空文件/空行保留。原解析器/action读取边界28项通过，旧版16个故障场景失败、12项正常控制通过；相关命令58/缺参20/启动顺序9回归通过。
+
+清理构建绑定870份来源及六profile，核对入口`python3 scripts/audit_ors_results.py --input`，见[读取边界](docs/PARTITION-ACTIONS.md#ors-input-boundaries)。私有文件/目录及stdio EIO注入，关闭返回为注入；manager/shell/UI/重启为替身。未验收完整GUI/FIFO状态、物理I/O时限、并发路径或ORS关机准入。完整OTA沿用已有结果。
+
+## 沿用的 ORS 缺少参数不再崩溃
 
 0133在`backup`选项、`set`名称复制前检查空参数，并识别空白分隔。缺少参数返回失败，停止后续命令及启动自动重启；正常备份/命名/设置空值与普通值保留。20项原解析器/action检查通过；旧版12项失败（8次空指针崩溃，4项误判成功）。因解析器变更，原命令58项和启动顺序9项回归通过。
 

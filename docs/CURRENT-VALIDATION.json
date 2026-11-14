@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-ors-arguments.img",
-  "image_sha256": "05cbd17df3d56991ad507c380f86395f7f9a20ad08856c2741247eca274a5113",
-  "production_sources": 869,
+  "image_name": "recovery-dijun-unified-ors-input.img",
+  "image_sha256": "37a742613b87b818dd150cf32d5ef6c4c72eb969b20cac5d2fc060957d229f9f",
+  "production_sources": 870,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2557,6 +2557,46 @@
       "failures": 0,
       "local_report_sha256": "ff954a53e5a397546fde2e7f5df7f4a9b0c69d1c41c94ee06b161a7c2b967d2c",
       "scope": "Patch0133 rejects missing/whitespace-only backup options or setting names before null strcpy, stops subsequent commands and startup automatic reboot. Full original parser/action with private files and ASan/UBSan:20 pass; old12/20 fail (8 null crashes,4 false success); command58/startup sequence9 pass. Backup/manager/settings/console/sleep/reboot fixtures. No actual backup, full GUI/FIFO status, ORS shutdown admission or device operations; existing full OTA reused."
+    },
+    {
+      "name": "ors-input-current",
+      "status": "PASS",
+      "cases": 28,
+      "failures": 0,
+      "local_report_sha256": "088c71b93c681662c878b0f4b36dec8bf5908b5bcb35e6a074eecb5b363fa7f4",
+      "scope": "Patch0134 propagates ORS stdio read/close errors and checks511-byte line lookahead before executing any truncated command; valid boundary/EOF/empty controls preserved. Full original parser/action under ASan/UBSan with private files/directory and fopencookie EIO, close-result injection after actual close:28 pass; old16/28 fail,12 controls pass. Command58/argument20/sequence9 pass. Manager/shell/settings/console/sleep/reboot fixtures; no physical I/O bound, rollback, concurrent pathname stability, full GUI/FIFO status or ORS shutdown admission. Existing full OTA reused."
+    },
+    {
+      "name": "ors-input-old",
+      "status": "FAIL",
+      "cases": 28,
+      "failures": 16,
+      "local_report_sha256": "d88c613bec7348156ef76790fac6beb536e14bf26da02d250e7c72fd0928a2db",
+      "scope": "Patch0134 propagates ORS stdio read/close errors and checks511-byte line lookahead before executing any truncated command; valid boundary/EOF/empty controls preserved. Full original parser/action under ASan/UBSan with private files/directory and fopencookie EIO, close-result injection after actual close:28 pass; old16/28 fail,12 controls pass. Command58/argument20/sequence9 pass. Manager/shell/settings/console/sleep/reboot fixtures; no physical I/O bound, rollback, concurrent pathname stability, full GUI/FIFO status or ORS shutdown admission. Existing full OTA reused."
+    },
+    {
+      "name": "ors-input-commands",
+      "status": "PASS",
+      "cases": 58,
+      "failures": 0,
+      "local_report_sha256": "65766a15b8bb09bb5a7caecaa97788304b878dd918b8719ec430572f3d2d13ca",
+      "scope": "Patch0134 propagates ORS stdio read/close errors and checks511-byte line lookahead before executing any truncated command; valid boundary/EOF/empty controls preserved. Full original parser/action under ASan/UBSan with private files/directory and fopencookie EIO, close-result injection after actual close:28 pass; old16/28 fail,12 controls pass. Command58/argument20/sequence9 pass. Manager/shell/settings/console/sleep/reboot fixtures; no physical I/O bound, rollback, concurrent pathname stability, full GUI/FIFO status or ORS shutdown admission. Existing full OTA reused."
+    },
+    {
+      "name": "ors-input-arguments",
+      "status": "PASS",
+      "cases": 20,
+      "failures": 0,
+      "local_report_sha256": "6da43012c9e287aa1df0b9ed9dceca1cb933c59ad61dc2e9e413b786c1c4cd9d",
+      "scope": "Patch0134 propagates ORS stdio read/close errors and checks511-byte line lookahead before executing any truncated command; valid boundary/EOF/empty controls preserved. Full original parser/action under ASan/UBSan with private files/directory and fopencookie EIO, close-result injection after actual close:28 pass; old16/28 fail,12 controls pass. Command58/argument20/sequence9 pass. Manager/shell/settings/console/sleep/reboot fixtures; no physical I/O bound, rollback, concurrent pathname stability, full GUI/FIFO status or ORS shutdown admission. Existing full OTA reused."
+    },
+    {
+      "name": "ors-input-sequence",
+      "status": "PASS",
+      "cases": 9,
+      "failures": 0,
+      "local_report_sha256": "ac174f829f242d7eb8edb6ba0db19c01f9b2aa6afd94c15ef658247172bc00aa",
+      "scope": "Patch0134 propagates ORS stdio read/close errors and checks511-byte line lookahead before executing any truncated command; valid boundary/EOF/empty controls preserved. Full original parser/action under ASan/UBSan with private files/directory and fopencookie EIO, close-result injection after actual close:28 pass; old16/28 fail,12 controls pass. Command58/argument20/sequence9 pass. Manager/shell/settings/console/sleep/reboot fixtures; no physical I/O bound, rollback, concurrent pathname stability, full GUI/FIFO status or ORS shutdown admission. Existing full OTA reused."
     }
   ],
   "refresh_stuck_investigation": {
