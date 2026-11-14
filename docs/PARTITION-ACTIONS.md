@@ -1,5 +1,16 @@
 # 分区界面修正：镜像目标与 NV 操作
 
+<a id="ors-startup-sequence"></a>
+## 多份启动脚本的失败处理（0129）
+
+启动action依次处理临时转换脚本和缓存ORS。0128已将单份脚本内操作失败传回解析器，但action仍分别记录成功：第一份成功、第二份失败时仍自动重启；第一份失败时仍消费并执行第二份，其成功还会覆盖前一次失败状态。
+
+[0129补丁](../dtsrc/O1_asic_dual/patches/0129-ors-startup-sequence-failure.patch)让action在任一脚本失败时设置结束页并返回失败。第一份失败不再检查/移动缓存脚本，留待后续明确处理；两份均成功仍保留自动重启，没有脚本时仍返回未执行。已完成的操作不回滚；不是新的关机准入或事务协议。
+
+`tests/ors_results_test.py --sequence`执行完整原解析器和启动action，临时/缓存各取不存在、成功、失败，共九个组合，使用私有普通脚本文件；检查执行次数、后续命令、缓存是否保留、结束状态和自动重启。修正版九项通过，同夹具旧版四项失败；单脚本58项回归通过。分区/shell执行、配置、sleep及最终重启为替身，不代表真实启动、缓存挂载或设备操作。
+
+本地报告：`logs/ors-sequence-current.json`、`logs/ors-sequence-old.json`、`logs/ors-sequence-command-regression.json`。交付核对入口为`python3 scripts/audit_ors_results.py --sequence`。当前镜像见[交付报告](../simulation-report.md)，完整OTA沿用历史原包模型结果。
+
 <a id="ors-command-results"></a>
 ## ORS脚本操作失败传播（0128）
 

@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-ors-results.img` |
-| SHA-256 | `e91b7b77dc8e83709f41e10c76bae11a02a8988cff64ae73d8bf271a5779e9d2` |
-| 生产来源绑定 | 864 份 |
+| 文件 | `recovery-dijun-unified-ors-sequence.img` |
+| SHA-256 | `286d8161ac6cba9e58604a9f6b31196cec6e1649d35ded1c9c16ef7190b80c49` |
+| 生产来源绑定 | 865 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：ORS 操作失败停止脚本
+## 本批生产修正：多份启动脚本保留失败
+
+0129修正启动action分别记录临时/缓存脚本成功、从而掩盖失败的问题。任一脚本失败立即进入结束状态并返回失败；第一份失败时缓存脚本不被消费，第一份成功但第二份失败时不再自动重启。已完成操作不回滚。
+
+临时/缓存脚本各取不存在、成功、失败，九种组合通过；同夹具旧版四项失败。原单脚本58项回归通过。清理构建绑定865份来源及六profile，核对入口为`python3 scripts/audit_ors_results.py --sequence`，见[多份启动脚本](docs/PARTITION-ACTIONS.md#ors-startup-sequence)。缓存发现、manager/shell及最终重启为替身；没有完成ORS关机准入或真实启动验收，不重复完整OTA。
+
+## 沿用的 ORS 操作失败停止脚本
 
 0128将清除、格式化、挂载/卸载及shell命令的失败结果传回ORS解析器，失败即停止后续命令；启动脚本入口不再因误判成功而自动重启。System清除失败也不执行后续详情刷新。成功路径与命令别名保留，不回滚此前完成的操作。
 

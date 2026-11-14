@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-ors-results.img",
-  "image_sha256": "e91b7b77dc8e83709f41e10c76bae11a02a8988cff64ae73d8bf271a5779e9d2",
-  "production_sources": 864,
+  "image_name": "recovery-dijun-unified-ors-sequence.img",
+  "image_sha256": "286d8161ac6cba9e58604a9f6b31196cec6e1649d35ded1c9c16ef7190b80c49",
+  "production_sources": 865,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2437,6 +2437,30 @@
       "failures": 30,
       "local_report_sha256": "f0128c70778ea362add9a8239b440f871b7fd7a875d191eb650e32dfed269681",
       "scope": "Patch0128 propagates wipe/format/mount/unmount/ExecCmd failures through original complete ORS parser and startup action, stops later commands and prevents automatic reboot on failure. Host private scripts58 pass; same-fixture old30/58 fail. Manager operations, ExecCmd, settings, console, sleeps and reboot are explicit fixtures. No physical operations, full GUI/FIFO exit status, ORS shutdown admission or rollback; existing full OTA evidence reused."
+    },
+    {
+      "name": "ors-startup-sequence-current",
+      "status": "PASS",
+      "cases": 9,
+      "failures": 0,
+      "local_report_sha256": "99318896b714a476a9e14bba6adf32d1f43f10006aa85e2d6000d31ae76db7b1",
+      "scope": "Patch0129 stops startup action at the first failed temporary/cache script; preserves unconsumed cache script and prevents automatic reboot after any failure. Original full parser/action with private script files9 pass, old4/9 fail; single-script58 pass. Cache discovery/mount, manager/shell/settings/sleep/reboot are fixtures; not complete ORS shutdown admission, rollback, GUI or device boot. Existing full OTA reused."
+    },
+    {
+      "name": "ors-startup-sequence-old",
+      "status": "FAIL",
+      "cases": 9,
+      "failures": 4,
+      "local_report_sha256": "fc2ac04fc3220a11e8d45021f7fcc72952f717fd9d743456fd9d965045504361",
+      "scope": "Patch0129 stops startup action at the first failed temporary/cache script; preserves unconsumed cache script and prevents automatic reboot after any failure. Original full parser/action with private script files9 pass, old4/9 fail; single-script58 pass. Cache discovery/mount, manager/shell/settings/sleep/reboot are fixtures; not complete ORS shutdown admission, rollback, GUI or device boot. Existing full OTA reused."
+    },
+    {
+      "name": "ors-startup-sequence-command-regression",
+      "status": "PASS",
+      "cases": 58,
+      "failures": 0,
+      "local_report_sha256": "165c93b79cb37f73b53bf98cd3e1a0285090210f19c5ce1a910e466e36df04f9",
+      "scope": "Patch0129 stops startup action at the first failed temporary/cache script; preserves unconsumed cache script and prevents automatic reboot after any failure. Original full parser/action with private script files9 pass, old4/9 fail; single-script58 pass. Cache discovery/mount, manager/shell/settings/sleep/reboot are fixtures; not complete ORS shutdown admission, rollback, GUI or device boot. Existing full OTA reused."
     }
   ],
   "refresh_stuck_investigation": {

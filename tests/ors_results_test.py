@@ -18,6 +18,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--source', type=Path, default=SRC/'openrecoveryscript.cpp')
     ap.add_argument('--report', type=Path, required=True)
+    ap.add_argument('--sequence', action='store_true', help='Test temporary/cache script ordering and failure aggregation')
     args = ap.parse_args()
     text = args.source.read_text()
     production = '\n'.join(method(text, s) for s in ['int OpenRecoveryScript::run_script_file(', 'int OpenRecoveryScript::Run_OpenRecoveryScript_Action('])
@@ -112,6 +113,32 @@ int main(int argc,char** argv){
  puts("ors_result_stops_tail_and_automatic_reboot=1");
 }
 '''.replace('// PRODUCTION', production)
+    if args.sequence:
+        fixture = fixture.replace('static bool succeeds=false;', 'static bool succeeds=false; static int first=-1, second=-1, checked=0;')
+        fixture = fixture.replace('static int check_for_script_file(){return 0;}', '''static int check_for_script_file(){
+ ++checked;if(second<0)return 0;succeeds=second==0;
+ filesystem::rename("cache-script.txt",SCRIPT_FILE_TMP);return 1;
+}''')
+        fixture = fixture[:fixture.index('int main(int argc,char** argv)')] + r'''
+int main(int argc,char** argv){
+ assert(argc==3);first=atoi(argv[1]);second=atoi(argv[2]);expected_operation="cmd";
+ if(second>=0){ofstream cache("cache-script.txt");cache<<"cmd fixture-command\nset sentinel reached\n";}
+ if(first>=0){succeeds=first==0;ofstream script(SCRIPT_FILE_TMP);script<<"cmd fixture-command\nset sentinel reached\n";}
+ int rc=OpenRecoveryScript::Run_OpenRecoveryScript_Action();
+ bool failed=first==1 || (first!=1 && second==1);
+ bool ran=first>=0 || (first!=1 && second>=0);
+ int expected_calls=(first>=0?1:0)+(first!=1&&second>=0?1:0);
+ int expected_tail=(first==0?1:0)+(first!=1&&second==0?1:0);
+ bool ok=ran&&!failed;
+ printf("result=%d calls=%d tail=%d cache_checks=%d reboots=%d done=%d\n",rc,calls,tail,checked,reboots,done);fflush(stdout);
+ assert(rc==(ok?0:1));assert(calls==expected_calls);assert(tail==expected_tail);
+ assert(checked==(first==1?0:1));assert(reboots==(ok?1:0));assert(disabled==reboots);assert(done==(ok?0:1));
+ assert(!filesystem::exists(SCRIPT_FILE_TMP));
+ assert(filesystem::exists("cache-script.txt")==(first==1&&second>=0));
+ filesystem::remove("cache-script.txt");
+ puts("ors_sequence_failure_preserved=1");
+}
+'''
     rows = []
     commands = [('wipe cache','wipe:/cache'),('wipe /cache','wipe:/cache'),
                 ('wipe system','wipe:/system'),('wipe /system_root','wipe:/system'),
@@ -125,13 +152,22 @@ int main(int argc,char** argv){
         compile_command = ['g++','-std=c++23','-O1','-g','-fsanitize=address,undefined','-fno-pie','-no-pie',str(p/'test.cpp'),'-o',str(p/'test')]
         subprocess.run(compile_command, check=True)
         for command, operation in commands:
+            if args.sequence:
+                break
             for outcome in ['success','failure'] if command!='cmd' else ['failure']:
                 for entry in ['direct','startup']:
                     run = subprocess.run([str(p/'test'),command,operation,outcome,entry],cwd=p,capture_output=True,text=True,timeout=5)
                     row = dict(case=f'{command}-{outcome}-{entry}',status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,output=run.stdout+run.stderr)
                     rows.append(row);print(row['status'],row['case'],flush=True)
+        if args.sequence:
+            for first in [-1,0,1]:
+                for second in [-1,0,1]:
+                    run = subprocess.run([str(p/'test'),str(first),str(second)],cwd=p,capture_output=True,text=True,timeout=5)
+                    row = dict(case=f'temporary-{first}-cache-{second}',status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,output=run.stdout+run.stderr)
+                    rows.append(row);print(row['status'],row['case'],flush=True)
     sources = [args.source,Path(__file__).resolve(),ROOT/'tests/nested_partition_path_test.py']
-    report = dict(status='PASS' if all(r['status']=='PASS' for r in rows) else 'FAIL',scope=__doc__,cases=rows,
+    scope = __doc__ + (' Temporary/cache scripts: absent/success/failure combinations; first failure leaves cache unconsumed, second failure blocks automatic reboot after first success.' if args.sequence else '')
+    report = dict(status='PASS' if all(r['status']=='PASS' for r in rows) else 'FAIL',scope=scope,cases=rows,
                   sources={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},compile_command=compile_command)
     args.report.write_text(json.dumps(report,indent=2)+'\n')
     return report['status']!='PASS'
