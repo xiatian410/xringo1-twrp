@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-terminal-shutdown.img` |
-| SHA-256 | `db7a4dab233780f77b5e9a7c98f2d734b8c545714adf4e3f0d885bd8f7e405d7` |
-| 生产来源绑定 | 863 份 |
+| 文件 | `recovery-dijun-unified-ors-results.img` |
+| SHA-256 | `e91b7b77dc8e83709f41e10c76bae11a02a8988cff64ae73d8bf271a5779e9d2` |
+| 生产来源绑定 | 864 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：终端重启入口与最终回收
+## 本批生产修正：ORS 操作失败停止脚本
+
+0128将清除、格式化、挂载/卸载及shell命令的失败结果传回ORS解析器，失败即停止后续命令；启动脚本入口不再因误判成功而自动重启。System清除失败也不执行后续详情刷新。成功路径与命令别名保留，不回滚此前完成的操作。
+
+完整原解析器/启动action在私有脚本中58项通过，相同夹具旧版30项失败；manager、shell和最终重启为替身。清理构建、864份生产来源及六profile封装核对见`python3 scripts/audit_ors_results.py`，具体范围见[ORS错误传播](docs/PARTITION-ACTIONS.md#ors-command-results)。不宣称完整GUI、FIFO退出码、ORS关机准入或实机操作完成；完整OTA复用历史原包模型结果，没有重跑。
+
+## 沿用的终端重启入口与最终回收
 
 0127将PTY启动/写入接入短期任务准入，重启预约后拒绝新shell或命令输入，并把启动失败传回完整engine/GUI adapter。GUI最终退出及adapter析构等待直接shell后台回收；普通stop保持非阻塞。准入五项、完整engine/adapter五项和原回收七项通过，同夹具旧owner四/五项失败。
 

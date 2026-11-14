@@ -1,5 +1,23 @@
 # 分区界面修正：镜像目标与 NV 操作
 
+<a id="ors-command-results"></a>
+## ORS脚本操作失败传播（0128）
+
+原ORS解释器忽略了清除Cache/System/Dalvik、恢复出厂、格式化Data、挂载/卸载及`cmd`的失败结果。因`ret_val`保持0，失败后会继续执行下一条脚本；由启动action执行时，还可能据此进入自动重启。
+
+[0128补丁](../dtsrc/O1_asic_dual/patches/0128-ors-command-error-propagation.patch)将上述分区操作的bool语义返回值转换为ORS的0成功/1失败，将`ExecCmd`非0返回转为失败，缺少参数的`cmd`也失败。失败后复用原解析循环停止；System清除失败不再进入后续详情刷新。成功路径和缺省命令别名保留。本补丁不更改NV界面策略或底层分区权限，也不回滚已经完成的操作。
+
+新增定向检查执行完整原`run_script_file`与`Run_OpenRecoveryScript_Action`，用私有脚本文件验证58个成功/失败与直接/启动入口组合。每条被测命令后放置`set sentinel reached`，断言失败不执行后续命令、不进入自动重启，并返回1；成功仍执行后续命令并保留启动action的自动重启路径。当前全部通过，相同夹具旧版30项失败，含`tail=1 reboots=1`的实际替身调用记录。
+
+分区操作、shell执行、DataManager、消息、sleep及最终reboot是显式替身；没有执行真实清除/格式化/挂载、Android shell或重启。已存在的底层文件系统工具证据沿用，不将此次结果称为完整GUI/FIFO状态、ORS准入或完整OTA验收。原`done_ors`表示解析结束，失败结果由返回码及启动页面状态区分，本批没有增加新的CLI退出码协议。
+
+```bash
+python3 tests/ors_results_test.py --report logs/ors-results-current.json
+python3 scripts/audit_ors_results.py
+```
+
+本地报告为`logs/ors-results-current.json`、`logs/ors-results-old.json`及`logs/ors-results-delivery-audit.json`。当前镜像见[交付报告](../simulation-report.md)。以下保留此前分区界面维护记录。
+
 用户报告确认刷入页“目标分区点不动”，并发现高级清除仍有 NV。此次检查发现两个具体缺陷：原厂文件系统 fstab 不含 raw 镜像目标，候选镜像也未带 `twrp.flags`，因而没有 Boot 等可选项；先前 0054 只限制普通挂载，没有覆盖清除与分区工具。此前检查范围不足。
 
 维护的 `profiles/common/root/system/etc/twrp.flags` 现补入 Boot、Init Boot、Vendor Boot、Recovery、DTBO，交由核心检查分区是否存在及选择当前槽位。六份 OTA 的分区清单均含这五项；不写死 `_a`/`_b`。选择目标、滑动确认、真正写入仍是不同步骤。普通 `.img` 的目标选择应由这五种已存在分区提供，标题本身不承担选择功能。
