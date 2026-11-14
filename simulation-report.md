@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-restore-enumeration.img` |
-| SHA-256 | `223f1f107cdd521787888f1a21e04b3b3cf55fb79301d8b48887f1db9da11178` |
-| 生产来源绑定 | 867 份 |
+| 文件 | `recovery-dijun-unified-aux-wipe.img` |
+| SHA-256 | `bccc98a0ade7b6f3913e48c4bb4432a91599786e682d1bb47fcaece68b87d438` |
+| 生产来源绑定 | 868 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：恢复列表先验证归档再读取文件头
+## 本批生产修正：电池统计与 Android Secure 清除错误传播
+
+0132直接检查电池统计文件删除结果（不存在仍算成功），Android Secure 多目标清除在首个失败处停止，失败传回原后台FAILED状态。私有chroot文件及实际权限错误15项通过，同夹具旧版7项失败：5项误报成功、2项失败后仍继续下一目标。成功/缺失/链接控制路径保留，已删除内容不回滚。
+
+清理构建绑定868份来源及六profile，核对入口`python3 scripts/audit_aux_wipe.py`，见[清除结果范围](docs/PARTITION-ACTIONS.md#aux-wipe-results)。挂载、配置、UI和executor为替身，未完成完整GUI/线程启动、真实挂载/fscrypt、并发及物理I/O生命周期。完整OTA沿用历史结果；本批没有重跑震动或无关功能。
+
+## 沿用的恢复列表先验证归档再读取文件头
 
 0131修正旧格式备份目录中`.win` FIFO使恢复列表等待的问题；先验证已知分区的整个单文件/分卷集合，再读取文件头。目录、链接、空文件及缺卷使本次列表失败并清空，不发布部分选项。正常旧备份继续支持。
 

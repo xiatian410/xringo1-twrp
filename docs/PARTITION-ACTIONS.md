@@ -1,5 +1,23 @@
 # 分区界面修正：镜像目标与 NV 操作
 
+<a id="aux-wipe-results"></a>
+## 电池统计与 Android Secure 清除结果（0132）
+
+电池统计清除原先先探测文件存在，再忽略`remove`结果；权限不足或路径类型错误会误报成功。Android Secure 清除遍历多个存储时，用最后一次结果覆盖先前失败，也会在失败后继续下一个目标。
+
+[0132补丁](../dtsrc/O1_asic_dual/patches/0132-aux-wipe-failure-propagation.patch)直接检查电池统计文件的`unlink`结果：不存在仍算成功，其他错误返回失败且不打印已清除。删除链接仅删除链接本身。Android Secure 任一目标失败立即停止，并将失败传回原后台操作的终态；全部成功和没有目标的既有语义保留。已经删除的内容不回滚。
+
+`tests/aux_wipe_test.py`执行原manager、`WipeAndSec`、`RemoveDir`及后台`run`，使用私有chroot文件、uid65534和真实目录权限错误，覆盖普通成功、不存在、删除/查找拒绝、目录误作文件、链接、挂载拒绝、多目标失败以及LIST入口，共15项。修正版全通过；相同夹具旧版7项失败，其中5项误报成功，另2项虽返回失败却仍继续下一目标。
+
+挂载、配置、console、executor及其他manager路由为显式替身。没有执行完整GUI/start/thread、真实挂载、fscrypt、物理I/O或并发路径替换；不是完整文件系统生命周期验收。完整OTA沿用既有原包模型结果，不重跑震动或无关功能。
+
+```bash
+python3 tests/aux_wipe_test.py
+python3 scripts/audit_aux_wipe.py
+```
+
+本地证据为`logs/aux-wipe-current.json`、`logs/aux-wipe-old.json`和`logs/aux-wipe-delivery-audit.json`。镜像与构建来源见[交付报告](../simulation-report.md)。
+
 <a id="ors-staging-errors"></a>
 ## 脚本暂存失败保留原文件（0130）
 

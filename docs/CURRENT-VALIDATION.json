@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-restore-enumeration.img",
-  "image_sha256": "223f1f107cdd521787888f1a21e04b3b3cf55fb79301d8b48887f1db9da11178",
-  "production_sources": 867,
+  "image_name": "recovery-dijun-unified-aux-wipe.img",
+  "image_sha256": "bccc98a0ade7b6f3913e48c4bb4432a91599786e682d1bb47fcaece68b87d438",
+  "production_sources": 868,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2509,6 +2509,22 @@
       "failures": 6,
       "local_report_sha256": "8016f08d102e15933ffea80d64e46ef6ba5e885e4278f55d0a6925c32c19910a",
       "scope": "Patch0131 validates known partition archive sets before header probing in SetRestoreFiles; rejects FIFO/directory/symlink/empty/gapped sets without publishing partial lists. Original manager/digest/raw-copy and header probe with BoringSSL/private I/O75 pass; old enumeration6/9 fail (two FIFO timeouts), normal3 pass. Mount/UI/metadata/ioctl/archive extraction and ReadFully helper are fixtures. No full restore/GUI/crypto lifecycle or concurrent pathname stability; existing OTA reused."
+    },
+    {
+      "name": "aux-wipe-current",
+      "status": "PASS",
+      "cases": 15,
+      "failures": 0,
+      "local_report_sha256": "055768982cd86a38576542809a54c887dbacb3735f2f0de0280e25287c1c19cc",
+      "scope": "Patch0132 checks battery-stat unlink errors (ENOENT remains success) and stops Android Secure at first failure. Original manager/partition/RemoveDir/backend run with private chroot files and actual uid65534 permission errors:15 current pass, old7/15 fail (five false success, two continue after failure). Mount/settings/console/executor/other routes are fixtures. No full GUI/start/thread, actual mounts/fscrypt, concurrency/physical I/O or rollback; existing full OTA reused."
+    },
+    {
+      "name": "aux-wipe-old",
+      "status": "FAIL",
+      "cases": 15,
+      "failures": 7,
+      "local_report_sha256": "998bae2591ee35d20e7532c19ce4f1830c519d95148eb79ae2df1abee4018425",
+      "scope": "Patch0132 checks battery-stat unlink errors (ENOENT remains success) and stops Android Secure at first failure. Original manager/partition/RemoveDir/backend run with private chroot files and actual uid65534 permission errors:15 current pass, old7/15 fail (five false success, two continue after failure). Mount/settings/console/executor/other routes are fixtures. No full GUI/start/thread, actual mounts/fscrypt, concurrency/physical I/O or rollback; existing full OTA reused."
     }
   ],
   "refresh_stuck_investigation": {

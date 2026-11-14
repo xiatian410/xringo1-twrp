@@ -1,0 +1,41 @@
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -1640,28 +1640,32 @@
+ int TWPartitionManager::WipeBatteryStats() const {
+   if (!MountByPath("/data", true)) return false;
+ 
+-  if (!TWFunc::IsPathExists("/data/system/batterystats.bin")) {
++  // Check the deletion itself: existence probes can hide lookup failures,
++  // and a later unlink failure must reach the wipe operation's result.
++  if (unlink("/data/system/batterystats.bin") == 0) {
++    gui_print("Cleared battery stats.\n");
++  } else if (errno == ENOENT) {
+     gui_print("No Battery Stats Found. No Need To Wipe.\n");
+   } else {
+-    remove("/data/system/batterystats.bin");
+-    gui_print("Cleared battery stats.\n");
++    gui2_console::log_error("error_opening_strerr", "/data/system/batterystats.bin",
++                            strerror(errno));
++    return false;
+   }
+   return true;
+ }
+ 
+ int TWPartitionManager::WipeAndroidSecure() const {
+-  int ret = false;
+   bool found = false;
+ 
+   // Iterate through all partitions
+   for (TWPartition* partition : partitions_) {
+     if (partition->has_android_secure_) {
+-      ret = partition->WipeAndSec();
++      if (!partition->WipeAndSec()) return false;
+       found = true;
+     }
+   }
+   if (found) {
+-    return ret;
++    return true;
+   }
+   gui2_console::log_error("no_andsec");
+   return false;
