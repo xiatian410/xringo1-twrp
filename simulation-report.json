@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-cli-results.img",
-  "image_sha256": "edbe45e627cc5582e36d210613b4eaf016721bfc77bcda9ac543290cec085f96",
-  "image_status": "Clean-built patch0138 CLI wrapper result propagation and failure handling candidate; hardware-unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-refresh-return.img",
+  "image_sha256": "4623448c6b0a986ca3cb056383eeb7b9ad91a54181b40e920622e863104880bd",
+  "image_status": "Clean-built patch0139 preserves backup refresh return ACTION payload; targeted route regression passed, hardware-unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -5084,6 +5084,22 @@
       "evidence": "logs/cli-ors-joined.json",
       "evidence_sha256": "e1e45b8e07f6448d7889de2b1f1f1727436ab7c2e08b07f15d8a53ff9d54069d",
       "scope": "Original CLI main -> private real FIFO -> original listener/twcmd -> original CLI wrapper/append/parser and callback/listener reset, then a second client command in same server. Host ASan/UBSan. Copy/cache discovery/get/decrypt/partition/shell/console mirror/completion sink fixtures. Tests ten first-command cases plus retry; failed remote command still yields client0 under unchanged text protocol. No ARM64/full GUI/device, real partition/decryption or concurrent staging proof."
+    },
+    {
+      "name": "backup-refresh-return-current",
+      "status": "PASS",
+      "count": 6,
+      "evidence": "logs/refresh-return-current.json",
+      "evidence_sha256": "26424b245576f0f284950f8eca86e86f4d36652b9a5d02eff9e8d0596cda1933",
+      "scope": "Original selected route/callback/worker and LVGL progress/page-host paths; backup/storage bodies, scan, settings, fonts and display are fixtures. No hardware reproduction, actual mount/backup or DRM diagnosis."
+    },
+    {
+      "name": "backup-refresh-return-old",
+      "status": "EXPECTED_FAILURES",
+      "count": 6,
+      "evidence": "logs/refresh-return-old.json",
+      "evidence_sha256": "d73a5991e2dce3565d0553cdb34e3c847d4363abc904d5199d37be08313da0dd",
+      "scope": "Original selected route/callback/worker and LVGL progress/page-host paths; backup/storage bodies, scan, settings, fonts and display are fixtures. No hardware reproduction, actual mount/backup or DRM diagnosis. Four original ACTION-return failures, two BACKUP route controls pass."
     }
   ],
   "source_review_followups": [
@@ -5422,11 +5438,11 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/cli-results-delivery-audit.json",
-    "additional_evidence": "logs/cli-ors-joined-audit.json",
-    "image_sha256": "edbe45e627cc5582e36d210613b4eaf016721bfc77bcda9ac543290cec085f96",
-    "production_patch": "0138",
-    "scope": "Current clean-built CLI-results candidate; historical production audit and subsequent original CLI/FIFO/ORS same-server retry evidence. Closeout preserves image and all876 source bindings. Current full-functional/hardware validation unproven. See offline_closeout for new documentation/source inspection, not a new production delivery.",
+    "evidence": "logs/refresh-return-delivery.json",
+    "evidence_sha256": "d214183f128acf2b8fd148716389778ec7db4f8dbe3f85dd5baf79f714a671b5",
+    "image_sha256": "4623448c6b0a986ca3cb056383eeb7b9ad91a54181b40e920622e863104880bd",
+    "production_patch": "0139",
+    "scope": "Original selected route/callback/worker and LVGL progress/page-host paths; backup/storage bodies, scan, settings, fonts and display are fixtures. No hardware reproduction, actual mount/backup or DRM diagnosis.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -6315,11 +6331,11 @@
     "scope": "Original ARM64 read/set and OS4 refresh callbacks with MMIO/PMIC/calendar fixtures. Full probe/hctosys/calendar/cold-start and physical drift remain open."
   },
   "refresh_stuck_investigation": {
-    "status": "offline-investigation-closed-field-incident-unlocated",
+    "status": "new-return-sequence-reproduced-and-software-fixed-hardware-unverified",
     "document": "docs/REFRESH-STUCK-INVESTIGATION.md",
     "local_analysis": "logs/refresh-capture-analysis.json",
     "production_fix": true,
-    "conclusion": "Existing refresh completed within5147ms. Non-atomic capture shows a DPU config wait, without duration/causality. Current worker/DONE/GUI/display chain reviewed; no new confirmed Recovery lifecycle bug. Insufficient evidence to establish a software fix or hardware-only root cause.",
+    "conclusion": "Refresh saved ACTION id but dropped backup action payload. Back acknowledges worker to IDLE then build_page skips ACTION with null payload; stale progress view maps IDLE to RUNNING. Preserve page_router.current_request() including payload for both return requests. Hardware effect not retested; historical DPU snapshot is not causal proof.",
     "worker_evidence": "logs/refresh-worker-chain.json",
     "worker_scope": "Original worker state publication and LVGL adapter pass with scan/presentation doubles; full GUI tick and DRM unverified. No production fix.",
     "lifecycle_evidence": "logs/backup-manage-refresh-lifecycle.json",
@@ -6329,7 +6345,7 @@
     "field_incident_fixed": false,
     "loop_evidence": "logs/refresh-loop.json",
     "loop_scope": "Original gui2_loop_tick and app/gui2_loop.cpp, tools worker/status adapter, LVGL progress and page host. Normal completion, precompleted worker and controlled 220ms submit wait; wait halts GUI ticks despite worker DONE, release updates next tick. Scan, device services, input/perf, console/background polling, route composition and display submission are explicit fixtures. Not real DRM, full Android or field root-cause proof; no production fix.",
-    "next_action": "None in current queue. Reopen only on new distinguishing evidence or direct regression; do not request capture or rerun equivalent worker/DONE/loop tests.",
+    "next_action": "No repeated investigation without new fault/regression. Patch0139 addresses the supplied post-success return sequence.",
     "current_analysis": "logs/refresh-capture-analysis-current.json",
     "capture_evidence": {
       "evidence": "logs/refresh-capture-analysis-current.json",
@@ -6341,7 +6357,7 @@
       "scope": "Single capture snapshot. Establishes display configuration wait at capture time, not its duration, cause, or relation to the refresh UI symptom. No production change or repeated worker tests."
     },
     "date": "2026-11-15",
-    "new_production_fix": false
+    "new_production_fix": true
   },
   "finite_maintenance": {
     "date": "2026-11-13",
@@ -6781,7 +6797,7 @@
   },
   "execution_status": "maintenance-with-explicit-unverified-boundaries",
   "execution_queue": {
-    "scope": "Three finite work packages from ADAPTATION-GOALS.md current execution section; long-term full device functionality remains unverified.",
+    "scope": "Prior finite closeout plus new user-reported backup-refresh return defect; patch0139 targeted fix complete, remaining hardware/function limits retained.",
     "authority": "docs/WORK-QUEUE.md",
     "active": [],
     "closed": [
@@ -6803,6 +6819,13 @@
         "outcome": "six-sample-claims-and-evidence-reconciled",
         "production_fix": false,
         "document": "compatibility-matrix.md"
+      },
+      {
+        "id": "backup-refresh-return",
+        "outcome": "production-route-fix-and-targeted-regression-delivered",
+        "production_fix": true,
+        "hardware_testing": false,
+        "document": "docs/REFRESH-STUCK-INVESTIGATION.md"
       }
     ],
     "reopen_policy": "Only a new specific user fault, direct regression evidence or explicitly requested feature. Do not generate work from historical twelve-group records, unchanged fixtures or U boundaries."
@@ -6837,7 +6860,7 @@
     "new_build": false,
     "functional_suite_rerun": false,
     "hardware_testing": false,
-    "historical_scope": "Historical GUI-loop report has changed full-file bindings; current chain reviewed statically without relabeling it as a new complete run. Historical profile replay reused for unchanged selector/main runtime only; changed touch helper has separate policy evidence. Original OTA success remains bound to its0090 run.",
+    "historical_scope": "Historical GUI-loop report has changed full-file bindings; current chain reviewed statically without relabeling it as a new complete run. Historical profile replay reused for unchanged selector/main runtime only; changed touch helper has separate policy evidence. Original OTA success remains bound to its0090 run. Prior0138 closeout only; superseded candidate is0139 for the new return-route defect. No historical functional run has been relabeled.",
     "full_functional_validation": false,
     "historical_full_audit_passed": false,
     "publication_policy": "scripts/sync_github.py --push validates reviewed text export and verifies remote main equals local HEAD; binaries/blobs/raw logs/keys excluded."
@@ -6846,6 +6869,49 @@
   "historical_current_delivery_before_closeout": {
     "evidence": "logs/terminal-reap-delivery-audit.json",
     "scope": "Patch0125 closes PTY master on unlock/fork failure, rejects child setup errors, kills/reaps only the owned unreaped direct shell on a background reaper, retries wait EINTR and prevents reopen while reaping; GUI stop remains nonblocking. Host original PTY owner seven cases pass; old six/seven fail. Actual private PTYs/fork/setsid/ioctl/kill/wait/threads; exec and syscall faults are fixtures. No descendant group cleanup, complete terminal admission, Android shell/GUI or final reboot/uninterruptible child completion proof. Historical OTA reused.",
+    "hardware": "unverified"
+  },
+  "backup_refresh_return": {
+    "date": "2026-11-15",
+    "status": "PASS",
+    "production_patch": "0139-backup-refresh-return-route.patch",
+    "document": "docs/REFRESH-STUCK-INVESTIGATION.md",
+    "trigger": "Home -> Backup without opening storage selection -> Refresh Sizes succeeds -> Back",
+    "root_cause": "Refresh saved ACTION id but dropped backup action payload. Back acknowledges worker to IDLE then build_page skips ACTION with null payload; stale progress view maps IDLE to RUNNING.",
+    "fix": "Preserve page_router.current_request() including payload for both return requests.",
+    "current_cases": 6,
+    "old_failures": 4,
+    "old_control_passes": 2,
+    "repeated_return_cycles": 5,
+    "reports": {
+      "current": {
+        "sha256": "26424b245576f0f284950f8eca86e86f4d36652b9a5d02eff9e8d0596cda1933",
+        "cases": 6,
+        "failures": 0
+      },
+      "old": {
+        "sha256": "d73a5991e2dce3565d0553cdb34e3c847d4363abc904d5199d37be08313da0dd",
+        "cases": 6,
+        "failures": 4
+      }
+    },
+    "delivery_evidence": "logs/refresh-return-delivery.json",
+    "delivery_evidence_sha256": "d214183f128acf2b8fd148716389778ec7db4f8dbe3f85dd5baf79f714a671b5",
+    "image_name": "recovery-dijun-unified-refresh-return.img",
+    "image_sha256": "4623448c6b0a986ca3cb056383eeb7b9ad91a54181b40e920622e863104880bd",
+    "production_sources": 877,
+    "clean_build": true,
+    "build_jobs": 30,
+    "hardware_testing": false,
+    "hardware_fix_verified": false,
+    "scope": "Original selected route/callback/worker and LVGL progress/page-host paths; backup/storage bodies, scan, settings, fonts and display are fixtures. No hardware reproduction, actual mount/backup or DRM diagnosis."
+  },
+  "historical_delivery_before_refresh_return": {
+    "evidence": "logs/cli-results-delivery-audit.json",
+    "additional_evidence": "logs/cli-ors-joined-audit.json",
+    "image_sha256": "edbe45e627cc5582e36d210613b4eaf016721bfc77bcda9ac543290cec085f96",
+    "production_patch": "0138",
+    "scope": "Current clean-built CLI-results candidate; historical production audit and subsequent original CLI/FIFO/ORS same-server retry evidence. Closeout preserves image and all876 source bindings. Current full-functional/hardware validation unproven. See offline_closeout for new documentation/source inspection, not a new production delivery.",
     "hardware": "unverified"
   }
 }

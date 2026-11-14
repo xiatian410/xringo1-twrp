@@ -1,6 +1,27 @@
 # 刷新容量页面不结束：现场分析
 
-## 本轮结论：离线调查收尾（2026-11-15）
+## 当前结论：未选存储时刷新成功后返回丢失页面参数（0139）
+
+2026-11-15 用户补充明确操作顺序：**首页 → 备份，不打开选择存储 → 刷新容量 → 成功后点返回 → 无限加载条**。该新证据重开了已收尾调查；按此顺序已复现并修复一个确定的软件路由错误，不再用单点 DPU 等待解释这个复现路径。
+
+首页卡片通过 `ACTION` 加 `action_definition(BACKUP)` 参数打开备份页；打开选择存储再返回后，路由变为独立的 `BACKUP`。原 `backup_refresh_sizes_cb` 保存的只是 `page_router.current()`，丢失 `ACTION` 的 payload。完成后 `navigate_back` 先 acknowledge 将工具状态重置为 IDLE，再导航到没有 payload 的 ACTION；`build_page` 因 payload 为空不构建页面，原进度 view 继续存在。下一次 `refresh_tool_progress` 把 IDLE 当成运行态，于是重新显示无限加载条。这也解释为何先进入选择存储会绕过问题。
+
+**0139 的修正：**保存 `page_router.current_request()`，同时保留页面 ID 和 payload。两条入口都可返回原备份页，无需强制用户先选择内部存储；返回时旧进度页面被正常释放，名称保留。存储选择本身和容量统计逻辑未改变。
+
+定向离线复现六场景：从首页直接进入、刷新提前结束、自定义名称、选择存储后返回、独立 BACKUP 路由、连续五次刷新返回。旧代码首页路径四项失败、两条直接 BACKUP 控制路径通过；修正后六项全部通过，并检查运行中拒绝返回、worker IDLE、旧进度 view 清空、仅保留一个页面与转场遮罩释放。执行原入口/刷新/返回回调、相关生产路由分支、工具 worker、真实 LVGL 进度和 page host；备份/存储页面内容、扫描、设置、字体和显示是显式替身，未操作手机或真实分区。
+
+固定补丁为 `dtsrc/O1_asic_dual/patches/0139-backup-refresh-return-route.patch`；清理构建和当前镜像见[交付报告](../simulation-report.md)。本地证据为 `logs/refresh-return-current.json`、`logs/refresh-return-old.json` 与 `logs/refresh-return-delivery.json`。此结论证明软件复现路径已修正，不宣称已实机复测，也不判定旧采样中的 DPU 等待性质。
+
+复现命令：
+
+```bash
+python3 tests/refresh_return_test.py
+python3 scripts/audit_refresh_return_delivery.py
+```
+
+旧实现可从当前 `gui2.cpp` 反向应用 0139 补丁还原，并通过 `--source`、`--report` 指定独立输入和输出；不覆盖既有历史报告。以下章节保留补充复现顺序之前的调查记录，旧“未定位”“下一步”不代表当前路由修正状态。
+
+## 先前结论：补充复现条件之前（2026-11-15）
 
 **调查已结束，现场故障未证明修复。** 本轮对照当前候选对应的容量刷新、worker 状态发布、GUI 轮询和显示提交源码，没有确认新的软件生命周期缺陷；不新增补丁、不修改 DRM、不重编镜像。
 

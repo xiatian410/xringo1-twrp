@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-cli-results.img",
-  "image_sha256": "edbe45e627cc5582e36d210613b4eaf016721bfc77bcda9ac543290cec085f96",
-  "production_sources": 876,
+  "image_name": "recovery-dijun-unified-refresh-return.img",
+  "image_sha256": "4623448c6b0a986ca3cb056383eeb7b9ad91a54181b40e920622e863104880bd",
+  "production_sources": 877,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2776,20 +2776,20 @@
     }
   ],
   "refresh_stuck_investigation": {
-    "status": "offline-investigation-closed-field-incident-unlocated",
+    "status": "new-return-sequence-reproduced-and-software-fixed-hardware-unverified",
     "refresh_elapsed_upper_bound_ms": 5147,
     "capture_uptime_seconds": 338.12,
     "display_thread": "disp_commit_0: D state, dpu_kms_wait_for_hw_cfg_done",
     "limitations": "Single non-atomic capture snapshot proves the display wait at capture time only; it does not establish duration or causality for the refresh page symptom. No DRM production change or repeated worker/DONE tests.",
-    "next_action": "None in current queue. Reopen only on new distinguishing evidence or direct regression; do not request capture or rerun equivalent worker/DONE/loop tests.",
+    "next_action": "No repeated investigation without new fault/regression. Patch0139 addresses the supplied post-success return sequence.",
     "date": "2026-11-15",
     "field_incident_fixed": false,
-    "new_production_fix": false,
-    "conclusion": "Existing refresh completed within5147ms. Non-atomic capture shows a DPU config wait, without duration/causality. Current worker/DONE/GUI/display chain reviewed; no new confirmed Recovery lifecycle bug. Insufficient evidence to establish a software fix or hardware-only root cause."
+    "new_production_fix": true,
+    "conclusion": "Refresh saved ACTION id but dropped backup action payload. Back acknowledges worker to IDLE then build_page skips ACTION with null payload; stale progress view maps IDLE to RUNNING. Preserve page_router.current_request() including payload for both return requests. Hardware effect not retested; historical DPU snapshot is not causal proof."
   },
   "current_batch_groups": [],
   "current_batch_document": "docs/WORK-QUEUE.md",
-  "current_batch_groups_scope": "Finite offline investigation and compatibility/documentation closeout. No new production fix/build/function suite; prior numbered groups are historical only, not active work. Full functional/hardware claims remain unproven.",
+  "current_batch_groups_scope": "New specific user-reported backup refresh return sequence; patch0139 only. Historical numbered groups do not generate tasks.",
   "stock_os4_zip_entry": {
     "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
     "report": "logs/zip-stock-os4-fixed.json",
@@ -3113,7 +3113,7 @@
   },
   "execution_status": "maintenance-with-explicit-unverified-boundaries",
   "execution_queue": {
-    "scope": "Three finite work packages from ADAPTATION-GOALS.md current execution section; long-term full device functionality remains unverified.",
+    "scope": "Prior finite closeout plus new user-reported backup-refresh return defect; patch0139 targeted fix complete, remaining hardware/function limits retained.",
     "authority": "docs/WORK-QUEUE.md",
     "active": [],
     "closed": [
@@ -3135,6 +3135,13 @@
         "outcome": "six-sample-claims-and-evidence-reconciled",
         "production_fix": false,
         "document": "compatibility-matrix.md"
+      },
+      {
+        "id": "backup-refresh-return",
+        "outcome": "production-route-fix-and-targeted-regression-delivered",
+        "production_fix": true,
+        "hardware_testing": false,
+        "document": "docs/REFRESH-STUCK-INVESTIGATION.md"
       }
     ],
     "reopen_policy": "Only a new specific user fault, direct regression evidence or explicitly requested feature. Do not generate work from historical twelve-group records, unchanged fixtures or U boundaries."
@@ -3169,7 +3176,7 @@
     "new_build": false,
     "functional_suite_rerun": false,
     "hardware_testing": false,
-    "historical_scope": "Historical GUI-loop report has changed full-file bindings; current chain reviewed statically without relabeling it as a new complete run. Historical profile replay reused for unchanged selector/main runtime only; changed touch helper has separate policy evidence. Original OTA success remains bound to its0090 run.",
+    "historical_scope": "Historical GUI-loop report has changed full-file bindings; current chain reviewed statically without relabeling it as a new complete run. Historical profile replay reused for unchanged selector/main runtime only; changed touch helper has separate policy evidence. Original OTA success remains bound to its0090 run. Prior0138 closeout only; superseded candidate is0139 for the new return-route defect. No historical functional run has been relabeled.",
     "full_functional_validation": false,
     "historical_full_audit_passed": false,
     "publication_policy": "scripts/sync_github.py --push validates reviewed text export and verifies remote main equals local HEAD; binaries/blobs/raw logs/keys excluded."
@@ -3181,5 +3188,40 @@
     ],
     "current_batch_document": "docs/PARTITION-ACTIONS.md#tool-page-worker-lifecycle",
     "current_batch_groups_scope": "New evidence only: partition tool page/callback/worker/progress/back-detail handoff10 cases with manager/details fixtures. No production change/build; full GUI/manager/tools lifecycle and hardware remain unverified. Existing full original ZIP result reused, not rerun."
+  },
+  "backup_refresh_return": {
+    "date": "2026-11-15",
+    "status": "PASS",
+    "production_patch": "0139-backup-refresh-return-route.patch",
+    "document": "docs/REFRESH-STUCK-INVESTIGATION.md",
+    "trigger": "Home -> Backup without opening storage selection -> Refresh Sizes succeeds -> Back",
+    "root_cause": "Refresh saved ACTION id but dropped backup action payload. Back acknowledges worker to IDLE then build_page skips ACTION with null payload; stale progress view maps IDLE to RUNNING.",
+    "fix": "Preserve page_router.current_request() including payload for both return requests.",
+    "current_cases": 6,
+    "old_failures": 4,
+    "old_control_passes": 2,
+    "repeated_return_cycles": 5,
+    "reports": {
+      "current": {
+        "sha256": "26424b245576f0f284950f8eca86e86f4d36652b9a5d02eff9e8d0596cda1933",
+        "cases": 6,
+        "failures": 0
+      },
+      "old": {
+        "sha256": "d73a5991e2dce3565d0553cdb34e3c847d4363abc904d5199d37be08313da0dd",
+        "cases": 6,
+        "failures": 4
+      }
+    },
+    "delivery_evidence": "logs/refresh-return-delivery.json",
+    "delivery_evidence_sha256": "d214183f128acf2b8fd148716389778ec7db4f8dbe3f85dd5baf79f714a671b5",
+    "image_name": "recovery-dijun-unified-refresh-return.img",
+    "image_sha256": "4623448c6b0a986ca3cb056383eeb7b9ad91a54181b40e920622e863104880bd",
+    "production_sources": 877,
+    "clean_build": true,
+    "build_jobs": 30,
+    "hardware_testing": false,
+    "hardware_fix_verified": false,
+    "scope": "Original selected route/callback/worker and LVGL progress/page-host paths; backup/storage bodies, scan, settings, fonts and display are fixtures. No hardware reproduction, actual mount/backup or DRM diagnosis."
   }
 }

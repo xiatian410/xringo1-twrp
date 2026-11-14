@@ -1,0 +1,16 @@
+diff --git a/gui2/gui2.cpp b/gui2/gui2.cpp
+--- a/gui2/gui2.cpp
++++ b/gui2/gui2.cpp
+@@ -4086,8 +4086,10 @@
+   request.title = strings().refresh_sizes_button;
+   request.running = strings().refreshing_sizes;
+   request.done = strings().refresh_sizes_done;
+-  request.back = { page_router.current() };
+-  request.after = { page_router.current() };
++  // The home card opens ACTION with a backup definition payload. Keep it
++  // when returning, as well as the direct BACKUP route after storage selection.
++  request.back = page_router.current_request();
++  request.after = page_router.current_request();
+   tool_job_request = request;
+   if (!tools->start(request.job, request.target, request.value)) return;
+   navigate_to(page_kind::TOOL_PROGRESS, nullptr, page_transition::PUSH);

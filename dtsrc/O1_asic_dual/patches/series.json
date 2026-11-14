@@ -518,6 +518,10 @@
         {
           "file": "0138-cli-command-result-propagation.patch",
           "sha256": "de319f63bba34eacaee649c8a32c5776af197d6da44e949f473b7a8dd1b4345b"
+        },
+        {
+          "file": "0139-backup-refresh-return-route.patch",
+          "sha256": "c6d7c6f8fc1d27bb8829af4812e2c7494319f24cb305bd856f50c041a93880f6"
         }
       ],
       "result_files": {
@@ -539,7 +543,7 @@
         "gui2/backend/decrypt_backend.h": "a6ec26538be3ba26af9c449960752b4ad91bcdf6fa15a2027cfdb915c0fc7945",
         "gui2/backend/twrp_decrypt_backend.cpp": "02d0547d9efbebbd011ac459e7878d6ec1e2dc1f0a1d400303add2d1b9a12388",
         "gui2/backend/twrp_decrypt_backend.h": "04981432ab630686863a3ba810b8cb5bb2d05884e0ebe82a0b401a1af5e8beab",
-        "gui2/gui2.cpp": "3891b0caadae6e50b8ad4298da90bd7846a585be0bc805b1fc9e141311630e85",
+        "gui2/gui2.cpp": "af67847920da35a4e0bd585bfb364f9ada9dce6f81b568b631d810064ef5f5ac",
         "gui2/i18n/en.cpp": "f5e87f8bf67a3e2926578e39d6a2999c59474080b7b8bf93e1377b6b2143762b",
         "gui2/i18n/i18n.h": "aa9b311694cc4cc200d458353201e341d86dd23ff40c7aa537f7ae64f06ec2cc",
         "gui2/i18n/ru.cpp": "b64f01c049be61f69b5ef082fea16a591c1ae064d184815df16650e28f609a89",

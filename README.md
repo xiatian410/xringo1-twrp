@@ -17,7 +17,7 @@ The bounded offline adaptation work has entered maintenance with explicit unveri
 | Current candidate | [Image, source revision and validation](simulation-report.md) |
 | Open work | [Priorities and remaining boundaries](docs/WORK-QUEUE.md) |
 
-The original OS4.0.4.0 full ZIP completed one explicit file-model installation, including all 4933 payload operations, 42 final partition hashes and ten COW initializations. Physical partition mapping, slot changes and reboot-time snapshot merge remain unverified. The reported refresh-page stall remains unlocated; the offline investigation establishes neither its root cause nor a fix. Resolved vibration and settings issues are excluded from routine rechecks.
+The original OS4.0.4.0 full ZIP completed one explicit file-model installation, including all 4933 payload operations, 42 final partition hashes and ten COW initializations. Physical partition mapping, slot changes and reboot-time snapshot merge remain unverified. Patch 0139 fixes a reproduced return-route error after refreshing backup sizes without first opening storage selection. Hardware confirmation remains outstanding; the earlier DPU stack snapshot does not establish a cause for this route error. Resolved vibration and settings issues are excluded from routine rechecks.
 
 ## Build
 
