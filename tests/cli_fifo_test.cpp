@@ -11,12 +11,14 @@
 #include <thread>
 #include <unistd.h>
 #include "backend/twrp_background_backend.h"
+#include "twrp_operation_executor.h"
 static std::string input, output;
 #define ORS_INPUT_FILE input.c_str()
 #define ORS_OUTPUT_FILE output.c_str()
 #define LOGINFO(...) ((void)0)
 static std::atomic<int> busy{0}, executions{0};
 static std::string executed;
+static std::atomic<bool> hold_command{false}, command_entered{false};
 static FILE* mirrored=nullptr;
 void gui_set_FILE(FILE* file){mirrored=file;}
 void operation_start(const char*){}
@@ -28,7 +30,7 @@ struct DataManager {
 struct OpenRecoveryScript {
  static inline void(*callback)()=nullptr;
  static void Call_After_CLI_Command(void(*cb)()){callback=cb;}
- static void Run_CLI_Command(const char* text){executed=text;++executions;if(mirrored){
+ static void Run_CLI_Command(const char* text){executed=text;++executions;command_entered=true;while(hold_command.load())std::this_thread::yield();if(mirrored){
  if(std::string(text)=="saturated"){
   std::string chunk(1024,'z');for(int i=0;i<256;++i)fputs(chunk.c_str(),mirrored);
  }else fputs("fixture completed\n",mirrored);
@@ -61,7 +63,30 @@ int main(int argc,char**argv){
  assert(argc==3);signal(SIGPIPE,SIG_IGN);
  input=std::string(argv[2])+"/orsin";output=std::string(argv[2])+"/orsout";
  std::string name=argv[1];gui2_backend::twrp_background_backend backend;backend.start();
- if(name=="abandoned-reader"||name=="late-reader"||name=="expiry-recovery"||name=="pending-restart"){
+ if(name.starts_with("shutdown-")){
+  auto& executor=twrp_operation_executor::instance();
+  if(name=="shutdown-active")hold_command=true;
+  if(name=="shutdown-reserved"||name=="shutdown-rollback")assert(executor.reserve_shutdown());
+  if(name=="shutdown-rollback")executor.release_shutdown();
+  if(name=="shutdown-pending"){
+   submit("print shutdown");tick(backend);assert(executions==0);
+   assert(executor.reserve_shutdown());
+  }
+  int reader=open(output.c_str(),O_RDONLY|O_NONBLOCK);assert(reader>=0);
+  if(name!="shutdown-pending")submit("print shutdown");
+  if(name=="shutdown-active"){
+   for(int i=0;i<1000&&!command_entered;++i){tick(backend);usleep(1000);}
+   assert(command_entered&&!executor.reserve_shutdown());hold_command=false;
+  }
+  auto data=response(backend,reader);
+  if(name=="shutdown-reserved"||name=="shutdown-pending"){
+   assert(data=="Failed, shutdown in progress\n"&&executions==0);
+  }else{
+   assert(data=="fixture completed\n"&&executions==1);
+   backend.stop();assert(executor.reserve_shutdown());
+  }
+  close(reader);puts("shutdown_cli_admission=1");
+ } else if(name=="abandoned-reader"||name=="late-reader"||name=="expiry-recovery"||name=="pending-restart"){
   submit("print first");tick(backend);assert(executions==0);
   if(name=="abandoned-reader"){for(int i=0;i<100;++i)tick(backend);}
   else if(name=="pending-restart"){

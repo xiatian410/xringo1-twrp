@@ -1,0 +1,326 @@
+--- a/gui2/backend/twrp_background_backend.cpp
++++ b/gui2/backend/twrp_background_backend.cpp
+@@ -23,6 +23,7 @@
+ #include "partitions.hpp"
+ #include "twcommon.h"
+ #include "twrp_operation.h"
++#include "twrp_operation_executor.h"
+ 
+ namespace gui2_backend {
+ namespace {
+@@ -130,11 +131,20 @@
+     orsout = nullptr;
+     reset_ors_listener();
+   } else {
++    auto admission = twrp_operation_executor::instance().admit_job();
++    if (!admission) {
++      fputs("Failed, shutdown in progress\n", orsout);
++      fclose(orsout);
++      orsout = nullptr;
++      reset_ors_listener();
++      return;
++    }
+     gui_set_FILE(orsout);
+     OpenRecoveryScript::Call_After_CLI_Command(ors_command_done);
+     if (command_thread.joinable()) command_thread.join();
+     command_active.store(true);
+-    command_thread = std::thread(twcmd, std::move(command));
++    command_thread = twrp_operation_executor::instance().worker(
++        std::move(admission), twcmd, std::move(command));
+   }
+ }
+ 
+--- a/gui2/backend/twrp_backup_backend.cpp
++++ b/gui2/backend/twrp_backup_backend.cpp
+@@ -7,6 +7,7 @@
+ #include "partitions.hpp"
+ #include "twrp_functions.hpp"
+ #include "twrp_operation.h"
++#include "twrp_operation_executor.h"
+ #include "variables.h"
+ 
+ namespace gui2_backend {
+@@ -54,6 +55,8 @@
+ }
+ 
+ bool twrp_backup_backend::start() {
++  auto admission = twrp_operation_executor::instance().admit_job();
++  if (!admission) return false;
+   if (running_.load()) return false;
+   join_finished_thread();
+   if (cancel_worker_.joinable()) cancel_worker_.join();
+@@ -66,7 +69,7 @@
+     state_ = backup_state::RUNNING;
+   }
+   running_.store(true);
+-  worker_ = std::thread(&twrp_backup_backend::run, this);
++  worker_ = twrp_operation_executor::instance().worker(std::move(admission), &twrp_backup_backend::run, this);
+   return true;
+ }
+ 
+--- a/gui2/backend/twrp_decrypt_backend.cpp
++++ b/gui2/backend/twrp_decrypt_backend.cpp
+@@ -87,6 +87,8 @@
+ }
+ 
+ bool twrp_decrypt_backend::start(const std::string& password) {
++  auto admission = twrp_operation_executor::instance().admit_job();
++  if (!admission) return false;
+   if (running_.load() || selected_id_ < 0) return false;
+   join_finished_thread();
+ 
+@@ -95,11 +97,13 @@
+     state_ = decrypt_state::RUNNING;
+   }
+   running_.store(true);
+-  worker_ = std::thread(&twrp_decrypt_backend::run, this, password, selected_id_);
++  worker_ = twrp_operation_executor::instance().worker(std::move(admission), &twrp_decrypt_backend::run, this, password, selected_id_);
+   return true;
+ }
+ 
+ bool twrp_decrypt_backend::start_refresh() {
++  auto admission = twrp_operation_executor::instance().admit_job();
++  if (!admission) return false;
+   if (running_.load()) return false;
+   join_finished_thread();
+ 
+@@ -108,7 +112,7 @@
+     state_ = decrypt_state::RUNNING;
+   }
+   running_.store(true);
+-  worker_ = std::thread(&twrp_decrypt_backend::run_refresh, this);
++  worker_ = twrp_operation_executor::instance().worker(std::move(admission), &twrp_decrypt_backend::run_refresh, this);
+   return true;
+ }
+ 
+--- a/gui2/backend/twrp_install_backend.cpp
++++ b/gui2/backend/twrp_install_backend.cpp
+@@ -95,6 +95,8 @@
+ }
+ 
+ bool twrp_install_backend::start_zip(const std::vector<std::string>& paths) {
++  auto admission = twrp_operation_executor::instance().admit_job();
++  if (!admission) return false;
+   if (running_.load() || paths.empty()) return false;
+   join_finished_thread();
+   {
+@@ -105,7 +107,7 @@
+     started_ = std::chrono::steady_clock::now();
+   }
+   running_.store(true);
+-  worker_ = std::thread(&twrp_install_backend::run_zip, this, paths);
++  worker_ = twrp_operation_executor::instance().worker(std::move(admission), &twrp_install_backend::run_zip, this, paths);
+   return true;
+ }
+ 
+@@ -231,6 +233,8 @@
+ 
+ bool twrp_install_backend::start_image(const std::string& path, const std::string& mount_point,
+                                       bool both_slots) {
++  auto admission = twrp_operation_executor::instance().admit_job();
++  if (!admission) return false;
+   if (running_.load() || path.empty() || mount_point.empty() ||
+       mount_point.find(';') != std::string::npos) return false;
+   {
+@@ -251,7 +255,7 @@
+   DataManager::SetValue("tw_flash_partition", mount_point + ";");
+   DataManager::SetValue("tw_flash_both_slots", both_slots ? 1 : 0);
+   running_.store(true);
+-  worker_ = std::thread(&twrp_install_backend::run_image, this, path, mount_point, both_slots);
++  worker_ = twrp_operation_executor::instance().worker(std::move(admission), &twrp_install_backend::run_image, this, path, mount_point, both_slots);
+   return true;
+ }
+ 
+--- a/gui2/backend/twrp_reboot_backend.cpp
++++ b/gui2/backend/twrp_reboot_backend.cpp
+@@ -41,6 +41,8 @@
+ 
+ // GUIAction::setbootslot
+ bool twrp_reboot_backend::set_active_slot(boot_slot slot) {
++  auto admission = twrp_operation_executor::instance().admit_job();
++  if (!admission) return false;
+   // Decryption may still be inside a synchronous key-service call after the
+   // user leaves its page. Never block the UI or change slots under that work.
+   std::unique_lock transaction(twrp_operation_executor::instance().mutex(), std::try_to_lock);
+@@ -112,8 +114,12 @@
+   const char* argument = reboot_argument(target);
+   if (argument == nullptr || !is_supported(target)) return false;
+ 
++  auto& executor = twrp_operation_executor::instance();
++  if (!executor.reserve_shutdown()) return false;
+   sync();
+-  return DataManager::SetValue("tw_reboot_arg", argument) == 0;
++  if (DataManager::SetValue("tw_reboot_arg", argument) == 0) return true;
++  executor.release_shutdown();
++  return false;
+ }
+ 
+ bool twrp_reboot_backend::take_external_reboot() {
+--- a/gui2/backend/twrp_restore_backend.cpp
++++ b/gui2/backend/twrp_restore_backend.cpp
+@@ -155,6 +155,8 @@
+ }
+ 
+ bool twrp_restore_backend::start(const std::vector<std::string>& mount_points) {
++  auto admission = twrp_operation_executor::instance().admit_job();
++  if (!admission) return false;
+   if (running_.load() || opened_.empty() || mount_points.empty()) return false;
+   join_finished_thread();
+ 
+@@ -172,7 +174,7 @@
+     state_ = restore_state::RUNNING;
+   }
+   running_.store(true);
+-  worker_ = std::thread(&twrp_restore_backend::run, this, opened_);
++  worker_ = twrp_operation_executor::instance().worker(std::move(admission), &twrp_restore_backend::run, this, opened_);
+   return true;
+ }
+ 
+--- a/gui2/backend/twrp_sideload_backend.cpp
++++ b/gui2/backend/twrp_sideload_backend.cpp
+@@ -11,6 +11,7 @@
+ #include "twinstall/install.h"
+ #include "twrp_functions.hpp"
+ #include "twrp_operation.h"
++#include "twrp_operation_executor.h"
+ 
+ namespace gui2_backend {
+ 
+@@ -25,6 +26,8 @@
+ }
+ 
+ bool twrp_sideload_backend::start(bool wipe_dalvik, bool wipe_cache) {
++  auto admission = twrp_operation_executor::instance().admit_job();
++  if (!admission) return false;
+   if (running_.load()) return false;
+   join_threads();
+   {
+@@ -36,7 +39,7 @@
+   DataManager::SetValue("tw_wipe_dalvik", wipe_dalvik ? 1 : 0);
+   DataManager::SetValue("tw_wipe_cache", wipe_cache ? 1 : 0);
+   running_.store(true);
+-  worker_ = std::thread(&twrp_sideload_backend::run, this);
++  worker_ = twrp_operation_executor::instance().worker(std::move(admission), &twrp_sideload_backend::run, this);
+   return true;
+ }
+ 
+--- a/gui2/backend/twrp_tools_backend.cpp
++++ b/gui2/backend/twrp_tools_backend.cpp
+@@ -442,6 +442,8 @@
+ }
+ 
+ bool twrp_tools_backend::start(tool_job job, const std::string& target, const std::string& value) {
++  auto admission = twrp_operation_executor::instance().admit_job();
++  if (!admission) return false;
+   if (running_.load()) return false;
+   if (job == tool_job::REPAIR || job == tool_job::RESIZE || job == tool_job::CHANGE_FILE_SYSTEM) {
+     twrp_operation_executor::guard transaction(twrp_operation_executor::instance().mutex());
+@@ -453,7 +455,7 @@
+     state_ = tool_state::RUNNING;
+   }
+   running_.store(true);
+-  worker_ = std::thread(&twrp_tools_backend::run, this, job, target, value);
++  worker_ = twrp_operation_executor::instance().worker(std::move(admission), &twrp_tools_backend::run, this, job, target, value);
+   return true;
+ }
+ 
+--- a/gui2/backend/twrp_wipe_backend.cpp
++++ b/gui2/backend/twrp_wipe_backend.cpp
+@@ -164,6 +164,8 @@
+ }
+ 
+ bool twrp_wipe_backend::start(std::vector<std::string> args) {
++  auto admission = twrp_operation_executor::instance().admit_job();
++  if (!admission) return false;
+   if (running_.load() || args.empty()) return false;
+   join_finished_thread();
+ 
+@@ -184,7 +186,7 @@
+   }
+ 
+   running_.store(true);
+-  worker_ = std::thread(&twrp_wipe_backend::run, this, std::move(args));
++  worker_ = twrp_operation_executor::instance().worker(std::move(admission), &twrp_wipe_backend::run, this, std::move(args));
+   return true;
+ }
+ 
+--- a/twrp_operation_executor.h
++++ b/twrp_operation_executor.h
+@@ -1,7 +1,11 @@
+ #ifndef TWRP_OPERATION_EXECUTOR_H
+ #define TWRP_OPERATION_EXECUTOR_H
+ 
++#include <cstddef>
+ #include <mutex>
++#include <memory>
++#include <functional>
++#include <thread>
+ #include <utility>
+ 
+ // Storage and crypto share one transaction domain. Execute on the caller's
+@@ -13,6 +17,55 @@
+   using guard = std::lock_guard<std::recursive_mutex>;
+   std::recursive_mutex& mutex() { return mutex_; }
+ 
++  // Admission is separate from the storage lock: count a job before its
++  // thread is scheduled, including time spent waiting for that lock. Accepted
++  // jobs keep their ticket until the worker actually returns.
++  class job_ticket {
++   public:
++    job_ticket() = default;
++    job_ticket(const job_ticket&) = delete;
++    job_ticket& operator=(const job_ticket&) = delete;
++    ~job_ticket() {
++      if (!owner_) return;
++      std::lock_guard lock(owner_->admission_mutex_);
++      --owner_->admitted_jobs_;
++    }
++   private:
++    friend class twrp_operation_executor;
++    twrp_operation_executor* owner_ = nullptr;
++  };
++  using admission = std::shared_ptr<job_ticket>;
++
++  admission admit_job() {
++    auto ticket = std::make_shared<job_ticket>();
++    std::lock_guard lock(admission_mutex_);
++    if (shutdown_reserved_) return {};
++    ticket->owner_ = this;
++    ++admitted_jobs_;
++    return ticket;
++  }
++
++  template <typename Function, typename... Args>
++  std::thread worker(admission ticket, Function&& function, Args&&... args) {
++    return std::thread([ticket = std::move(ticket),
++                        call = std::bind(std::forward<Function>(function),
++                                         std::forward<Args>(args)...)]() mutable { call(); });
++  }
++
++  // The caller also owns the storage lock while publishing the reboot target.
++  // No lock is retained through joins, final sync or unmounts.
++  bool reserve_shutdown() {
++    std::lock_guard lock(admission_mutex_);
++    if (shutdown_reserved_ || admitted_jobs_ != 0) return false;
++    shutdown_reserved_ = true;
++    return true;
++  }
++
++  void release_shutdown() {
++    std::lock_guard lock(admission_mutex_);
++    shutdown_reserved_ = false;
++  }
++
+   template <typename Function>
+   decltype(auto) run(Function&& function) {
+     guard lock(mutex_);
+@@ -21,6 +74,9 @@
+ 
+  private:
+   std::recursive_mutex mutex_;
++  std::mutex admission_mutex_;
++  std::size_t admitted_jobs_ = 0;
++  bool shutdown_reserved_ = false;
+ };
+ 
+ #endif  // TWRP_OPERATION_EXECUTOR_H

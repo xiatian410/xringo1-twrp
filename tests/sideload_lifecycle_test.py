@@ -21,7 +21,7 @@ def main():
  android=SRC.parents[1];clang=android/'prebuilts/clang/host/linux-x86/clang-r547379/bin/clang++';host=android/'out/host/linux-x86/lib64'
  cases=['install-success','install-fail','fuse-missing','fuse-error','fork-fail','socket-fail','usb-fail','property-fail','exec-fail','wait-eintr','epoll-create-fail','epoll-add-fail','epoll-wait-fail','epoll-timeout','malformed','short-command','unsupported','reboot-command','buffered-close','cancel','cancel-before-spawn','destructor','reuse','busy','foreign-cancel','signal-preserved','broken-status','parser-short','parser-long','status-eintr','status-partial','status-zero','status-error']
  if args.before:cases=[c for c in cases if c not in ['status-zero','status-error']]
- code=(ROOT/'tests/sideload_lifecycle_test.cpp').read_text()
+ code='#include "twrp_operation_executor.h"\n'+(ROOT/'tests/sideload_lifecycle_test.cpp').read_text()
  code=code.replace('// CORE_HEADER','\n'.join(x for x in core_header.read_text().splitlines() if not x.startswith('#include')))
  code=code.replace('// CORE',body(core,'using CommandFunction'))
  code=code.replace('// BACKEND_HEADER','\n'.join(x for x in header.read_text().splitlines() if not x.startswith('#include')))
@@ -30,7 +30,7 @@ def main():
  reports=[]
  with tempfile.TemporaryDirectory(prefix='sideload-lifecycle-') as tmp:
   work=Path(tmp);(work/'test.cpp').write_text(code);exe=work/'test'
-  cmd=[str(clang),'-std=c++23','-stdlib=libc++','-O1','-g','-D__unused=__attribute__((unused))','-I'+str(SRC/'minadbd/include'),'-I'+str(SRC/'gui2/backend'),'-I'+str(android/'system/libbase/include'),'-I'+str(android/'system/logging/liblog/include'),str(work/'test.cpp'),'-L'+str(host),'-Wl,-rpath,'+str(host),'-Wl,--wrap=socketpair','-lbase','-llog','-lpthread','-o',str(exe)]
+  cmd=[str(clang),'-std=c++23','-stdlib=libc++','-O1','-g','-D__unused=__attribute__((unused))','-I'+str(SRC),'-I'+str(SRC/'minadbd/include'),'-I'+str(SRC/'gui2/backend'),'-I'+str(android/'system/libbase/include'),'-I'+str(android/'system/logging/liblog/include'),str(work/'test.cpp'),str(SRC/'twrp_operation_executor.cpp'),'-L'+str(host),'-Wl,-rpath,'+str(host),'-Wl,--wrap=socketpair','-lbase','-llog','-lpthread','-o',str(exe)]
   subprocess.run(cmd,check=True)
   dependencies={}
   for line in subprocess.check_output(['ldd',str(exe)],text=True).splitlines():
@@ -40,7 +40,7 @@ def main():
    run=subprocess.run([str(exe),name],capture_output=True,text=True,timeout=12)
    row=dict(case=name,status='PASS' if run.returncode==0 else 'FAIL',exit=run.returncode,output=run.stdout+run.stderr);reports.append(row);print(row['status'],name,flush=True)
    if run.returncode:print(row['output'][-1500:],flush=True)
- bound=[core,core_header,backend,header,SRC/'gui2/backend/sideload_backend.h',SRC/'minadbd/include/minadbd/types.h',Path(__file__).resolve(),ROOT/'tests/sideload_lifecycle_test.cpp',ROOT/'tests/nested_partition_path_test.py']
+ bound=[SRC/'twrp_operation_executor.h',SRC/'twrp_operation_executor.cpp',core,core_header,backend,header,SRC/'gui2/backend/sideload_backend.h',SRC/'minadbd/include/minadbd/types.h',Path(__file__).resolve(),ROOT/'tests/sideload_lifecycle_test.cpp',ROOT/'tests/nested_partition_path_test.py']
  bound+=list((android/'system/libbase/include/android-base').glob('*.h'))
  result=dict(status='PASS' if all(r['status']=='PASS' for r in reports) else 'FAIL',scope=__doc__,cases=reports,sources={str(p):sha(p) for p in bound},binary_dependencies={str(clang):sha(clang),**dependencies})
  args.report.write_text(json.dumps(result,indent=2)+'\n');return result['status']!='PASS'

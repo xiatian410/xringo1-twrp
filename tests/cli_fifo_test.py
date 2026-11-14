@@ -27,10 +27,10 @@ def main():
         for include in ['twrp_background_backend.h', 'data.hpp', 'openrecoveryscript.hpp', 'orscmd/orscmd.h', 'partitions.hpp', 'twcommon.h', 'twrp_operation.h']:
             text = text.replace('#include "'+include+'"', '')
         (work/'backend.inc').write_text(text)
-        command = ['g++', '-std=c++20', '-O1', '-g', '-fsanitize=address,undefined', '-fno-sanitize-recover=all', '-I'+str(work), '-I'+str(SRC/'gui2'), str(harness), '-pthread', '-o', str(work/'test')]
+        command = ['g++', '-std=c++20', '-O1', '-g', '-fsanitize=address,undefined', '-fno-sanitize-recover=all', '-I'+str(work), '-I'+str(SRC/'gui2'), '-I'+str(SRC), str(harness), str(SRC/'twrp_operation_executor.cpp'), '-pthread', '-o', str(work/'test')]
         subprocess.run(command, check=True)
         cases = []
-        for name in ['abandoned-reader', 'late-reader', 'normal', 'busy', 'unsupported', 'short-command', 'max-command', 'reader-disappears', 'expiry-recovery', 'consecutive', 'saturated', 'pending-restart']:
+        for name in ['abandoned-reader', 'late-reader', 'normal', 'busy', 'unsupported', 'short-command', 'max-command', 'reader-disappears', 'expiry-recovery', 'consecutive', 'saturated', 'pending-restart', 'shutdown-reserved', 'shutdown-pending', 'shutdown-active', 'shutdown-rollback']:
             folder = work/name
             folder.mkdir()
             try:
@@ -40,7 +40,7 @@ def main():
                 result = dict(name=name, status='FAIL', reason='listener blocked for eight seconds', output=str(error.stdout))
             cases.append(result)
             print(name, result['status'], flush=True)
-    sources = [args.source, harness, Path(__file__), ROOT/'tests/nested_partition_path_test.py', SRC/'gui2/backend/twrp_background_backend.h', SRC/'gui2/backend/background_backend.h']
+    sources = [args.source, harness, Path(__file__), ROOT/'tests/nested_partition_path_test.py', SRC/'gui2/backend/twrp_background_backend.h', SRC/'gui2/backend/background_backend.h', SRC/'twrp_operation_executor.h', SRC/'twrp_operation_executor.cpp']
     report = dict(status='PASS' if all(c['status']=='PASS' for c in cases) else 'FAIL', scope=__doc__, cases=cases, compile_command=command, sources={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources})
     args.report.write_text(json.dumps(report, indent=2)+'\n')
     return report['status']!='PASS'

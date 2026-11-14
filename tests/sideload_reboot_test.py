@@ -30,7 +30,7 @@ def main():
  preamble=preamble.replace('scenario=="buffered-close"&&value=="sideload"','(scenario=="buffered-close"||scenario=="ack-fail")&&value=="sideload"')
  preamble=preamble.replace('struct PartitionManagerFixture {','struct PartitionManagerFixture {void UnlockBlockPartitions(){}void UpdateSystemDetails(){}')
  preamble=preamble.replace('namespace gui2_console {','namespace gui2_console {std::string text(const std::string& s){return s;}')
- code=preamble+(ROOT/'tests/sideload_reboot_test.cpp').read_text()
+ code='#include "twrp_operation_executor.h"\n'+preamble+(ROOT/'tests/sideload_reboot_test.cpp').read_text()
  code=code.replace('// FIXED','#define FIXED_CORE 1').replace('// CORE_HEADER','\n'.join(x for x in header.read_text().splitlines() if not x.startswith('#include')))
  code=code.replace('// CORE',core.read_text()[core.read_text().index('using CommandFunction'):]).replace('// BACKEND_HEADER','\n'.join(x for x in (SRC/'gui2/backend/twrp_sideload_backend.h').read_text().splitlines() if not x.startswith('#include')))
  code=code.replace('// BACKEND',backend.read_text()[backend.read_text().index('namespace gui2_backend'):])

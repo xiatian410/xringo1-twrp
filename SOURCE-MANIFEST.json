@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "8c2cba9d74fd39e26fdde23b441f1a5e4b832c69454f0035ee365c288c5c5622",
+    "sha256": "78631f34eaf26862a14ddbe87f585bde53ec187bf483ebda8a4c1230c9e1931f",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -80,7 +80,7 @@
     "mode": "0o644"
   },
   "docs/INSTALL-CHAIN-VALIDATION.md": {
-    "sha256": "632c4660b1129114e6c09924f406312ce5f8e475702c6b358ec216c7dd7e6c8f",
+    "sha256": "aa11733abc78c46178326764401506af6d3fb6d10eeb416a941c12488575c38e",
     "mode": "0o644"
   },
   "docs/MODULE-STATE-ADAPTATION.md": {
@@ -108,7 +108,7 @@
     "mode": "0o644"
   },
   "docs/MULTIUSER-ADAPTATION.md": {
-    "sha256": "f80661132ae21d5049ec9383a9fb6bcd33c47e09ee8b5218617e41be3664ee1a",
+    "sha256": "150578ec1d82bcdc7361516a290a4032cc193332ccaf80f034610e03d4c74f8e",
     "mode": "0o644"
   },
   "docs/OPERATION-FEEDBACK-ADAPTATION.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "29cc1753661c5e145d8450ae7de694705f0a2f134058b0f13842c8fb0cf02e9d",
+    "sha256": "cb076f2364a456d6cf26fbca9acbf6ba13ea58026fc95cb5895547373b59d0a9",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -767,8 +767,12 @@
     "sha256": "cf726c66ef84469bf83aadff5dc6c7e64515da1b883fd7a89c71a887dd514d84",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0124-shutdown-job-admission.patch": {
+    "sha256": "065bc2143140ceaa42cf6e97f706d771ade938a140f036d69c56d88ec11d15f4",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "7d92576ae8f551fec37ddee59ef7b98759bb226d88b65dd8c4b1c4f8b5a1dc52",
+    "sha256": "e772491e1eec42832c4a50fe63fb9cacd432e37d4c950166ff200e9c5501f173",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -1559,6 +1563,10 @@
     "sha256": "9dd2701ec67146d43544164fc33ecdc85a51ae0f8b805cdefa797bacbda453e5",
     "mode": "0o644"
   },
+  "scripts/audit_shutdown_admission.py": {
+    "sha256": "beb8d7a69a2aeea5fda4f5a55c9670d49ce58f55c8ad22e6d00a92b23efccc96",
+    "mode": "0o644"
+  },
   "scripts/audit_sideload_completion_delivery.py": {
     "sha256": "f6f78e84b03012ea234311fa4377f3eaba9c7a6b0385378cb889ba351af1ad64",
     "mode": "0o644"
@@ -1968,11 +1976,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "ec4afe2bcda7738ff18da5c26b1fa9b850ee31e5d8a6bb8b296154421d34707d",
+    "sha256": "6b275b908a348976980b410f6094136138e65a93d7be189f7740e5401def7207",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "0101f803007993909a443e72227469948d91fd27775e5f6100a4f5983600ceda",
+    "sha256": "17e32751ec3650434dd0c4eb7192718b22b0666068e565ea60326eb68f884c5a",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2040,11 +2048,11 @@
     "mode": "0o644"
   },
   "tests/cli_fifo_test.cpp": {
-    "sha256": "ce432fdf1de11d90ae3998cd8bae911ebd329c9eb0b145740b17aff6019d83fd",
+    "sha256": "9cb63adcb74e3e9d0ac041e528f192377fec117a936483192510115dc954f57a",
     "mode": "0o644"
   },
   "tests/cli_fifo_test.py": {
-    "sha256": "96616e30245289a671d4fb825a702c3faafc71abcecb188fba2deb71f5ea062a",
+    "sha256": "b252a9d67c43bbf86f7c0df4f318023324fc5a5d034af454d2aa6b3c0dd6b412",
     "mode": "0o644"
   },
   "tests/copylog_test.cpp": {
@@ -2879,12 +2887,16 @@
     "sha256": "569e121989bfb9644f25b00974151ce0ed00081ca83cbd2d7a9248238d51eceb",
     "mode": "0o644"
   },
+  "tests/shutdown_admission_test.py": {
+    "sha256": "d01b7426a0ab8c9137f37642dfa14e1241af4515d49342115fa6272e6e700df9",
+    "mode": "0o644"
+  },
   "tests/sideload_lifecycle_test.cpp": {
     "sha256": "78b9255dec85af6d1d3d4d4a4332fe2ab98381657627a885160f609c8dc4ced7",
     "mode": "0o644"
   },
   "tests/sideload_lifecycle_test.py": {
-    "sha256": "8214971d1473aa9e43c1cf62571ad4c6d130bae8300c9f9778644294efa9d73a",
+    "sha256": "431f598e530f11feaf89b6f6712e238417087327b060db0efad70d0ea5dd7fb1",
     "mode": "0o644"
   },
   "tests/sideload_package_chain_test.cpp": {
@@ -2904,7 +2916,7 @@
     "mode": "0o644"
   },
   "tests/sideload_reboot_test.py": {
-    "sha256": "99c3ec0856982e5e4adde01bb748d08b517b42fc17b73e38c55cdc3eeaac063e",
+    "sha256": "f7ef4d4c093966a491cf362a6f97d40195e1ded8922a41d9fcfa256941784a91",
     "mode": "0o644"
   },
   "tests/sideload_rejection_test.py": {

@@ -458,6 +458,10 @@
         {
           "file": "0123-mtp-receive-error-boundary.patch",
           "sha256": "cf726c66ef84469bf83aadff5dc6c7e64515da1b883fd7a89c71a887dd514d84"
+        },
+        {
+          "file": "0124-shutdown-job-admission.patch",
+          "sha256": "065bc2143140ceaa42cf6e97f706d771ade938a140f036d69c56d88ec11d15f4"
         }
       ],
       "result_files": {
@@ -477,7 +481,7 @@
         "infomanager.cpp": "7f1fe90502a85952125c67f2b4613329b19aa095ad649ba221331a48d171e495",
         "Android.bp": "1f705f027a005452faf679686a43d3900779c5aee98fc95ebdc2600202a6da2a",
         "gui2/backend/decrypt_backend.h": "a6ec26538be3ba26af9c449960752b4ad91bcdf6fa15a2027cfdb915c0fc7945",
-        "gui2/backend/twrp_decrypt_backend.cpp": "44fcb069c6c0a90e9642505ef5a0e4d7ed862728b330f6026964c6619d1741cd",
+        "gui2/backend/twrp_decrypt_backend.cpp": "02d0547d9efbebbd011ac459e7878d6ec1e2dc1f0a1d400303add2d1b9a12388",
         "gui2/backend/twrp_decrypt_backend.h": "04981432ab630686863a3ba810b8cb5bb2d05884e0ebe82a0b401a1af5e8beab",
         "gui2/gui2.cpp": "f243b6f15377c0c5e00eeee3033d323988ec2979ffb416d38d81f3aff8c356ed",
         "gui2/i18n/en.cpp": "f5e87f8bf67a3e2926578e39d6a2999c59474080b7b8bf93e1377b6b2143762b",
@@ -505,7 +509,7 @@
         "digest/twrp_digest_driver.hpp": "266f16b28f4d3ace274a5ea42253ee993fd6790ce323a8e5b79e885f2e9a6fa4",
         "twrpTar.cpp": "e4331daf00dc46bee854464224a48279bb8c1400efb67ccfb1bdca57cde909fb",
         "twrpTar.hpp": "d81ab9ac664ca3cc51e76b05f6fbd51f862e31218983371b6a61a33096ec6ffe",
-        "gui2/backend/twrp_backup_backend.cpp": "925155463e34f59103a0b94473363638cb47afb35f80ea782da065eb2e2c985e",
+        "gui2/backend/twrp_backup_backend.cpp": "94c7fc6781f8ae150cf4f9379ceba2055f30af9b34f5d861c70fb4dcf67bd091",
         "backup_process.hpp": "5d4a5d4973bba52d7a796dee1ed5e3d8258cebfb438dad33cfbcbb964b1ee225",
         "twrpRepacker.cpp": "4b95330ee0cff1df83da0231da203365121be14be2830fefbb4772b0b5c727c7",
         "tarWrite.cpp": "c7ae8b3f27403eb2df3b0ee697988b1542f44350c6f0adc7aa8a4bc86612130a",
@@ -545,19 +549,19 @@
         "gui2/backend/mount_backend.h": "4cc5e65d3baae879156e640672cc79b55f4abeeee2cd9b58b60af38361c68ebb",
         "sysfs_device_match.hpp": "66987f6f13e174bb22ce057d022006b1eb0fe2cfa3069046c51e30f72063e941",
         "twrpinstall/twinstall.cpp": "c99be8c70dffadc4f92e0b7ce356fbcf2e9d97ec468ebee8e34c7c50c6e81b0e",
-        "gui2/backend/twrp_install_backend.cpp": "20ae186a20ea7232dfe25c03522d64be5ba97eaedc6e7579b1bec92fa0ab4c1b",
+        "gui2/backend/twrp_install_backend.cpp": "5deef9816535c3668d0289645c451626e627eff0ddcb48befbc71c606dca9b02",
         "twrpinstall/adb_install.cpp": "928520ae7805cd248a269c372c41e327fec669967db587493546c02ab87a7478",
         "twrpinstall/include/twinstall/adb_install.h": "e6677a337acfeac973859517c97fa2ab15b46d9a49a7a64ab53142ab6f026328",
-        "gui2/backend/twrp_sideload_backend.cpp": "0870b3b7d59f5be485ed17db62189108fae248b0093e8628d7fc52cb53cc8e8d",
+        "gui2/backend/twrp_sideload_backend.cpp": "cf92ba6c55ff99a797d4348c4c4480badd2d97729342f195f9458f6d8f6199cd",
         "gui2/backend/twrp_sideload_backend.h": "df5ef8d68dd5e6101482ba26cb944bc822c8643e0656193227956a9085a1812e",
         "openrecoveryscript.cpp": "a9b5d99e2af4266b50ceae67a487ef40fb97e7422b2015e76873f1dff0027134",
         "gui2/backend/reboot_backend.h": "49c74edd83b63ee28fc70e34ba58268df9107bc379ab9e65f2e662f3303b109d",
         "gui2/backend/twrp_reboot_backend.h": "4c6767ff062d6b0885d0b9c9bff626fdf29ddb73b1d47ce1eff135d2bb0d925a",
-        "gui2/backend/twrp_reboot_backend.cpp": "a809dfc21e28ea583238cb015bc0188c58676e10a2c2303bd8a740edc827674c",
-        "gui2/backend/twrp_wipe_backend.cpp": "0cfc499ccf3e0296bbdc028eedb8e43c5f1b722edbd43a380a1106311c6c0e73",
-        "gui2/backend/twrp_tools_backend.cpp": "52dfe873375bf6fb9726337872b9b6b629fd6b81193638b26d683f79401ad3a8",
+        "gui2/backend/twrp_reboot_backend.cpp": "445688f58b94ab736a087276166c54047136e72e517c2598659211525673e0dc",
+        "gui2/backend/twrp_wipe_backend.cpp": "1b18100a7991392888956a8664f9f69cd8a250a1b5d54b3da75f8e51a717e252",
+        "gui2/backend/twrp_tools_backend.cpp": "5b451bb11a74ba47aa9ddec138837737beffc6154c5f22ae147f0353507ae33e",
         "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a",
-        "gui2/backend/twrp_background_backend.cpp": "e70068bce5cbac87fb91fb7fd505d5b9e9efcfd9c3677c53c2536a9c666923bf",
+        "gui2/backend/twrp_background_backend.cpp": "a697345d2b7e3fc72be8cba248433e994a0c0ba8d43ecbf35ecc566da1a8ab4a",
         "libtar/libtar.h": "bc3cde522f301eb0c7ff532159752640eb5dcf65281b4e63c63a8b0f75c9e838",
         "libtar/internal.h": "dec002f630564d0f77c49fa9af5d0a553e5af5d37926f775f59d6a25c62eebd5",
         "libtar/android_utils.c": "dfa8967e239e97c27c4d4db2e3951de316ab3f9307eb0add7446919c613c5c65",
@@ -567,7 +571,9 @@
         "mtp/MtpRequestPacket.cpp": "9e143dbd31fd424728e753e7383de0957aced6415f166b6b1dd9b5e1fdcdbd3e",
         "mtp/MtpDataPacket.cpp": "fe7d542a6ddf5fc40be0ab7ee4c74f8abfb6240846d72390c2f1bca4b0805f0d",
         "exclude.cpp": "db68a3c2d5bb5908413462e49a61654c5e72ed06783f5eab991aacd76af99bde",
-        "exclude.hpp": "e0b0435e7952fcae99460b69460abd13ff54fddcbf5d611c3517ae9b5a09992e"
+        "exclude.hpp": "e0b0435e7952fcae99460b69460abd13ff54fddcbf5d611c3517ae9b5a09992e",
+        "gui2/backend/twrp_restore_backend.cpp": "85e57056d8f51e927b7c5da951722342fa87f85545acad3e3b3941332571b234",
+        "twrp_operation_executor.h": "72c2f644f7a1d32dc2cad006fc7ceb8fd257d9970321f7971c4b08c4e06b16b8"
       }
     },
     "system/sepolicy": {

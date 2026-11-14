@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-mtp-receive-boundary.img` |
-| SHA-256 | `7d26ec1ffcd20b8df4f8a4d25d9a4df46abf8fd2d7613afdc0f43115b8dd69f8` |
-| 生产来源绑定 | 852 份 |
+| 文件 | `recovery-dijun-unified-shutdown-admission.img` |
+| SHA-256 | `2ed5dba900b869ac0f326c6e6823ef07e9eebfab5512782e0816ee7772e24573` |
+| 生产来源绑定 | 855 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：接收失败后的数据边界
+## 本批生产修正：重启交接的任务准入
+
+0124补齐后台任务已接收但尚未取得存储锁的空窗。GUI后台任务/槽位切换与FIFO CLI参与准入计数；无已接收任务时重启可预约停止接收，目标写入失败回滚，成功后保持至退出。取消/收尾保留，等待线程不持有存储锁。
+
+启动29项通过，旧接线18/29失败；CLI16、入口21、侧载23、生命周期33、解密后台12、收尾4通过。含128次真实双线程预约竞争；任务内容、HAL/DM/USB及最终重启有明确替身。清理构建及六profile打包通过。核对为`python3 scripts/audit_shutdown_admission.py`，范围见[任务准入](docs/MULTIUSER-ADAPTATION.md#shutdown-admission)。终端/直接ORS、完整MTP/USB关闭及同步TEE安全取消仍未验收；完整OTA沿用历史结果。
+
+## 沿用的接收失败后数据边界
 
 0123补齐receiveFile内部普通错误及分段编辑首段写入失败后的边界处理：仍可能有文件数据或终止包未读时结束连接，避免尾部被继续当作命令。成功及ECANCELED/Reset保留原行为；小文件已完整缓冲的普通错误仍正常响应。分段编辑已写入内容不回滚。
 
