@@ -482,6 +482,10 @@
         {
           "file": "0129-ors-startup-sequence-failure.patch",
           "sha256": "7952aa448e87de8841c9fb7d8941c4827ac6b1d363b2dcdc71644dca27be3f12"
+        },
+        {
+          "file": "0130-ors-staging-error-propagation.patch",
+          "sha256": "ac4616f8dfb8c7fa1e407da2b97cb63b1f12c4aae003c02f2cbd81c708b6d3d8"
         }
       ],
       "result_files": {
@@ -574,7 +578,7 @@
         "twrpinstall/include/twinstall/adb_install.h": "e6677a337acfeac973859517c97fa2ab15b46d9a49a7a64ab53142ab6f026328",
         "gui2/backend/twrp_sideload_backend.cpp": "cf92ba6c55ff99a797d4348c4c4480badd2d97729342f195f9458f6d8f6199cd",
         "gui2/backend/twrp_sideload_backend.h": "df5ef8d68dd5e6101482ba26cb944bc822c8643e0656193227956a9085a1812e",
-        "openrecoveryscript.cpp": "c19728a6a42c645491d241557853595933d090d83bbdd07be228f912260db25b",
+        "openrecoveryscript.cpp": "d9ed87c7e5f7bd0a827027594b22b33641debc42d59458772484d0e6fa27114c",
         "gui2/backend/reboot_backend.h": "49c74edd83b63ee28fc70e34ba58268df9107bc379ab9e65f2e662f3303b109d",
         "gui2/backend/twrp_reboot_backend.h": "4c6767ff062d6b0885d0b9c9bff626fdf29ddb73b1d47ce1eff135d2bb0d925a",
         "gui2/backend/twrp_reboot_backend.cpp": "445688f58b94ab736a087276166c54047136e72e517c2598659211525673e0dc",

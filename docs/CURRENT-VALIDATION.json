@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-ors-sequence.img",
-  "image_sha256": "286d8161ac6cba9e58604a9f6b31196cec6e1649d35ded1c9c16ef7190b80c49",
-  "production_sources": 865,
+  "image_name": "recovery-dijun-unified-ors-staging.img",
+  "image_sha256": "b67c8dc1f9310e1a3163c73c221d23b22a8bc0590ade4a2da15f7fa9bd64222c",
+  "production_sources": 866,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2461,6 +2461,38 @@
       "failures": 0,
       "local_report_sha256": "165c93b79cb37f73b53bf98cd3e1a0285090210f19c5ce1a910e466e36df04f9",
       "scope": "Patch0129 stops startup action at the first failed temporary/cache script; preserves unconsumed cache script and prevents automatic reboot after any failure. Original full parser/action with private script files9 pass, old4/9 fail; single-script58 pass. Cache discovery/mount, manager/shell/settings/sleep/reboot are fixtures; not complete ORS shutdown admission, rollback, GUI or device boot. Existing full OTA reused."
+    },
+    {
+      "name": "ors-staging-current",
+      "status": "PASS",
+      "cases": 23,
+      "failures": 0,
+      "local_report_sha256": "28b7c6d572551febe07a47867d8e3129200cf7ccd12a548a03745c24c8c44651",
+      "scope": "Patch0130 preserves ORS source on copy/unlink failure, attempts partial temporary cleanup, and propagates cache staging failure through startup action to prevent execution/automatic reboot. Original check/copy/parser/action and TWFunc::CopyFile with private files23 pass, old11/23 fail; sequence9 and commands58 pass. Mount/chmod/unlink faults, settings, shell/sleep/reboot are explicit fixtures. No power-loss durability, pathname races, atomic transaction, full GUI/CLI or shutdown admission. Existing OTA reused."
+    },
+    {
+      "name": "ors-staging-old",
+      "status": "FAIL",
+      "cases": 23,
+      "failures": 11,
+      "local_report_sha256": "6dc2f8578e1220dbe5fdaebfd6e1c0098cc15fe4d03ecc424535c4ad873597a8",
+      "scope": "Patch0130 preserves ORS source on copy/unlink failure, attempts partial temporary cleanup, and propagates cache staging failure through startup action to prevent execution/automatic reboot. Original check/copy/parser/action and TWFunc::CopyFile with private files23 pass, old11/23 fail; sequence9 and commands58 pass. Mount/chmod/unlink faults, settings, shell/sleep/reboot are explicit fixtures. No power-loss durability, pathname races, atomic transaction, full GUI/CLI or shutdown admission. Existing OTA reused."
+    },
+    {
+      "name": "ors-staging-sequence",
+      "status": "PASS",
+      "cases": 9,
+      "failures": 0,
+      "local_report_sha256": "9fe14d74f29ebe145127b804cb0c2472a330d01728668b704eeeb92b6fc9e8de",
+      "scope": "Patch0130 preserves ORS source on copy/unlink failure, attempts partial temporary cleanup, and propagates cache staging failure through startup action to prevent execution/automatic reboot. Original check/copy/parser/action and TWFunc::CopyFile with private files23 pass, old11/23 fail; sequence9 and commands58 pass. Mount/chmod/unlink faults, settings, shell/sleep/reboot are explicit fixtures. No power-loss durability, pathname races, atomic transaction, full GUI/CLI or shutdown admission. Existing OTA reused."
+    },
+    {
+      "name": "ors-staging-commands",
+      "status": "PASS",
+      "cases": 58,
+      "failures": 0,
+      "local_report_sha256": "4d6362180e6de47e246f90ee521ed4d4adbc9ce9ae6507ab6febce054b10782c",
+      "scope": "Patch0130 preserves ORS source on copy/unlink failure, attempts partial temporary cleanup, and propagates cache staging failure through startup action to prevent execution/automatic reboot. Original check/copy/parser/action and TWFunc::CopyFile with private files23 pass, old11/23 fail; sequence9 and commands58 pass. Mount/chmod/unlink faults, settings, shell/sleep/reboot are explicit fixtures. No power-loss durability, pathname races, atomic transaction, full GUI/CLI or shutdown admission. Existing OTA reused."
     }
   ],
   "refresh_stuck_investigation": {

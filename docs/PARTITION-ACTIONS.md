@@ -1,5 +1,18 @@
 # 分区界面修正：镜像目标与 NV 操作
 
+<a id="ors-staging-errors"></a>
+## 脚本暂存失败保留原文件（0130）
+
+`check_for_script_file`和`copy_script_file`原先忽略`TWFunc::CopyFile`结果，无论复制是否成功都删除源脚本并报告成功。目标写入/权限设置失败时可能丢失源文件；源删除失败时仍可能执行副本并自动重启，下次启动又重复执行源脚本。
+
+[0130补丁](../dtsrc/O1_asic_dual/patches/0130-ors-staging-error-propagation.patch)检查复制和源删除结果，失败时保留源文件、尝试删除本次临时副本，并返回失败。缓存检查区分未发现（0）、已暂存（1）和暂存失败（-1）；启动action收到负值即结束，不执行副本或自动重启，即使之前的临时脚本已成功。CLI复制函数保留原0失败/1成功协议，源已是临时路径的快捷分支不变。缓存挂载失败沿用原未发现行为，本批未改动该策略。
+
+同一`tests/ors_results_test.py --staging`复用完整原检查/复制/解析器/action，并执行原`TWFunc::CopyFile`。23个场景使用独立私有目录，覆盖正常、源不存在、已位于临时路径、目标被目录占据、chmod失败、源unlink失败、挂载失败，以及前一脚本成功后的缓存处理。修正版全部通过，同夹具旧版11项失败；顺序九项和单脚本58项通过。源文件内容逐字节比较，成功副本也读回确认。
+
+挂载、chmod/unlink故障、配置、shell及最终重启为显式替身，其余复制/权限正常路径和私有文件真实执行。不是断电持久性、路径竞争、原子事务、完整CLI/GUI或真实启动验收。临时副本清理是尽力操作，不能保证不可删除对象被移除。首次对照用例因断言失败未清理残留而污染后续用例，已将每个场景隔离目录，首次结果保留但不作为统计。
+
+本地最终报告：`logs/ors-staging-current.json`、`logs/ors-staging-old.json`、`logs/ors-staging-sequence.json`、`logs/ors-staging-commands.json`。交付核对：`python3 scripts/audit_ors_results.py --staging`。当前镜像见[交付报告](../simulation-report.md)，不重复完整OTA或无关功能检查。
+
 <a id="ors-startup-sequence"></a>
 ## 多份启动脚本的失败处理（0129）
 

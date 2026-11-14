@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-ors-sequence.img` |
-| SHA-256 | `286d8161ac6cba9e58604a9f6b31196cec6e1649d35ded1c9c16ef7190b80c49` |
-| 生产来源绑定 | 865 份 |
+| 文件 | `recovery-dijun-unified-ors-staging.img` |
+| SHA-256 | `b67c8dc1f9310e1a3163c73c221d23b22a8bc0590ade4a2da15f7fa9bd64222c` |
+| 生产来源绑定 | 866 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：多份启动脚本保留失败
+## 本批生产修正：脚本暂存失败保留源文件
+
+0130检查ORS暂存复制和源删除的结果；失败保留原脚本、尝试清理临时副本，并传回失败。缓存暂存失败会停止启动action，不执行副本或自动重启，即使前一个脚本已成功。源已位于临时路径和正常成功路径保留。
+
+23项原检查/复制/解析器/action及原CopyFile私有文件场景通过，同夹具旧版11项失败；顺序九项与单脚本58项通过。清理构建绑定866份生产来源及六profile，核对入口为`python3 scripts/audit_ors_results.py --staging`，见[暂存失败](docs/PARTITION-ACTIONS.md#ors-staging-errors)。挂载/故障/shell/重启为替身；不承诺断电、并发路径替换、完整关机准入或真实启动。未重复完整OTA。
+
+## 沿用的多份启动脚本保留失败
 
 0129修正启动action分别记录临时/缓存脚本成功、从而掩盖失败的问题。任一脚本失败立即进入结束状态并返回失败；第一份失败时缓存脚本不被消费，第一份成功但第二份失败时不再自动重启。已完成操作不回滚。
 
