@@ -506,6 +506,10 @@
         {
           "file": "0135-ors-deferred-reboot.patch",
           "sha256": "1c4cf34784863029ad19bc580c4d5c7157ee20f47e6e50aaa3bfa48bd6d5957d"
+        },
+        {
+          "file": "0136-cli-command-bounds.patch",
+          "sha256": "3d79553e859ab35a6c4745701d0c0aab9d2fce8b834399700f116fc6f19bdffd"
         }
       ],
       "result_files": {
@@ -623,7 +627,8 @@
         "gui2/backend/terminal_engine.h": "933100ba35790f1a31b54d6be50c6f0539a8e23d0280a269f2a31c59edf194a7",
         "gui2/backend/twrp_terminal_backend.cpp": "e2c468a48e9a94ffcf4badfd32f8cb1a8b77a84bb8b7820bfd11299ebf880fb9",
         "gui2/backend/twrp_terminal_backend.h": "add7b766832c51e85f4de261b604f636e025cfaf8a1663363abb611cd4e44672",
-        "openrecoveryscript.hpp": "6612bda3d584f66d2f8808a320c18b9f3a8cc35bac73858c4843c44ce2bb21cb"
+        "openrecoveryscript.hpp": "6612bda3d584f66d2f8808a320c18b9f3a8cc35bac73858c4843c44ce2bb21cb",
+        "orscmd/orscmd.cpp": "e26a0d86e9f28b08132789e54a5aa5609f8f6db9d0bb6ff3da5b2b0220341d28"
       }
     },
     "system/sepolicy": {

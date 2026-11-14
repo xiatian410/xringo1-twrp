@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-ors-reboot.img` |
-| SHA-256 | `9a87134900f79bd2979f5f959d5470288327be44e3cde73019fcfd94524e5550` |
-| 生产来源绑定 | 872 份 |
+| 文件 | `recovery-dijun-unified-cli-command.img` |
+| SHA-256 | `79c8a5ea4b5a881cc8b6bbfa7a035558588a6c3027c88421c8c7073fe43e80cb` |
+| 生产来源绑定 | 874 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：ORS 重启交给统一收尾流程
+## 本批生产修正：CLI 命令组装边界
+
+0136修正`twrp`客户端将参数用sprintf反复写回同一个1024字节数组的重叠读写与越界。现在逐参数检查容量，保留空格拼接和固定长度协议；超过1023字节在打开任一FIFO前明确失败，不发送截断命令。记录整体清零，终止符及剩余字节均为零。
+
+原CLI main在ASan/UBSan下12项通过；同夹具旧版五个超长场景全部发生栈越界，七个普通/上限控制原本通过。未改变FIFO接收端，其既有16项来源哈希全部相符，直接复用。清理构建绑定874份来源及六profile，核对入口`python3 scripts/audit_cli_command.py`；只改变`twrp`程序与构建属性/摘要。见[CLI命令范围](docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-command-bounds)。测试的FIFO/help/capability为替身，没有完整client/server/ORS接合、ARM64运行或物理设备验收；完整OTA沿用已有模型结果。
+
+## 沿用的 ORS 重启交给统一收尾流程
 
 0135移除ORS显式命令及启动成功后的直接TwReboot调用；脚本关闭成功后发布待处理请求，显式重启不再执行后续命令或缓存脚本。原GUI消费器在存储空闲、所有预约任务返回后预约关机，再由原最终收尾流程执行。直接解析器/启动action持有准入票，关机预约后拒绝执行；忙、目标写入失败或临时能力不可用时保留请求重试。启动请求跳过后续只读提示，避免等待用户确认后才能退出。
 

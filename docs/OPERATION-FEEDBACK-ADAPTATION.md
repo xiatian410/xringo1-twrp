@@ -1,5 +1,23 @@
 # 操作反馈与页面生命周期
 
+<a id="cli-command-bounds"></a>
+## CLI 命令组装越界（0136）
+
+原`twrp`客户端先sprintf复制argv[1]，再以`command`同时作为源与目标拼接后续参数；没有总长度检查，超过1024字节数组会栈越界。固定1024字节发送记录未清零，命令终止符之后还含未初始化字节。
+
+[0136补丁](../dtsrc/O1_asic_dual/patches/0136-cli-command-bounds.patch)将数组整体初始化为零，逐参数检查内容和分隔空格的容量，再用memcpy追加。保留最多1023字节和一个NUL、原有空格拼接、空参数及固定1024字节记录；超长命令在打开任一FIFO前返回失败，不截断或部分发送。未修改已有help/version/capability分支。
+
+`tests/cli_command_test.py`执行原始main的命令路径，ASan/UBSan验证单/多参数、空参数、中文/空格、三个合法上限与五种超长情况，共12项通过。精确比较发送内容、终止符到末尾全零；失败必须无open/write/close。相同夹具旧版五个超长场景均被ASan识别为stack-buffer-overflow，七个控制原本通过。FIFO的open/read/write/close及help/capability为替身，没有实际执行命令。
+
+原监听器16项报告`logs/shutdown-admission-cli.json`的全部来源哈希仍一致，本批复用而不重跑。最终镜像仅`twrp`客户端与构建属性/摘要改变；Recovery/GUI字节不变。未完成整条client/server/ORS接合、ARM64运行、CLI退出码传播、连接等待/超时或物理设备验证，不将本修正扩展为完整CLI验收。
+
+```bash
+python3 tests/cli_command_test.py --report logs/cli-command-current.json
+python3 scripts/audit_cli_command.py
+```
+
+本地报告`logs/cli-command-{current,old}.json`，交付核对`logs/cli-command-delivery-audit.json`；当前镜像见[交付报告](../simulation-report.md)。
+
 <a id="terminal-shutdown-boundary"></a>
 ## 终端重启预约与最终回收（0127）
 

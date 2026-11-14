@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-ors-reboot.img",
-  "image_sha256": "9a87134900f79bd2979f5f959d5470288327be44e3cde73019fcfd94524e5550",
-  "production_sources": 872,
+  "image_name": "recovery-dijun-unified-cli-command.img",
+  "image_sha256": "79c8a5ea4b5a881cc8b6bbfa7a035558588a6c3027c88421c8c7073fe43e80cb",
+  "production_sources": 874,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2653,6 +2653,22 @@
       "failures": 0,
       "local_report_sha256": "a6afafee480464123cd749e5eab4f18539106105fe774473f92d5cf01e2ec49b",
       "scope": "Patch0135 defers explicit/startup ORS reboot until script close succeeds, stops script tail/cache, tickets direct parser/startup execution and consumes pending target through existing GUI storage/admission reservation; failed writes/busy/capability retain request. Original queue/parser/action/GUI consumer with real executor16 pass, old16/16 fail; input28/commands58/arguments20/sequence9/sideload23 pass. Settings/capabilities/sync/absent minadbd/final reboot are fixtures, close error injected; startup prompt bypass statically checked. No full GUI/USB, descendant/process-wide shutdown, concurrent staging, physical reboot or actual OTA boot/merge proof; prior full OTA reused."
+    },
+    {
+      "name": "cli-command-current",
+      "status": "PASS",
+      "cases": 12,
+      "failures": 0,
+      "local_report_sha256": "0e45f70414f75f7d7ab708a5fb0e6034b2d33859f302ee66d29f8eec962cd78a",
+      "scope": "Patch0136 replaces overlapping unbounded sprintf in CLI argv assembly with checked append, rejects above1023 bytes before either FIFO opens and zero-initializes fixed1024-byte record. Host original main ASan/UBSan12 pass, old5/12 fail with stack-buffer-overflow. FIFO/help/capability services are fixtures. Unchanged listener16 reused after all source hashes matched; no rerun. No client/server/ORS joined run, ARM64 runtime, FIFO liveness or full shutdown proof. Existing full OTA reused."
+    },
+    {
+      "name": "cli-command-old",
+      "status": "FAIL",
+      "cases": 12,
+      "failures": 5,
+      "local_report_sha256": "a6da45fa998ac7d60397726a172a2be1cc6f2750262e8c4d8f8afe17ef75697f",
+      "scope": "Patch0136 replaces overlapping unbounded sprintf in CLI argv assembly with checked append, rejects above1023 bytes before either FIFO opens and zero-initializes fixed1024-byte record. Host original main ASan/UBSan12 pass, old5/12 fail with stack-buffer-overflow. FIFO/help/capability services are fixtures. Unchanged listener16 reused after all source hashes matched; no rerun. No client/server/ORS joined run, ARM64 runtime, FIFO liveness or full shutdown proof. Existing full OTA reused."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2957,5 +2973,17 @@
     "document": "docs/PARTITION-ACTIONS.md#ors-deferred-reboot",
     "production_changes": true,
     "new_build": true
+  },
+  "cli_command_bounds": {
+    "patch": "0136",
+    "scope": "Patch0136 replaces overlapping unbounded sprintf in CLI argv assembly with checked append, rejects above1023 bytes before either FIFO opens and zero-initializes fixed1024-byte record. Host original main ASan/UBSan12 pass, old5/12 fail with stack-buffer-overflow. FIFO/help/capability services are fixtures. Unchanged listener16 reused after all source hashes matched; no rerun. No client/server/ORS joined run, ARM64 runtime, FIFO liveness or full shutdown proof. Existing full OTA reused.",
+    "document": "docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-command-bounds",
+    "production_changes": true,
+    "new_build": true,
+    "reused_listener": {
+      "evidence": "logs/shutdown-admission-cli.json",
+      "sha256": "9832a130415adc82d0001fc6a6b490f1589e0fbd2b0960bea50de0e5523f35ee",
+      "count": 16
+    }
   }
 }

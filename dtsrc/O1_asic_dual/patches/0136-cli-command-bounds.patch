@@ -1,0 +1,35 @@
+--- a/orscmd/orscmd.cpp
++++ b/orscmd/orscmd.cpp
+@@ -99,7 +99,7 @@
+ 
+ int main(int argc, char **argv) {
+ 	int read_fd, write_fd, index;
+-	char command[1024], result[512];
++	char command[1024] = {}, result[512];
+ 
+ 	if (argc < 2 || strcmp(argv[1], "help") == 0 || strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "?") == 0 || strcmp(argv[1], "-h") == 0) {
+ 		print_usage();
+@@ -129,9 +129,20 @@
+ 		return do_getcap(argv[2]);
+ 	}
+ 
+-	sprintf(command, "%s", argv[1]);
+-	for (index = 2; index < argc; index++) {
+-		sprintf(command, "%s %s", command, argv[index]);
++	// Preserve the fixed-size wire record, including its NUL terminator. Check
++	// every argument before touching either FIFO; never send a truncated command.
++	size_t used = 0;
++	for (index = 1; index < argc; index++) {
++		const size_t length = strlen(argv[index]);
++		const size_t separator = index > 1 ? 1 : 0;
++		if (separator > sizeof(command) - 1 - used ||
++		    length > sizeof(command) - 1 - used - separator) {
++			fprintf(stderr, "Command exceeds %zu bytes.\n", sizeof(command) - 1);
++			return 1;
++		}
++		if (separator) command[used++] = ' ';
++		memcpy(command + used, argv[index], length);
++		used += length;
+ 	}
+ 
+ 	write_fd = open(ORS_INPUT_FILE, O_WRONLY);
