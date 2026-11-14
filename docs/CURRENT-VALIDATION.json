@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-ors-input.img",
-  "image_sha256": "37a742613b87b818dd150cf32d5ef6c4c72eb969b20cac5d2fc060957d229f9f",
-  "production_sources": 870,
+  "image_name": "recovery-dijun-unified-ors-reboot.img",
+  "image_sha256": "9a87134900f79bd2979f5f959d5470288327be44e3cde73019fcfd94524e5550",
+  "production_sources": 872,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2597,6 +2597,62 @@
       "failures": 0,
       "local_report_sha256": "ac174f829f242d7eb8edb6ba0db19c01f9b2aa6afd94c15ef658247172bc00aa",
       "scope": "Patch0134 propagates ORS stdio read/close errors and checks511-byte line lookahead before executing any truncated command; valid boundary/EOF/empty controls preserved. Full original parser/action under ASan/UBSan with private files/directory and fopencookie EIO, close-result injection after actual close:28 pass; old16/28 fail,12 controls pass. Command58/argument20/sequence9 pass. Manager/shell/settings/console/sleep/reboot fixtures; no physical I/O bound, rollback, concurrent pathname stability, full GUI/FIFO status or ORS shutdown admission. Existing full OTA reused."
+    },
+    {
+      "name": "ors-reboot-current",
+      "status": "PASS",
+      "cases": 16,
+      "failures": 0,
+      "local_report_sha256": "e84d0e60be0351a4c9b502eaa84d179425e31f1533b475c961655ff28392167a",
+      "scope": "Patch0135 defers explicit/startup ORS reboot until script close succeeds, stops script tail/cache, tickets direct parser/startup execution and consumes pending target through existing GUI storage/admission reservation; failed writes/busy/capability retain request. Original queue/parser/action/GUI consumer with real executor16 pass, old16/16 fail; input28/commands58/arguments20/sequence9/sideload23 pass. Settings/capabilities/sync/absent minadbd/final reboot are fixtures, close error injected; startup prompt bypass statically checked. No full GUI/USB, descendant/process-wide shutdown, concurrent staging, physical reboot or actual OTA boot/merge proof; prior full OTA reused."
+    },
+    {
+      "name": "ors-reboot-old",
+      "status": "FAIL",
+      "cases": 16,
+      "failures": 16,
+      "local_report_sha256": "fc0096655acc51dd1a811b034bee425a70dc7d05b59c73e7f5dda62a24f78340",
+      "scope": "Patch0135 defers explicit/startup ORS reboot until script close succeeds, stops script tail/cache, tickets direct parser/startup execution and consumes pending target through existing GUI storage/admission reservation; failed writes/busy/capability retain request. Original queue/parser/action/GUI consumer with real executor16 pass, old16/16 fail; input28/commands58/arguments20/sequence9/sideload23 pass. Settings/capabilities/sync/absent minadbd/final reboot are fixtures, close error injected; startup prompt bypass statically checked. No full GUI/USB, descendant/process-wide shutdown, concurrent staging, physical reboot or actual OTA boot/merge proof; prior full OTA reused."
+    },
+    {
+      "name": "ors-reboot-input",
+      "status": "PASS",
+      "cases": 28,
+      "failures": 0,
+      "local_report_sha256": "71011ea922859c4b4bd5b9f9aab4c3b0c1162f23ca08b3df0aad7ffc4a2b466e",
+      "scope": "Patch0135 defers explicit/startup ORS reboot until script close succeeds, stops script tail/cache, tickets direct parser/startup execution and consumes pending target through existing GUI storage/admission reservation; failed writes/busy/capability retain request. Original queue/parser/action/GUI consumer with real executor16 pass, old16/16 fail; input28/commands58/arguments20/sequence9/sideload23 pass. Settings/capabilities/sync/absent minadbd/final reboot are fixtures, close error injected; startup prompt bypass statically checked. No full GUI/USB, descendant/process-wide shutdown, concurrent staging, physical reboot or actual OTA boot/merge proof; prior full OTA reused."
+    },
+    {
+      "name": "ors-reboot-commands",
+      "status": "PASS",
+      "cases": 58,
+      "failures": 0,
+      "local_report_sha256": "efc24fc79f5d6dc7b8a160f3b0b6037a217f5dcab038ebf560635f669ba1f11f",
+      "scope": "Patch0135 defers explicit/startup ORS reboot until script close succeeds, stops script tail/cache, tickets direct parser/startup execution and consumes pending target through existing GUI storage/admission reservation; failed writes/busy/capability retain request. Original queue/parser/action/GUI consumer with real executor16 pass, old16/16 fail; input28/commands58/arguments20/sequence9/sideload23 pass. Settings/capabilities/sync/absent minadbd/final reboot are fixtures, close error injected; startup prompt bypass statically checked. No full GUI/USB, descendant/process-wide shutdown, concurrent staging, physical reboot or actual OTA boot/merge proof; prior full OTA reused."
+    },
+    {
+      "name": "ors-reboot-arguments",
+      "status": "PASS",
+      "cases": 20,
+      "failures": 0,
+      "local_report_sha256": "e162ffeeb0f91fec46cdc36089555ee966356176d2e5565030cf9ff36112f727",
+      "scope": "Patch0135 defers explicit/startup ORS reboot until script close succeeds, stops script tail/cache, tickets direct parser/startup execution and consumes pending target through existing GUI storage/admission reservation; failed writes/busy/capability retain request. Original queue/parser/action/GUI consumer with real executor16 pass, old16/16 fail; input28/commands58/arguments20/sequence9/sideload23 pass. Settings/capabilities/sync/absent minadbd/final reboot are fixtures, close error injected; startup prompt bypass statically checked. No full GUI/USB, descendant/process-wide shutdown, concurrent staging, physical reboot or actual OTA boot/merge proof; prior full OTA reused."
+    },
+    {
+      "name": "ors-reboot-sequence",
+      "status": "PASS",
+      "cases": 9,
+      "failures": 0,
+      "local_report_sha256": "97aca2424d36da5c05402e0eadc6b5d316d7ece12b18dfc43fe2fa9ac2990651",
+      "scope": "Patch0135 defers explicit/startup ORS reboot until script close succeeds, stops script tail/cache, tickets direct parser/startup execution and consumes pending target through existing GUI storage/admission reservation; failed writes/busy/capability retain request. Original queue/parser/action/GUI consumer with real executor16 pass, old16/16 fail; input28/commands58/arguments20/sequence9/sideload23 pass. Settings/capabilities/sync/absent minadbd/final reboot are fixtures, close error injected; startup prompt bypass statically checked. No full GUI/USB, descendant/process-wide shutdown, concurrent staging, physical reboot or actual OTA boot/merge proof; prior full OTA reused."
+    },
+    {
+      "name": "ors-reboot-sideload",
+      "status": "PASS",
+      "cases": 23,
+      "failures": 0,
+      "local_report_sha256": "a6afafee480464123cd749e5eab4f18539106105fe774473f92d5cf01e2ec49b",
+      "scope": "Patch0135 defers explicit/startup ORS reboot until script close succeeds, stops script tail/cache, tickets direct parser/startup execution and consumes pending target through existing GUI storage/admission reservation; failed writes/busy/capability retain request. Original queue/parser/action/GUI consumer with real executor16 pass, old16/16 fail; input28/commands58/arguments20/sequence9/sideload23 pass. Settings/capabilities/sync/absent minadbd/final reboot are fixtures, close error injected; startup prompt bypass statically checked. No full GUI/USB, descendant/process-wide shutdown, concurrent staging, physical reboot or actual OTA boot/merge proof; prior full OTA reused."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2892,6 +2948,13 @@
     "patch": "0122",
     "scope": "Patch0122 terminates an MTP session when local SendObject setup/initial-write failure bypasses receiveFile and object bytes or a terminating packet remain unread. It cleans staging, retains old destination and does not dispatch command-shaped payload or queued command; explicit modeled reconnect/open/upload succeeds. Host production objects ASan/UBSan271 pass; same-harness old8/8 fail with actual victim deletion for new/overwrite chown/chmod/create/write errors. Small fully buffered errors retain ordinary responses. USB transport/reset/properties are fixtures; no actual ARM64/Windows/endpoint reconnect, receiveFile-internal error recovery, pathname race isolation or powerloss proof. Historical OTA reused.",
     "document": "docs/MTP-ATOMIC-UPLOAD.md#upload-unread-tail",
+    "production_changes": true,
+    "new_build": true
+  },
+  "ors_deferred_reboot": {
+    "patch": "0135",
+    "scope": "Patch0135 defers explicit/startup ORS reboot until script close succeeds, stops script tail/cache, tickets direct parser/startup execution and consumes pending target through existing GUI storage/admission reservation; failed writes/busy/capability retain request. Original queue/parser/action/GUI consumer with real executor16 pass, old16/16 fail; input28/commands58/arguments20/sequence9/sideload23 pass. Settings/capabilities/sync/absent minadbd/final reboot are fixtures, close error injected; startup prompt bypass statically checked. No full GUI/USB, descendant/process-wide shutdown, concurrent staging, physical reboot or actual OTA boot/merge proof; prior full OTA reused.",
+    "document": "docs/PARTITION-ACTIONS.md#ors-deferred-reboot",
     "production_changes": true,
     "new_build": true
   }

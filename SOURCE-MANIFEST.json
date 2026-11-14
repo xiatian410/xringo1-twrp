@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "d2be9deb57e1b95c4720e959a6c53e799f4321f92646787d89fd62182dbce227",
+    "sha256": "4c36adaeb311b93a7b71e1dfe8c494416150d5759a04462ebc7d03df2db3d51d",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -124,7 +124,7 @@
     "mode": "0o644"
   },
   "docs/PARTITION-ACTIONS.md": {
-    "sha256": "e58a9029fa56ba18735ae5e394c5a828627914bc05a74b00735f847982d30b17",
+    "sha256": "44885037070662d0055224a4dde8d8b33536692fd8a1aa8b77f85843c7fc9af2",
     "mode": "0o644"
   },
   "docs/PROFILE-LINKER-ARM64.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "f5559af1fa4d0a739959414a4355883547961afde73ba3ffb53eac358e31ed0f",
+    "sha256": "c83a5d8f8cecd01402b11f1ab6ecf035aa074b3e4b11dd78aa5890d4f4cddb18",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -811,8 +811,12 @@
     "sha256": "0262472dccbf5b2c99c4f8b7288a7aeaa741a8cbcfb69380e15b4ab00f9e81ac",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0135-ors-deferred-reboot.patch": {
+    "sha256": "1c4cf34784863029ad19bc580c4d5c7157ee20f47e6e50aaa3bfa48bd6d5957d",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "c806a4a72830eaf00576ec057e1e44eb0b1a32b1c0db7e7b79c99a9dcb3392e9",
+    "sha256": "66781e80fb03cd71b046849df0416264fc43f4a444488517b485a779ca1607ea",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -1556,7 +1560,7 @@
     "mode": "0o644"
   },
   "scripts/audit_ors_results.py": {
-    "sha256": "0fcae44b26f40194ed4f62bdf78fb9151223dcf9a5d49a4c39be43ae529a9dee",
+    "sha256": "aa447dfd9018bdb997ced6744adddaaafcd003bb44ec0ae3201b826af2a071bf",
     "mode": "0o644"
   },
   "scripts/audit_otg_discovery_delivery.py": {
@@ -2036,11 +2040,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "926f753fe32ece22d400356df3bc68fc9e567d3caf585e4d6f2509091b022aad",
+    "sha256": "1e9130128d94917140634b22210cf74f77a79dd653293ee999d3a7de10a14104",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "9cbb78d9c50ca275313adde68359214757d64d1ee545ac9ba96a455d6c41b41d",
+    "sha256": "0488b85f7092ef0b86799bb607df91d728a69674404d1cc4de8fb7eddb8ffd81",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2604,7 +2608,7 @@
     "mode": "0o644"
   },
   "tests/ors_results_test.py": {
-    "sha256": "42499f1fd0ed4c52415e888915c00a75a7d57339b4a4fc8c7ad89bc70b109d97",
+    "sha256": "c15d11c4cbf29064645c7740b96dc187cd3f16d2d9004b0e85ac002db06e905c",
     "mode": "0o644"
   },
   "tests/ota_allocated_exit_probe.cpp": {
@@ -2988,7 +2992,7 @@
     "mode": "0o644"
   },
   "tests/sideload_reboot_test.py": {
-    "sha256": "f7ef4d4c093966a491cf362a6f97d40195e1ded8922a41d9fcfa256941784a91",
+    "sha256": "230b616fe4dc1069bcda123ce981228dc5a947b0a8a37a94ecfb59e08bf686fa",
     "mode": "0o644"
   },
   "tests/sideload_rejection_test.py": {

@@ -14,10 +14,13 @@ def main():
     modes.add_argument('--staging', action='store_true')
     modes.add_argument('--arguments', action='store_true')
     modes.add_argument('--input', action='store_true')
+    modes.add_argument('--reboot', action='store_true')
     args = parser.parse_args()
     sequence, staging = args.sequence, args.staging
     arguments = args.arguments
     input_mode = args.input
+    if args.reboot:
+        return audit_reboot()
     batch = 'ors-input' if input_mode else 'ors-arguments' if arguments else 'ors-staging' if staging else 'ors-sequence' if sequence else 'ors-results'
     number = '0134' if input_mode else '0133' if arguments else '0130' if staging else '0129' if sequence else '0128'
     index = read(ROOT/'simulation-report.json')
@@ -106,6 +109,55 @@ def main():
                   limits='Host original complete ORS parser/startup action using private files; manager operations, ExecCmd, settings, console, sleeps and final reboot are fixtures. No physical operations, full GUI/FIFO response status, complete ORS shutdown admission, transactional rollback or full OTA. RTC untouched; existing OTA reused.')
     (ROOT/f'logs/{batch}-delivery-audit.json').write_text(json.dumps(result,indent=2)+'\n')
     print(f'PASS: patch{number}; {reports}; clean image/six profiles')
+
+
+def audit_reboot():
+    index = read(ROOT/'simulation-report.json')
+    image = Path(index['image'])
+    assert image.name == 'recovery-dijun-unified-ors-reboot.img'
+    assert sha(image) == index['image_sha256']
+    provenance = read(image.with_name(image.stem+'-sources.json'))
+    assert provenance['image_sha256'] == sha(image)
+    for name, digest in provenance['files'].items():
+        assert sha(name) == digest, name
+    build = ROOT/provenance['build_log']
+    assert sha(build) == provenance['build_log_sha256']
+    assert build.read_text().count('build completed successfully') == 2
+    assert 'Deleted images and staging directories' in build.read_text()
+    assert manifest(TREE) == manifest(ANDROID/'device/xiaomi/O1_asic')
+    patch = read(TREE/'patches/series.json')['repositories']['bootable/recovery']['patches'][-1]
+    assert patch['file'] == '0135-ors-deferred-reboot.patch'
+    assert sha(TREE/'patches'/patch['file']) == patch['sha256']
+    reports = {}
+    for suffix, count, failures in [('current',16,0),('old',16,16),('input',28,0),('commands',58,0),('arguments',20,0),('sequence',9,0),('sideload',23,0)]:
+        path = ROOT/f'logs/ors-reboot-{suffix}.json'
+        report = read(path)
+        assert len(report['cases']) == count
+        assert sum(c['status']=='FAIL' for c in report['cases']) == failures
+        for name, digest in report['sources'].items():
+            assert sha(name) == digest, name
+        item = next(c for c in index['additional_checks'] if c['evidence']==str(path.relative_to(ROOT)))
+        assert item['evidence_sha256'] == sha(path)
+        assert not any('AddressSanitizer' in c['output'] or 'runtime error:' in c['output'] for c in report['cases'])
+        if suffix=='current':
+            assert all('ors_closed_before_gui_reboot_reservation=1' in c['output'] for c in report['cases'])
+        reports[suffix] = dict(cases=count,failures=failures,sha256=sha(path))
+    source = (ANDROID/'bootable/recovery/openrecoveryscript.cpp').read_text()
+    assert 'TWFunc::TwReboot(' not in source
+    startup = (ANDROID/'bootable/recovery/twrp.cpp').read_text()
+    assert 'hooks->run_script();\n    // Complete startup' in startup
+    assert 'if (OpenRecoveryScript::HasPendingReboot()) return;' in startup
+    before = entries(ROOT/'imgs/built/recovery-dijun-unified-ors-input.img')
+    after = entries(image)
+    changed = sorted(n for n in set(before)|set(after) if before.get(n)!=after.get(n))
+    assert set(changed) == {'prop.default','ramdisk-files.sha256sum','system/bin/recovery'}, changed
+    package = read(image.with_suffix('.json'))
+    assert package['sha256']==sha(image) and len(package['profiles'])==6
+    assert index['status']=='in_progress' and len(index['not_yet_completed'])==12
+    result = dict(status='PASS',image_sha256=sha(image),production_sources=len(provenance['files']),jobs=provenance['jobs'],reports=reports,changed_ramdisk_entries=changed,
+        limits='Original ORS parser/action/queue and GUI consumer with real executor; private files, final close error injection, DataManager/capability/sync/absent minadbd fixtures. Startup prompt bypass statically checked. No full GUI/USB, descendant/process-wide shutdown, staging concurrency or physical reboot. Historical OTA reused.')
+    (ROOT/'logs/ors-reboot-delivery-audit.json').write_text(json.dumps(result,indent=2)+'\n')
+    print('PASS: patch0135; ORS16/old16 failures; input28/commands58/arguments20/sequence9/sideload23; clean image/six profiles')
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@
 """Native sideload reboot COMD -> actual core/GUI or ORS -> GUI poll -> final router.
 
 Real private processes/socket/epoll. Properties, USB/FUSE/MTP and DataManager,
-capabilities, sync and final TwReboot are explicit doubles; no real reboot,
+capabilities, absent ORS pending request, sync and final TwReboot are explicit doubles; no real reboot,
 phone, bootloader/BCB or GUI rendering. Reuses audited lifecycle fixture preamble.
 """
 import argparse,hashlib,json,re,subprocess,tempfile
@@ -34,7 +34,7 @@ def main():
  code=code.replace('// FIXED','#define FIXED_CORE 1').replace('// CORE_HEADER','\n'.join(x for x in header.read_text().splitlines() if not x.startswith('#include')))
  code=code.replace('// CORE',core.read_text()[core.read_text().index('using CommandFunction'):]).replace('// BACKEND_HEADER','\n'.join(x for x in (SRC/'gui2/backend/twrp_sideload_backend.h').read_text().splitlines() if not x.startswith('#include')))
  code=code.replace('// BACKEND',backend.read_text()[backend.read_text().index('namespace gui2_backend'):])
- code=code.replace('// REBOOT_HEADER','#include "twrp_operation_executor.h"\n#include "twrp_reboot_backend.h"')
+ code=code.replace('// REBOOT_HEADER','#include "twrp_operation_executor.h"\n#include "twrp_reboot_backend.h"\nstruct OpenRecoveryScript {static bool TakePendingReboot(const std::function<bool(const std::string&)>&){return false;}};')
  rmethods='\n'.join(method(reboot.read_text(),s) for s in ['bool twrp_reboot_backend::is_supported(', 'const char* twrp_reboot_backend::reboot_argument(', 'bool twrp_reboot_backend::request_reboot('])
  rmethods+='\ntwrp_reboot_backend::twrp_reboot_backend() = default;\n'
  if args.before:rmethods+='bool twrp_reboot_backend::take_external_reboot(){return false;}'

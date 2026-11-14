@@ -1,5 +1,25 @@
 # 分区界面修正：镜像目标与 NV 操作
 
+<a id="ors-deferred-reboot"></a>
+## ORS 重启请求与统一收尾（0135）
+
+原脚本`reboot`与启动action成功路径直接调用TwReboot，绕过GUI后台任务收尾；显式重启调用若返回，还会继续执行后续命令。直接解析器也没有关机预约准入票。
+
+[0135补丁](../dtsrc/O1_asic_dual/patches/0135-ors-deferred-reboot.patch)将重启变为待处理请求：显式命令停止解析，真实脚本关闭成功后才入队；关闭失败不会发布。启动action识别专用返回值，不执行后续缓存脚本，也不覆盖显式目标为system。普通脚本全部成功时只提交system请求。支持system/recovery/poweroff/bootloader/download/edl/fastboot；空参数仍为system，未知参数改为明确失败，避免误重启系统。
+
+原GUI外部重启消费器读取队列，通过现有`request_reboot`执行存储锁、能力检查、关机预约和目标写入；失败保留请求供下次轮询。解析器和启动action各持有真实executor票，正在执行或尚未返回时阻止关机预约，预约成功后拒绝直接脚本新任务。启动流程发现待处理请求后跳过后续服务/只读提示，正常完成startup worker后才由GUI消费；此处连接经静态检查，未执行完整startup。
+
+复用ORS检查器新增`--reboot`：七目标、默认目标、自动请求、显式启动请求保留缓存、无效目标、已预约拒绝、写失败/忙/能力失败后重试、关闭失败共16项通过。同夹具旧版16项失败。执行原队列/完整解析器/action/GUI消费方法和真实executor；私有脚本、ASan/UBSan，配置/能力/sync/minadbd空队列/最终重启为替身；关闭失败在真实关闭后注入。相关输入28、命令58、缺参20、顺序9和侧载重启23项通过；旧报告保持原字节，不刷新历史结果。
+
+有限重启交接修正至此收尾。未证明完整GUI/FIFO状态、任意终端后代、进程级停止、并发脚本暂存隔离、USB关闭、物理重启或OTA启动合并；完整OTA沿用已有原包模型结果。
+
+```bash
+python3 tests/ors_results_test.py --reboot --report logs/ors-reboot-current.json
+python3 scripts/audit_ors_results.py --reboot
+```
+
+本地报告为`logs/ors-reboot-{current,old,input,commands,arguments,sequence,sideload}.json`与`logs/ors-reboot-delivery-audit.json`。本批最终镜像及哈希见[交付报告](../simulation-report.md)。
+
 <a id="ors-input-boundaries"></a>
 ## ORS 读取错误和超长命令（0134）
 

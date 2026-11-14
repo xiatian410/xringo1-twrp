@@ -23,10 +23,12 @@ def main():
     modes.add_argument('--staging', action='store_true', help='Test source preservation and failure propagation during script staging')
     modes.add_argument('--arguments', action='store_true', help='Test missing backup options and setting names without crashing')
     modes.add_argument('--input', action='store_true', help='Test stream errors and complete-command line boundaries')
+    modes.add_argument('--reboot', action='store_true', help='Test deferred reboot and executor handoff')
     args = ap.parse_args()
     text = args.source.read_text()
     production = '\n'.join(method(text, s) for s in ['int OpenRecoveryScript::run_script_file(', 'int OpenRecoveryScript::Run_OpenRecoveryScript_Action('])
     fixture = r'''
+#include "twrp_operation_executor.h"
 #include <cassert>
 #include <cstdio>
 #include <cstring>
@@ -48,9 +50,11 @@ using namespace std;
 #define LOGINFO(...) ((void)0)
 #define gui_print(...) ((void)0)
 enum {SYSTEM,RECOVERY,POWER_OFF,BOOTLOADER,DOWNLOAD,EDL};
+static bool QueueORSReboot(const std::string&);
 static bool succeeds=false;
 static int calls=0, tail=0, updates=0, reboots=0, disabled=0,done=0;
 static string expected_operation;
+static bool QueueORSReboot(const std::string&){++reboots;return true;}
 static int operation(const string& name){assert(name==expected_operation);++calls;return succeeds?1:0;}
 struct DataManager {
  template<class T>static void SetValue(const string& key,const T&){if(key=="sentinel")++tail;if(key=="tw_page_done")++done;}
@@ -285,6 +289,75 @@ int main(int argc,char** argv){
  puts("ors_input_failure_blocks_success_and_truncated_execution=1");
 }
 '''
+    if args.reboot:
+        queue_source = text if 'std::mutex ors_reboot_mutex;' in text else (SRC/'openrecoveryscript.cpp').read_text()
+        queue = queue_source[queue_source.index('namespace {\nstd::mutex ors_reboot_mutex;'):queue_source.index('int OpenRecoveryScript::check_for_script_file')]
+        fixture = fixture.replace('static bool QueueORSReboot(const std::string&);', '')
+        fixture = fixture.replace('static bool QueueORSReboot(const std::string&){++reboots;return true;}', '')
+        fixture = fixture.replace(' static int run_script_file();', ' static bool HasPendingReboot();static bool TakePendingReboot(const std::function<bool(const std::string&)>&);\n static int run_script_file();')
+        point = fixture.index('int OpenRecoveryScript::run_script_file(')
+        fixture = fixture[:point] + queue + fixture[point:]
+        fixture = fixture.replace('#include <cassert>', '#include <functional>\n#include "twrp_reboot_backend.h"\n#include <cassert>', 1)
+        reboot_source = SRC/'gui2/backend/twrp_reboot_backend.cpp'
+        bodies = '\n'.join(method(reboot_source.read_text(), sig) for sig in [
+            'bool twrp_reboot_backend::is_supported(', 'const char* twrp_reboot_backend::reboot_argument(',
+            'bool twrp_reboot_backend::request_reboot(', 'bool twrp_reboot_backend::take_external_reboot('])
+        fixture = fixture.replace('template<class T>static void SetValue(const string& key,const T&){if(key=="sentinel")++tail;if(key=="tw_page_done")++done;}',
+          'template<class T>static int SetValue(const string& key,const T&){if(key=="sentinel")++tail;if(key=="tw_page_done")++done;return 0;} static int SetValue(const string& key,const char* v);')
+        fixture = fixture.replace('static int check_for_script_file(){return 0;}', 'static int check_for_script_file(){if(!filesystem::exists("cache-script.txt"))return 0;filesystem::rename("cache-script.txt",SCRIPT_FILE_TMP);return 1;}')
+        fixture = fixture[:fixture.index('int main(int argc,char** argv)')] + r'''
+static bool write_ok=true, supported=true;static string target;static int syncs=0;
+int DataManager::SetValue(const string& key,const char* v){if(key=="sentinel"){++tail;return 0;}if(key!="tw_reboot_arg")return 0;if(!write_ok)return -1;target=v;return 0;}
+static void fixture_sync(){++syncs;}
+static bool TakeMiniAdbdRebootAction(Device::BuiltinAction*,const std::function<bool(Device::BuiltinAction)>&){return false;}
+namespace gui2_backend {
+twrp_reboot_backend::twrp_reboot_backend()=default;
+const reboot_capabilities& twrp_reboot_backend::capabilities() const {capabilities_={supported,supported,supported,supported,supported,supported,supported,false};return capabilities_;}
+std::string twrp_reboot_backend::active_slot()const{return {};}
+bool twrp_reboot_backend::set_active_slot(boot_slot){return false;}
+bool twrp_reboot_backend::usb_fastboot()const{return false;}
+void twrp_reboot_backend::set_usb_fastboot(bool){}
+bool twrp_reboot_backend::os_installed()const{return true;}
+#define sync fixture_sync
+// REBOOT_METHODS
+#undef sync
+}
+int main(int argc,char** argv){
+ assert(argc==2);string label=argv[1];expected_operation="cmd";succeeds=true;
+ auto& executor=twrp_operation_executor::instance();
+ bool startup=label=="automatic"||label=="startup-explicit";
+ string command="reboot "+label;
+ if(label=="default")command="reboot";
+ if(label=="automatic")command="cmd fixture-command";
+ if(label=="startup-explicit")command="reboot recovery";
+ if(label=="write-retry"||label=="busy-retry"||label=="capability-retry"||label=="reserved"||label=="close-error")command="reboot recovery";
+ if(label=="reserved")assert(executor.reserve_shutdown());
+ if(startup){ofstream cache("cache-script.txt");cache<<"set sentinel cache\n";}
+ {ofstream script(SCRIPT_FILE_TMP);script<<command<<"\nset sentinel reached\n";}
+ int result=startup?OpenRecoveryScript::Run_OpenRecoveryScript_Action():OpenRecoveryScript::run_script_file();
+ assert(reboots==0);assert(result==(label=="invalid"||label=="reserved"||label=="close-error"?1:startup?0:2));
+ assert(tail==(label=="automatic"?2:0));
+ assert(filesystem::exists("cache-script.txt")==(label=="startup-explicit"));
+ gui2_backend::twrp_reboot_backend backend;
+ if(label=="invalid"||label=="reserved"||label=="close-error")assert(!backend.take_external_reboot());
+ else {
+  if(label=="write-retry"){write_ok=false;assert(!backend.take_external_reboot());assert(target.empty());auto ticket=executor.admit_job();assert(ticket);ticket.reset();write_ok=true;}
+  if(label=="capability-retry"){supported=false;assert(!backend.take_external_reboot());assert(target.empty());supported=true;}
+  if(label=="busy-retry"){auto ticket=executor.admit_job();assert(ticket);assert(!backend.take_external_reboot());assert(target.empty());ticket.reset();}
+  assert(backend.take_external_reboot());
+  string expected=label=="automatic"||label=="default"?"system":label=="startup-explicit"||label.ends_with("retry")?"recovery":label;
+  assert(target==expected);assert(!executor.admit_job());assert(!backend.take_external_reboot());executor.release_shutdown();
+ }
+ assert(reboots==0);puts("ors_closed_before_gui_reboot_reservation=1");
+}
+'''
+        fixture = fixture.replace('// REBOOT_METHODS', bodies)
+        fixture = fixture.replace('namespace Device {enum BuiltinAction{REBOOT_BOOTLOADER};}', 'namespace Device {enum BuiltinAction{REBOOT,REBOOT_BOOTLOADER,REBOOT_FASTBOOT,REBOOT_RECOVERY};}')
+        fixture = fixture.replace('static bool succeeds=false;', '''static bool close_fault=false;
+static int checked_close(FILE* fp){int result=::fclose(fp);if(close_fault){errno=EIO;return EOF;}return result;}
+#define fclose checked_close
+static bool succeeds=false;''')
+        fixture = fixture.replace('auto& executor=twrp_operation_executor::instance();', 'close_fault=label=="close-error";auto& executor=twrp_operation_executor::instance();')
     rows = []
     commands = [('wipe cache','wipe:/cache'),('wipe /cache','wipe:/cache'),
                 ('wipe system','wipe:/system'),('wipe /system_root','wipe:/system'),
@@ -295,16 +368,22 @@ int main(int argc,char** argv){
                 ('cmd fixture-command','cmd'),('cmd','cmd')]
     with tempfile.TemporaryDirectory(prefix='ors-results-') as tmp:
         p = Path(tmp);(p/'test.cpp').write_text(fixture)
-        compile_command = ['g++','-std=c++23','-O1','-g','-fsanitize=address,undefined','-fno-pie','-no-pie',str(p/'test.cpp'),'-o',str(p/'test')]
+        compile_command = ['g++','-std=c++23','-O1','-g','-fsanitize=address,undefined','-fno-pie','-no-pie','-pthread','-I'+str(SRC),'-I'+str(SRC/'gui2/backend'),str(p/'test.cpp'),str(SRC/'twrp_operation_executor.cpp'),'-o',str(p/'test')]
         subprocess.run(compile_command, check=True)
         for command, operation in commands:
-            if args.sequence or args.staging or args.arguments or args.input:
+            if args.sequence or args.staging or args.arguments or args.input or args.reboot:
                 break
             for outcome in ['success','failure'] if command!='cmd' else ['failure']:
                 for entry in ['direct','startup']:
                     run = subprocess.run([str(p/'test'),command,operation,outcome,entry],cwd=p,capture_output=True,text=True,timeout=5)
                     row = dict(case=f'{command}-{outcome}-{entry}',status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,output=run.stdout+run.stderr)
                     rows.append(row);print(row['status'],row['case'],flush=True)
+        if args.reboot:
+            for label in ['system','recovery','poweroff','bootloader','download','edl','fastboot','default','automatic','startup-explicit','invalid','reserved','write-retry','busy-retry','capability-retry','close-error']:
+                case_dir=p/label;case_dir.mkdir()
+                run=subprocess.run([str(p/'test'),label],cwd=case_dir,capture_output=True,text=True,timeout=5)
+                rows.append(dict(case=label,status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,output=run.stdout+run.stderr))
+                print(rows[-1]['status'],label,flush=True)
         if args.input:
             for name in ['read-first', 'read-after-command', 'read-partial', 'read-lookahead', 'close-error', 'directory', 'long-line', 'long-after-command', 'empty', 'blank', 'short-eof', 'boundary-eof', 'boundary-newline', 'buffer-newline']:
                 for entry in ['direct', 'startup']:
@@ -337,9 +416,10 @@ int main(int argc,char** argv){
                     run = subprocess.run([str(p/'test'),str(first),str(second)],cwd=p,capture_output=True,text=True,timeout=5)
                     row = dict(case=f'temporary-{first}-cache-{second}',status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,output=run.stdout+run.stderr)
                     rows.append(row);print(row['status'],row['case'],flush=True)
-    sources = [args.source,Path(__file__).resolve(),ROOT/'tests/nested_partition_path_test.py']
+    sources = [args.source,Path(__file__).resolve(),ROOT/'tests/nested_partition_path_test.py',SRC/'twrp_operation_executor.h',SRC/'twrp_operation_executor.cpp']
+    if args.reboot:sources.extend([SRC/'openrecoveryscript.cpp',reboot_source,SRC/'openrecoveryscript.hpp',SRC/'gui2/backend/twrp_reboot_backend.h',SRC/'gui2/backend/reboot_backend.h'])
     if args.staging:sources.append(SRC/'twrp_functions.cpp')
-    scope = __doc__ + (' Temporary/cache scripts: absent/success/failure combinations; first failure leaves cache unconsumed, second failure blocks automatic reboot after first success.' if args.sequence else '')
+    scope = __doc__ + (' Reboot mode executes original queue, parser/action and GUI consumer with real executor; settings/capabilities/sync/sideload absent and final reboot are fixtures. Explicit request stops tail/cache; reject reserved shutdown, retain on busy/write/capability failure, reject close errors.' if args.reboot else '') + (' Temporary/cache scripts: absent/success/failure combinations; first failure leaves cache unconsumed, second failure blocks automatic reboot after first success.' if args.sequence else '')
     if args.staging:scope += ' Original check/copy/parser/action and TWFunc::CopyFile with private files; mount/chmod/unlink faults injected; checks source bytes and partial temporary cleanup. No mount, crash durability, concurrent pathname replacement or actual shell/reboot.'
     if args.arguments:scope += ' Missing/space-only backup options and setting names: reject before null strcpy, stop tail and startup automatic reboot; valid backup options and set empty/value controls preserved. Full original parser/action under ASan/UBSan; backup operation is an explicit fixture.'
     if args.input:scope += ' Original stdio parser/action with private files, actual directory-read error and fopencookie EIO at first read/partial command/after command/lookahead; fclose result injected after actual close. Reject overlong lines before executing prefix; accept511-byte command at EOF or followed by newline. ASan/UBSan; manager/shell/reboot fixtures, no physical I/O bound, rollback, concurrent file stability or full GUI.'

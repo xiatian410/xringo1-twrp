@@ -502,6 +502,10 @@
         {
           "file": "0134-ors-input-error-boundaries.patch",
           "sha256": "0262472dccbf5b2c99c4f8b7288a7aeaa741a8cbcfb69380e15b4ab00f9e81ac"
+        },
+        {
+          "file": "0135-ors-deferred-reboot.patch",
+          "sha256": "1c4cf34784863029ad19bc580c4d5c7157ee20f47e6e50aaa3bfa48bd6d5957d"
         }
       ],
       "result_files": {
@@ -533,7 +537,7 @@
         "gui2/pages/decrypt_page.h": "a0b337a0813d646af6f70dea67b122063f819d6917ee8b311c64c9ca8e081897",
         "gui2/pages/page_router.h": "4b3850d8f395fb7944eec077e2b4715ab8e7dc3743f17d6eabfcca8fb0ff7326",
         "gui2/pages/page_state.h": "a2985e2a3b3fdd1fd9ca7405670af8d565002e4e43851df7b03c7310d2c10824",
-        "twrp.cpp": "2f8f8bd6ef5b2f9be493f5de47cc9eb78702d67514c68f157fa502f779a48eee",
+        "twrp.cpp": "8b938a019eca5ccd2d64d1f492d398822c244c20091678a82d1cc8cb12d85947",
         "gui2/backend/status_backend.cpp": "5b62ad4a677ea2c1ad53f670a737c7813406c1a88b837972ce56f43a68918a3e",
         "twrpminui/haptics.cpp": "62399d18e29969e4a27bf37c6fe924dd8536912a8c6e0f548d56fb3e5230a0af",
         "gui2/backend/twrp_hardware_settings.cpp": "98863b74240108e4734a4e638bc4b6e0ec77d2eaa2bab98abdcea71cab936bf2",
@@ -594,10 +598,10 @@
         "twrpinstall/include/twinstall/adb_install.h": "e6677a337acfeac973859517c97fa2ab15b46d9a49a7a64ab53142ab6f026328",
         "gui2/backend/twrp_sideload_backend.cpp": "cf92ba6c55ff99a797d4348c4c4480badd2d97729342f195f9458f6d8f6199cd",
         "gui2/backend/twrp_sideload_backend.h": "df5ef8d68dd5e6101482ba26cb944bc822c8643e0656193227956a9085a1812e",
-        "openrecoveryscript.cpp": "dc8550c8f73252c270e7858bc2fb062d4ae5227a7eb4873dc18a4a3e3570f4e3",
+        "openrecoveryscript.cpp": "827470b76830361eedb99cd3441f194596bae88458ec52fab9bff9c0d28b29ee",
         "gui2/backend/reboot_backend.h": "49c74edd83b63ee28fc70e34ba58268df9107bc379ab9e65f2e662f3303b109d",
         "gui2/backend/twrp_reboot_backend.h": "4c6767ff062d6b0885d0b9c9bff626fdf29ddb73b1d47ce1eff135d2bb0d925a",
-        "gui2/backend/twrp_reboot_backend.cpp": "445688f58b94ab736a087276166c54047136e72e517c2598659211525673e0dc",
+        "gui2/backend/twrp_reboot_backend.cpp": "5a3661a2bcbf644522f3b6a8a66d11a3618903a2725ed2773ab19f107a2881ea",
         "gui2/backend/twrp_wipe_backend.cpp": "1b18100a7991392888956a8664f9f69cd8a250a1b5d54b3da75f8e51a717e252",
         "gui2/backend/twrp_tools_backend.cpp": "5b451bb11a74ba47aa9ddec138837737beffc6154c5f22ae147f0353507ae33e",
         "twrpinstall/installcommand.cpp": "dc4a9f1a8eed956f3de038fcd52741665f393a8b246cdbe69cf8f460de34375a",
@@ -618,7 +622,8 @@
         "gui2/backend/terminal_backend.h": "d31c3f69659c52b2f8dc3ff48bd7b4324b23793a4d698299bdac37529aadfe9e",
         "gui2/backend/terminal_engine.h": "933100ba35790f1a31b54d6be50c6f0539a8e23d0280a269f2a31c59edf194a7",
         "gui2/backend/twrp_terminal_backend.cpp": "e2c468a48e9a94ffcf4badfd32f8cb1a8b77a84bb8b7820bfd11299ebf880fb9",
-        "gui2/backend/twrp_terminal_backend.h": "add7b766832c51e85f4de261b604f636e025cfaf8a1663363abb611cd4e44672"
+        "gui2/backend/twrp_terminal_backend.h": "add7b766832c51e85f4de261b604f636e025cfaf8a1663363abb611cd4e44672",
+        "openrecoveryscript.hpp": "6612bda3d584f66d2f8808a320c18b9f3a8cc35bac73858c4843c44ce2bb21cb"
       }
     },
     "system/sepolicy": {

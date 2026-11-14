@@ -1,0 +1,193 @@
+--- a/openrecoveryscript.cpp
++++ b/openrecoveryscript.cpp
+@@ -39,6 +39,10 @@
+ #include <zlib.h>
+ #include <cutils/properties.h>
+ 
++#include <functional>
++#include <mutex>
++
++#include "twrp_operation_executor.h"
+ #include "twrp_functions.hpp"
+ #include "partitions.hpp"
+ #include "twcommon.h"
+@@ -57,6 +61,31 @@
+ 
+ #define SCRIPT_COMMAND_SIZE 512
+ 
++// Requests are consumed only after the script has closed and its caller has
++// returned. Never reboot from an ORS worker or overwrite an earlier request.
++namespace {
++std::mutex ors_reboot_mutex;
++std::string ors_pending_reboot;
++bool QueueORSReboot(const std::string& target) {
++	std::lock_guard lock(ors_reboot_mutex);
++	if (!ors_pending_reboot.empty()) return false;
++	ors_pending_reboot = target;
++	return true;
++}
++}
++
++bool OpenRecoveryScript::HasPendingReboot() {
++	std::lock_guard lock(ors_reboot_mutex);
++	return !ors_pending_reboot.empty();
++}
++
++bool OpenRecoveryScript::TakePendingReboot(const std::function<bool(const std::string&)>& accept) {
++	std::lock_guard lock(ors_reboot_mutex);
++	if (ors_pending_reboot.empty() || !accept(ors_pending_reboot)) return false;
++	ors_pending_reboot.clear();
++	return true;
++}
++
+ int OpenRecoveryScript::check_for_script_file(void) {
+ 	std::string logDir = TWFunc::GetLogDir();
+ 	std::string orsFile;
+@@ -112,6 +141,9 @@
+ }
+ 
+ int OpenRecoveryScript::run_script_file(void) {
++	auto admission = twrp_operation_executor::instance().admit_job();
++	if (!admission) return 1;
++	std::string requested_reboot;
+ 	int ret_val = 0, cindex, line_len, i, remove_nl, install_cmd = 0, sideload = 0;
+ 	char script_line[SCRIPT_COMMAND_SIZE], command[SCRIPT_COMMAND_SIZE],
+ 	     value[SCRIPT_COMMAND_SIZE], mount[SCRIPT_COMMAND_SIZE],
+@@ -395,18 +427,13 @@
+ 					ret_val = 1;
+ 				}
+ 			} else if (strcmp(command, "reboot") == 0) {
+-				if (strlen(value) && strcmp(value, "recovery") == 0)
+-					TWFunc::TwReboot(RECOVERY);
+-				else if (strlen(value) && strcmp(value, "poweroff") == 0)
+-					TWFunc::TwReboot(POWER_OFF);
+-				else if (strlen(value) && strcmp(value, "bootloader") == 0)
+-					TWFunc::TwReboot(BOOTLOADER);
+-				else if (strlen(value) && strcmp(value, "download") == 0)
+-					TWFunc::TwReboot(DOWNLOAD);
+-				else if (strlen(value) && strcmp(value, "edl") == 0)
+-					TWFunc::TwReboot(EDL);
+-				else
+-					TWFunc::TwReboot(SYSTEM);
++				if (!strlen(value)) requested_reboot = "system";
++				else if (strcmp(value, "system") == 0 || strcmp(value, "recovery") == 0 ||
++				         strcmp(value, "poweroff") == 0 || strcmp(value, "bootloader") == 0 ||
++				         strcmp(value, "download") == 0 || strcmp(value, "edl") == 0 ||
++				         strcmp(value, "fastboot") == 0) requested_reboot = value;
++				else { LOGERR("Unknown ORS reboot target: %s\n", value); ret_val = 1; }
++				break; // Stop before any subsequent script command.
+ 			} else if (strcmp(command, "cmd") == 0) {
+ 				DataManager::SetValue("tw_action_text2", gui2_console::text("running_command"));
+ 				if (cindex != 0) {
+@@ -484,6 +511,8 @@
+ 		return 1;
+ 	}
+ 
++	if (!requested_reboot.empty() && ret_val == 0)
++		return QueueORSReboot(requested_reboot) ? 2 : 1;
+ 	if (sideload)
+ 		ret_val = 1;  // Forces booting to the home page after sideload
+ 	return ret_val;
+@@ -638,6 +667,8 @@
+ }
+ 
+ int OpenRecoveryScript::Run_OpenRecoveryScript_Action() {
++	auto admission = twrp_operation_executor::instance().admit_job();
++	if (!admission) return 1;
+ 	int op_status = 1;
+ 	// Check for the SCRIPT_FILE_TMP first as these are AOSP recovery commands
+ 	// that we converted to ORS commands during boot in recovery.cpp.
+@@ -645,9 +676,10 @@
+ 	int reboot = 0;
+ 	if (TWFunc::IsPathExists(SCRIPT_FILE_TMP)) {
+ 		gui2_console::info("running_recovery_commands");
+-		if (OpenRecoveryScript::run_script_file() != 0) {
++		const int result = OpenRecoveryScript::run_script_file();
++		if (result != 0) {
+ 			DataManager::SetValue("tw_page_done", 1);
+-			return 1;
++			return result == 2 ? 0 : 1;
+ 		}
+ 		reboot = 1;
+ 		op_status = 0;
+@@ -660,9 +692,10 @@
+ 	}
+ 	if (staged_script > 0) {
+ 		gui2_console::info("running_ors");
+-		if (OpenRecoveryScript::run_script_file() != 0) {
++		const int result = OpenRecoveryScript::run_script_file();
++		if (result != 0) {
+ 			DataManager::SetValue("tw_page_done", 1);
+-			return 1;
++			return result == 2 ? 0 : 1;
+ 		}
+ 		reboot = 1;
+ 		op_status = 0;
+@@ -670,9 +703,7 @@
+ 	if (reboot) {
+ 		// Disable stock recovery reflashing
+ 		TWFunc::DisableStockRecoveryReplace();
+-		usleep(2000000); // Sleep for 2 seconds before rebooting
+-		TWFunc::TwReboot(SYSTEM);
+-		usleep(5000000); // Sleep for 5 seconds to allow reboot to occur
++		if (!QueueORSReboot("system")) op_status = 1;
+ 	} else {
+ 		DataManager::SetValue("tw_page_done", 1);
+ 	}
+--- a/openrecoveryscript.hpp
++++ b/openrecoveryscript.hpp
+@@ -20,6 +20,7 @@
+ #define _OPENRECOVERYSCRIPT_HPP
+ 
+ #include <string>
++#include <functional>
+ 
+ using namespace std;
+ 
+@@ -35,6 +36,8 @@
+ 	static string Locate_Zip_File(string Path, string File);                       // Attempts to locate the zip file in storage
+ 	static int Backup_Command(string Options);                                     // Runs a backup
+ public:
++	static bool HasPendingReboot();
++	static bool TakePendingReboot(const std::function<bool(const std::string&)>& accept);
+ 	static int Insert_ORS_Command(string Command);                                 // Inserts the Command into the SCRIPT_FILE_TMP file
+ 	static int Run_OpenRecoveryScript_Action();                                    // Runs startup and queued ORS scripts
+ 	static void Call_After_CLI_Command(VoidFunction fn) { call_after_cli_command = fn; }
+--- a/gui2/backend/twrp_reboot_backend.cpp
++++ b/gui2/backend/twrp_reboot_backend.cpp
+@@ -8,6 +8,7 @@
+ #include <android-base/properties.h>
+ 
+ #include "data.hpp"
++#include "openrecoveryscript.hpp"
+ #include "twcommon.h"
+ #include "twrp_operation.h"
+ #include "twrp_operation_executor.h"
+@@ -127,6 +128,15 @@
+   // request_reboot() acquires the same recursive mutex during the handoff.
+   std::unique_lock transaction(twrp_operation_executor::instance().mutex(), std::try_to_lock);
+   if (!transaction.owns_lock()) return false;
++  if (OpenRecoveryScript::TakePendingReboot([this](const std::string& pending) {
++    for (auto target : {reboot_target::SYSTEM, reboot_target::POWER_OFF,
++                        reboot_target::RECOVERY, reboot_target::FASTBOOT,
++                        reboot_target::BOOTLOADER, reboot_target::DOWNLOAD,
++                        reboot_target::EDL}) {
++      if (pending == reboot_argument(target)) return request_reboot(target);
++    }
++    return false;
++  })) return true;
+   Device::BuiltinAction action;
+   return TakeMiniAdbdRebootAction(&action, [this](Device::BuiltinAction pending) {
+     reboot_target target;
+--- a/twrp.cpp
++++ b/twrp.cpp
+@@ -259,6 +259,9 @@
+     (DataManager::GetIntValue(TW_IS_ENCRYPTED) == 0 || skip_decryption) &&
+     (TWFunc::IsPathExists(SCRIPT_FILE_TMP) || TWFunc::IsPathExists(ors_file))) {
+     hooks->run_script();
++    // Complete startup without another prompt when the script requested exit.
++    // GUI polling consumes the request only after the startup worker joins.
++    if (OpenRecoveryScript::HasPendingReboot()) return;
+   }
+ 
+ 	hooks->step(gui2_backend::startup_step::SERVICES);
