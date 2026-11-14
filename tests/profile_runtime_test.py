@@ -39,14 +39,12 @@ elif name == 'resetprop':
 elif name == 'getprop':print(props.get(args[0],''))
 elif name == 'insmod':
     module=Path(args[0]).stem
-    if props.get('twrp.profile.scope')=='touch':
+    if (r/'tmp/dijun-runtime/touch.profile').exists():
         assert (r/'lib/firmware/synaptics_spi_dijun.img').is_file(), 'touch firmware must precede insmod'
-        assert not (r/'lib/firmware/cs40l26.wmfw').exists()
-        assert not (r/'system/lib64/mitee').exists()
-    else:
-        assert (r/'lib/firmware/cs40l26.wmfw').is_file(), 'firmware must precede insmod'
+    if (r/'tmp/dijun-runtime/haptics.profile').exists():
+        assert (r/'lib/firmware/cs40l26.wmfw').is_file(), 'haptic firmware must precede insmod'
     assert not (r/f'sys/module/{module}').exists(), 'must not reinsert a loaded module'
-    if module in ['xring_smartpa','xring_audio_hw_third']:
+    if module in ['xring_smartpa','xring_audio_hw_third'] and (r/'tmp/dijun-runtime/touch.profile').exists():
         # Prioritize the touch attempt, but a failed independent touch closure
         # must not manufacture a haptics insertion failure in this fixture.
         assert props.get('twrp.profile.touch_modules') in ['loaded','failed'], 'optional haptics must follow the touch attempt'
@@ -61,7 +59,7 @@ elif name == 'insmod':
     if module in ['xring_smartpa','xring_audio_hw_third']:
         mode=os.environ.get('HAPTICS_INPUT','missing')
         target=r/'proc/bus/input/devices'
-        if mode=='immediate':target.write_text('N: Name="cs40l26_input"\n')
+        if mode=='immediate':target.write_text(target.read_text()+'N: Name="cs40l26_input"\n')
         elif mode=='delayed':
             import subprocess
             subprocess.Popen([sys.executable,'-c',"import time,pathlib; time.sleep(.25); pathlib.Path(r'"+str(target)+"').write_text('N: Name=\\\"cs40l26_input\\\"\\n')"])
@@ -82,11 +80,13 @@ p.write_text(json.dumps(props))
 class Runtime(unittest.TestCase):
     def fixture(self, sample='os4-current', slot='_a', preloaded=True):
         root = Selection.fixture(self, sample, slot)
-        for line in (CATALOG/sample/'touch-files.list').read_text().splitlines():
-            sha, mode, path = line.split()
-            target = root/'odm/firmware'/Path(path).name
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(BLOBS/sha, target)
+        profile=json.loads((CATALOG/sample/'profile.json').read_text())
+        for component in ['touch','haptics','crypto']:
+            for line in (CATALOG/sample/f'{component}-checks.list').read_text().splitlines():
+                sha,path=line.split()
+                target=root/path.lstrip('/')
+                target.parent.mkdir(parents=True,exist_ok=True)
+                shutil.copy2(BLOBS/sha,target)
         (root/'proc/bus/input').mkdir(parents=True)
         (root/'proc/bus/input/devices').write_text('')
         report = json.loads((CATALOG / sample / 'module-sources.json').read_text())
@@ -109,7 +109,9 @@ class Runtime(unittest.TestCase):
         for sample_name in SAMPLES:
             (catalog / sample_name).mkdir(parents=True)
             for name in ['selection.conf','runtime-files.list','modules.plan','crypto.prop',
-                         'touch-files.list','touch-modules.plan']:
+                         'crypto-layout.conf','crypto-release.conf'] + [
+                             f'{c}-{n}' for c in ['touch','haptics','crypto']
+                             for n in ['files.list','modules.plan','checks.list']]:
                 shutil.copy2(CATALOG / sample_name / name, catalog / sample_name / name)
                 if IMAGE_ENTRIES:
                     key=f'system/etc/dijun/profiles/{sample_name}/{name}'
@@ -176,108 +178,140 @@ class Runtime(unittest.TestCase):
                 self.run_phase(root,'cache'); self.run_phase(root,'modules')
                 report=json.loads((CATALOG/sample/'module-sources.json').read_text())
                 loaded=[Path(c[1]).stem for c in self.calls(root) if c[0]=='insmod']
-                self.assertEqual(loaded,report['order'])
-                for name,item in report['modules'].items():
-                    for dep in item['hard']:self.assertLess(loaded.index(dep),loaded.index(name))
+                expected=[]
+                for component in ['touch','haptics','crypto']:
+                    for line in (CATALOG/sample/f'{component}-modules.plan').read_text().splitlines():
+                        name=line.split()[0]
+                        if name not in expected:expected.append(name)
+                self.assertEqual(loaded,expected)
+                for name in loaded:
+                    for dep in report['modules'][name]['hard']:self.assertLess(loaded.index(dep),loaded.index(name))
                 before=len(loaded); self.run_phase(root,'modules')
                 self.assertEqual(len([c for c in self.calls(root) if c[0]=='insmod']),before)
 
-    def test_bad_profile_and_module_abort_before_effects(self):
-        for path in ['vendor_dlkm/lib/modules/synaptics_tcm2.ko']:
-            root=self.fixture(); (root/path).write_bytes(b'wrong version')
-            self.run_phase(root,'cache',1)
+    def test_no_components_or_bad_slot_aborts(self):
+        for case in ['kernel','inactive-slot','missing-store','unknown-scope']:
+            root=self.fixture('os4-stable')
+            if case=='kernel':(root/'proc/sys/kernel/osrelease').write_text('unknown-kernel\n')
+            elif case=='inactive-slot':(root/'sys/class/block/dm-3/dm/name').write_text('vendor_dlkm_b\n')
+            elif case=='missing-store':
+                (root/'system/etc/dijun/blobs').unlink();(root/'system/etc/dijun/blobs').mkdir()
+            if case=='unknown-scope':
+                self.run_phase(root,'cache');(root/'tmp/dijun-runtime/scope').write_text('invalid\n')
+            else:self.run_phase(root,'cache',1)
+            self.run_phase(root,'modules',1);self.run_phase(root,'publish',1)
             self.assertFalse(any(c[0] in ['insmod','resetprop'] or c[:2]==['setprop','ctl.start'] for c in self.calls(root)))
-            self.run_phase(root,'publish',1)
-        root=self.fixture()
-        report=json.loads((CATALOG/'os4-current/module-sources.json').read_text())
-        source=next(i['runtime'] for n,i in report['modules'].items() if i['runtime'].startswith('/vendor_dlkm/') and n not in ['synaptics_tcm2','xring_audio_hw_third'])
-        (root/source.lstrip('/')).unlink()
-        self.run_phase(root,'cache',1)
-        self.assertFalse(any(c[0]=='insmod' for c in self.calls(root)))
 
-    def test_touch_only_system_change(self):
+    def updated_identity(self,root,release='17',system_spl='2026-11-01',vendor_spl='2026-10-01'):
+        (root/'system_root/system/build.prop').write_text(
+            f'ro.build.version.release={release}\nro.build.version.security_patch={system_spl}\n'
+            'ro.system.build.version.incremental=updated-user-build\n')
+        (root/'vendor/build.prop').write_text(f'ro.vendor.build.security_patch={vendor_spl}\nupdated.vendor.label=1\n')
+        (root/'odm/etc/build.prop').write_text('updated.odm.label=1\n')
+
+    def test_component_ota_all_features_and_current_identity(self):
         for sample in SAMPLES:
             with self.subTest(sample=sample):
-                root=self.fixture(sample, slot='_b')
-                (root/'system_root/system/build.prop').write_text('updated system identity\n')
+                root=self.fixture(sample,slot='_b')
+                release=json.loads((CATALOG/sample/'profile.json').read_text())['crypto_identity']['ro.build.version.release']
+                self.updated_identity(root,release)
                 self.run_phase(root,'cache')
-                self.assertEqual(self.props(root)['twrp.profile.scope'],'touch')
-                self.assertNotIn('twrp.profile.selected',self.props(root))
-                self.assertEqual(self.props(root)['twrp.profile.touch_selected'],sample)
-                self.run_phase(root,'modules',TOUCH_INPUT='immediate')
+                self.assertEqual(self.props(root)['twrp.profile.scope'],'components')
+                for component in ['touch','haptics','crypto']:
+                    self.assertEqual(self.props(root)[f'twrp.profile.{component}_selected'],sample)
+                self.run_phase(root,'modules',TOUCH_INPUT='immediate',HAPTICS_INPUT='immediate')
                 self.assertEqual(self.props(root)['twrp.profile.touch_reports'],'requested')
-                self.assertEqual((root/'sys/class/touch/touch_dev/enable_touch_raw').read_text(),'0\n')
-                self.assertFalse((root/'tmp/dijun-runtime/crypto.prop').exists())
-                self.assertFalse((root/'tmp/dijun-runtime/root/vendor').exists())
-                # Denial must hold even if publish is called while stock mounts remain.
-                self.run_phase(root,'publish')
-                self.assertEqual(self.props(root)['twrp.crypto.ready'],'0')
-                self.assertEqual(self.props(root)['twrp.profile.state'],'touch-only')
-                self.assertFalse(any(c[0]=='resetprop' or c[:2]==['setprop','ctl.start'] for c in self.calls(root)))
+                self.assertEqual(self.props(root)['twrp.profile.haptics_input'],'registered')
+                self.unmount(root); self.run_phase(root,'publish')
+                props=self.props(root)
+                self.assertEqual(props['twrp.crypto.ready'],'1')
+                self.assertEqual(props['ro.build.version.release'],release)
+                self.assertEqual(props['ro.build.version.security_patch'],'2026-11-01')
+                self.assertEqual(props['ro.vendor.build.security_patch'],'2026-10-01')
                 loaded=[Path(c[1]).stem for c in self.calls(root) if c[0]=='insmod']
-                expected=[l.split()[0] for l in (CATALOG/sample/'touch-modules.plan').read_text().splitlines()
-                          if not l.split()[2].startswith('/lib/modules/')]
-                self.assertEqual(loaded,expected)
+                self.assertEqual(len(loaded),len(set(loaded)))
+                self.assertIn('synaptics_tcm2',loaded)
+                self.assertIn(json.loads((CATALOG/sample/'module-sources.json').read_text())['roots'][1],loaded)
 
-    def test_touch_only_rejects_changed_inputs(self):
-        cases=['kernel','module','preloaded-dependency','firmware','inactive-slot',
-               'blob','unknown-scope']
-        for case in cases:
+    def test_component_failure_isolation(self):
+        for case in ['haptics-module','haptics-firmware','crypto-TA','crypto-library',
+                     'crypto-module','crypto-layout','invalid-date','duplicate-property',
+                     'unsupported-release','touch-module','touch-firmware']:
             with self.subTest(case=case):
-                root=self.fixture('os4-stable')
-                (root/'system_root/system/build.prop').write_text('updated system identity\n')
-                target={'kernel':'proc/sys/kernel/osrelease',
-                        'module':'vendor_dlkm/lib/modules/synaptics_tcm2.ko',
-                        'firmware':'odm/firmware/synaptics_spi_dijun.img',
-                        'inactive-slot':'sys/class/block/dm-3/dm/name'}.get(case)
-                if case=='preloaded-dependency':
-                    target=next(l.split()[2].lstrip('/') for l in
-                                (CATALOG/'os4-stable/touch-modules.plan').read_text().splitlines()
-                                if l.split()[2].startswith('/lib/modules/'))
-                if target:(root/target).write_bytes(b'wrong bytes\n')
-                if case=='blob':
-                    (root/'system/etc/dijun/blobs').unlink()
-                    (root/'system/etc/dijun/blobs').mkdir()
-                if case=='unknown-scope':
-                    self.run_phase(root,'cache')
-                    (root/'tmp/dijun-runtime/scope').write_text('unknown\n')
-                else:
-                    self.run_phase(root,'cache',1)
-                self.run_phase(root,'modules',1)
-                self.run_phase(root,'publish',1)
-                self.assertFalse(any(c[0] in ['insmod','resetprop'] or c[:2]==['setprop','ctl.start'] for c in self.calls(root)))
-
-    def test_touch_only_identity_changes_and_stage_integrity(self):
-        for case in ['vendor-identity','odm-identity','fstab-identity','staged-module',
-                     'missing-module','insmod-error']:
-            with self.subTest(case=case):
-                root=self.fixture('os4-stable')
-                (root/'system_root/system/build.prop').write_text('updated system identity\n')
-                target={'vendor-identity':'vendor/build.prop','odm-identity':'odm/etc/build.prop',
-                        'fstab-identity':'vendor/etc/fstab.O1_asic'}.get(case)
-                if target:(root/target).write_text('updated identity\n')
-                if case=='missing-module':
-                    (root/'vendor_dlkm/lib/modules/xr_spi_mmio.ko').unlink()
-                    self.run_phase(root,'cache',1)
-                    self.assertFalse(any(c[0]=='insmod' for c in self.calls(root)))
-                    continue
+                root=self.fixture('os4-stable'); self.updated_identity(root)
+                bad='crypto'
+                if case=='haptics-module':
+                    bad='haptics'; (root/'vendor_dlkm/lib/modules/xring_audio_hw_third.ko').write_bytes(b'new-ABI')
+                elif case=='haptics-firmware':
+                    bad='haptics'; (root/'odm/firmware/cs40l26.wmfw').write_bytes(b'new-firmware')
+                elif case=='touch-module':
+                    bad='touch'; (root/'vendor_dlkm/lib/modules/synaptics_tcm2.ko').write_bytes(b'new-ABI')
+                elif case=='touch-firmware':
+                    bad='touch'; (root/'odm/firmware/synaptics_spi_dijun.img').write_bytes(b'new-firmware')
+                elif case in ['crypto-TA','crypto-library']:
+                    line=next(l for l in (CATALOG/'os4-stable/crypto-checks.list').read_text().splitlines()
+                              if ('/mitee/ta/' in l if case=='crypto-TA' else '/vendor/lib64/' in l))
+                    (root/line.split()[1].lstrip('/')).write_bytes(b'new-crypto-bytes')
+                elif case=='crypto-module':
+                    plan=(CATALOG/'os4-stable/crypto-modules.plan').read_text().splitlines()
+                    path=next(l.split()[2] for l in plan if l.split()[0]=='fbe')
+                    (root/path.lstrip('/')).write_bytes(b'changed-preloaded-FBE')
+                elif case=='crypto-layout':
+                    p=root/'vendor/etc/fstab.O1_asic';p.write_text(p.read_text().replace('wrappedkey_v0','wrappedkey_v1'))
+                elif case=='invalid-date':self.updated_identity(root,system_spl='2026-02-30')
+                elif case=='duplicate-property':
+                    p=root/'system_root/system/build.prop';p.write_text(p.read_text()+'ro.build.version.release=16\n')
+                elif case=='unsupported-release':self.updated_identity(root,release='18')
                 self.run_phase(root,'cache')
-                if case=='staged-module':
-                    (root/'tmp/dijun-runtime/modules/xr_spi_mmio.ko').write_bytes(b'tampered')
-                    self.run_phase(root,'modules',1)
-                    self.assertFalse((root/'sys/module/synaptics_tcm2').exists())
-                elif case=='insmod-error':
-                    self.run_phase(root,'modules',FAIL_MODULE='xr_spi_mmio')
-                    self.assertEqual(self.props(root)['twrp.profile.touch_modules'],'failed')
-                    self.assertEqual(self.props(root)['twrp.profile.modules'],'partial')
-                else:
-                    self.run_phase(root,'modules',TOUCH_INPUT='immediate')
-                self.run_phase(root,'publish')
-                self.assertEqual(self.props(root)['twrp.crypto.ready'],'0')
-                self.assertFalse(any(c[0]=='resetprop' or c[:2]==['setprop','ctl.start'] for c in self.calls(root)))
+                self.assertEqual(self.props(root)[f'twrp.profile.{bad}'],'unavailable')
+                for component in set(['touch','haptics','crypto'])-{bad}:
+                    self.assertEqual(self.props(root)[f'twrp.profile.{component}_selected'],'os4-stable')
+                self.run_phase(root,'modules',TOUCH_INPUT='immediate',HAPTICS_INPUT='immediate')
+                self.unmount(root);self.run_phase(root,'publish')
+                self.assertEqual(self.props(root)['twrp.crypto.ready'],'0' if bad=='crypto' else '1')
+                if bad!='touch':self.assertEqual(self.props(root)['twrp.profile.touch_reports'],'requested')
+                if bad!='haptics':self.assertEqual(self.props(root)['twrp.profile.haptics_input'],'registered')
+                if bad=='crypto':self.assertFalse(any(c[0]=='resetprop' or c[:2]==['setprop','ctl.start'] for c in self.calls(root)))
+
+    def test_component_staging_and_module_failure(self):
+        for case in ['staged-touch-module','failed-crypto-module','failed-haptics-module']:
+            root=self.fixture('os4-stable',preloaded=False);self.updated_identity(root)
+            self.run_phase(root,'cache')
+            if case=='staged-touch-module':
+                (root/'tmp/dijun-runtime/modules/xr_spi_mmio.ko').write_bytes(b'tampered')
+                self.run_phase(root,'modules',1)
+                self.assertFalse((root/'sys/module/synaptics_tcm2').exists())
+                continue
+            module='fbe' if case=='failed-crypto-module' else 'xring_audio_hw_third'
+            # fbe is provided by vendor_boot; for this case leave its source
+            # intact but remove preloaded fixture state before cache/loading.
+            if module=='fbe':
+                self.assertFalse((root/'sys/module/fbe').exists())
+            self.run_phase(root,'modules',FAIL_MODULE=module,TOUCH_INPUT='immediate',HAPTICS_INPUT='immediate')
+            self.unmount(root);self.run_phase(root,'publish')
+            self.assertEqual(self.props(root)['twrp.profile.touch_reports'],'requested')
+            self.assertEqual(self.props(root)['twrp.crypto.ready'],'0' if module=='fbe' else '1')
+            if module=='fbe':self.assertFalse(any(c[:2]==['setprop','ctl.start'] for c in self.calls(root)))
+
+    def test_component_semantic_layout_and_cached_identity(self):
+        root=self.fixture('os4-stable'); self.updated_identity(root,system_spl='2028-02-29')
+        p=root/'vendor/etc/fstab.O1_asic'
+        rows=[]
+        for line in p.read_text().splitlines():
+            f=line.split()
+            if len(f)==5 and not line.lstrip().startswith('#'):
+                f[3]=','.join(reversed(f[3].split(',')));f[4]=','.join(reversed(f[4].split(',')))
+                line='   '.join(f)
+            rows.append(line)
+        p.write_text('# OTA comment change\n'+'\n'.join(reversed(rows))+'\n')
+        self.run_phase(root,'cache'); self.run_phase(root,'modules')
+        self.unmount(root)
+        (root/'tmp/dijun-runtime/crypto.prop').write_text('ro.build.version.release=99\n')
+        self.run_phase(root,'publish',1)
+        self.assertFalse(any(c[0]=='resetprop' or c[:2]==['setprop','ctl.start'] for c in self.calls(root)))
 
     def test_publish_mount_and_changed_cache_guards(self):
-        root=self.fixture(); self.run_phase(root,'cache')
+        root=self.fixture(); self.run_phase(root,'cache'); self.run_phase(root,'modules')
         self.run_phase(root,'publish',1)
         self.assertFalse(any(c[0]=='resetprop' for c in self.calls(root)))
         self.unmount(root)
@@ -287,7 +321,7 @@ class Runtime(unittest.TestCase):
 
     def test_service_failure_and_identity_failure(self):
         for failure in ['FAIL_BINDER','FAIL_RESETPROP','FAIL_START']:
-            root=self.fixture(); self.run_phase(root,'cache'); self.unmount(root)
+            root=self.fixture(); self.run_phase(root,'cache'); self.run_phase(root,'modules'); self.unmount(root)
             self.run_phase(root,'publish',1,**{failure:'1'})
             self.assertEqual(self.props(root)['twrp.crypto.ready'],'0')
             if failure in ['FAIL_BINDER','FAIL_START']:
@@ -330,7 +364,7 @@ class Runtime(unittest.TestCase):
 
     def test_missing_tee_bounded_and_wrong_persist(self):
         for case in ['tee','persist']:
-            root=self.fixture(); self.run_phase(root,'cache'); self.unmount(root)
+            root=self.fixture(); self.run_phase(root,'cache'); self.run_phase(root,'modules'); self.unmount(root)
             if case=='tee': (root/'dev/tee0').unlink()
             else:(root/'proc/mounts').write_text('/dev/block/other /mnt/vendor/persist ext4 rw 0 0\n')
             self.run_phase(root,'publish',1)

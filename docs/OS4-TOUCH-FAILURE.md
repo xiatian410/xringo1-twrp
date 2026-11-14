@@ -1,6 +1,10 @@
 # OS4 正式版无法触摸：反馈、离线排查与顺序修正候选
 
-## 当前：system 身份变化阻断触摸加载（2026-11-15）
+## 当前现场结论（2026-11-15）
+
+用户明确反馈 **rc2 触摸正常**。该现场问题已确认恢复，不继续修改 raw0 时序。用户同时报告解密与震动缺失，已转为独立组件联合激活回归；rc3 保留 rc2 的 raw0 helper 和输入二进制，改变组件选择与当前版本属性传递。详见[组件选择](PROFILE-SELECTION.md)与[工作队列](WORK-QUEUE.md)。下文 rc2 交付时的“现场待确认”为历史状态，不能覆盖本次用户确认；rc3 的现场解密/震动仍未确认。
+
+## rc2 历史定位：system 身份变化阻断触摸加载（2026-11-15）
 
 用户补充 `/tmp/dijun-runtime.log`：`os4-stable: system hash differs` → `no complete matching profile` → `runtime cache: no verified profile`；`/proc/sys/kernel/osrelease` 与原 OS4 正式版精确一致：`6.18.21-android17-5-g284297031c53-abogki553682993-4k`。用户提供的 `touch-now.zip`（本地 SHA-256 `b6ad8cebf52507497e184a9cdd57326bc22e47db7f945d64d3d6ce40867a80a4`）也显示没有触摸模块和输入设备。启动参数包含 `OS4.0.5.0.XODCN`，但完整 OS4.0.5 包及当前模块/固件哈希尚未取得。
 

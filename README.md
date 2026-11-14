@@ -6,7 +6,7 @@ TWRP / YARP recovery adaptation for Xiaomi 15S Pro (`dijun`, XRING O1). The proj
 
 ## Status
 
-Field logs show that a changed system identity rejects the full profile and prevents touch modules from loading despite a matching kernel. Candidate **1.0.1-rc2** separates touch activation from crypto identity: touch requires the exact kernel, active slot, complete hard module closure and matching installed firmware. Crypto remains disabled without a full identity match. Current device module/firmware compatibility and physical touch recovery are unverified; this is not a claim of full OS4.0.5 support. See the [touch investigation](docs/OS4-TOUCH-FAILURE.md). Other completed work remains in maintenance; see the [compatibility matrix](compatibility-matrix.md) for the six sampled firmware profiles and remaining limits.
+The user confirmed touch works on **1.0.1-rc2**, but reported decryption and vibration unavailable because that candidate enabled only touch after a system identity change. **1.0.1-rc3** selects touch, haptics and crypto independently by their actual components, and reads the active system's Android release and system/vendor patch levels. An OTA that changes build labels while retaining the required kernel, components and configuration no longer requires a separate version profile. The raw0 helper and input/GUI binaries retain rc2 bytes. Physical decryption and vibration on rc3 remain unverified; this is not a claim of universal future firmware support. See [component selection](docs/PROFILE-SELECTION.md), the [work queue](docs/WORK-QUEUE.md) and [compatibility matrix](compatibility-matrix.md).
 
 | | Current scope |
 | --- | --- |

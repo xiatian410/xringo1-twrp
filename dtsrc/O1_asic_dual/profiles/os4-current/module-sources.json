@@ -1,7 +1,10 @@
 {
   "roots": [
     "synaptics_tcm2",
-    "xring_audio_hw_third"
+    "xring_audio_hw_third",
+    "fbe",
+    "xr_rpmb",
+    "xr_ufs"
   ],
   "order": [
     "drm_display_helper",
@@ -32,11 +35,13 @@
     "xr_cpufreq",
     "xring_smmu",
     "xrsp_driver",
+    "hwid",
     "pinctrl_xr",
     "xr_ip_reset",
     "xr_pm_comm",
     "xr_doze",
     "xring_usb",
+    "xr_rpmb",
     "xr_spmi_controller",
     "xr_pmic_spmi",
     "xr_clk",
@@ -50,6 +55,8 @@
     "xring_thermal",
     "xr_ddr",
     "media_dvfs",
+    "fbe",
+    "xr_ufs",
     "xring_axi_dmac",
     "xring_i2c",
     "xr_regulator",
@@ -325,6 +332,14 @@
       ],
       "post": []
     },
+    "hwid": {
+      "source": "firmware/samples/os4-current/analysis/vendor_boot/fragment-0/lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xiaomi-modules/hwid/hwid.ko",
+      "runtime": "/lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xiaomi-modules/hwid/hwid.ko",
+      "sha256": "b5a32c6c4c056b28f26e0a65a8bb163d0029b969fd535b7b1159c641c6965dba",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
     "pinctrl_xr": {
       "source": "firmware/samples/os4-current/analysis/vendor_boot/fragment-0/lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/pinctrl_618/pinctrl-xr.ko",
       "runtime": "/lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/pinctrl_618/pinctrl-xr.ko",
@@ -385,6 +400,14 @@
       "pre": [
         "xr_doze"
       ],
+      "post": []
+    },
+    "xr_rpmb": {
+      "source": "firmware/samples/os4-current/analysis/vendor_boot/fragment-0/lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/rpmb/xr_rpmb.ko",
+      "runtime": "/lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/rpmb/xr_rpmb.ko",
+      "sha256": "6ec34888e2fec55b5d8d8d58516af02519a2bef8e767ea25e9d893a3e4903fb6",
+      "hard": [],
+      "pre": [],
       "post": []
     },
     "xr_spmi_controller": {
@@ -573,6 +596,31 @@
       ],
       "post": []
     },
+    "fbe": {
+      "source": "firmware/samples/os4-current/analysis/vendor_boot/fragment-0/lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/fbe/fbe.ko",
+      "runtime": "/lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/fbe/fbe.ko",
+      "sha256": "577cafaa932924fc6ee5285aee4776ff9b40b9014fb19b0872a55790b7438a40",
+      "hard": [
+        "mitee",
+        "securelib"
+      ],
+      "pre": [
+        "mitee"
+      ],
+      "post": []
+    },
+    "xr_ufs": {
+      "source": "firmware/samples/os4-current/analysis/vendor_boot/fragment-0/lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/ufs/xr_ufs.ko",
+      "runtime": "/lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/ufs/xr_ufs.ko",
+      "sha256": "1e247c8748b97ac988357f070180d3b9ce6d747397c4be5aca6f2ded4b9ee609",
+      "hard": [
+        "fbe",
+        "hwid",
+        "xr_rpmb"
+      ],
+      "pre": [],
+      "post": []
+    },
     "xring_axi_dmac": {
       "source": "firmware/samples/os4-current/analysis/vendor_boot/fragment-0/lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/dma/xring_axi_dmac.ko",
       "runtime": "/lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/dma/xring_axi_dmac.ko",
@@ -700,6 +748,99 @@
       "post": []
     }
   },
+  "runtime_component_closures": {
+    "touch": [
+      "dmd",
+      "drm_display_helper",
+      "dse",
+      "external_tcpc",
+      "flowctrl",
+      "fsa4480_i2c",
+      "mca_event",
+      "mca_log",
+      "mca_parse_dts",
+      "mca_platform_buckchg_class",
+      "mca_protocol_class",
+      "mca_protocol_pd_class",
+      "mca_sysfs",
+      "mca_workqueue",
+      "media_dvfs",
+      "miev",
+      "mitee",
+      "os_cpu_plat_common",
+      "os_cpu_vip_sched",
+      "perf_actuator",
+      "redriver",
+      "sched_walt",
+      "securelib",
+      "shub_boot_prepare",
+      "shub_ipc_drv",
+      "synaptics_tcm2",
+      "tui",
+      "xiaomi_touch_dijun",
+      "xr_clk",
+      "xr_cpufreq",
+      "xr_ddr",
+      "xr_dfx",
+      "xr_doze",
+      "xr_ffa_module",
+      "xr_ipc",
+      "xr_mem_s1",
+      "xr_pmic",
+      "xr_pmic_spmi",
+      "xr_spi_mmio",
+      "xr_timestamp",
+      "xr_vote_mng",
+      "xring_drm",
+      "xring_smmu",
+      "xring_thermal",
+      "xring_usb",
+      "xrsp_driver"
+    ],
+    "haptics": [
+      "dmd",
+      "external_tcpc",
+      "flowctrl",
+      "fsa4480_i2c",
+      "mca_event",
+      "mca_log",
+      "mca_parse_dts",
+      "mca_platform_buckchg_class",
+      "mca_protocol_class",
+      "mca_protocol_pd_class",
+      "mca_sysfs",
+      "mca_workqueue",
+      "pinctrl_xr",
+      "securelib",
+      "xr_dfx",
+      "xr_ffa_module",
+      "xr_ip_reset",
+      "xr_ipc",
+      "xr_pmic",
+      "xr_pmic_spmi",
+      "xr_regulator",
+      "xr_spmi_controller",
+      "xr_timestamp",
+      "xr_vote_mng",
+      "xring_audio_hw_third",
+      "xring_axi_dmac",
+      "xring_i2c",
+      "xrsp_driver"
+    ],
+    "crypto": [
+      "fbe",
+      "hwid",
+      "mitee",
+      "securelib",
+      "xr_dfx",
+      "xr_ffa_module",
+      "xr_pmic_spmi",
+      "xr_rpmb",
+      "xr_spmi_controller",
+      "xr_ufs",
+      "xrsp_driver"
+    ]
+  },
   "touch_priority_hard_closure": [
     "dmd",
     "drm_display_helper",
@@ -748,6 +889,18 @@
     "xring_usb",
     "xrsp_driver"
   ],
+  "crypto_priority_hard_closure": [
+    "fbe",
+    "hwid",
+    "mitee",
+    "securelib",
+    "xr_dfx",
+    "xr_ffa_module",
+    "xr_pmic_spmi",
+    "xr_rpmb",
+    "xr_ufs",
+    "xrsp_driver"
+  ],
   "haptics_priority_hard_closure": [
     "external_tcpc",
     "fsa4480_i2c",
@@ -780,7 +933,11 @@
     },
     {
       "owner": "xring_audio_hw_third",
-      "optional_softdep": "pinctrl_madera"
+      "optional_softdep": "madera"
+    },
+    {
+      "owner": "xring_audio_hw_third",
+      "optional_softdep": "arizona_micsupp"
     },
     {
       "owner": "xring_audio_hw_third",
@@ -788,11 +945,7 @@
     },
     {
       "owner": "xring_audio_hw_third",
-      "optional_softdep": "madera"
-    },
-    {
-      "owner": "xring_audio_hw_third",
-      "optional_softdep": "arizona_micsupp"
+      "optional_softdep": "pinctrl_madera"
     }
   ],
   "ignored_vendor_syntax": [
@@ -810,9 +963,10 @@
       "owner": "perf_actuator",
       "after": "sched_walt",
       "cycle": [
+        "os_cpu_vip_sched",
         "sched_walt",
         "perf_actuator",
-        "sched_walt"
+        "os_cpu_vip_sched"
       ]
     }
   ]

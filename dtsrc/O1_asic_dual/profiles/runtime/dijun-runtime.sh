@@ -88,28 +88,50 @@ cache)
     setprop twrp.profile.state selecting
     [ ! -e "$stage" ] || fail 'already staged; refusing a second activation in one boot'
     mkdir -m 0700 "$stage" || fail 'cannot create private staging directory'
-    scope=full
-    sh "$root/system/bin/dijun-select-profile.sh" --root "$root" \
-        --profiles "$catalog" --blobs "$blobs" > "$stage/selection"
-    selected=$?
-    if [ "$selected" -ne 0 ]; then
-        [ "$selected" -eq 3 ] || fail 'invalid or ambiguous full profile evidence'
-        echo 'runtime cache: no full identity match; checking independent touch closure'
-        scope=touch
+    # Each feature qualifies independently. A changed system build label must
+    # not remove drivers, and a changed optional haptic must not block crypto.
+    : > "$stage/files"
+    : > "$stage/modules.plan"
+    components=0
+    for component in touch haptics crypto; do
         sh "$root/system/bin/dijun-select-profile.sh" --root "$root" \
-            --profiles "$catalog" --blobs "$blobs" --purpose touch > "$stage/selection" || fail 'no verified full or touch profile'
-    fi
-    profile=$(sed -n 's/^PROFILE=//p' "$stage/selection")
-    case "$profile" in os2-initial|os2-final|os3-initial|os3-final|os4-current|os4-stable) ;; *) fail 'invalid selection' ;; esac
-    source=$catalog/$profile
-    if [ "$scope" = full ]; then
-        cp "$source/runtime-files.list" "$stage/files" || fail 'missing asset list'
-        cp "$source/modules.plan" "$stage/modules.plan" || fail 'missing module plan'
-        cp "$source/crypto.prop" "$stage/crypto.prop" || fail 'missing crypto identity'
-    else
-        cp "$source/touch-files.list" "$stage/files" || fail 'missing touch asset list'
-        cp "$source/touch-modules.plan" "$stage/modules.plan" || fail 'missing touch module plan'
-    fi
+            --profiles "$catalog" --blobs "$blobs" --purpose "$component" > "$stage/$component.selection"
+        selected=$?
+        if [ "$selected" -ne 0 ]; then
+            [ "$selected" -eq 3 ] || fail "invalid or ambiguous $component evidence"
+            setprop "twrp.profile.$component" unavailable
+            echo "runtime cache: $component has no compatible component set; other features continue"
+            continue
+        fi
+        profile=$(sed -n 's/^PROFILE=//p' "$stage/$component.selection")
+        case "$profile" in os2-initial|os2-final|os3-initial|os3-final|os4-current|os4-stable) ;; *) fail 'invalid selection' ;; esac
+        source=$catalog/$profile
+        cat "$source/$component-files.list" >> "$stage/files" || fail "missing $component asset list"
+        cat "$source/$component-modules.plan" >> "$stage/modules.plan" || fail "missing $component module plan"
+        printf '%s\n' "$profile" > "$stage/$component.profile"
+        setprop "twrp.profile.${component}_selected" "$profile"
+        setprop "twrp.profile.$component" cached
+        if [ "$component" = crypto ]; then
+            cp "$source/crypto-modules.plan" "$stage/crypto-modules.plan" || fail 'missing crypto closure'
+            release=$(sed -n 's/^ANDROID_RELEASE=//p' "$stage/crypto.selection")
+            system_spl=$(sed -n 's/^SYSTEM_SPL=//p' "$stage/crypto.selection")
+            vendor_spl=$(sed -n 's/^VENDOR_SPL=//p' "$stage/crypto.selection")
+            printf 'ro.build.version.release=%s\nro.build.version.security_patch=%s\nro.vendor.build.security_patch=%s\n' \
+                "$release" "$system_spl" "$vendor_spl" > "$stage/crypto.prop"
+            sha256sum "$stage/crypto.prop" | cut -d' ' -f1 > "$stage/crypto.sha256"
+            setprop twrp.profile.selected "$profile"
+        fi
+        components=$((components + 1))
+    done
+    [ "$components" -gt 0 ] || fail 'no compatible components'
+    # Shared dependencies must be byte-identical. Preserve closure ordering and
+    # reject a cross-component collision instead of loading two versions.
+    awk '{ if ($1 in seen && seen[$1] != $0) exit 1; if (!($1 in seen)) print; seen[$1]=$0 }' \
+        "$stage/modules.plan" > "$stage/modules.merged" || fail 'component module conflict'
+    mv "$stage/modules.merged" "$stage/modules.plan" || fail 'cannot finalize module plan'
+    awk '{ if ($3 in seen && seen[$3] != $0) exit 1; if (!($3 in seen)) print; seen[$3]=$0 }' \
+        "$stage/files" > "$stage/files.merged" || fail 'component asset conflict'
+    mv "$stage/files.merged" "$stage/files" || fail 'cannot finalize asset list'
     while read -r sha mode path extra; do
         [ -z "$extra" ] || fail 'malformed asset line'
         case "$mode" in 0644|0755) ;; *) fail 'invalid mode' ;; esac
@@ -123,10 +145,7 @@ cache)
         [ -z "$extra" ] || fail 'malformed module line'
         case "$name" in ''|*[!a-zA-Z0-9_]*) fail 'invalid module name' ;; esac
         case "$path" in /lib/modules/*.ko|/vendor_dlkm/lib/modules/*.ko|/system_dlkm/lib/modules/*.ko) ;; *) fail 'invalid module source' ;; esac
-        # Independent touch fallback also verifies sources of preloaded deps.
-        if [ "$scope" = touch ]; then
-            hash_ok "$root$path" "$sha" || fail "missing or mismatched touch dependency $name"
-        fi
+        hash_ok "$root$path" "$sha" || fail "missing or mismatched component dependency $name"
         module_live "$name" && continue
         copy_checked "$root$path" "$stage/modules/$name.ko" "$sha" 0644 || fail "missing or mismatched module $name"
     done < "$stage/modules.plan"
@@ -138,18 +157,11 @@ cache)
         esac
     done < "$stage/files"
     printf '%s\n' /lib/firmware > "$root/sys/module/firmware_class/parameters/path" || fail 'firmware path unavailable'
-    printf '%s\n' "$profile" > "$stage/profile"
-    printf '%s\n' "$scope" > "$stage/scope"
+    printf '%s\n' components > "$stage/scope"
     touch "$stage/cached"
-    setprop twrp.profile.scope "$scope"
-    if [ "$scope" = full ]; then
-        setprop twrp.profile.selected "$profile"
-        setprop twrp.profile.state cached
-    else
-        setprop twrp.profile.touch_selected "$profile"
-        setprop twrp.profile.state touch-cached
-    fi
-    echo "runtime cache: verified $profile (scope=$scope)"
+    setprop twrp.profile.scope components
+    setprop twrp.profile.state cached
+    echo "runtime cache: verified $components independent component sets"
     ;;
 modules)
     [ -f "$stage/cached" ] || fail 'cache incomplete'
@@ -157,8 +169,8 @@ modules)
     setprop twrp.profile.touch_modules pending
     setprop twrp.profile.modules pending
     scope=$(cat "$stage/scope") || fail 'cache scope unavailable'
-    case "$scope" in full|touch) ;; *) fail 'invalid cache scope' ;; esac
-    if [ "$scope" = full ]; then setprop twrp.profile.haptics_input pending; fi
+    case "$scope" in components) ;; *) fail 'invalid cache scope' ;; esac
+    if [ -f "$stage/haptics.profile" ]; then setprop twrp.profile.haptics_input pending; fi
     while read -r name sha path deps; do
         if [ -d "$root/sys/module/$name" ]; then
             if wait_module_live "$name"; then
@@ -209,7 +221,7 @@ modules)
         setprop twrp.profile.touch_reports request_failed
         echo 'runtime touch: ordinary-report request unavailable or failed'
     fi
-    if [ "$scope" = full ]; then
+    if [ -f "$stage/haptics.profile" ]; then
         haptics_module=
         while read -r name sha path deps; do
             case "$name" in xring_smartpa|xring_audio_hw_third) haptics_module=$name ;; esac
@@ -233,15 +245,7 @@ modules)
 publish)
     [ -f "$stage/cached" ] || fail 'no cached profile'
     scope=$(cat "$stage/scope") || fail 'cache scope unavailable'
-    case "$scope" in
-        touch)
-            setprop twrp.crypto.ready 0
-            setprop twrp.profile.state touch-only
-            echo 'runtime publish: touch-only profile; crypto identity and HAL activation withheld'
-            exit 0 ;;
-        full) ;;
-        *) fail 'invalid cache scope' ;;
-    esac
+    [ "$scope" = components ] || fail 'invalid cache scope'
     [ ! -f "$stage/published" ] || fail 'already published'
     check_unmounted || fail 'stock partitions still mounted'
     # Check the full set before touching any live runtime file.
@@ -251,6 +255,22 @@ publish)
     while read -r sha mode path; do
         copy_checked "$stage/root$path" "$root$path" "$sha" "$mode" || fail "publish $path"
     done < "$stage/files"
+    touch "$stage/published"
+    if [ ! -f "$stage/crypto.profile" ]; then
+        setprop twrp.crypto.ready 0
+        setprop twrp.profile.state drivers-only
+        echo 'runtime publish: compatible drivers published; crypto component requirements did not match'
+        exit 0
+    fi
+    hash_ok "$stage/crypto.prop" "$(cat "$stage/crypto.sha256")" || fail 'cached current crypto identity changed'
+    while read -r name sha path deps; do
+        if ! module_live "$name"; then
+            setprop twrp.crypto.ready 0
+            setprop twrp.profile.state crypto-modules-unavailable
+            echo "runtime publish: crypto dependency not live: $name; drivers retained"
+            exit 0
+        fi
+    done < "$stage/crypto-modules.plan"
     count=0
     while IFS='=' read -r key value; do
         case "$key" in ro.build.version.release|ro.build.version.security_patch|ro.vendor.build.security_patch) ;; *) fail 'unexpected crypto property' ;; esac
@@ -260,7 +280,6 @@ publish)
         count=$((count + 1))
     done < "$stage/crypto.prop"
     [ "$count" -eq 3 ] || fail 'incomplete crypto identity'
-    touch "$stage/published"
     setprop twrp.profile.state published
     if [ "$(getprop ro.boot.mitee_disable)" = true ]; then
         echo 'runtime publish: MiTEE disabled by boot configuration'
@@ -277,7 +296,7 @@ publish)
     fi
     setprop twrp.crypto.ready 1
     setprop twrp.profile.state ready
-    echo 'runtime publish: matching HAL interfaces registered; hardware key operations not yet tested'
+    echo 'runtime publish: component-compatible HAL interfaces registered with current system identity; hardware key operations not yet tested'
     ;;
 *) fail 'expected cache, modules or publish' ;;
 esac

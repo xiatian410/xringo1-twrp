@@ -1,72 +1,51 @@
 # 固件组合选择与启动激活
 
-六份原厂 system/build.prop 已从校验后的 EROFS 分区读取，release/SPL 与 OTA 元数据一致。
-vendor/ODM 的 Android 15 身份单独保留，不能替代 OS3 的 Android 16 或 OS4 的 Android 17。
-当前维护树已把六套档案、去重资源和运行时脚本接入构建；完整功能验收仍在进行。
+## 当前规则：按功能组件兼容，不按每次 OTA 的构建标签锁定
 
-## 输入与判断
+用户已确认 `1.0.1-rc2` 触摸正常，同时报告解密与震动不可用。rc2 的“仅触摸”分支会有意跳过其余组件，未满足完整使用要求。`1.0.1-rc3` 将触摸、震动、解密分别选择和激活；不再因 system/vendor/ODM 整份 `build.prop` 的日期、版本号或无关配置变化关闭全部功能。
 
-完整解密身份选择继续执行下述严格检查。2026-11-15 新增独立触摸范围：完整身份无匹配时，可以仅按精确内核、活动槽位、触摸硬依赖的全部文件哈希，以及当前 ODM 两份触摸固件/配置与内置资源的一致性选择触摸路径。system/vendor/ODM 的 build.prop 和 fstab 身份不作为此路径的 ABI 证明，也不授予解密资格。触摸范围只发布固件和模块，`twrp.crypto.ready=0`，不启动 HAL 或覆盖安全补丁身份。未知模块、固件、内核和异常槽位仍拒绝。详见[当前触摸修正](OS4-TOUCH-FAILURE.md)。以下完整身份协议与历史报告保留其原范围。
+**内核、对应组件与所需配置不变的 OTA，无需逐个增加系统小版本 profile。**六套原厂档案作为已知组件集合，允许运行时复用，而不是 OTA 版本白名单。若实际内核 ABI、驱动/固件、TEE/TA/HAL 或加密布局发生变化，仍需确认兼容；当前实现不承诺任意未来内核或未知安全组件。
 
-`dijun-select-profile.sh` 是只读预检。recovery 先挂载当前槽位的 system、vendor、ODM、vendor_dlkm。
-脚本读取 `/proc/bootconfig` 中唯一的 `androidboot.slot_suffix`，只接受 `_a`、`_b`。
-四个挂载的 dm 名称必须分别匹配当前槽位；缺失、重复、另一槽位或未知映射名称返回错误。
+`dijun-select-profile.sh` 只读预检。四个来源分区的 dm 名称必须对应 `/proc/bootconfig` 的唯一活动槽位，拒绝另一槽位、缺失与重复映射。每个功能必须恰好匹配一套组件；成功只代表可进入激活流程。
 
-每个候选同时核对完整 kernel release、system/vendor/ODM build.prop、vendor fstab、
-Synaptics 模块、对应震动模块的 SHA-256，以及全部所需 blob 的 SHA-256 和大小。
-必须恰好匹配一个候选；未知组合、混装模块、损坏资源不选择“接近”的版本。
-选择器成功只输出 profile、槽位、内核和 `matched-not-activated`；激活由后续脚本负责。
-返回码：0 匹配；2 输入/清单不合法；3 无完整匹配；4 多个匹配。
+| 功能 | 运行时匹配条件 | 与其他功能的关系 |
+| --- | --- | --- |
+| 触摸 | 精确 kernel release、Synaptics 全部硬依赖的来源 SHA-256、当前 ODM 固件与配置、内置资源一致 | 不依赖解密或震动匹配 |
+| 震动 | 精确 kernel release、原厂震动驱动及硬依赖、当前 vendor/ODM 固件与所封装资源一致 | 组件不匹配只停用该功能；不改动驱动内部振动实现 |
+| 解密 | 精确 kernel release、MiTEE/FBE/UFS/RPMB 硬依赖、原厂 HAL/TA/私有库/VINTF 字节、当前 Android release 家族和加密存储布局 | 触摸或震动不匹配不会自动拒绝解密；安全服务与真实密钥操作另行判断 |
+
+解密从活动槽位的原始 `system/build.prop` 读取 `ro.build.version.release` 与 `ro.build.version.security_patch`，从 `vendor/build.prop` 读取 `ro.vendor.build.security_patch`，不使用 Recovery 自己的构建身份。重复、缺失、非法日期或未采样 Android release 家族均拒绝该解密组合；合法的新补丁日期不需要重新编译。系统与 vendor 的 SPL 分别传递，不能统一写成旧值或最高值。
+
+加密布局检查只比较 `/data`、`/metadata`、persist 三项的源设备、挂载点、文件系统与规范化后的选项。注释、行顺序、选项顺序和其他挂载项变化不会拒绝解密；实际加密参数变化仍拒绝。
+
+默认 `--purpose full` 保留旧的完整原包身份检查，供档案溯源与诊断使用；生产 runtime 分别调用 `--purpose touch|haptics|crypto`，不再把 `full` 作为全部功能开关。返回码为 0 匹配、2 输入/清单异常、3 无兼容集合、4 多个匹配。坏清单或歧义阻止激活，正常无匹配仅影响对应功能。
 
 ## 启动顺序
 
-1. `KernelModuleLoader` 的 profile 分支先挂载所需来源，仅暂存实际匹配的资产。
-   该分支完全绕过 legacy major.minor 目录和通用模块清单；失败也不回退。
-2. `dijun-runtime.sh cache` 校验全部用户空间资源和尚未加载的模块来源，再发布 `/lib/firmware`。
-   已在 `/sys/module` 的模块由原厂首阶段保留，不重新插入。
-3. `modules` 保持原厂硬依赖与可实现的软依赖顺序，在就绪模块中优先触摸依赖，触摸先于可选震动模块，再调用 insmod，记录缺失硬依赖或失败。
-   可选外设模块插入失败不阻止独立的安全服务准备。资源哈希不符则终止该档案激活。
-4. 外层 `ProcessFstab` 与 `SetupFstabPartitions` 完成卸载后，`publish` 才把 HAL、TA、私有库复制到 RAM 路径。
-   发布前重新验证缓存；若 system/vendor/ODM 仍挂载，拒绝写入。
-5. 从该 profile 的 `crypto.prop` 设置并回读三个身份属性，再准备 MiTEE 节点和原始 persist 存储。
-   已有 persist 挂载必须解析到原始 persist 块设备；不接受 tmpfs 或其他分区替代。
-6. 显式启动三个 MiTEE 服务，检查 KeyMint、Gatekeeper、SharedSecret、SecureClock、keystore2 五个 Binder 接口。
-   注册与 ping 就绪后才设置 `twrp.crypto.ready=1`。HAL 不设置 lazy interface 触发，采用 oneshot，避免失败重启循环。
-7. 自动解密与手动凭据入口均检查就绪状态。服务退出/keystore 重启会撤销就绪状态；失败不调用格式化或重启。
+1. `KernelModuleLoader` 挂载活动槽位来源，`cache` 分别校验三个功能。来源包含已加载模块的文件；模块已经 live 也不能绕过版本检查。
+2. 合并已通过功能的资源、硬依赖及震动/解密的可用原厂软依赖；共享模块或目标路径必须字节一致。按触摸、震动、解密顺序合并，闭包内依赖先于使用者，重复模块仅保留一次。
+3. 暂存完成后先发布 `/lib/firmware`，再进入 `modules`。已加载模块不重插；保留模块状态等待和失败记录。触摸普通报告请求继续使用 rc2 原字节脚本。
+4. 源分区卸载后，`publish` 复核暂存资产，再复制到 RAM，禁止写穿仍挂载的 system/vendor/ODM。仅通过的功能有对应资源。
+5. 解密闭包全部 live、缓存的当前身份未变时，设置并回读三个实际版本属性，准备原始 persist 与 MiTEE 节点。没有解密兼容集合时，保留已通过的驱动。
+6. 显式启动 tee-supplicant、KeyMint、Gatekeeper；五个 Binder 接口注册/ping 后设置 `twrp.crypto.ready=1`。启动失败、服务退出或 keystore2 重启撤销就绪；不自动格式化或重启。
 
-MiTEE 节点等待上限约 5 秒；Binder 轮询 15 秒，外加 18 秒进程期限。
-cache/modules/publish 外层期限分别为 45/45/35 秒。它们约束用户空间启动等待；
-无法保证终止陷入内核不可中断睡眠的驱动，也不等于已为后续真实 TEE 密钥操作实现硬超时。
+`ready` 代表服务接口就绪，不代表已经成功解开硬件密钥或 CE 数据。节点等待、模块插入、Binder 等待继续有界；外层 cache/modules/publish 为 45/45/35 秒，不能保证终止内核不可中断睡眠。
 
-原厂模块计划由 `generate_profile_runtime.py` 从真实 ELF 和 depmod 元数据生成。
-四个 OS2/OS3 样本各有 51 项依赖闭包，两个 OS4 样本各为 54 项；这不是每次实际插入的数量。
-原厂 `pre:dw_apb_rtc` 缺少分隔符，Android libmodprobe 不把它作为有效软依赖；报告保留该原始异常。
-OS4 有一个可选顺序与硬依赖形成循环，保留两端模块、按硬依赖加载，并在 `module-sources.json` 记录循环。
-不存在的可选软依赖也逐项保留，不把它们伪装成已满足。完整内核导出 CRC 尚未取得，仍属未验证边界。
+## 生成与依赖
 
-## 依赖与覆盖范围
+`generate_profile_runtime.py` 从原始 ELF/depmod 和资源来源生成每个功能的 `*-modules.plan`、`*-files.list`、`*-checks.list`；震动和解密还保留原厂可用软依赖及其可实现顺序，而触摸沿用 rc2 硬依赖范围。另生成 `crypto-layout.conf`、`crypto-release.conf`。OS2/OS3 各 44 项触摸硬依赖，OS4 各 46 项；解密独立纳入 FBE/UFS/RPMB，避免仅检查触摸闭包里的 MiTEE 就误报安全链路齐全。震动使用现有原厂组件，没有重新做 DSP 或振动实现研究。
 
-一个镜像内含六套用户空间资产，按内容去重为 78 个 blob、40,184,830 字节；
-模块从当前安装的对应 vendor_dlkm/system_dlkm 或继承的 vendor_boot 获取，不在 recovery 混装模块。
-清除 system/vendor/ODM、未知中间版本、自定义内核、异常槽位/快照命名都会使选择失败。
-此时不会尝试猜测 ABI 或解密身份；原厂已加载的显示/USB 驱动可继续使用，但离线检查不能保证缺失系统下的实际可用性。
-这六个采样版本不代表其间所有版本，新增版本须重新建立档案。
+模块仍从当前 vendor_dlkm/system_dlkm 与继承 vendor_boot 获取，Recovery 不打包或跨版本混用 `.ko`。公共 VINTF 与 blob 保持原字节；清除来源分区或换入未知组件会影响依赖这些来源的功能，不伪装为已支持。
 
-## 离线证据
+## 本批有限验证
 
-- [选择测试](../logs/profile-selection-test.json)：8 组、77 场景；含正式版与旧 OS4 双向组件混装拒绝，真实固件身份与资源字节，模拟挂载/proc；成功后输入不变。
-- [运行时测试](../logs/profile-runtime-test.json)：直接执行生产 shell；六包两槽位、全部未加载模块顺序、重复加载避免、缓存损坏、混装、节点缺失、persist 冲突、HAL/属性错误。
-- [核心分支测试](../logs/profile-core-test.log)：编译执行原 C++ 分支，替换挂载/属性/命令；验证无 legacy 回退、只释放自行挂载的分区、自动/手动解密门控。
-- [Binder 就绪测试](../logs/wait-services-test.log)：编译真实 helper，仅替换 Binder 与时钟；缺服务、延迟注册、死亡 Binder、引用释放和期限。
-- 最终镜像及从镜像取出的脚本测试见 [模拟报告](../simulation-report.md)。
+- 生产 shell 回归 13 组、175 次阶段调用：六样本双槽、更新构建标识与当前 SPL、独立功能不匹配、模块失败、暂存完整性、服务/属性/persist 错误。
+- 从 rc3 实际镜像取出的脚本：六样本同次触摸/震动/解密启动，共 18 次阶段调用；旧 rc2 在六样本的同一更新条件全部只能进入 touch 分支。
+- 默认完整原包选择器保留 8 组、77 场景检查；清理构建、943 项生产来源及实际载荷差异通过，原厂资源、触摸 helper 与平台二进制未变。
 
-这些测试不执行原厂 ARM64 HAL，不访问 TEE、RPMB 或真实手机块设备。接口模拟成功不表示真实解密成功。
-诊断状态为 `twrp.profile.selected`、`twrp.profile.state`、`twrp.profile.modules`、`twrp.crypto.ready`；
-日志在 `/tmp/dijun-runtime.log`、`/tmp/dijun-mitee-prepare.log` 与 `/tmp/recovery.log`。
+挂载、insmod、sysfs/input、属性和 Binder 都是明确替身。以上不执行手机、真实 TEE/RPMB 密钥操作，也不证明 rc3 现场解密或震动已经恢复。rc2 的触摸由用户确认正常，rc3 保留其触摸 helper 和输入二进制；原始 OS4.0.5 全包未取得，不声明完整支持该包。具体镜像和状态见[交付报告](../simulation-report.md)。
 
-OS4 正式版增补验证发现激活阶段仍有五档案允许列表，已明确加入 `os4-stable`。选择器和激活阶段必须同时验证，首份失败镜像记录见[正式版增补](PROFILE-SELECTION.md#os4-正式版增补记录)。
-
-触摸失效反馈及加载优先修正见[OS4 触摸排查](OS4-TOUCH-FAILURE.md)。`twrp.profile.touch_modules` 只反映模块存在，不能代替 input 注册或事件交付证明。
+诊断字段：`twrp.profile.touch_selected`、`haptics_selected`、`crypto_selected`、`twrp.profile.state`、`twrp.profile.modules`、`twrp.crypto.ready`；日志为 `/tmp/dijun-runtime.log`、`/tmp/dijun-mitee-prepare.log` 与 `/tmp/recovery.log`。
 
 ## OS4 正式版增补记录
 

@@ -26,11 +26,13 @@ xr_vote_mng 41148bd53ea8a249f650281b02ba11c240ab2e570826459303afdfa8b177e178 /li
 xr_cpufreq f2444881c64e9c128a450f4a0456a4ac3dd049b34dfad0103e4c3ace12221198 /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/cpufreq/xr_cpufreq.ko xr_vote_mng
 xring_smmu f343277882efb80b9e2f91eceac2cea9db75cec2f69fbe6d9bc939b9d6c262f4 /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/xr_mem/smmu/xring_smmu.ko -
 xrsp_driver ef32075e47864b934a88a99f5866dfd86f45c59db306b813cecbb4598fbddc4e /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/xsp/xsp1/xrsp_driver.ko xr_ffa_module
+hwid b5a32c6c4c056b28f26e0a65a8bb163d0029b969fd535b7b1159c641c6965dba /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xiaomi-modules/hwid/hwid.ko -
 pinctrl_xr 62d34a031daab268bcb8f0e7b94f1f23bccf6a399d2a074ef6d3d410597a9f3a /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/pinctrl_618/pinctrl-xr.ko xr_timestamp,xrsp_driver
 xr_ip_reset 85a46fd99f98b3c841807f134682355eb78fb4bfbe90de1e2702b94a86110b87 /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/reset/xr_ip_reset.ko xrsp_driver
 xr_pm_comm 2d167a4e7d6f53eef481d8e75e736e3f489f1d146361d69f050cd1169517a54d /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/pm_comm/xr_pm_comm.ko xr_vote_mng
 xr_doze 6cfea6653ef8eec6648c6406de2e0627ad93d4e34defe8d56e30be721c95c95d /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/doze/xr_doze.ko xr_timestamp
 xring_usb 762d35516b3c490cdbf5732e5aafd4273a6f19307fc1a66c7323e0b79f8a96d6 /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/usb/xring_usb.ko flowctrl,redriver,xr_doze
+xr_rpmb 6ec34888e2fec55b5d8d8d58516af02519a2bef8e767ea25e9d893a3e4903fb6 /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/rpmb/xr_rpmb.ko -
 xr_spmi_controller 4ceca257865727870dbc74256447b5f090f0bb3cd207d0504c490bd86827a07a /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/spmi/xr-spmi-controller.ko -
 xr_pmic_spmi a76bc952b52df6c63529a229f610adebb90e603a6b665de627f2fcf6217cff17 /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/pmic/xr-pmic-spmi.ko xrsp_driver
 xr_clk efcf8fb619625b6ccd3414c711f37cbf79220fe60417aa93937a16e2f31a770d /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/clk/xr-clk.ko xr_doze,xr_pmic_spmi,xr_vote_mng,xrsp_driver
@@ -44,6 +46,8 @@ shub_ipc_drv c9d06a9040da2be30c83c7666fd4d05a35b045e153c433af0f1efa6971a1cbd1 /v
 xr_mem_s1 bda9ce61e89510bea32bf9494efde9300f797ad2a1373b78f81fe5a481e31889 /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/xr_mem/xr_mem_s1.ko miev,mitee,os_cpu_vip_sched,xring_smmu
 xr_pmic bbb8d9eaa4746899327b18b9ac3de392979c14dcab43df157782d6c7cc669deb /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/pmic/xr_pmic.ko dmd,xr_dfx,xr_pmic_spmi,xr_vote_mng
 xring_thermal a72150b02648bfd0bf8c8cf83f68abe6daeca6cfa7304cd9869fd12829039723 /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/thermal/xring_thermal.ko dse,sched_walt,securelib,xr_timestamp,xr_vote_mng
+fbe 577cafaa932924fc6ee5285aee4776ff9b40b9014fb19b0872a55790b7438a40 /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/fbe/fbe.ko mitee,securelib
+xr_ufs 7e43821d8f385ece973f651856b4f420ee0211cfe670baeaa86110fa55f9be1c /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/ufs/xr_ufs.ko fbe,hwid,xr_rpmb
 xring_axi_dmac 6c04a5431bc4ce60d5c602d509401b8d7d55c07dfdf7f3a6c64dcff974b5d71d /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/dma/xring_axi_dmac.ko -
 xring_i2c 91754a6e62d0bf6ecfc3525f93f94c83063514478ba744d7bacfa20bbc941cb9 /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/i2c/xring_i2c.ko -
 xr_regulator 7ca57fa244af5218648335bae58122a88924efd30e5983e9b246bab4cef8bc18 /lib/modules/6.18.21-android17-5-maybe-dirty-4k/extra/xring-modules/drivers/regulator/xr_regulator.ko flowctrl,xr_pmic,xr_timestamp,xr_vote_mng,xrsp_driver

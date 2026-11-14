@@ -77,7 +77,7 @@ PRODUCT_PACKAGES += dijun-wait-services dijun-usb-config
 PRODUCT_COPY_FILES += $(call find-copy-subdir-files,*,$(DEVICE_PATH)/profiles/common/root,recovery/root)
 PRODUCT_COPY_FILES += $(call find-copy-subdir-files,*,$(DEVICE_PATH)/prebuilt/common/profile-blobs,recovery/root/system/etc/dijun/blobs)
 PRODUCT_COPY_FILES += $(foreach profile,os2-initial os2-final os3-initial os3-final os4-current os4-stable,\
-    $(foreach name,selection.conf runtime-files.list modules.plan crypto.prop touch-files.list touch-modules.plan,\
+    $(foreach name,selection.conf runtime-files.list modules.plan crypto.prop touch-files.list touch-modules.plan touch-checks.list haptics-files.list haptics-modules.plan haptics-checks.list crypto-files.list crypto-modules.plan crypto-checks.list crypto-layout.conf crypto-release.conf,\
     $(DEVICE_PATH)/profiles/$(profile)/$(name):recovery/root/system/etc/dijun/profiles/$(profile)/$(name)))
 PRODUCT_COPY_FILES += $(foreach script,dijun-select-profile.sh dijun-runtime.sh dijun-prepare-mitee.sh dijun-touch-reports.sh,\
     $(DEVICE_PATH)/profiles/runtime/$(script):recovery/root/system/bin/$(script))

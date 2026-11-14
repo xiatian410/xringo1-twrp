@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/yarp-dijun-1.0.1-rc2.img",
-  "image_sha256": "d6d07213e0540b7862b50a90f57658e619e6be1108961f84e87fad335fd9545b",
-  "image_status": "Clean-built rc2 separates exact touch closure from full crypto identity. Current device input bytes and physical event delivery unverified.",
+  "image": "imgs/built/yarp-dijun-1.0.1-rc3.img",
+  "image_sha256": "c5161389eaa05f12034d8aa41ee98f8741629b0e1b726dad8a7c3d107b2d45fb",
+  "image_status": "Clean-built independent feature activation; rc2 field touch confirmed, rc3 physical crypto/haptics unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -5435,12 +5435,12 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/touch-scope-delivery.json",
-    "evidence_sha256": "a5de275378655017a6182ff40b02546da528426a1442278e80f49c2c248382ac",
-    "image_sha256": "d6d07213e0540b7862b50a90f57658e619e6be1108961f84e87fad335fd9545b",
-    "production_patch": "0139 retained; native device-tree touch scope",
-    "scope": "Check the touch-only activation fix, its bounded regressions and clean image.\n\nNo sysfs/controller callback, physical module loading or OS4.0.5 package is\nexecuted. Changed build.prop bytes model the field-reported identity mismatch.\n",
-    "hardware": "unverified"
+    "evidence": "logs/component-compat-delivery.json",
+    "evidence_sha256": "9c5902b88c32f3a81420d64011a5e72c6087e2dac08711e94867a4d3748bf591",
+    "image_sha256": "c5161389eaa05f12034d8aa41ee98f8741629b0e1b726dad8a7c3d107b2d45fb",
+    "production_patch": "0139 retained; native device-tree independent component activation",
+    "scope": "Bind independent feature activation to original components and a clean image.\n\nHost activation substitutes mounts, properties, insmod, input and Binder. This\naudit does not establish physical decryption, haptics or future OTA compatibility.\n",
+    "hardware": "unverified; rc2 user touch confirmation retained"
   },
   "delivery_evidence_refresh": {
     "date": "2026-11-12",
@@ -6792,18 +6792,18 @@
     "production_changes": false,
     "new_build": false
   },
-  "execution_status": "touch-profile-gate-fixed-device-events-awaiting-confirmation",
+  "execution_status": "component-activation-fixed-field-crypto-and-haptics-awaiting-confirmation",
   "execution_queue": {
-    "scope": "Touch-only profile gate fixed; field module/firmware matching and events unverified. Other completed items stay closed.",
+    "scope": "One reported regression: rc2 touch works but touch-only activation omits crypto and haptics. Independent component activation delivered; physical outcomes pending.",
     "authority": "docs/WORK-QUEUE.md",
     "active": [
       {
-        "id": "touch-release-regression",
-        "outcome": "profile-gate-fixed-in-software-current-device-matching-and-events-unverified",
+        "id": "component-activation-regression",
+        "outcome": "production-policy-fixed-offline-regressions-complete-field-outcomes-pending",
         "production_change": true,
         "hardware_testing": false,
-        "document": "docs/OS4-TOUCH-FAILURE.md",
-        "next": "Stop repeated checks; continue only on new runtime failure evidence. OS4.0.5 full profile and crypto are not claimed."
+        "document": "docs/PROFILE-SELECTION.md",
+        "next": "Stop equivalent checks after rc3 delivery; continue only on specific new field results."
       }
     ],
     "closed": [
@@ -6832,6 +6832,12 @@
         "production_fix": true,
         "hardware_testing": false,
         "document": "docs/REFRESH-STUCK-INVESTIGATION.md"
+      },
+      {
+        "id": "touch-release-regression",
+        "outcome": "user-confirms-rc2-touch-normal",
+        "production_fix": true,
+        "document": "docs/OS4-TOUCH-FAILURE.md"
       }
     ],
     "reopen_policy": "Only a new specific user fault, direct regression evidence or explicitly requested feature. Do not generate work from historical twelve-group records, unchanged fixtures or U boundaries."
@@ -7046,6 +7052,234 @@
     "kernel_release": "6.18.21-android17-5-g284297031c53-abogki553682993-4k",
     "failure": "os4-stable: system hash differs; runtime cache: no verified profile",
     "observation": "Touch modules and input device absent. Boot argument mentions OS4.0.5.0.XODCN; actual module/firmware byte identities unavailable.",
-    "installed_image_hash": "not independently verified"
+    "installed_image_hash": "not independently verified",
+    "latest_user_confirmation": "User explicitly confirms touch normal on rc2, then reports crypto and haptics absent."
+  },
+  "component_compat_delivery": {
+    "local_audit": "logs/component-compat-delivery.json",
+    "local_audit_sha256": "9c5902b88c32f3a81420d64011a5e72c6087e2dac08711e94867a4d3748bf591",
+    "status": "PASS",
+    "image": "imgs/built/yarp-dijun-1.0.1-rc3.img",
+    "image_sha256": "c5161389eaa05f12034d8aa41ee98f8741629b0e1b726dad8a7c3d107b2d45fb",
+    "image_size": 104857600,
+    "ramdisk_size": 76689928,
+    "production_sources": 943,
+    "jobs": 30,
+    "production_change": "Independent touch/haptics/crypto component selection; current active-slot release/SPL; unchanged platform patches through 0139.",
+    "profiles": [
+      {
+        "profile": "os2-final",
+        "components": {
+          "touch": {
+            "modules": 44,
+            "assets": 2,
+            "installed_checks": 2
+          },
+          "haptics": {
+            "modules": 14,
+            "assets": 18,
+            "installed_checks": 18
+          },
+          "crypto": {
+            "modules": 28,
+            "assets": 37,
+            "installed_checks": 41
+          }
+        }
+      },
+      {
+        "profile": "os2-initial",
+        "components": {
+          "touch": {
+            "modules": 44,
+            "assets": 2,
+            "installed_checks": 2
+          },
+          "haptics": {
+            "modules": 14,
+            "assets": 18,
+            "installed_checks": 18
+          },
+          "crypto": {
+            "modules": 28,
+            "assets": 37,
+            "installed_checks": 41
+          }
+        }
+      },
+      {
+        "profile": "os3-final",
+        "components": {
+          "touch": {
+            "modules": 44,
+            "assets": 2,
+            "installed_checks": 2
+          },
+          "haptics": {
+            "modules": 14,
+            "assets": 18,
+            "installed_checks": 18
+          },
+          "crypto": {
+            "modules": 28,
+            "assets": 37,
+            "installed_checks": 41
+          }
+        }
+      },
+      {
+        "profile": "os3-initial",
+        "components": {
+          "touch": {
+            "modules": 44,
+            "assets": 2,
+            "installed_checks": 2
+          },
+          "haptics": {
+            "modules": 14,
+            "assets": 18,
+            "installed_checks": 18
+          },
+          "crypto": {
+            "modules": 28,
+            "assets": 37,
+            "installed_checks": 41
+          }
+        }
+      },
+      {
+        "profile": "os4-current",
+        "components": {
+          "touch": {
+            "modules": 46,
+            "assets": 2,
+            "installed_checks": 2
+          },
+          "haptics": {
+            "modules": 28,
+            "assets": 18,
+            "installed_checks": 18
+          },
+          "crypto": {
+            "modules": 11,
+            "assets": 39,
+            "installed_checks": 43
+          }
+        }
+      },
+      {
+        "profile": "os4-stable",
+        "components": {
+          "touch": {
+            "modules": 46,
+            "assets": 2,
+            "installed_checks": 2
+          },
+          "haptics": {
+            "modules": 28,
+            "assets": 18,
+            "installed_checks": 18
+          },
+          "crypto": {
+            "modules": 12,
+            "assets": 39,
+            "installed_checks": 43
+          }
+        }
+      }
+    ],
+    "payload_changes": [
+      "prop.default",
+      "ramdisk-files.sha256sum",
+      "ramdisk-files.txt",
+      "system/bin/dijun-runtime.sh",
+      "system/bin/dijun-select-profile.sh",
+      "system/etc/dijun/profiles/os2-final/crypto-checks.list",
+      "system/etc/dijun/profiles/os2-final/crypto-files.list",
+      "system/etc/dijun/profiles/os2-final/crypto-layout.conf",
+      "system/etc/dijun/profiles/os2-final/crypto-modules.plan",
+      "system/etc/dijun/profiles/os2-final/crypto-release.conf",
+      "system/etc/dijun/profiles/os2-final/haptics-checks.list",
+      "system/etc/dijun/profiles/os2-final/haptics-files.list",
+      "system/etc/dijun/profiles/os2-final/haptics-modules.plan",
+      "system/etc/dijun/profiles/os2-final/modules.plan",
+      "system/etc/dijun/profiles/os2-final/touch-checks.list",
+      "system/etc/dijun/profiles/os2-initial/crypto-checks.list",
+      "system/etc/dijun/profiles/os2-initial/crypto-files.list",
+      "system/etc/dijun/profiles/os2-initial/crypto-layout.conf",
+      "system/etc/dijun/profiles/os2-initial/crypto-modules.plan",
+      "system/etc/dijun/profiles/os2-initial/crypto-release.conf",
+      "system/etc/dijun/profiles/os2-initial/haptics-checks.list",
+      "system/etc/dijun/profiles/os2-initial/haptics-files.list",
+      "system/etc/dijun/profiles/os2-initial/haptics-modules.plan",
+      "system/etc/dijun/profiles/os2-initial/modules.plan",
+      "system/etc/dijun/profiles/os2-initial/touch-checks.list",
+      "system/etc/dijun/profiles/os3-final/crypto-checks.list",
+      "system/etc/dijun/profiles/os3-final/crypto-files.list",
+      "system/etc/dijun/profiles/os3-final/crypto-layout.conf",
+      "system/etc/dijun/profiles/os3-final/crypto-modules.plan",
+      "system/etc/dijun/profiles/os3-final/crypto-release.conf",
+      "system/etc/dijun/profiles/os3-final/haptics-checks.list",
+      "system/etc/dijun/profiles/os3-final/haptics-files.list",
+      "system/etc/dijun/profiles/os3-final/haptics-modules.plan",
+      "system/etc/dijun/profiles/os3-final/modules.plan",
+      "system/etc/dijun/profiles/os3-final/touch-checks.list",
+      "system/etc/dijun/profiles/os3-initial/crypto-checks.list",
+      "system/etc/dijun/profiles/os3-initial/crypto-files.list",
+      "system/etc/dijun/profiles/os3-initial/crypto-layout.conf",
+      "system/etc/dijun/profiles/os3-initial/crypto-modules.plan",
+      "system/etc/dijun/profiles/os3-initial/crypto-release.conf",
+      "system/etc/dijun/profiles/os3-initial/haptics-checks.list",
+      "system/etc/dijun/profiles/os3-initial/haptics-files.list",
+      "system/etc/dijun/profiles/os3-initial/haptics-modules.plan",
+      "system/etc/dijun/profiles/os3-initial/modules.plan",
+      "system/etc/dijun/profiles/os3-initial/touch-checks.list",
+      "system/etc/dijun/profiles/os4-current/crypto-checks.list",
+      "system/etc/dijun/profiles/os4-current/crypto-files.list",
+      "system/etc/dijun/profiles/os4-current/crypto-layout.conf",
+      "system/etc/dijun/profiles/os4-current/crypto-modules.plan",
+      "system/etc/dijun/profiles/os4-current/crypto-release.conf",
+      "system/etc/dijun/profiles/os4-current/haptics-checks.list",
+      "system/etc/dijun/profiles/os4-current/haptics-files.list",
+      "system/etc/dijun/profiles/os4-current/haptics-modules.plan",
+      "system/etc/dijun/profiles/os4-current/modules.plan",
+      "system/etc/dijun/profiles/os4-current/touch-checks.list",
+      "system/etc/dijun/profiles/os4-stable/crypto-checks.list",
+      "system/etc/dijun/profiles/os4-stable/crypto-files.list",
+      "system/etc/dijun/profiles/os4-stable/crypto-layout.conf",
+      "system/etc/dijun/profiles/os4-stable/crypto-modules.plan",
+      "system/etc/dijun/profiles/os4-stable/crypto-release.conf",
+      "system/etc/dijun/profiles/os4-stable/haptics-checks.list",
+      "system/etc/dijun/profiles/os4-stable/haptics-files.list",
+      "system/etc/dijun/profiles/os4-stable/haptics-modules.plan",
+      "system/etc/dijun/profiles/os4-stable/modules.plan",
+      "system/etc/dijun/profiles/os4-stable/touch-checks.list"
+    ],
+    "runtime_groups": 13,
+    "runtime_phase_calls": 175,
+    "packaged_groups": 1,
+    "packaged_phase_calls": 18,
+    "previous_image_feature_regressions": 6,
+    "strict_selector_groups": 8,
+    "strict_selector_cases": 77,
+    "field_touch": "User confirmed rc2 touch normal; rc3 raw0 helper and input binaries unchanged.",
+    "field_crypto_and_haptics": "User reported absent on rc2; rc3 software activation fixed, hardware outcome unverified.",
+    "hardware_testing": false,
+    "scope": "Bind independent feature activation to original components and a clean image.\n\nHost activation substitutes mounts, properties, insmod, input and Binder. This\naudit does not establish physical decryption, haptics or future OTA compatibility.\n",
+    "evidence": {
+      "logs/component-compat-runtime.json": "90aeed47c3700b6a67e74129e1d23364b6f22b5713225f7138ac8160a037c50f",
+      "logs/component-compat-image.json": "af21ba0c7525affa80275c0714009cd235152fcfbf4f7584e0512d23760e428d",
+      "logs/component-compat-before.json": "7e92c8a52affdb3d91a6b85a5ab6a895f0019a17f235002992e650cc6ecc84ae",
+      "logs/component-compat-selection.json": "9710623117466ce109db183e02fc1eff055354ee9bdf4ff010fe149335444386"
+    },
+    "audit_source_sha256": "1963380ef6f099643dbe482d2490e2f902eb1f3aa1834dc7f7922bf36b9f0ab9"
+  },
+  "historical_delivery_before_component_compat": {
+    "evidence": "logs/touch-scope-delivery.json",
+    "evidence_sha256": "a5de275378655017a6182ff40b02546da528426a1442278e80f49c2c248382ac",
+    "image_sha256": "d6d07213e0540b7862b50a90f57658e619e6be1108961f84e87fad335fd9545b",
+    "production_patch": "0139 retained; native device-tree touch scope",
+    "scope": "Check the touch-only activation fix, its bounded regressions and clean image.\n\nNo sysfs/controller callback, physical module loading or OS4.0.5 package is\nexecuted. Changed build.prop bytes model the field-reported identity mismatch.\n",
+    "hardware": "unverified"
   }
 }

@@ -28,8 +28,10 @@ xring_smmu ccbcfdb70193a0f3c98b66131eaa1be13cbc99c8d477f99abc50f27f391a4aad /lib
 xr_mem_adapter fdb1b3a0bd53c04dadd5e5b5a60d6f2075729b5b17d1050ffc22d198d889227b /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/mem_adapter/xr_mem_adapter.ko miev,xring_smmu
 xring_usb 91cca97334843630b205343bb4d45edcb50ea3cbd19ff5ccf8cd1313b0215dfc /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/usb/xring_usb.ko flowctrl,redriver,xr_doze
 xrsp_driver 098c3aefe2c5dea80f1a1b3e33f2207cff9a0879ceb88b5450a00a8f8a9624b4 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/xsp/xsp1/xrsp_driver.ko xr_ffa_module
+hwid 94bbbd4c33bc3cc56dc4c9b815bf237f3fc230a0e53f5b1fe6470481c0a3c2c1 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/hwid/hwid.ko -
 pinctrl_xr ec0eacbb4ef9c9581ed93b88109529f52e33522bb3bfa83549f0e80472534e4d /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/pinctrl/pinctrl-xr.ko xr_doze,xring_hwspinlock,xrsp_driver
 xr_ip_reset 110291560245553882fc7e3bb2c837926389636b7e567ddde441b89561b795fa /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/reset/xr_ip_reset.ko xrsp_driver
+xr_rpmb 7037f5ade97d42e2fe1383d63d1e592e1ffa3dc9eb325fe7480df0bf042f2fb7 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/rpmb/xr_rpmb.ko -
 xr_spmi_controller ef1b3c875c6d1a8aa9945a5a8b8039f3f593facf6607a1f5519e69a46d89f1f5 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/spmi/xr-spmi-controller.ko -
 xr_pmic_spmi 375450dcf556231ed420f2a66da37681f6acc01fc0acb8dee93053ca762b21c3 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/pmic/xr-pmic-spmi.ko xrsp_driver
 xr_dfx 070cdd05cf0549c0ce29b1ced43caef2f0687f45a848f6f76b0e0851a3d6b091 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/dfx/xr_dfx.ko xr_pmic_spmi,xr_timestamp
@@ -41,6 +43,7 @@ peri_dvfs 56316d701cb6bac729ca24a1b85c0aae1527e40d83c858700ea901fd9abedd79 /lib/
 perf_actuator d17c3ce792138a49ad99c46fece3acd5a0d6d00fe2c508b3bd6f3f38f19d9242 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/perf/perf_actuator/perf-actuator.ko peri_dvfs
 xr_ddr fd1f7c9bc67e7b82918034413b15072727b4a459b905b5fb55617a4f140e1a00 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/ddr/xr_ddr.ko perf_actuator,securelib,xr_vote_mng
 xr_heaps fe5bfcfe6a1fa327f655e5845441ca2eea1942094d56290427105bd035b8438a /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/heaps/xr_heaps.ko mitee,xr_mem_adapter
+fbe d0c06c9b5733502d58550d67a27e8a8c7303c26356e066dc6609c92dc711d482 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/fbe/fbe.ko mitee,securelib
 xring_axi_dmac 6fe77a2de0d07b4bea8e59096e3902b99467280b5eda60b91ded2f82b1900598 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/dma/xring_axi_dmac.ko -
 xring_i2c e38181f1f2a0da387022e832e125bc989cbc0fcc6ded5df77e8266dc5cc55d27 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/i2c/xring_i2c.ko xring_hwspinlock
 xr_regulator 1113a104145b95218e1ae3506941228bd1b516c1a24c18e1af10120d154cfa14 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/regulator/xr_regulator.ko flowctrl,xr_timestamp,xr_vote_mng,xring_hwspinlock,xrsp_driver
@@ -49,3 +52,4 @@ tui 2f98f6853bd7cd343171866838db0681181cd334e9d83a2f002373a7ce2a04a1 /vendor_dlk
 xiaomi_touch_dijun c1199ccba4e2429d8b4fa72c9e838aa31a6898a62be47187642f51affde0bd57 /vendor_dlkm/lib/modules/xiaomi_touch_dijun.ko miev,shub_ipc_drv,xr_timestamp,xring_drm
 synaptics_tcm2 93646e624011ed9fe69645f6e028368a05f0bb82f089455b0716900c2ac0209f /vendor_dlkm/lib/modules/synaptics_tcm2.ko tui,xiaomi_touch_dijun,xr_doze,xr_spi_mmio
 xring_smartpa 0d4b140193c5d45f73a09b83006fffb69ff1a040e4d4063677498a898ee89fe8 /vendor_dlkm/lib/modules/xring_smartpa.ko miev
+xr_ufs c918aef444b1afc097ac4879f2a508b1329a892a1bc56a53bd65224eabd74bd1 /lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/ufs/xring-ufs/xr_ufs.ko fbe,hwid,miev,xr_heaps,xr_rpmb

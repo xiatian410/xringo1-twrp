@@ -28,7 +28,7 @@ def module_plan(sample, facts):
                 name = item['modinfo']['name'][0]
                 modules[name] = (path, item)
     _, haptic = haptics_module(facts)
-    roots = ['synaptics_tcm2', haptic['modinfo']['name'][0]]
+    roots = ['synaptics_tcm2', haptic['modinfo']['name'][0], 'fbe', 'xr_rpmb', 'xr_ufs']
     hard, pre, post, unknown, ignored = {}, {}, {}, [], []
     for name, (path, item) in modules.items():
         hard[name] = {canonical(dep) for value in item['modinfo'].get('depends', [])
@@ -110,6 +110,12 @@ def module_plan(sample, facts):
         haptics_required.add(name)
         for dep in hard[name]: haptics_visit(dep)
     haptics_visit(roots[1])
+    crypto_required = set()
+    def crypto_visit(name):
+        if name in crypto_required: return
+        crypto_required.add(name)
+        for dep in hard[name]: crypto_visit(dep)
+    for name in roots[2:]: crypto_visit(name)
     sorter = TopologicalSorter({k: sorted(v) for k, v in sorted(graph.items())})
     sorter.prepare()
     ready, order = set(), []
@@ -122,6 +128,19 @@ def module_plan(sample, facts):
         ready.remove(name)
         order.append(name)
         sorter.done(name)
+    # Preserve each feature's available stock softdeps as well as hard deps.
+    # Bus/regulator probes can be required for device discovery even without
+    # an ELF symbol edge. Touch retains the field-confirmed hard-only policy.
+    runtime_closures = {'touch': sorted(touch_required)}
+    def component_visit(name, closure):
+        if name in closure: return
+        if name not in selected: return
+        closure.add(name)
+        for dep in hard[name] | pre[name] | post[name]: component_visit(dep, closure)
+    for component, component_roots in [('haptics', [roots[1]]), ('crypto', roots[2:])]:
+        closure = set()
+        for name in component_roots: component_visit(name, closure)
+        runtime_closures[component] = sorted(closure)
     lines, records = [], {}
     for name in order:
         assert re.fullmatch(r'[a-zA-Z0-9_]+', name), name
@@ -141,7 +160,9 @@ def module_plan(sample, facts):
             if any(line.strip() and not line.lstrip().startswith('#') for line in text.splitlines()):
                 raise ValueError(f'{sample}: review nonempty module options before generating plan')
     return lines, dict(roots=roots, order=order, modules=records,
+                       runtime_component_closures=runtime_closures,
                        touch_priority_hard_closure=sorted(touch_required),
+                       crypto_priority_hard_closure=sorted(crypto_required),
                        haptics_priority_hard_closure=sorted(haptics_required),
                        unavailable_optional_softdeps=unknown, ignored_vendor_syntax=ignored,
                        conflicting_optional_order=deferred_soft_order)
@@ -179,9 +200,42 @@ def main():
         (file.parent / 'crypto.prop').write_text(''.join(f'{k}={v}\n' for k, v in sorted(identity.items())))
         lines, report = module_plan(sample, facts)
         (file.parent / 'modules.plan').write_text('\n'.join(lines) + '\n')
-        touch_names = set(report['touch_priority_hard_closure'])
-        (file.parent / 'touch-modules.plan').write_text('\n'.join(
-            line for line in lines if line.split()[0] in touch_names) + '\n')
+        for component, key in [('touch', 'touch_priority_hard_closure'),
+                               ('haptics', 'haptics_priority_hard_closure'),
+                               ('crypto', 'crypto_priority_hard_closure')]:
+            names = set(report['runtime_component_closures'][component])
+            (file.parent / f'{component}-modules.plan').write_text('\n'.join(
+                line for line in lines if line.split()[0] in names) + '\n')
+            assets = []
+            checks = {}
+            for dest, item in sorted(profile['assets'].items()):
+                included = (component == 'touch' and dest in [
+                    'lib/firmware/synaptics_spi_dijun.img', 'lib/firmware/dijun_syna_thp_config.ini'] or
+                    component == 'haptics' and dest.startswith(('lib/firmware/cs40l26', 'vendor/firmware/cs40l26')) or
+                    component == 'crypto' and dest.startswith(('vendor/bin/', 'vendor/mitee/ta/', 'system/lib64/mitee/')))
+                if included:
+                    assets.append(f'{item["sha256"]} {int(item["mode"], 8):04o} /{dest}')
+                if included or component == 'crypto' and dest.startswith('system/etc/vintf/'):
+                    # Compare installed component bytes, not build labels. Keep
+                    # the original source path, including vendor private DSOs.
+                    source = Path(item['source']).relative_to(Path('firmware/samples') / sample / 'analysis')
+                    checks['/' + str(source)] = item['sha256']
+            (file.parent / f'{component}-files.list').write_text('\n'.join(assets) + '\n')
+            (file.parent / f'{component}-checks.list').write_text(''.join(
+                f'{sha} {path}\n' for path, sha in sorted(checks.items())))
+        fstab = SAMPLES / sample / 'analysis/vendor/etc/fstab.O1_asic'
+        layout = []
+        for line in fstab.read_text().splitlines():
+            fields = line.split()
+            if not fields or fields[0].startswith('#'): continue
+            if fields[1] in ['/data', '/metadata', '/mnt/vendor/persist']:
+                assert len(fields) == 5
+                layout.append(' '.join(fields[:3] + [','.join(sorted(set(v.split(',')))) for v in fields[3:]]))
+        assert len(layout) == 3
+        (file.parent / 'crypto-layout.conf').write_text('\n'.join(sorted(layout)) + '\n')
+        # The parser accepts the sampled Android release family, but obtains
+        # current patch levels from the active mounted slot at every boot.
+        (file.parent / 'crypto-release.conf').write_text(identity['ro.build.version.release'] + '\n')
         (file.parent / 'module-sources.json').write_text(json.dumps(report, indent=2) + '\n')
         print(sample, len(lines), 'modules in ordered closure;', len(report['unavailable_optional_softdeps']), 'unavailable softdeps')
     for dest, sha in common.items():

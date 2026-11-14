@@ -1,7 +1,10 @@
 {
   "roots": [
     "synaptics_tcm2",
-    "xring_smartpa"
+    "xring_smartpa",
+    "fbe",
+    "xr_rpmb",
+    "xr_ufs"
   ],
   "order": [
     "drm_display_helper",
@@ -34,8 +37,10 @@
     "xr_mem_adapter",
     "xring_usb",
     "xrsp_driver",
+    "hwid",
     "pinctrl_xr",
     "xr_ip_reset",
+    "xr_rpmb",
     "xr_spmi_controller",
     "xr_pmic_spmi",
     "xr_dfx",
@@ -47,6 +52,7 @@
     "perf_actuator",
     "xr_ddr",
     "xr_heaps",
+    "fbe",
     "xring_axi_dmac",
     "xring_i2c",
     "xr_regulator",
@@ -54,7 +60,8 @@
     "tui",
     "xiaomi_touch_dijun",
     "synaptics_tcm2",
-    "xring_smartpa"
+    "xring_smartpa",
+    "xr_ufs"
   ],
   "modules": {
     "drm_display_helper": {
@@ -360,6 +367,14 @@
       ],
       "post": []
     },
+    "hwid": {
+      "source": "firmware/samples/os2-final/analysis/vendor_boot/fragment-0/lib/modules/6.6.77-android15-8-4k/extra/xring-modules/hwid/hwid.ko",
+      "runtime": "/lib/modules/6.6.77-android15-8-4k/extra/xring-modules/hwid/hwid.ko",
+      "sha256": "94bbbd4c33bc3cc56dc4c9b815bf237f3fc230a0e53f5b1fe6470481c0a3c2c1",
+      "hard": [],
+      "pre": [],
+      "post": []
+    },
     "pinctrl_xr": {
       "source": "firmware/samples/os2-final/analysis/vendor_boot/fragment-0/lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/pinctrl/pinctrl-xr.ko",
       "runtime": "/lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/pinctrl/pinctrl-xr.ko",
@@ -381,6 +396,14 @@
       "hard": [
         "xrsp_driver"
       ],
+      "pre": [],
+      "post": []
+    },
+    "xr_rpmb": {
+      "source": "firmware/samples/os2-final/analysis/vendor_boot/fragment-0/lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/rpmb/xr_rpmb.ko",
+      "runtime": "/lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/rpmb/xr_rpmb.ko",
+      "sha256": "7037f5ade97d42e2fe1383d63d1e592e1ffa3dc9eb325fe7480df0bf042f2fb7",
+      "hard": [],
       "pre": [],
       "post": []
     },
@@ -519,6 +542,19 @@
       "pre": [],
       "post": []
     },
+    "fbe": {
+      "source": "firmware/samples/os2-final/analysis/vendor_boot/fragment-0/lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/fbe/fbe.ko",
+      "runtime": "/lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/fbe/fbe.ko",
+      "sha256": "d0c06c9b5733502d58550d67a27e8a8c7303c26356e066dc6609c92dc711d482",
+      "hard": [
+        "mitee",
+        "securelib"
+      ],
+      "pre": [
+        "mitee"
+      ],
+      "post": []
+    },
     "xring_axi_dmac": {
       "source": "firmware/samples/os2-final/analysis/vendor_boot/fragment-0/lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/dma/xring_axi_dmac.ko",
       "runtime": "/lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/dma/xring_axi_dmac.ko",
@@ -639,7 +675,122 @@
         "xring_i2c"
       ],
       "post": []
+    },
+    "xr_ufs": {
+      "source": "firmware/samples/os2-final/analysis/vendor_boot/fragment-0/lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/ufs/xring-ufs/xr_ufs.ko",
+      "runtime": "/lib/modules/6.6.77-android15-8-4k/extra/xring-modules/drivers/ufs/xring-ufs/xr_ufs.ko",
+      "sha256": "c918aef444b1afc097ac4879f2a508b1329a892a1bc56a53bd65224eabd74bd1",
+      "hard": [
+        "fbe",
+        "hwid",
+        "miev",
+        "xr_heaps",
+        "xr_rpmb"
+      ],
+      "pre": [
+        "fbe",
+        "trace_hook",
+        "xr_clk",
+        "xr_regulator",
+        "xr_rpmb",
+        "xr_timestamp"
+      ],
+      "post": []
     }
+  },
+  "runtime_component_closures": {
+    "touch": [
+      "dmd",
+      "drm_display_helper",
+      "external_tcpc",
+      "flowctrl",
+      "fsa4480_i2c",
+      "mca_event",
+      "mca_log",
+      "mca_parse_dts",
+      "mca_platform_buckchg_class",
+      "mca_protocol_class",
+      "mca_protocol_pd_class",
+      "mca_sysfs",
+      "mca_workqueue",
+      "media_dvfs",
+      "miev",
+      "mitee",
+      "perf_actuator",
+      "peri_dvfs",
+      "redriver",
+      "securelib",
+      "shub_boot_prepare",
+      "shub_ipc_drv",
+      "synaptics_tcm2",
+      "tui",
+      "xiaomi_touch_dijun",
+      "xr_clk",
+      "xr_ddr",
+      "xr_dfx",
+      "xr_doze",
+      "xr_ffa_module",
+      "xr_heaps",
+      "xr_ipc",
+      "xr_mem_adapter",
+      "xr_pm_comm",
+      "xr_pmic_spmi",
+      "xr_spi_mmio",
+      "xr_timestamp",
+      "xr_vote_mng",
+      "xring_drm",
+      "xring_hwspinlock",
+      "xring_ocm",
+      "xring_smmu",
+      "xring_usb",
+      "xrsp_driver"
+    ],
+    "haptics": [
+      "miev",
+      "pinctrl_xr",
+      "securelib",
+      "xr_doze",
+      "xr_ffa_module",
+      "xr_ip_reset",
+      "xr_pm_comm",
+      "xr_timestamp",
+      "xr_vote_mng",
+      "xring_axi_dmac",
+      "xring_hwspinlock",
+      "xring_i2c",
+      "xring_smartpa",
+      "xrsp_driver"
+    ],
+    "crypto": [
+      "dmd",
+      "fbe",
+      "flowctrl",
+      "hwid",
+      "miev",
+      "mitee",
+      "pinctrl_xr",
+      "securelib",
+      "xr_clk",
+      "xr_dfx",
+      "xr_doze",
+      "xr_ffa_module",
+      "xr_heaps",
+      "xr_ip_reset",
+      "xr_mem_adapter",
+      "xr_pm_comm",
+      "xr_pmic_spmi",
+      "xr_regulator",
+      "xr_rpmb",
+      "xr_spmi_controller",
+      "xr_timestamp",
+      "xr_ufs",
+      "xr_vote_mng",
+      "xring_axi_dmac",
+      "xring_hwspinlock",
+      "xring_i2c",
+      "xring_smmu",
+      "xrsp_driver"
+    ]
   },
   "touch_priority_hard_closure": [
     "dmd",
@@ -687,6 +838,23 @@
     "xring_usb",
     "xrsp_driver"
   ],
+  "crypto_priority_hard_closure": [
+    "fbe",
+    "hwid",
+    "miev",
+    "mitee",
+    "securelib",
+    "xr_dfx",
+    "xr_ffa_module",
+    "xr_heaps",
+    "xr_mem_adapter",
+    "xr_pmic_spmi",
+    "xr_rpmb",
+    "xr_timestamp",
+    "xr_ufs",
+    "xring_smmu",
+    "xrsp_driver"
+  ],
   "haptics_priority_hard_closure": [
     "miev",
     "xring_smartpa"
@@ -702,10 +870,14 @@
     },
     {
       "owner": "xr_regulator",
-      "optional_softdep": "xsp1"
+      "optional_softdep": "trace_hook"
     },
     {
       "owner": "xr_regulator",
+      "optional_softdep": "xsp1"
+    },
+    {
+      "owner": "xr_ufs",
       "optional_softdep": "trace_hook"
     }
   ],
