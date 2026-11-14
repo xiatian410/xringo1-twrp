@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-shutdown-admission.img",
-  "image_sha256": "2ed5dba900b869ac0f326c6e6823ef07e9eebfab5512782e0816ee7772e24573",
-  "production_sources": 855,
+  "image_name": "recovery-dijun-unified-terminal-reap.img",
+  "image_sha256": "b7004782ada0776af3627b5f574a2d6c833306f2414e1f7075dda6f5e411c36c",
+  "production_sources": 857,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2357,6 +2357,22 @@
       "failures": 0,
       "local_report_sha256": "64f7a0d6801e68ed2b58b422a205c5302e1438f7b551d8002ab92ca5fcd98e6a",
       "scope": "Run the actual decrypt backend and its threads with a substitute CE provider."
+    },
+    {
+      "name": "terminal-reap-current",
+      "status": "PASS",
+      "cases": 7,
+      "failures": 0,
+      "local_report_sha256": "8382edcd4d638f06d6d95246c1074e1024dede30581d8cb23ca8c613929881c0",
+      "scope": "Patch0125 closes PTY master on unlock/fork failure, rejects child setup errors, kills/reaps only the owned unreaped direct shell on a background reaper, retries wait EINTR and prevents reopen while reaping; GUI stop remains nonblocking. Host original PTY owner seven cases pass; old six/seven fail. Actual private PTYs/fork/setsid/ioctl/kill/wait/threads; exec and syscall faults are fixtures. No descendant group cleanup, complete terminal admission, Android shell/GUI or final reboot/uninterruptible child completion proof. Historical OTA reused."
+    },
+    {
+      "name": "terminal-reap-old",
+      "status": "FAIL",
+      "cases": 7,
+      "failures": 6,
+      "local_report_sha256": "61f8a9dbbea639360627b5d20b3c7b48d0d00bbbc683b8dc18ea1120fd7df579",
+      "scope": "Patch0125 closes PTY master on unlock/fork failure, rejects child setup errors, kills/reaps only the owned unreaped direct shell on a background reaper, retries wait EINTR and prevents reopen while reaping; GUI stop remains nonblocking. Host original PTY owner seven cases pass; old six/seven fail. Actual private PTYs/fork/setsid/ioctl/kill/wait/threads; exec and syscall faults are fixtures. No descendant group cleanup, complete terminal admission, Android shell/GUI or final reboot/uninterruptible child completion proof. Historical OTA reused."
     }
   ],
   "refresh_stuck_investigation": {

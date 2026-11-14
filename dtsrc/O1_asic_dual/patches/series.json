@@ -462,6 +462,10 @@
         {
           "file": "0124-shutdown-job-admission.patch",
           "sha256": "065bc2143140ceaa42cf6e97f706d771ade938a140f036d69c56d88ec11d15f4"
+        },
+        {
+          "file": "0125-terminal-child-reaping.patch",
+          "sha256": "b70d9d34982d9cb505cded23c8d9bf738285ba9f18d1d1b454544d21c430c07e"
         }
       ],
       "result_files": {
@@ -573,7 +577,8 @@
         "exclude.cpp": "db68a3c2d5bb5908413462e49a61654c5e72ed06783f5eab991aacd76af99bde",
         "exclude.hpp": "e0b0435e7952fcae99460b69460abd13ff54fddcbf5d611c3517ae9b5a09992e",
         "gui2/backend/twrp_restore_backend.cpp": "85e57056d8f51e927b7c5da951722342fa87f85545acad3e3b3941332571b234",
-        "twrp_operation_executor.h": "72c2f644f7a1d32dc2cad006fc7ceb8fd257d9970321f7971c4b08c4e06b16b8"
+        "twrp_operation_executor.h": "72c2f644f7a1d32dc2cad006fc7ceb8fd257d9970321f7971c4b08c4e06b16b8",
+        "gui2/backend/terminal_engine.cpp": "521df63b449994637f7922edaddac7f14c4c21c7f918831bd498ee01f08bc4f6"
       }
     },
     "system/sepolicy": {

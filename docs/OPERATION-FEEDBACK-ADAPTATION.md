@@ -1,5 +1,17 @@
 # 操作反馈与页面生命周期
 
+<a id="terminal-child-reaping"></a>
+## 终端关闭后的直接子进程回收
+
+0125修正PTY关闭后仅WNOHANG检查一次便丢弃PID的问题。关闭PTY后终止仍归owner所有、尚未回收的直接shell，后台线程waitpid并重试EINTR；GUI stop不等待，重复关闭无操作，旧shell未回收时拒绝重新打开，回收后可重开。析构等待reaper结束。unlockpt/fork失败关闭master，子进程slave打开/dup2/setsid/控制终端失败则退出，启动失败不再resize无效PTY。
+
+私有PTY与无害native子进程验证七项：unlock失败、fork失败、关闭、已退出shell、wait中断、延迟回收、重开；原owner类在ASan/UBSan下全部通过，相同夹具旧版六项失败（fork失败关闭原本正确）。使用真实getpt/unlockpt/fork/setsid/ioctl/kill/wait及线程；exec和部分错误/等待调度为替身，没有运行Android命令或操作物理设备。
+
+镜像`recovery-dijun-unified-terminal-reap.img`，SHA-256 `b7004782ada0776af3627b5f574a2d6c833306f2414e1f7075dda6f5e411c36c`；installclean后30并发，857份生产来源及六profile。报告本地`logs/terminal-reap-current.json`和`logs/terminal-reap-old.json`，核对入口`python3 scripts/audit_terminal_reap.py`。本批仅recovery程序及构建属性/摘要改变，OTA和其他无关测试复用既有证据。
+
+这里只回收直接shell，不对未经确认的进程组发信号，也不证明所有后台后代已退出。终端任务准入、完整关闭屏障、Android shell/GUI及真实最终重启仍未验收；不可中断内核等待仍可能使最终析构等待。
+
+
 日期：2026-11-11。当前候选与校验和见[模拟报告](../simulation-report.md)。本项检查任务结束时的震动请求、忙状态和屏幕唤醒通知，没有测试物理电机，也没有执行真实分区操作。
 
 ## 修改

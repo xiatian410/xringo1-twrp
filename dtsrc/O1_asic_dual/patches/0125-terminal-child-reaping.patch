@@ -1,0 +1,139 @@
+--- a/gui2/backend/terminal_engine.cpp
++++ b/gui2/backend/terminal_engine.cpp
+@@ -18,6 +18,9 @@
+ 
+ // Recovery terminal engine and PTY transport.
+ 
++#include <atomic>
++#include <thread>
++#include <signal.h>
+ #include <fcntl.h>
+ #include <linux/input.h>
+ #include <sys/wait.h>
+@@ -59,8 +62,13 @@
+ class Pseudoterminal
+ {
+ public:
+-	Pseudoterminal() : fdMaster(0), pid(0)
+-	{
++	Pseudoterminal() : fdMaster(-1), pid(0)
++	{
++	}
++
++	~Pseudoterminal() {
++		stop();
++		if (reaper.joinable()) reaper.join();
+ 	}
+ 
+ 	bool started() const { return pid > 0; }
+@@ -73,6 +81,13 @@
+ 
+ 	bool start()
+ 	{
++		if (started()) return true;
++		// A previous shell still belongs to the reaper. Never overwrite its
++		// ownership or block the GUI waiting for it to leave the kernel.
++		if (reaper.joinable()) {
++			if (!reaped.load()) return false;
++			reaper.join();
++		}
+ 		fdMaster = getpt();
+ 		if (fdMaster < 0) {
+ 			LOGERR("Error %d on getpt()\n", errno);
+@@ -81,6 +96,8 @@
+ 
+ 		if (unlockpt(fdMaster) != 0) {
+ 			LOGERR("Error %d on unlockpt()\n", errno);
++			close(fdMaster);
++			fdMaster = -1;
+ 			return false;
+ 		}
+ 
+@@ -88,6 +105,7 @@
+ 		if (pid < 0) {
+ 			LOGERR("fork failed for pty, error %d\n", errno);
+ 			close(fdMaster);
++			fdMaster = -1;
+ 			pid = 0;
+ 			return false;
+ 		}
+@@ -101,6 +119,7 @@
+ 		}
+ 		else {
+ 			int fdSlave = open(ptsname(fdMaster), O_RDWR);
++			if (fdSlave < 0) _exit(127);
+ 			close(fdMaster);
+ 			runSlave(fdSlave);
+ 		}
+@@ -111,20 +130,16 @@
+ 
+ 	void runSlave(int fdSlave)
+ 	{
+-		dup2(fdSlave, 0); // PTY becomes standard input (0)
+-		dup2(fdSlave, 1); // PTY becomes standard output (1)
+-		dup2(fdSlave, 2); // PTY becomes standard error (2)
+-
+-		// Now the original file descriptor is useless
+-		close(fdSlave);
++		if (dup2(fdSlave, 0) < 0 || dup2(fdSlave, 1) < 0 || dup2(fdSlave, 2) < 0)
++			_exit(127);
++		if (fdSlave > 2) close(fdSlave);
+ 
+ 		// Make the current process a new session leader
+-		if (setsid() == (pid_t)-1)
+-			LOGERR("setsid failed: %d\n", errno);
++		if (setsid() == (pid_t)-1) _exit(127);
+ 
+ 		// As the child is a session leader, set the controlling terminal to be the slave side of the PTY
+ 		// (Mandatory for programs like the shell to make them manage correctly their outputs)
+-		ioctl(0, TIOCSCTTY, 1);
++		if (ioctl(0, TIOCSCTTY, 1) < 0) _exit(127);
+ 
+ 		execl("/system/bin/sh", "sh", NULL);
+ 		_exit(127);
+@@ -182,21 +197,27 @@
+ 
+ 	void stop()
+ 	{
+-		if (!started()) {
+-			LOGERR("someone tried to stop pty, but it was not started\n");
+-			return;
+-		}
++		if (!started()) return;
++		const pid_t child = pid;
++		pid = 0;
+ 		close(fdMaster);
+ 		g_pty_fd = fdMaster = -1;
+-
+-		int status;
+-		waitpid(pid, &status, WNOHANG); // avoid zombies but don't hang if the child is still alive and we got here due to some error
+-		pid = 0;
++		// Only the unreaped direct child is ours. Closing the PTY sends the
++		// terminal hangup; do not signal an unverified process group.
++		kill(child, SIGKILL);
++		reaped.store(false);
++		reaper = std::thread([this, child] {
++			int status;
++			while (waitpid(child, &status, 0) < 0 && errno == EINTR) {}
++			reaped.store(true);
++		});
+ 	}
+ 
+ private:
+ 	int fdMaster;
+ 	pid_t pid;
++	std::thread reaper;
++	std::atomic<bool> reaped{true};
+ };
+ 
+ // UTF-8 decoder
+@@ -379,8 +400,7 @@
+ 	{
+ 		if (!pty.started())
+ 		{
+-			pty.start();
+-			pty.resize(width, height, 0, 0);
++			if (pty.start()) pty.resize(width, height, 0, 0);
+ 		}
+ 	}
+ 

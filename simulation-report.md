@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-shutdown-admission.img` |
-| SHA-256 | `2ed5dba900b869ac0f326c6e6823ef07e9eebfab5512782e0816ee7772e24573` |
-| 生产来源绑定 | 855 份 |
+| 文件 | `recovery-dijun-unified-terminal-reap.img` |
+| SHA-256 | `b7004782ada0776af3627b5f574a2d6c833306f2414e1f7075dda6f5e411c36c` |
+| 生产来源绑定 | 857 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：重启交接的任务准入
+## 本批生产修正：终端子进程回收
+
+0125修正PTY关闭后丢弃未回收shell的问题：GUI非阻塞关闭，由后台线程回收直接子进程并重试EINTR，回收前拒绝重开；同时关闭unlockpt/fork失败的master，子进程setup失败退出。七个私有PTY场景通过，同夹具旧版六项失败。清理构建及六profile核对通过，范围见[终端回收](docs/OPERATION-FEEDBACK-ADAPTATION.md#terminal-child-reaping)，核对为`python3 scripts/audit_terminal_reap.py`。
+
+不宣称终端所有后代停止、完整任务准入或Android shell/真实重启完成。原整包OTA等无关路径不重跑。
+
+## 沿用的重启交接任务准入
 
 0124补齐后台任务已接收但尚未取得存储锁的空窗。GUI后台任务/槽位切换与FIFO CLI参与准入计数；无已接收任务时重启可预约停止接收，目标写入失败回滚，成功后保持至退出。取消/收尾保留，等待线程不持有存储锁。
 

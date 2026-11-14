@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-shutdown-admission.img",
-  "image_sha256": "2ed5dba900b869ac0f326c6e6823ef07e9eebfab5512782e0816ee7772e24573",
-  "image_status": "Clean-built candidate; patch0124 shutdown admission; hardware-unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-terminal-reap.img",
+  "image_sha256": "b7004782ada0776af3627b5f574a2d6c833306f2414e1f7075dda6f5e411c36c",
+  "image_status": "Clean-built patch0125 PTY child owner candidate; hardware-unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -4668,6 +4668,22 @@
       "evidence": "logs/multiuser-backend.json",
       "evidence_sha256": "64f7a0d6801e68ed2b58b422a205c5302e1438f7b551d8002ab92ca5fcd98e6a",
       "scope": "Run the actual decrypt backend and its threads with a substitute CE provider."
+    },
+    {
+      "name": "terminal-reap-current",
+      "status": "PASS",
+      "count": 7,
+      "evidence": "logs/terminal-reap-current.json",
+      "evidence_sha256": "8382edcd4d638f06d6d95246c1074e1024dede30581d8cb23ca8c613929881c0",
+      "scope": "Patch0125 closes PTY master on unlock/fork failure, rejects child setup errors, kills/reaps only the owned unreaped direct shell on a background reaper, retries wait EINTR and prevents reopen while reaping; GUI stop remains nonblocking. Host original PTY owner seven cases pass; old six/seven fail. Actual private PTYs/fork/setsid/ioctl/kill/wait/threads; exec and syscall faults are fixtures. No descendant group cleanup, complete terminal admission, Android shell/GUI or final reboot/uninterruptible child completion proof. Historical OTA reused."
+    },
+    {
+      "name": "terminal-reap-old",
+      "status": "FAIL",
+      "count": 7,
+      "evidence": "logs/terminal-reap-old.json",
+      "evidence_sha256": "61f8a9dbbea639360627b5d20b3c7b48d0d00bbbc683b8dc18ea1120fd7df579",
+      "scope": "Patch0125 closes PTY master on unlock/fork failure, rejects child setup errors, kills/reaps only the owned unreaped direct shell on a background reaper, retries wait EINTR and prevents reopen while reaping; GUI stop remains nonblocking. Host original PTY owner seven cases pass; old six/seven fail. Actual private PTYs/fork/setsid/ioctl/kill/wait/threads; exec and syscall faults are fixtures. No descendant group cleanup, complete terminal admission, Android shell/GUI or final reboot/uninterruptible child completion proof. Historical OTA reused."
     }
   ],
   "source_review_followups": [
@@ -5006,8 +5022,8 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/shutdown-admission-delivery-audit.json",
-    "scope": "Patch0124 counts admitted GUI backup/restore/ZIP/image/wipe/decrypt/refresh/tool/sideload jobs before thread scheduling, and FIFO CLI dispatch. GUI reboot reserves admission only with no admitted jobs; successful target publication retains reservation, failure rolls it back. Cancellation/drain remain available; storage mutex is not held across joins. Host original launch/reboot methods with real executor/threads and explicit worker/DM/sync fixtures:29 pass, old wiring18/29 fail; atomic128 races included. CLI16/reboot21/sideload23/lifecycle33/decrypt12/drain4 pass. No complete Android GUI/final reboot, terminal/direct ORS coverage, full MTP/USB shutdown or synchronous Binder/TEE cancellation. Historical full OTA reused, not rerun.",
+    "evidence": "logs/terminal-reap-delivery-audit.json",
+    "scope": "Patch0125 closes PTY master on unlock/fork failure, rejects child setup errors, kills/reaps only the owned unreaped direct shell on a background reaper, retries wait EINTR and prevents reopen while reaping; GUI stop remains nonblocking. Host original PTY owner seven cases pass; old six/seven fail. Actual private PTYs/fork/setsid/ioctl/kill/wait/threads; exec and syscall faults are fixtures. No descendant group cleanup, complete terminal admission, Android shell/GUI or final reboot/uninterruptible child completion proof. Historical OTA reused.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -6253,5 +6269,10 @@
     "document": "docs/MULTIUSER-ADAPTATION.md#shutdown-admission",
     "scope": "Patch0124 counts admitted GUI backup/restore/ZIP/image/wipe/decrypt/refresh/tool/sideload jobs before thread scheduling, and FIFO CLI dispatch. GUI reboot reserves admission only with no admitted jobs; successful target publication retains reservation, failure rolls it back. Cancellation/drain remain available; storage mutex is not held across joins. Host original launch/reboot methods with real executor/threads and explicit worker/DM/sync fixtures:29 pass, old wiring18/29 fail; atomic128 races included. CLI16/reboot21/sideload23/lifecycle33/decrypt12/drain4 pass. No complete Android GUI/final reboot, terminal/direct ORS coverage, full MTP/USB shutdown or synchronous Binder/TEE cancellation. Historical full OTA reused, not rerun.",
     "delivery_audit": "logs/shutdown-admission-delivery-audit.json"
+  },
+  "terminal_child_reaping": {
+    "patch": "0125-terminal-child-reaping.patch",
+    "document": "docs/OPERATION-FEEDBACK-ADAPTATION.md#terminal-child-reaping",
+    "scope": "Patch0125 closes PTY master on unlock/fork failure, rejects child setup errors, kills/reaps only the owned unreaped direct shell on a background reaper, retries wait EINTR and prevents reopen while reaping; GUI stop remains nonblocking. Host original PTY owner seven cases pass; old six/seven fail. Actual private PTYs/fork/setsid/ioctl/kill/wait/threads; exec and syscall faults are fixtures. No descendant group cleanup, complete terminal admission, Android shell/GUI or final reboot/uninterruptible child completion proof. Historical OTA reused."
   }
 }

@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "78631f34eaf26862a14ddbe87f585bde53ec187bf483ebda8a4c1230c9e1931f",
+    "sha256": "45dd2ce771b6a2a2ed306cd6ccce5182b5cbf2daf87d2fbb8707b0ffcaaea302",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -112,7 +112,7 @@
     "mode": "0o644"
   },
   "docs/OPERATION-FEEDBACK-ADAPTATION.md": {
-    "sha256": "75e2406f8aff0098ed40a2d6fcbe5652cfeebfcd65f786949a389829db9b5596",
+    "sha256": "ea91d70ad9d2a3e33ea5ca64d8b5c1a8f54f720dce582261094686e2467ab3b4",
     "mode": "0o644"
   },
   "docs/OS4-TOUCH-FAILURE.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "cb076f2364a456d6cf26fbca9acbf6ba13ea58026fc95cb5895547373b59d0a9",
+    "sha256": "4c7a29a6cf7c7b2414e5f9cc3f8a31c7a251d6b1bf81f2859bc5acc53f1eef41",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -771,8 +771,12 @@
     "sha256": "065bc2143140ceaa42cf6e97f706d771ade938a140f036d69c56d88ec11d15f4",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/patches/0125-terminal-child-reaping.patch": {
+    "sha256": "b70d9d34982d9cb505cded23c8d9bf738285ba9f18d1d1b454544d21c430c07e",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/patches/series.json": {
-    "sha256": "e772491e1eec42832c4a50fe63fb9cacd432e37d4c950166ff200e9c5501f173",
+    "sha256": "19d8a9e25db986d8f5c138ec361fab99e774e7730e3549fa6cc8f8047c3acaa2",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/prebuilt/Android.mk": {
@@ -1655,6 +1659,10 @@
     "sha256": "ecb254cabee2c1f5f4a54c15edf64a82ac26ffc625d15884a1e652e4e50c5dfc",
     "mode": "0o644"
   },
+  "scripts/audit_terminal_reap.py": {
+    "sha256": "00407c7dcf86dc224ce89ac0e0c05bbe86601654ef7cb6950a7ef6bfd54864d5",
+    "mode": "0o644"
+  },
   "scripts/audit_thermal_identity_delivery.py": {
     "sha256": "dc9ecd8ab3053d4e0d9b8269b16b16e2354dda24805ce5f6aad53a98b04344de",
     "mode": "0o644"
@@ -1976,11 +1984,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "6b275b908a348976980b410f6094136138e65a93d7be189f7740e5401def7207",
+    "sha256": "05ebb249790a4233f9fff9eac0fb9f70f13956a34bd2302092f0985cda0a1c99",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "17e32751ec3650434dd0c4eb7192718b22b0666068e565ea60326eb68f884c5a",
+    "sha256": "95b01e55481f043fe7254b2b4116fcbf4edbcd1f1abaee1a0d8119fa37f5b154",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2953,6 +2961,10 @@
   },
   "tests/temperature_ui_test.py": {
     "sha256": "06ba6c3bf59c24ebd242c6a996f85aef25a1eb9547ce7b89820c4b9005884556",
+    "mode": "0o644"
+  },
+  "tests/terminal_reap_test.py": {
+    "sha256": "a822bd3ec24aeaeb016e9a5173204e0039ddec05a363cbf1546f449bba4f43eb",
     "mode": "0o644"
   },
   "tests/thermal_identity_test.py": {
