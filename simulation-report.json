@@ -5422,8 +5422,11 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/terminal-reap-delivery-audit.json",
-    "scope": "Patch0125 closes PTY master on unlock/fork failure, rejects child setup errors, kills/reaps only the owned unreaped direct shell on a background reaper, retries wait EINTR and prevents reopen while reaping; GUI stop remains nonblocking. Host original PTY owner seven cases pass; old six/seven fail. Actual private PTYs/fork/setsid/ioctl/kill/wait/threads; exec and syscall faults are fixtures. No descendant group cleanup, complete terminal admission, Android shell/GUI or final reboot/uninterruptible child completion proof. Historical OTA reused.",
+    "evidence": "logs/cli-results-delivery-audit.json",
+    "additional_evidence": "logs/cli-ors-joined-audit.json",
+    "image_sha256": "edbe45e627cc5582e36d210613b4eaf016721bfc77bcda9ac543290cec085f96",
+    "production_patch": "0138",
+    "scope": "Current clean-built CLI-results candidate; historical production audit and subsequent original CLI/FIFO/ORS same-server retry evidence. Closeout preserves image and all876 source bindings. Current full-functional/hardware validation unproven. See offline_closeout for new documentation/source inspection, not a new production delivery.",
     "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
@@ -6312,11 +6315,11 @@
     "scope": "Original ARM64 read/set and OS4 refresh callbacks with MMIO/PMIC/calendar fixtures. Full probe/hctosys/calendar/cold-start and physical drift remain open."
   },
   "refresh_stuck_investigation": {
-    "status": "unresolved-awaiting-new-distinguishing-evidence",
+    "status": "offline-investigation-closed-field-incident-unlocated",
     "document": "docs/REFRESH-STUCK-INVESTIGATION.md",
     "local_analysis": "logs/refresh-capture-analysis.json",
     "production_fix": true,
-    "conclusion": "User logs show refresh successfully ended; non-atomic main-thread sample passes XRING DRM commit, not proof of sustained hang.",
+    "conclusion": "Existing refresh completed within5147ms. Non-atomic capture shows a DPU config wait, without duration/causality. Current worker/DONE/GUI/display chain reviewed; no new confirmed Recovery lifecycle bug. Insufficient evidence to establish a software fix or hardware-only root cause.",
     "worker_evidence": "logs/refresh-worker-chain.json",
     "worker_scope": "Original worker state publication and LVGL adapter pass with scan/presentation doubles; full GUI tick and DRM unverified. No production fix.",
     "lifecycle_evidence": "logs/backup-manage-refresh-lifecycle.json",
@@ -6326,7 +6329,7 @@
     "field_incident_fixed": false,
     "loop_evidence": "logs/refresh-loop.json",
     "loop_scope": "Original gui2_loop_tick and app/gui2_loop.cpp, tools worker/status adapter, LVGL progress and page host. Normal completion, precompleted worker and controlled 220ms submit wait; wait halts GUI ticks despite worker DONE, release updates next tick. Scan, device services, input/perf, console/background polling, route composition and display submission are explicit fixtures. Not real DRM, full Android or field root-cause proof; no production fix.",
-    "next_action": "Existing capture exhausted: no second display-wait sample or matching DPU timeout/recovery event. Resume only on new adjacent stacks, submission/completion timeline or direct software-defect evidence; do not re-search this capture or repeat scan/DONE/loop fixtures.",
+    "next_action": "None in current queue. Reopen only on new distinguishing evidence or direct regression; do not request capture or rerun equivalent worker/DONE/loop tests.",
     "current_analysis": "logs/refresh-capture-analysis-current.json",
     "capture_evidence": {
       "evidence": "logs/refresh-capture-analysis-current.json",
@@ -6336,7 +6339,9 @@
       "display_waiter": "PID/TID 264 disp_commit_0 state D, wchan dpu_kms_wait_for_hw_cfg_done",
       "main_recovery_stack": "DRM atomic commit in separate non-atomic stack sample",
       "scope": "Single capture snapshot. Establishes display configuration wait at capture time, not its duration, cause, or relation to the refresh UI symptom. No production change or repeated worker tests."
-    }
+    },
+    "date": "2026-11-15",
+    "new_production_fix": false
   },
   "finite_maintenance": {
     "date": "2026-11-13",
@@ -6773,5 +6778,74 @@
     "document": "docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-ors-joined",
     "production_changes": false,
     "new_build": false
+  },
+  "execution_status": "maintenance-with-explicit-unverified-boundaries",
+  "execution_queue": {
+    "scope": "Three finite work packages from ADAPTATION-GOALS.md current execution section; long-term full device functionality remains unverified.",
+    "authority": "docs/WORK-QUEUE.md",
+    "active": [],
+    "closed": [
+      {
+        "id": "touch-startup",
+        "outcome": "software-path-review-closed-hardware-unverified",
+        "production_fix": false,
+        "document": "docs/WORK-QUEUE.md"
+      },
+      {
+        "id": "refresh-stall",
+        "outcome": "offline-investigation-closed-field-incident-unlocated",
+        "field_incident_fixed": false,
+        "production_fix": false,
+        "document": "docs/REFRESH-STUCK-INVESTIGATION.md"
+      },
+      {
+        "id": "compatibility-and-repository",
+        "outcome": "six-sample-claims-and-evidence-reconciled",
+        "production_fix": false,
+        "document": "compatibility-matrix.md"
+      }
+    ],
+    "reopen_policy": "Only a new specific user fault, direct regression evidence or explicitly requested feature. Do not generate work from historical twelve-group records, unchanged fixtures or U boundaries."
+  },
+  "offline_closeout": {
+    "date": "2026-11-15",
+    "work_type": "documentation-and-bounded-source-provenance-review",
+    "document": "simulation-report.md",
+    "local_inspection": "logs/maintenance-closeout-inspection.json",
+    "local_inspection_sha256": "567eec0fe979d22a7a6f6940122019754a23647ee7376af63645d21e9dba2fee",
+    "image_name": "recovery-dijun-unified-cli-results.img",
+    "image_sha256": "edbe45e627cc5582e36d210613b4eaf016721bfc77bcda9ac543290cec085f96",
+    "production_sources": 876,
+    "profiles": [
+      "os2-final",
+      "os2-initial",
+      "os3-final",
+      "os3-initial",
+      "os4-current",
+      "os4-stable"
+    ],
+    "source_provenance_matches": true,
+    "maintained_tree_matches_generated": true,
+    "pinned_patch_repositories_reconstructed": 6,
+    "packaged_profiles_and_assets_match": true,
+    "deduplicated_blobs": 78,
+    "image_bytes": 104857600,
+    "ramdisk_bytes": 76679139,
+    "build_log_verified": true,
+    "build_jobs": 30,
+    "production_changes": false,
+    "new_build": false,
+    "functional_suite_rerun": false,
+    "hardware_testing": false,
+    "historical_scope": "Historical GUI-loop report has changed full-file bindings; current chain reviewed statically without relabeling it as a new complete run. Historical profile replay reused for unchanged selector/main runtime only; changed touch helper has separate policy evidence. Original OTA success remains bound to its0090 run.",
+    "full_functional_validation": false,
+    "historical_full_audit_passed": false,
+    "publication_policy": "scripts/sync_github.py --push validates reviewed text export and verifies remote main equals local HEAD; binaries/blobs/raw logs/keys excluded."
+  },
+  "historical_status_scope": "status=in_progress, not_yet_completed and source_review_followups preserve historical full-function coverage limits, not the active queue. execution_status/execution_queue and docs/WORK-QUEUE.md control finite work. No complete hardware/full-functional claim.",
+  "historical_current_delivery_before_closeout": {
+    "evidence": "logs/terminal-reap-delivery-audit.json",
+    "scope": "Patch0125 closes PTY master on unlock/fork failure, rejects child setup errors, kills/reaps only the owned unreaped direct shell on a background reaper, retries wait EINTR and prevents reopen while reaping; GUI stop remains nonblocking. Host original PTY owner seven cases pass; old six/seven fail. Actual private PTYs/fork/setsid/ioctl/kill/wait/threads; exec and syscall faults are fixtures. No descendant group cleanup, complete terminal admission, Android shell/GUI or final reboot/uninterruptible child completion proof. Historical OTA reused.",
+    "hardware": "unverified"
   }
 }

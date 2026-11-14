@@ -6,7 +6,7 @@ TWRP / YARP recovery adaptation for Xiaomi 15S Pro (`dijun`, XRING O1). The proj
 
 ## Status
 
-The project is under active development. Six firmware profiles are maintained in one candidate; profile presence and successful offline tests do not establish complete device compatibility.
+The bounded offline adaptation work has entered maintenance with explicit unverified boundaries. One candidate contains six exact firmware profiles; this establishes the documented packaging and software selection scope, not complete device compatibility. See the [compatibility matrix](compatibility-matrix.md) for version-specific dependencies and remaining limits.
 
 | | Current scope |
 | --- | --- |
@@ -16,6 +16,8 @@ The project is under active development. Six firmware profiles are maintained in
 | Recovery layout | Kernel comes from the matching system `boot` / `vendor_boot` images |
 | Current candidate | [Image, source revision and validation](simulation-report.md) |
 | Open work | [Priorities and remaining boundaries](docs/WORK-QUEUE.md) |
+
+The original OS4.0.4.0 full ZIP completed one explicit file-model installation, including all 4933 payload operations, 42 final partition hashes and ten COW initializations. Physical partition mapping, slot changes and reboot-time snapshot merge remain unverified. The reported refresh-page stall remains unlocated; the offline investigation establishes neither its root cause nor a fix. Resolved vibration and settings issues are excluded from routine rechecks.
 
 ## Build
 

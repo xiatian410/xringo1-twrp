@@ -4,6 +4,8 @@
 
 当前状态以 [验证报告](../simulation-report.md) 和 [工作队列](WORK-QUEUE.md) 为准。震动已解决，其旧调查只供追溯，不进入例行检查。
 
+本轮三个有限工作包已收尾。刷新现场仍未定位，触摸/TEE/USB/真实 OTA 等硬件边界不改写为成功；未验证项不自动生成后续任务。
+
 ## 使用与构建
 
 - [功能入口与限制](../FEATURE-USAGE.md)
@@ -56,4 +58,4 @@
 
 ## 历史参考
 
-[历史归档](archive/README.md)收拢已解决震动问题的独立调查及旧阶段交付；[震动适配记录](HAPTICS-ADAPTATION.md)保留实现摘要。当前待办以工作队列为准。
+[历史归档](archive/README.md)收拢已解决震动问题的独立调查及[逐批交付记录](archive/DELIVERY-HISTORY.md)；[震动适配记录](HAPTICS-ADAPTATION.md)保留实现摘要。当前待办以工作队列为准。

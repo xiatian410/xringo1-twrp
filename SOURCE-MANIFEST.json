@@ -16,7 +16,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "93f991619f688b3c1d5083a372dea9c6a85552f054ddf9de294f3a39dcbe38f1",
+    "sha256": "ab954235e38b46e3e08287eb0c487e1032b365abdc494b3f9a23b603fdb85039",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -28,11 +28,11 @@
     "mode": "0o644"
   },
   "FEATURE-USAGE.md": {
-    "sha256": "553b5c7edaf4c4f9f10d4a70b01cd748701e468b4176eddee4cd4842e0e25999",
+    "sha256": "0904d4f86ca3abdbc79ae71f14e526c5ae9e9fd8c7edf63ca4706907cc993c55",
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "67f097f290784c3ce02904d64f6505193a7960fff4cf37df098c469b7d3dbf44",
+    "sha256": "237d65eefee5ac533813abeaced9852c30bccf1e33105cd7b8dfb883f2639214",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -44,11 +44,11 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "8323bb262dff1107dad988ebf0b1515c11d1494c6d64cd1d3599fe74d0e70375",
+    "sha256": "6aad99a594939244fc7c422540e2a31f942a1673c1b9a283579136f73c4eca2b",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
-    "sha256": "edb9e3d577436841d5320dcc4a72b323a3f1ba172bef35aaaa8bbde8499a1d5f",
+    "sha256": "02ed8ddce0c66451d20340745a6f420b7a74fa167ac0fc0a5e9efe2044acbe5f",
     "mode": "0o644"
   },
   "docs/BACKUP-DATA-PATHS.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "d4395957fcbb8160c5b766280b10128dac2602fe6e456911cca9d370eebf5dcf",
+    "sha256": "2e11a2914cf10d9ef024ff36da9ecc3fe295d08f87837bf9f84cebd26fa699a6",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -136,11 +136,11 @@
     "mode": "0o644"
   },
   "docs/README.md": {
-    "sha256": "bb993dedbc7eca7d2dc4e50dc15edfe7f47281226baf91c3fdb88b42ccbd081b",
+    "sha256": "7318a248c935b4b648881ac1cef2ad0b053b881e695c901b2873f41849d36cba",
     "mode": "0o644"
   },
   "docs/REFRESH-STUCK-INVESTIGATION.md": {
-    "sha256": "86e20ba66d9769b5aa70807907dc341bab7b72b03e09191812139398114251bf",
+    "sha256": "8527ee5c7141a1dc1d541a92993149386229ab5eec32f5564af81b0f072f519c",
     "mode": "0o644"
   },
   "docs/RESTORE-SESSION-ADAPTATION.md": {
@@ -164,15 +164,19 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "9a99f84a4b41a6c208b0993d7856831844a600d18b8c62b1b868f0f431fe8559",
+    "sha256": "bc23754906ee7e9857d798384ac050aa639642ce39d6c209236e239f034211d5",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
     "sha256": "cd77112ac9a1cf163ce098271ff106f005c0c8008ca7c8e08a6af82a0b08f371",
     "mode": "0o644"
   },
+  "docs/archive/DELIVERY-HISTORY.md": {
+    "sha256": "fa4229e95039fcb77d5f5a742427d6d12e222f10e22ab8a715e73145200a445b",
+    "mode": "0o644"
+  },
   "docs/archive/README.md": {
-    "sha256": "b19424c1ce6ad4bd08b5213512bb9078f4a2a77ce7a855add4a54ca22e3ce412",
+    "sha256": "56040be5e714cc62a875c0fed8d6f1150b2002b36388c65ab9929802b5fb8647",
     "mode": "0o644"
   },
   "docs/archive/haptics/HAPTICS-ASP-FF-STATE.md": {
@@ -2056,11 +2060,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "6a54ba489d7f77c8a9df7044c851203f18d3614139919f45c5178ffbd6bef086",
+    "sha256": "b97ba3da1b9d763ba46a6753fba4f68225dc3af2eb7d04012aab44a7a0f3ecce",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "1ac54c99c8b1fa07c3acb918ef3c1badb53bccb1fd28352f4580aeeadaba01e6",
+    "sha256": "f89fe7e237dbc56ec2bca64b9e23f0e8776844b7a65e1aa1c3e956b0f7fcd44d",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {

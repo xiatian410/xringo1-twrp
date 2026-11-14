@@ -2776,19 +2776,20 @@
     }
   ],
   "refresh_stuck_investigation": {
-    "status": "unresolved-awaiting-new-distinguishing-evidence",
+    "status": "offline-investigation-closed-field-incident-unlocated",
     "refresh_elapsed_upper_bound_ms": 5147,
     "capture_uptime_seconds": 338.12,
     "display_thread": "disp_commit_0: D state, dpu_kms_wait_for_hw_cfg_done",
     "limitations": "Single non-atomic capture snapshot proves the display wait at capture time only; it does not establish duration or causality for the refresh page symptom. No DRM production change or repeated worker/DONE tests.",
-    "next_action": "New adjacent stacks, submission/completion timeline or direct software-defect evidence required; existing capture has no second display-wait sample or matching DPU timeout/recovery event. No repeated capture searches or equivalent fixtures."
+    "next_action": "None in current queue. Reopen only on new distinguishing evidence or direct regression; do not request capture or rerun equivalent worker/DONE/loop tests.",
+    "date": "2026-11-15",
+    "field_incident_fixed": false,
+    "new_production_fix": false,
+    "conclusion": "Existing refresh completed within5147ms. Non-atomic capture shows a DPU config wait, without duration/causality. Current worker/DONE/GUI/display chain reviewed; no new confirmed Recovery lifecycle bug. Insufficient evidence to establish a software fix or hardware-only root cause."
   },
-  "current_batch_groups": [
-    6,
-    12
-  ],
-  "current_batch_document": "docs/PARTITION-ACTIONS.md#tool-page-worker-lifecycle",
-  "current_batch_groups_scope": "New evidence only: partition tool page/callback/worker/progress/back-detail handoff10 cases with manager/details fixtures. No production change/build; full GUI/manager/tools lifecycle and hardware remain unverified. Existing full original ZIP result reused, not rerun.",
+  "current_batch_groups": [],
+  "current_batch_document": "docs/WORK-QUEUE.md",
+  "current_batch_groups_scope": "Finite offline investigation and compatibility/documentation closeout. No new production fix/build/function suite; prior numbered groups are historical only, not active work. Full functional/hardware claims remain unproven.",
   "stock_os4_zip_entry": {
     "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
     "report": "logs/zip-stock-os4-fixed.json",
@@ -3109,5 +3110,76 @@
     "document": "docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-ors-joined",
     "production_changes": false,
     "new_build": false
+  },
+  "execution_status": "maintenance-with-explicit-unverified-boundaries",
+  "execution_queue": {
+    "scope": "Three finite work packages from ADAPTATION-GOALS.md current execution section; long-term full device functionality remains unverified.",
+    "authority": "docs/WORK-QUEUE.md",
+    "active": [],
+    "closed": [
+      {
+        "id": "touch-startup",
+        "outcome": "software-path-review-closed-hardware-unverified",
+        "production_fix": false,
+        "document": "docs/WORK-QUEUE.md"
+      },
+      {
+        "id": "refresh-stall",
+        "outcome": "offline-investigation-closed-field-incident-unlocated",
+        "field_incident_fixed": false,
+        "production_fix": false,
+        "document": "docs/REFRESH-STUCK-INVESTIGATION.md"
+      },
+      {
+        "id": "compatibility-and-repository",
+        "outcome": "six-sample-claims-and-evidence-reconciled",
+        "production_fix": false,
+        "document": "compatibility-matrix.md"
+      }
+    ],
+    "reopen_policy": "Only a new specific user fault, direct regression evidence or explicitly requested feature. Do not generate work from historical twelve-group records, unchanged fixtures or U boundaries."
+  },
+  "offline_closeout": {
+    "date": "2026-11-15",
+    "work_type": "documentation-and-bounded-source-provenance-review",
+    "document": "simulation-report.md",
+    "local_inspection": "logs/maintenance-closeout-inspection.json",
+    "local_inspection_sha256": "567eec0fe979d22a7a6f6940122019754a23647ee7376af63645d21e9dba2fee",
+    "image_name": "recovery-dijun-unified-cli-results.img",
+    "image_sha256": "edbe45e627cc5582e36d210613b4eaf016721bfc77bcda9ac543290cec085f96",
+    "production_sources": 876,
+    "profiles": [
+      "os2-final",
+      "os2-initial",
+      "os3-final",
+      "os3-initial",
+      "os4-current",
+      "os4-stable"
+    ],
+    "source_provenance_matches": true,
+    "maintained_tree_matches_generated": true,
+    "pinned_patch_repositories_reconstructed": 6,
+    "packaged_profiles_and_assets_match": true,
+    "deduplicated_blobs": 78,
+    "image_bytes": 104857600,
+    "ramdisk_bytes": 76679139,
+    "build_log_verified": true,
+    "build_jobs": 30,
+    "production_changes": false,
+    "new_build": false,
+    "functional_suite_rerun": false,
+    "hardware_testing": false,
+    "historical_scope": "Historical GUI-loop report has changed full-file bindings; current chain reviewed statically without relabeling it as a new complete run. Historical profile replay reused for unchanged selector/main runtime only; changed touch helper has separate policy evidence. Original OTA success remains bound to its0090 run.",
+    "full_functional_validation": false,
+    "historical_full_audit_passed": false,
+    "publication_policy": "scripts/sync_github.py --push validates reviewed text export and verifies remote main equals local HEAD; binaries/blobs/raw logs/keys excluded."
+  },
+  "historical_batch_before_closeout": {
+    "current_batch_groups": [
+      6,
+      12
+    ],
+    "current_batch_document": "docs/PARTITION-ACTIONS.md#tool-page-worker-lifecycle",
+    "current_batch_groups_scope": "New evidence only: partition tool page/callback/worker/progress/back-detail handoff10 cases with manager/details fixtures. No production change/build; full GUI/manager/tools lifecycle and hardware remain unverified. Existing full original ZIP result reused, not rerun."
   }
 }

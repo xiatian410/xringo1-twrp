@@ -1,5 +1,20 @@
 # 刷新容量页面不结束：现场分析
 
+## 本轮结论：离线调查收尾（2026-11-15）
+
+**调查已结束，现场故障未证明修复。** 本轮对照当前候选对应的容量刷新、worker 状态发布、GUI 轮询和显示提交源码，没有确认新的软件生命周期缺陷；不新增补丁、不修改 DRM、不重编镜像。
+
+证据支持的结论仅为：
+
+1. 既有现场日志在不超过 5147ms 内记录 `operation_end - status=0`，不支持“容量扫描一直未结束”。采样时 `disp_commit_0` 确在 `dpu_kms_wait_for_hw_cfg_done` 等待，主 Recovery 的另一次非原子栈位于 DRM atomic commit。
+2. 当前 `refreshsizes → UpdateSystemDetails → operation_end → tools::run` 先完成统计，再发布 DONE。`refresh_tool_progress → update_progress` 会替换运行文字、停止动画并显示完成动作；完成后等待用户返回是页面原有约定。
+3. 当前 `run_gui2_loop` 在同一线程先执行 GUI tick，再调用 `gui2_display_present → gr_flip → MinuiBackendDrm::Present → drmModeAtomicCommit`。若提交 ioctl 尚未返回，后续 tick 就不能呈现 worker 的终态。设置 NONBLOCK 或用户态 page-flip 轮询期限不能保证正在内核中等待的 ioctl 返回。
+4. 既有 `refresh-loop` 三场景说明提交等待能阻止 tick、释放后能呈现 DONE，但显示提交是显式替身。该报告绑定旧运行时来源；本轮只复用其有限结论并检查当前调用链，不将它重新标成当前候选的完整运行结果，也不重复执行。
+
+原始采集的六份文件摘要仍与分析记录一致。没有跨时间显示栈、帧提交/完成时间线或软件错误返回，因而不能判定等待持续多久、哪一帧触发，或它是否导致此次页面停留。**现有材料不足以确认可从 Recovery 软件侧修复的根因，也不足以断言只能是硬件故障。** 此项作为未定位现场问题保留，退出当前执行队列；只在用户提供新的区分性证据或直接回归证据后重开，不要求重采现场。
+
+当前候选与来源见[交付报告](../simulation-report.md)，当前队列见[工作队列](WORK-QUEUE.md)。以下为历史分析与修正记录；其中“下一步”“当前候选”和“未完成”均对应当时阶段，不自动生成新任务。
+
 2026-11-13 用户提供 `refresh-stuck-20261113-002627.zip`。ZIP 容器当前不可用；从先前提取目录复核了原始 `recovery.log`、`recovery-after.log`、线程栈、线程列表、logcat、dmesg，SHA-256 与既有分析记录一致。原始日志只保留本地，不上传公开仓库。没有 GUI 截图、用户态栈或提交时间线。
 
 <a id="现场采样"></a>
