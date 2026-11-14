@@ -486,6 +486,10 @@
         {
           "file": "0130-ors-staging-error-propagation.patch",
           "sha256": "ac4616f8dfb8c7fa1e407da2b97cb63b1f12c4aae003c02f2cbd81c708b6d3d8"
+        },
+        {
+          "file": "0131-restore-list-archive-validation.patch",
+          "sha256": "737a8b78ac220588af10d5c10638641e78ca497ed95c2d6e10c5a00d11d9081c"
         }
       ],
       "result_files": {
@@ -501,7 +505,7 @@
         "mtp/MtpFfsCompatHandle.cpp": "0bb87e23bbd8750ba2da8501afeead7ec3d7eb67b87e38aa2c68409d33cde6c6",
         "mtp/MtpDescriptors.cpp": "7b24102682e809c455ed1ebcef0a2defdab37abefd1ba692485b650d87a77025",
         "kernel_module_loader.cpp": "c93c4ca499648217be225a165b37f506ea3e5f7165389b532621b5e4292a4af6",
-        "partitionmanager.cpp": "a0a3e2d33ebcb45c880ac2d5dc04ec385bc31c9e8920815773f066b360e20a1b",
+        "partitionmanager.cpp": "2c1edcda02571576398b48d333072df3f08c8ceef04a49306ee353d9363863ec",
         "infomanager.cpp": "7f1fe90502a85952125c67f2b4613329b19aa095ad649ba221331a48d171e495",
         "Android.bp": "1f705f027a005452faf679686a43d3900779c5aee98fc95ebdc2600202a6da2a",
         "gui2/backend/decrypt_backend.h": "a6ec26538be3ba26af9c449960752b4ad91bcdf6fa15a2027cfdb915c0fc7945",

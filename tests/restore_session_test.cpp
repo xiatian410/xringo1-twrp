@@ -40,6 +40,7 @@ namespace fs=std::filesystem;
 #define CHECK(x) do {if(!(x)){fprintf(stderr,"FAIL line %d: %s\n",__LINE__,#x);exit(1);}}while(0)
 constexpr uint64_t kMiB=1024*1024;
 constexpr int ENCRYPTED=2;
+constexpr int UNCOMPRESSED=0,COMPRESSED=1;
 static fs::path root;
 static std::string scenario;
 static std::map<std::string,std::string> settings;
@@ -112,7 +113,7 @@ std::string GetFilename(const std::string& s){return fs::path(s).filename().stri
 bool IsPathExists(const std::string& s){std::error_code ec;return fs::exists(s,ec);}
 bool WriteToFile(const std::string& p,const std::string& s){std::ofstream f(p);f<<s;f.close();return !f.fail();}
 uint64_t GetFileSize(const std::string& s){std::error_code ec;auto n=fs::file_size(s,ec);return ec?0:n;}
-int GetFileType(const std::string&){return 0;}
+// FILE_TYPE_METHOD
 void SetPerformanceMode(bool on){performance+=on?1:-1;CHECK(performance>=0);}
 std::vector<std::string> SplitString(const std::string& s,char d,bool skip){
  std::vector<std::string> v;size_t i=0;
@@ -120,6 +121,7 @@ std::vector<std::string> SplitString(const std::string& s,char d,bool skip){
 }
 }
 namespace android::base {
+bool ReadFully(borrowed_fd fd,void* data,size_t count){char* out=static_cast<char*>(data);while(count){ssize_t n=TEMP_FAILURE_RETRY(read(fd.get(),out,count));if(n<=0)return false;out+=n;count-=n;}return true;}
 bool ReadFdToString(borrowed_fd fd,std::string* out){out->clear();char b[4096];ssize_t n;while((n=TEMP_FAILURE_RETRY(read(fd.get(),b,sizeof b)))>0)out->append(b,n);return n==0;}
 bool EqualsIgnoreCase(std::string_view a,std::string_view b){return a.size()==b.size()&&std::equal(a.begin(),a.end(),b.begin(),[](char x,char y){return tolower(x)==tolower(y);});}
 std::string HexString(const void* ptr,size_t n){const auto*b=static_cast<const unsigned char*>(ptr);std::string s;for(size_t i=0;i<n;++i)s+=std::format("{:02x}",b[i]);return s;}
@@ -199,6 +201,26 @@ int main(int argc,char** argv){
  const auto ap=root/"backup"/a.backup_file_name_, bp=root/"backup"/b.backup_file_name_, cp=root/"backup"/c.backup_file_name_;
  settings["tw_restore_selected"]="/a;/b;";settings[TW_SKIP_DIGEST_CHECK_VAR]="1";
  settings["tw_file_progress"]="old";
+ if(scenario.starts_with("list-")){
+  const auto base=root/"backup"/"b.ext4.win";
+  fs::remove(bp);fs::remove(bp.string()+".sha2");
+  if(scenario=="list-fifo")CHECK(mkfifo(base.c_str(),0600)==0);
+  else if(scenario=="list-split-fifo"){put(base.string()+"000","archive");CHECK(mkfifo((base.string()+"100").c_str(),0600)==0);}
+  else if(scenario=="list-directory")fs::create_directory(base);
+  else if(scenario=="list-symlink")fs::create_symlink(ap,base);
+  else if(scenario=="list-empty")put(base,"");
+  else if(scenario=="list-gap"){put(base.string()+"000","archive");put(base.string()+"002","tail");}
+  else if(scenario=="list-encrypted-thread"){put(base.string()+"000","plain");put(base.string()+"100","OAencrypted");}
+  else if(scenario=="list-split"){put(base.string()+"000","first");put(base.string()+"001","second");}
+  else put(base,"archive");
+  const bool valid=scenario=="list-normal"||scenario=="list-split"||scenario=="list-encrypted-thread";
+  PartitionManager.SetRestoreFiles((root/"backup").string());
+  if(valid){CHECK(b.backup_file_name_=="b.ext4.win");CHECK(!settings["tw_restore_selected"].empty());}
+  else{CHECK(settings["tw_restore_selected"].empty());CHECK(settings["tw_restore_list"].empty());CHECK(a.backup_file_name_.empty()&&b.backup_file_name_.empty()&&c.backup_file_name_.empty());}
+  CHECK(settings["tw_restore_encrypted"]==(scenario=="list-encrypted-thread"?"1":"0"));
+  CHECK(restored.empty());CHECK(contents(a.actual_block_device_)==std::string(4096,'O'));CHECK(contents(b.actual_block_device_)==std::string(4096,'O'));
+  puts("PASS: restore list validated before real archive header probe; targets unchanged");return 0;
+ }
  bool expected=true;bool no_write=false;
  if(scenario=="after-cancel")PartitionManager.stop_backup=true;
  if(scenario=="unknown-first"||scenario=="unknown-last")settings["tw_restore_selected"]=scenario=="unknown-first"?"/missing;/a;":"/a;/missing;";

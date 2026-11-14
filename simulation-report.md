@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-ors-staging.img` |
-| SHA-256 | `b67c8dc1f9310e1a3163c73c221d23b22a8bc0590ade4a2da15f7fa9bd64222c` |
-| 生产来源绑定 | 866 份 |
+| 文件 | `recovery-dijun-unified-restore-enumeration.img` |
+| SHA-256 | `223f1f107cdd521787888f1a21e04b3b3cf55fb79301d8b48887f1db9da11178` |
+| 生产来源绑定 | 867 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：脚本暂存失败保留源文件
+## 本批生产修正：恢复列表先验证归档再读取文件头
+
+0131修正旧格式备份目录中`.win` FIFO使恢复列表等待的问题；先验证已知分区的整个单文件/分卷集合，再读取文件头。目录、链接、空文件及缺卷使本次列表失败并清空，不发布部分选项。正常旧备份继续支持。
+
+原manager/digest/文件头探测及私有文件75项通过；同夹具旧版九项中六项失败，含两个FIFO超时，正常三个控制场景原本通过。清理构建绑定867份来源及六profile，核对入口为`python3 scripts/audit_digest_preflight.py --enumeration`，见[恢复列表验证](docs/RESTORE-SESSION-ADAPTATION.md#restore-list-validation)。挂载、UI、归档解压等为替身；没有完整恢复/GUI/解密或并发稳定性验收。完整OTA沿用已有结果。
+
+## 沿用的脚本暂存失败保留源文件
 
 0130检查ORS暂存复制和源删除的结果；失败保留原脚本、尝试清理临时副本，并传回失败。缓存暂存失败会停止启动action，不执行副本或自动重启，即使前一个脚本已成功。源已位于临时路径和正常成功路径保留。
 

@@ -25,6 +25,8 @@ def method(text,signature):
     return text[a:b]
 
 CASES=['normal','after-cancel','unknown-first','unknown-last','empty-selection','no-delimiter',
+       'list-fifo','list-split-fifo','list-directory','list-symlink','list-empty','list-gap',
+       'list-encrypted-thread','list-normal','list-split',
        'duplicates','parent-child','parent-child-selected','child-filesystem','child-bad-digest',
        'second-bad-digest','second-missing','missing-without-digest','child-removed','child-readonly',
        'second-readonly','second-absent','second-oversized','target-missing','target-ordinary',
@@ -98,6 +100,8 @@ namespace gui2_console {
 }
 ''')
         harness=(ROOT/'tests/restore_session_test.cpp').read_text()
+        file_type=method((SRC/'twrp_functions.cpp').read_text(),'ArchiveType TWFunc::GetFileType(')
+        harness=harness.replace('// FILE_TYPE_METHOD',file_type.replace('ArchiveType TWFunc::','int '))
         const=' const' if 'RunRestore(const std::string& restore_name) const' in pm else ''
         harness=harness.replace('// RUN_RESTORE_DECL','int RunRestore(const std::string&)'+const+';')
         harness=harness.replace('// PRODUCTION_METHODS',code)
@@ -121,7 +125,7 @@ namespace gui2_console {
             results.append(dict(case=case,status='PASS' if r.returncode==0 else 'FAIL',returncode=r.returncode,output=r.stdout+r.stderr))
             print(results[-1]['status'],case,flush=True)
         sources=[manager,digest/'twrp_digest_driver.cpp',digest/'twrp_digest_driver.hpp']
-        shared=[SRC/'backup_manifest.hpp',SRC/'partition.cpp', SRC/'digest/twrp_digest.cpp',SRC/'digest/twrp_digest.hpp',SRC/'variables.h',
+        shared=[SRC/'backup_manifest.hpp',SRC/'partition.cpp',SRC/'twrp_functions.cpp', SRC/'digest/twrp_digest.cpp',SRC/'digest/twrp_digest.hpp',SRC/'variables.h',
                 SRC/'twrp_operation_executor.h',crypto]
         shared+=list((ANDROID/'external/boringssl/src/include/openssl').glob('*.h'))
         shared+=list((ANDROID/'system/libbase/include/android-base').glob('*.h'))

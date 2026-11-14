@@ -1,5 +1,16 @@
 # 恢复会话预检与分卷校验
 
+<a id="restore-list-validation"></a>
+## 恢复列表读取文件头前验证归档（0131）
+
+旧`SetRestoreFiles`在验证归档类型/分卷结构之前，对备份名称匹配的条目调用`GetFileType`。后者使用普通阻塞打开；旧格式目录没有manifest先行保护，因此`.win`或分卷FIFO会使打开恢复列表等待写端。目录、链接、空文件和缺卷也可能先作为恢复选项出现，直到真正恢复才被拒绝。
+
+[0131补丁](../dtsrc/O1_asic_dual/patches/0131-restore-list-archive-validation.patch)先筛选已知分区的单文件/首卷，再复用`GetBackupFiles`验证整个归档文件集合，最后读取各卷文件头判断加密。任一候选无效时清空全部本次文件名和加密标志，保持列表/选择为空；不发布部分结果。普通旧格式无manifest备份继续支持。没有改动实际恢复写入、manifest格式或checksum开关。
+
+现有恢复会话套件加入九项枚举场景，执行原`SetRestoreFiles`、真实digest文件集合检查和原`TWFunc::GetFileType`，后者使用主机ReadFully替身进行真实open/read。75项通过；同夹具旧版九项中六项失败，两项FIFO超时，其余目录/链接/空文件/缺卷被错误接受。普通、普通分卷及跨线程加密头三项在旧版亦通过，不算新修复。枚举场景逐项检查目标文件未改写；所有对象均为私有临时文件，无物理设备。
+
+本地报告`logs/restore-enumeration-current.json`及`logs/restore-enumeration-old.json`；核对入口`python3 scripts/audit_digest_preflight.py --enumeration`。首次旧版测试因源快照未带digest文件无法编译，补齐未变文件后完成对照，首次日志保留。没有完整GUI/解密/归档解压/挂载或断电验收；检查后的并发替换仍可能改变对象，不宣称阻止所有FIFO竞争。新备份尾卷完整性沿用manifest证据，不重复等价套件。
+
 <a id="bounded-digest-sidecars"></a>
 ## 摘要读取限制（0126）
 

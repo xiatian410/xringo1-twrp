@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-ors-staging.img",
-  "image_sha256": "b67c8dc1f9310e1a3163c73c221d23b22a8bc0590ade4a2da15f7fa9bd64222c",
-  "production_sources": 866,
+  "image_name": "recovery-dijun-unified-restore-enumeration.img",
+  "image_sha256": "223f1f107cdd521787888f1a21e04b3b3cf55fb79301d8b48887f1db9da11178",
+  "production_sources": 867,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2493,6 +2493,22 @@
       "failures": 0,
       "local_report_sha256": "4d6362180e6de47e246f90ee521ed4d4adbc9ce9ae6507ab6febce054b10782c",
       "scope": "Patch0130 preserves ORS source on copy/unlink failure, attempts partial temporary cleanup, and propagates cache staging failure through startup action to prevent execution/automatic reboot. Original check/copy/parser/action and TWFunc::CopyFile with private files23 pass, old11/23 fail; sequence9 and commands58 pass. Mount/chmod/unlink faults, settings, shell/sleep/reboot are explicit fixtures. No power-loss durability, pathname races, atomic transaction, full GUI/CLI or shutdown admission. Existing OTA reused."
+    },
+    {
+      "name": "restore-enumeration-current",
+      "status": "PASS",
+      "cases": 75,
+      "failures": 0,
+      "local_report_sha256": "2958f842c35ac716ec8b8a80fd26ab7314eff02f34f5d96baac8f50f27d7e7ff",
+      "scope": "Patch0131 validates known partition archive sets before header probing in SetRestoreFiles; rejects FIFO/directory/symlink/empty/gapped sets without publishing partial lists. Original manager/digest/raw-copy and header probe with BoringSSL/private I/O75 pass; old enumeration6/9 fail (two FIFO timeouts), normal3 pass. Mount/UI/metadata/ioctl/archive extraction and ReadFully helper are fixtures. No full restore/GUI/crypto lifecycle or concurrent pathname stability; existing OTA reused."
+    },
+    {
+      "name": "restore-enumeration-old",
+      "status": "FAIL",
+      "cases": 9,
+      "failures": 6,
+      "local_report_sha256": "8016f08d102e15933ffea80d64e46ef6ba5e885e4278f55d0a6925c32c19910a",
+      "scope": "Patch0131 validates known partition archive sets before header probing in SetRestoreFiles; rejects FIFO/directory/symlink/empty/gapped sets without publishing partial lists. Original manager/digest/raw-copy and header probe with BoringSSL/private I/O75 pass; old enumeration6/9 fail (two FIFO timeouts), normal3 pass. Mount/UI/metadata/ioctl/archive extraction and ReadFully helper are fixtures. No full restore/GUI/crypto lifecycle or concurrent pathname stability; existing OTA reused."
     }
   ],
   "refresh_stuck_investigation": {

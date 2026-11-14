@@ -1,0 +1,41 @@
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -1451,12 +1451,6 @@
+     if (extn_len != 3 && extn_len != 6) continue;
+     if (!extn.starts_with("win")) continue;
+ 
+-    if (check_encryption) {
+-      if (TWFunc::GetFileType(file_path) == ENCRYPTED) {
+-        LOGINFO("'%s' is encrypted\n", file_path.c_str());
+-        DataManager::SetValue("tw_restore_encrypted", 1);
+-      }
+-    }
+     // Keep single-file backups and the first part of a split archive.
+     if (extn_len == 6 && extn != "win000") continue;
+ 
+@@ -1465,6 +1459,25 @@
+     if (part == nullptr) {
+       gui2_console::log_error("unable_locate_part_backup_name", label);
+       continue;
++    }
++
++    const std::string base = extn_len == 6 ? file_path.substr(0, file_path.size() - 3) : file_path;
++    const auto files = TwrpDigestDriver::GetBackupFiles(base);
++    if (!files) {
++      // Never probe headers of a FIFO/device or publish a partially discovered
++      // restore set. Legacy directories have no manifest to reject these first.
++      for (TWPartition* candidate : partitions_) candidate->backup_file_name_.clear();
++      DataManager::SetValue("tw_restore_encrypted", 0);
++      gui2_console::log_error("restore_error");
++      return;
++    }
++    if (check_encryption) {
++      for (const auto& file : *files) {
++        if (TWFunc::GetFileType(file) == ENCRYPTED) {
++          LOGINFO("'%s' is encrypted\n", file.c_str());
++          DataManager::SetValue("tw_restore_encrypted", 1);
++        }
++      }
+     }
+ 
+     part->backup_file_name_ = name;
