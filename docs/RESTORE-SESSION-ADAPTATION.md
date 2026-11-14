@@ -1,5 +1,23 @@
 # 恢复会话预检与分卷校验
 
+<a id="bounded-digest-sidecars"></a>
+## 摘要读取限制（0126）
+
+旧实现直接阻塞打开摘要并读取至EOF。对没有完整清单的旧备份，`.sha2`、`.sha256`、`.md5`或`.md5sum`被替换为没有写端的FIFO时，恢复预检会一直等待；有合法首行的超大摘要也会全部读入后继续。
+
+[0126补丁](../dtsrc/O1_asic_dual/patches/0126-restore-digest-bounded-read.patch)使用`O_NONBLOCK`打开，再对同一描述符执行`fstat`，要求普通文件，限制声明大小和实际读取总量不超过64KiB。超限、类型错误或读取错误均返回摘要失败，不按“缺少摘要”跳过。保留旧备份无摘要时警告后继续的行为，也保留指向普通摘要文件的符号链接。64KiB为单条摘要记录预留远大于常见文件名的空间，恰好达到上限仍接受。
+
+在原有恢复会话测试中加入十个场景：四种后缀FIFO、目录、超限、上限、链接、第二目标FIFO及超限预检。当前66项全部通过；同夹具对修改前源码运行七个故障场景，五个FIFO场景超过10秒超时，两个超大摘要仍被接受。修正后第二目标失败时，验证所有目标普通文件内容保持原样、未执行恢复且未发布完成。
+
+测试执行原恢复规划、raw-copy、摘要算法及BoringSSL，使用私有临时文件和ASan/UBSan；挂载、块设备类型/ioctl、归档展开及GUI仍有替身。完整清单本来会拒绝FIFO，新修正补齐旧备份及直接摘要入口。它不提供内容真实性、并发文件替换隔离或物理I/O完成时限；校验和不能认证备份来源。
+
+```bash
+python3 tests/restore_session_test.py --report logs/digest-sidecar-current.json
+python3 scripts/audit_digest_preflight.py
+```
+
+本地报告为`logs/digest-sidecar-current.json`、`logs/digest-sidecar-old.json`及`logs/digest-sidecar-delivery-audit.json`。当前镜像以[交付报告](../simulation-report.md)为准，以下为历史预检设计与阶段证据。
+
 日期：2026-11-11。当前镜像与哈希见[模拟报告](../simulation-report.md)。[0018 补丁](../dtsrc/O1_asic_dual/0018-restore-session-preflight.patch)进入统一设备树的固定补丁序列。本轮没有连接或写入手机。
 
 ## 行为修正

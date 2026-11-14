@@ -1,0 +1,65 @@
+--- a/digest/twrp_digest_driver.cpp
++++ b/digest/twrp_digest_driver.cpp
+@@ -19,12 +19,14 @@
+ #include "twrp_digest_driver.hpp"
+ 
+ #include <fcntl.h>
++#include <sys/stat.h>
+ #include <unistd.h>
+ #include <cerrno>
+ #include <cstdlib>
+ #include <cstring>
+ 
+ #include <algorithm>
++#include <array>
+ #include <cstddef>
+ #include <format>
+ #include <filesystem>
+@@ -66,6 +68,24 @@
+   std::string name;
+   TwrpDigest::Algorithm algorithm; // from hex length, not the suffix
+ };
++
++// Sidecars contain one checksum line. Bound reads even if a regular file grows
++// after fstat; do not wait for a FIFO writer or read a device as a checksum.
++bool ReadStoredDigest(const int fd, std::string& content) {
++  constexpr size_t kMaxDigestBytes = 64 * 1024;
++  struct stat info{};
++  if (fstat(fd, &info) != 0 || !S_ISREG(info.st_mode) || info.st_size < 0 ||
++      static_cast<uint64_t>(info.st_size) > kMaxDigestBytes) return false;
++  content.clear();
++  std::array<char, 4096> buffer{};
++  for (;;) {
++    const ssize_t count = TEMP_FAILURE_RETRY(read(fd, buffer.data(), buffer.size()));
++    if (count < 0) return false;
++    if (count == 0) return true;
++    if (static_cast<size_t>(count) > kMaxDigestBytes - content.size()) return false;
++    content.append(buffer.data(), static_cast<size_t>(count));
++  }
++}
+ 
+ // Parses one line; nullopt if not 32/64 hex digits + a name. Accepts CRLF, uppercase, '*'.
+ std::optional<StoredDigest> ParseStoredDigest(const std::string_view content) {
+@@ -156,18 +176,18 @@
+   bool found = false;
+   std::string stored_digest;
+ 
+-  // open()+ReadFdToString: one syscall, no exists/reopen race.
++  // Validate and read the opened descriptor, without an exists/reopen race.
+   for (const char* suffix : kDigestSuffixes) {
+     const std::string path = filename + suffix;
+-    const android::base::unique_fd fd(TEMP_FAILURE_RETRY(open(path.c_str(), O_RDONLY | O_CLOEXEC)));
++    const android::base::unique_fd fd(
++        TEMP_FAILURE_RETRY(open(path.c_str(), O_RDONLY | O_NONBLOCK | O_CLOEXEC)));
+     if (fd < 0) {
+       // ENOENT = try next suffix; other errors must not pass for "no digest file".
+       if (errno == ENOENT) continue;
+       gui2_console::info("digest_error");
+       return false;
+     }
+-    // ReadFdToString clears stored_digest (no pre-clear needed).
+-    if (!android::base::ReadFdToString(fd.get(), &stored_digest)) {
++    if (!ReadStoredDigest(fd.get(), stored_digest)) {
+       gui2_console::info("digest_error");
+       return false;
+     }

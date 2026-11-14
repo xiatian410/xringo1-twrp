@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-terminal-reap.img` |
-| SHA-256 | `b7004782ada0776af3627b5f574a2d6c833306f2414e1f7075dda6f5e411c36c` |
-| 生产来源绑定 | 857 份 |
+| 文件 | `recovery-dijun-unified-digest-preflight.img` |
+| SHA-256 | `97ec844bc06466e177898f7e716fda664d02450fbd5aecd94c5bb66a2f65c07e` |
+| 生产来源绑定 | 858 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：终端子进程回收
+## 本批生产修正：恢复摘要读取限制
+
+0126修正旧备份摘要被替换为FIFO时恢复预检阻塞的问题。摘要使用非阻塞打开，核对已打开对象为普通文件，限制文件大小和实际读取总量为64KiB；非法摘要明确失败。缺少摘要的旧备份仍警告后兼容，指向普通摘要文件的链接仍可读取。
+
+恢复链66项通过；同夹具旧版七个新增故障场景全部失败，其中五项FIFO读取超时。第二分区预检失败时，所有目标文件保持未写入。清理构建及六profile打包通过；详见[摘要读取范围](docs/RESTORE-SESSION-ADAPTATION.md#bounded-digest-sidecars)，核对为`python3 scripts/audit_digest_preflight.py`。不宣称内容真实性、并发源一致性或物理I/O超时已解决；完整OTA沿用历史模型结果。
+
+## 沿用的终端子进程回收
 
 0125修正PTY关闭后丢弃未回收shell的问题：GUI非阻塞关闭，由后台线程回收直接子进程并重试EINTR，回收前拒绝重开；同时关闭unlockpt/fork失败的master，子进程setup失败退出。七个私有PTY场景通过，同夹具旧版六项失败。清理构建及六profile核对通过，范围见[终端回收](docs/OPERATION-FEEDBACK-ADAPTATION.md#terminal-child-reaping)，核对为`python3 scripts/audit_terminal_reap.py`。
 

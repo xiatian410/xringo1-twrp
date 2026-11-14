@@ -227,6 +227,12 @@ int main(int argc,char** argv){
  if(scenario=="source-symlink"){fs::remove(bp);fs::create_symlink(ap,bp);}
  if(scenario=="source-directory"){fs::remove(bp);fs::create_directory(bp);}
  if(scenario=="source-fifo"){fs::remove(bp);CHECK(mkfifo(bp.c_str(),0600)==0);}
+ if(scenario=="second-fifo-sidecar"){
+  fs::remove(bp.string()+".sha2");CHECK(mkfifo((bp.string()+".sha2").c_str(),0600)==0);
+ }
+ if(scenario=="second-oversized-sidecar"){
+  put(bp.string()+".sha2",contents(bp.string()+".sha2")+std::string(65536,' '));
+ }
  if(scenario=="invalid-filesystem"){b.backup_file_name_="b.unknown.win";fs::rename(bp,root/"backup"/b.backup_file_name_);}
  if(scenario=="traversal-name")b.backup_file_name_="../backup/b.emmc.win";
  if(scenario=="size-overflow"){
@@ -250,13 +256,27 @@ int main(int argc,char** argv){
   if(scenario=="digest-wrong-name"){auto text=contents(ap.string()+".sha2");text.replace(text.find("a.emmc.win"),10,"other.win");put(ap.string()+".sha2",text);}
   if(scenario=="digest-uppercase")checksum(ap,false,true);
   if(scenario=="digest-md5"){fs::remove(ap.string()+".sha2");checksum(ap,true);}
+  if(scenario.starts_with("digest-fifo")){
+   fs::remove(ap.string()+".sha2");
+   const auto suffix=scenario=="digest-fifo"?".sha2":scenario=="digest-fifo-sha256"?".sha256":scenario=="digest-fifo-md5"?".md5":".md5sum";
+   CHECK(mkfifo((ap.string()+suffix).c_str(),0600)==0);
+  }
+  if(scenario=="digest-directory"){fs::remove(ap.string()+".sha2");fs::create_directory(ap.string()+".sha2");}
+  if(scenario=="digest-limit"||scenario=="digest-oversized"){
+   auto text=contents(ap.string()+".sha2");text.resize(65536+(scenario=="digest-oversized"?1:0),' ');put(ap.string()+".sha2",text);
+  }
+  if(scenario=="digest-symlink"){
+   fs::rename(ap.string()+".sha2",root/"checksum.txt");fs::create_symlink(root/"checksum.txt",ap.string()+".sha2");
+  }
   if(scenario=="make-threaded"){
    fs::remove(ap);file=root/"backup/data.ext4.win";
    for(auto s:{"000","001","100","200","201"})put(file.string()+s,"fixture "+std::string(s));
   }
   bool result=make?TwrpDigestDriver::MakeDigest(file.string()):TwrpDigestDriver::CheckDigest(file.string());
   expected=scenario!="digest-missing-file"&&scenario!="make-missing"&&scenario!="digest-malformed"&&scenario!="digest-wrong-name";
+  if(scenario.starts_with("digest-fifo")||scenario=="digest-directory"||scenario=="digest-oversized")expected=false;
   CHECK(result==expected);
+  if(!expected&&scenario.starts_with("digest-"))CHECK(std::ranges::find(events,"no_digest")==events.end());
   if(scenario=="make-threaded")for(auto s:{"000","001","100","200","201"}){
    CHECK(fs::is_regular_file(file.string()+s+".md5"));CHECK(TwrpDigestDriver::CheckFileDigest(file.string()+s));
   }
@@ -281,7 +301,7 @@ int main(int argc,char** argv){
  "second-absent","second-oversized","target-missing","target-ordinary","target-ioctl-error","source-empty",
  "source-symlink","source-directory","source-fifo","invalid-filesystem","split-raw","traversal-name","size-overflow",
  "mount-failure","cancel-preflight","split-bad-thread","split-missing-first","split-gap","split-thread-gap",
- "split-ambiguous","split-unsupported-thread","split-long-index"};
+ "split-ambiguous","split-unsupported-thread","split-long-index","second-fifo-sidecar","second-oversized-sidecar"};
  no_write=std::ranges::find(failures,scenario)!=failures.end();expected=!no_write;
  if(scenario=="restore-failure"||scenario=="cancel-between"||scenario=="cancel-last")expected=false;
  std::map<std::string,std::string> previous;for(auto*p:{&a,&b,&c})if(fs::exists(p->actual_block_device_))previous[p->actual_block_device_]=contents(p->actual_block_device_);

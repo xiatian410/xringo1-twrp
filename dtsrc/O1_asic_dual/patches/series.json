@@ -466,6 +466,10 @@
         {
           "file": "0125-terminal-child-reaping.patch",
           "sha256": "b70d9d34982d9cb505cded23c8d9bf738285ba9f18d1d1b454544d21c430c07e"
+        },
+        {
+          "file": "0126-restore-digest-bounded-read.patch",
+          "sha256": "e76fd1cd447b8d7e68033265b90148a9bf42d3a7505948f2769e9c0e1fdc8a72"
         }
       ],
       "result_files": {
@@ -509,7 +513,7 @@
         "libtar/extract.c": "c9dcc15edbd7dcf34c349bed81dcc336c7948192eb78c64d8fde1fdd14e45764",
         "gui2/backend/twrp_operation.cpp": "a2aaa78468023cd7a2024334ef995838702a5b6904686ec0665c12f142cd1ace",
         "partitions.hpp": "ebdd80f303eae6344aad7e5afffd852c874dd5481e118ddc340c9694b1571d07",
-        "digest/twrp_digest_driver.cpp": "6e2e62e3fdf570be857ac5b62c6befcd8474633f736dcca5a8f2a2ad5ec55ab5",
+        "digest/twrp_digest_driver.cpp": "8c3575d8616738b9f7c6c56759263a6cad0ccdca0322a853adb2d0fbccac74a4",
         "digest/twrp_digest_driver.hpp": "266f16b28f4d3ace274a5ea42253ee993fd6790ce323a8e5b79e885f2e9a6fa4",
         "twrpTar.cpp": "e4331daf00dc46bee854464224a48279bb8c1400efb67ccfb1bdca57cde909fb",
         "twrpTar.hpp": "d81ab9ac664ca3cc51e76b05f6fbd51f862e31218983371b6a61a33096ec6ffe",

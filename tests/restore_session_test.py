@@ -35,12 +35,16 @@ CASES=['normal','after-cancel','unknown-first','unknown-last','empty-selection',
        'split-normal','split-threaded','split-bad-thread','split-missing-first','split-gap',
        'split-thread-gap','split-ambiguous','split-unsupported-thread','split-long-index',
        'digest-missing-file','digest-no-sidecar','digest-malformed','digest-wrong-name',
-       'digest-uppercase','digest-md5','make-threaded','make-missing']
+       'digest-uppercase','digest-md5','make-threaded','make-missing',
+       'digest-fifo','digest-fifo-sha256','digest-fifo-md5','digest-fifo-md5sum',
+       'digest-directory','digest-oversized','digest-limit','digest-symlink',
+       'second-fifo-sidecar','second-oversized-sidecar']
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--source',type=Path,default=SRC)
     ap.add_argument('--report',type=Path,default=ROOT/'logs/restore-session.json')
+    ap.add_argument('--cases',nargs='+',choices=CASES,help='Run only a named regression subset')
     args=ap.parse_args()
     manager=args.source/'partitionmanager.cpp'
     pm=manager.read_text();part=(SRC/'partition.cpp').read_text()
@@ -108,7 +112,7 @@ namespace gui2_console {
              '-Wl,--wrap=sync','-o',str(temp/'test')]
         subprocess.run(cmd,check=True)
         results=[]
-        for case in CASES:
+        for case in args.cases or CASES:
             wd=temp/case;wd.mkdir();(wd/'.fixture').touch()
             try:
                 r=subprocess.run([str(temp/'test'),case],cwd=wd,capture_output=True,text=True,timeout=10)
