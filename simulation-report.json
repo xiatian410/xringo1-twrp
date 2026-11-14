@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-cli-command.img",
-  "image_sha256": "79c8a5ea4b5a881cc8b6bbfa7a035558588a6c3027c88421c8c7073fe43e80cb",
-  "image_status": "Clean-built patch0136 CLI command assembly bounds candidate; hardware-unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-cli-output.img",
+  "image_sha256": "e6b2bc79a68fd6fdcbbbdd34e9475e322d483487b854cd03a5daafed497c4dba",
+  "image_status": "Clean-built patch0137 exact CLI output and I/O result candidate; hardware-unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "0136 bounds CLI argv before FIFO and zero pads record;12 pass/old5 ASan stack overflows. Finite client assembly fix closed; full joined client/server/ORS and FIFO response status remain unverified. 0135 closes direct ORS parser/startup admission and deferred reboot handoff;16 pass/old16 fail. No proof of concurrent staging isolation, terminal descendants, full process/USB stop or physical reboot. Historical notes below describe their original scope. 0134 propagates ORS read/close failures and rejects overlong commands before executing prefixes;28 pass/old16 fail,12 normal controls pass; command58/argument20/sequence9 pass. Finite input boundary fix closed; complete ORS shutdown admission remains pending. 0133 rejects missing backup/set arguments without null strcpy and stops tail/startup reboot;20 pass/old12 fail, command58/sequence9 pass. Finite parser fix closed; ORS shutdown admission still pending. 0130 preserves source and rejects execution/reboot after ORS copy/unlink staging failure;23 pass/old11 fail, sequence9/commands58 pass. Finite fix closed; no durability/race or full shutdown-admission proof. 0129 stops startup action after either script fails and leaves unconsumed cache intact; sequence9 pass/old4 fail, commands58 pass. No rollback or full ORS shutdown admission. 0128 propagates ORS partition/shell operation errors, stops subsequent commands and prevents startup automatic reboot on failure;58 pass/old30 fail with manager/shell/reboot fixtures. This finite fix is closed; complete ORS shutdown admission, rollback and full GUI/manager lifecycle are not proven. 0127 gates terminal start/write after shutdown reservation and joins owned direct-shell reaper at final exit; owner5/engine5/reap7 pass, old4/5 fail. Descendants/direct ORS/full USB/process-wide stop remain unverified. Patch0124: GUI worker/FIFO CLI shutdown admission implemented; original launch29/CLI16/reboot21/sideload23/lifecycle33/decrypt12/drain4 pass, old launch wiring18/29 fail. 0120 preserves sideload reboot retry/cancellation until successful GUI acceptance (handoff23/lifecycle33 pass, old4/4 fail); Patch0124 now reserves GUI worker/FIFO CLI admission through GUI reboot publication; terminal descendants/direct ORS and full MTP/USB shutdown are outside this gate. One original OS4.0.4 full ZIP file-model run now joins real controller preparation/SnapshotManager initialization10 COWs, original writer4933 ops/payload hash/42 hashes, stock Recovery script, real Unverified publication, modeled slot/unmap and scoped Cleanup; engine0/wait0/parent INSTALL_SUCCESS0.24checks/881sec; no seeded allocation. Model lifecycle fixed, no production change/build. Real source LP/kernel maps/readonly/mount/HAL/slot/scratch/daemon/boot/merge, full ARM64 Recovery/GUI and actual USB/FUSE sideload remain unverified. Do not repeat this full run without relevant changes. Earlier failed raw report was overwritten by fixed-path runner; previous digest and documented outcome retained, not raw bytes."
+    "0137 joins original CLI client/listener and fixes output boundary corruption/I/O false success;13 joined/7 fault/12 assembly pass, old6 joined/6 fault fail. This finite boundary is closed; full ORS execution/exit status, ARM64 runtime, FIFO liveness and process stop remain unverified. 0136 bounds CLI argv before FIFO and zero pads record;12 pass/old5 ASan stack overflows. Finite client assembly fix closed; full joined client/server/ORS and FIFO response status remain unverified. 0135 closes direct ORS parser/startup admission and deferred reboot handoff;16 pass/old16 fail. No proof of concurrent staging isolation, terminal descendants, full process/USB stop or physical reboot. Historical notes below describe their original scope. 0134 propagates ORS read/close failures and rejects overlong commands before executing prefixes;28 pass/old16 fail,12 normal controls pass; command58/argument20/sequence9 pass. Finite input boundary fix closed; complete ORS shutdown admission remains pending. 0133 rejects missing backup/set arguments without null strcpy and stops tail/startup reboot;20 pass/old12 fail, command58/sequence9 pass. Finite parser fix closed; ORS shutdown admission still pending. 0130 preserves source and rejects execution/reboot after ORS copy/unlink staging failure;23 pass/old11 fail, sequence9/commands58 pass. Finite fix closed; no durability/race or full shutdown-admission proof. 0129 stops startup action after either script fails and leaves unconsumed cache intact; sequence9 pass/old4 fail, commands58 pass. No rollback or full ORS shutdown admission. 0128 propagates ORS partition/shell operation errors, stops subsequent commands and prevents startup automatic reboot on failure;58 pass/old30 fail with manager/shell/reboot fixtures. This finite fix is closed; complete ORS shutdown admission, rollback and full GUI/manager lifecycle are not proven. 0127 gates terminal start/write after shutdown reservation and joins owned direct-shell reaper at final exit; owner5/engine5/reap7 pass, old4/5 fail. Descendants/direct ORS/full USB/process-wide stop remain unverified. Patch0124: GUI worker/FIFO CLI shutdown admission implemented; original launch29/CLI16/reboot21/sideload23/lifecycle33/decrypt12/drain4 pass, old launch wiring18/29 fail. 0120 preserves sideload reboot retry/cancellation until successful GUI acceptance (handoff23/lifecycle33 pass, old4/4 fail); Patch0124 now reserves GUI worker/FIFO CLI admission through GUI reboot publication; terminal descendants/direct ORS and full MTP/USB shutdown are outside this gate. One original OS4.0.4 full ZIP file-model run now joins real controller preparation/SnapshotManager initialization10 COWs, original writer4933 ops/payload hash/42 hashes, stock Recovery script, real Unverified publication, modeled slot/unmap and scoped Cleanup; engine0/wait0/parent INSTALL_SUCCESS0.24checks/881sec; no seeded allocation. Model lifecycle fixed, no production change/build. Real source LP/kernel maps/readonly/mount/HAL/slot/scratch/daemon/boot/merge, full ARM64 Recovery/GUI and actual USB/FUSE sideload remain unverified. Do not repeat this full run without relevant changes. Earlier failed raw report was overwritten by fixed-path runner; previous digest and documented outcome retained, not raw bytes."
   ],
   "hardware_unverified": [
     "MiTEE/RPMB/wrapped-key actual decryption",
@@ -4980,6 +4980,46 @@
       "evidence": "logs/cli-command-old.json",
       "evidence_sha256": "a6da45fa998ac7d60397726a172a2be1cc6f2750262e8c4d8f8afe17ef75697f",
       "scope": "Patch0136 replaces overlapping unbounded sprintf in CLI argv assembly with checked append, rejects above1023 bytes before either FIFO opens and zero-initializes fixed1024-byte record. Host original main ASan/UBSan12 pass, old5/12 fail with stack-buffer-overflow. FIFO/help/capability services are fixtures. Unchanged listener16 reused after all source hashes matched; no rerun. No client/server/ORS joined run, ARM64 runtime, FIFO liveness or full shutdown proof. Existing full OTA reused."
+    },
+    {
+      "name": "cli-output-joined-current",
+      "status": "PASS",
+      "count": 13,
+      "evidence": "logs/cli-output-joined-current.json",
+      "evidence_sha256": "c747426c16c40803cab319cedc9f6778e1fca71d61c03a4ba1c1aca18cc8b61e",
+      "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused."
+    },
+    {
+      "name": "cli-output-joined-old",
+      "status": "FAIL",
+      "count": 13,
+      "evidence": "logs/cli-output-joined-old.json",
+      "evidence_sha256": "7dbccbe495e93ffc1782097bde99d4991fb13fda80abbc0d0482c028ad6684af",
+      "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused."
+    },
+    {
+      "name": "cli-output-io-current",
+      "status": "PASS",
+      "count": 7,
+      "evidence": "logs/cli-output-io-current.json",
+      "evidence_sha256": "02085aba2ea7d7bb2fb61172b038e5c1d4a920f4876483c0796f6403a2854c5c",
+      "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused."
+    },
+    {
+      "name": "cli-output-io-old",
+      "status": "FAIL",
+      "count": 7,
+      "evidence": "logs/cli-output-io-old.json",
+      "evidence_sha256": "8a5b2761b51b70da173da5b6390f28da71ea83783220adea4406599fc49b2ddf",
+      "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused."
+    },
+    {
+      "name": "cli-output-assembly",
+      "status": "PASS",
+      "count": 12,
+      "evidence": "logs/cli-output-assembly.json",
+      "evidence_sha256": "3d7a90c8ed5726754ec095895a947fc7f3bc95f04f08c1140f384fea96abdcc8",
+      "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused."
     }
   ],
   "source_review_followups": [
@@ -6649,5 +6689,12 @@
       "sha256": "9832a130415adc82d0001fc6a6b490f1589e0fbd2b0960bea50de0e5523f35ee",
       "count": 16
     }
+  },
+  "cli_output_bytes": {
+    "patch": "0137",
+    "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused.",
+    "document": "docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-output-bytes",
+    "production_changes": true,
+    "new_build": true
   }
 }

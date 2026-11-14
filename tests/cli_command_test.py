@@ -18,6 +18,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--source', type=Path, default=SRC/'orscmd/orscmd.cpp')
     ap.add_argument('--report', type=Path, required=True)
+    ap.add_argument('--output', action='store_true', help='Test output I/O failures and read EINTR')
     args = ap.parse_args()
     body = method(args.source.read_text(), 'int main(').replace('int main(', 'int cli_main(', 1)
     code = r'''
@@ -69,6 +70,40 @@ int main(int argc,char**argv){
         ('many-args', ['x']*600), ('huge-arg', ['x'*8192]),
     ]
     rows = []
+    if args.output:
+        code = code[:code.index('int main(int argc,char**argv)')] + r'''
+int main(int argc,char**argv){
+ assert(argc==2);scenario=argv[1];
+ char program[]="twrp", command[]="print", value[]="fixture";char* params[]={program,command,value,nullptr};
+ int result=cli_main(3,params);
+ bool failed=scenario=="open-error"||scenario=="read-error"||scenario=="write-error"||scenario=="flush-error";
+ assert((result!=0)==failed);assert(opens==2&&writes==1);
+ assert(closes==(scenario=="open-error"?1:2));
+ if(scenario=="eintr")assert(read_calls==3);
+ if(scenario=="normal"||scenario=="eintr"||scenario=="flush-error")assert(captured==std::string("A\0B\n",4));
+ if(scenario=="empty")assert(captured.empty());
+ puts("cli_output_error_propagation_and_exact_bytes=1");
+}
+'''
+        code = code.replace('static int opens=0,writes=0,closes=0;', 'static int opens=0,writes=0,closes=0,read_calls=0;static std::string scenario,captured;')
+        code = code.replace('static int fake_open(const char*,int){return ++opens;}', 'static int fake_open(const char*,int){++opens;if(opens==2&&scenario=="open-error"){errno=EACCES;return -1;}return opens;}')
+        code = code.replace('static ssize_t fake_read(int,void*,size_t){return 0;}', r'''
+static ssize_t fake_read(int,void* data,size_t){
+ ++read_calls;
+ if(scenario=="read-error"){errno=EIO;return -1;}
+ if(scenario=="eintr"&&read_calls==1){errno=EINTR;return -1;}
+ if(scenario=="empty"||read_calls>(scenario=="eintr"?2:1))return 0;
+ memcpy(data,"A\0B\n",4);return 4;
+}
+static size_t fake_fwrite(const void* data,size_t unit,size_t count,FILE*){
+ assert(unit==1);if(scenario=="write-error"){errno=EIO;return 0;}
+ captured.append((const char*)data,count);return count;
+}
+static int fake_fflush(FILE*){if(scenario=="flush-error"){errno=EIO;return EOF;}return 0;}
+#define fwrite fake_fwrite
+#define fflush fake_fflush
+''')
+        cases = [(name,[name]) for name in ['normal','empty','eintr','open-error','read-error','write-error','flush-error']]
     with tempfile.TemporaryDirectory(prefix='cli-command-') as tmp:
         work = Path(tmp)
         (work/'test.cpp').write_text(code)
@@ -79,7 +114,8 @@ int main(int argc,char**argv){
             rows.append(dict(case=name,status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,output=run.stdout+run.stderr))
             print(rows[-1]['status'],name,flush=True)
     sources = [args.source,Path(__file__).resolve(),ROOT/'tests/nested_partition_path_test.py']
-    report = dict(status='PASS' if all(c['status']=='PASS' for c in rows) else 'FAIL',scope=__doc__,cases=rows,
+    scope = __doc__ + (' Output mode: read/write/flush/open errors are injected at I/O boundary; checks return failure, fd cleanup, EINTR retry and embedded NUL byte preservation.' if args.output else '')
+    report = dict(status='PASS' if all(c['status']=='PASS' for c in rows) else 'FAIL',scope=scope,cases=rows,
         sources={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},compile_command=command)
     args.report.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
     return report['status']!='PASS'

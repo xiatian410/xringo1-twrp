@@ -8,14 +8,22 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-cli-command.img` |
-| SHA-256 | `79c8a5ea4b5a881cc8b6bbfa7a035558588a6c3027c88421c8c7073fe43e80cb` |
-| 生产来源绑定 | 874 份 |
+| 文件 | `recovery-dijun-unified-cli-output.img` |
+| SHA-256 | `e6b2bc79a68fd6fdcbbbdd34e9475e322d483487b854cd03a5daafed497c4dba` |
+| 生产来源绑定 | 875 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：CLI 命令组装边界
+## 本批生产修正：CLI 输出按实际字节数传递
+
+0137修正客户端固定改写读取缓冲区510/511字节导致的输出丢字与额外换行。读取到多少字节就输出多少，保留跨块及嵌入NUL；read遇EINTR重试，读取/fwrite/最终fflush失败返回失败，输出FIFO打开失败关闭输入fd。
+
+首次将原CLI main和原监听器通过真实私有FIFO/进程接合：13项通过；旧客户端六个510字节及以上输出场景损坏。另有I/O失败/中断/字节控制七项通过、旧六项失败；参数组装12项回归通过。监听端既有16项来源相同直接复用。ORS执行体/设置/console/分区为替身，故障在I/O边界注入；未完成完整ORS执行与退出码、ARM64运行、FIFO等待时限或实机验收。
+
+清理构建绑定875份来源和六profile，仅`twrp`程序及构建属性/摘要改变。核对`python3 scripts/audit_cli_command.py --output`，见[CLI输出范围](docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-output-bytes)。完整OTA与无关功能证据沿用，本批到此收尾。
+
+## 沿用的 CLI 命令组装边界
 
 0136修正`twrp`客户端将参数用sprintf反复写回同一个1024字节数组的重叠读写与越界。现在逐参数检查容量，保留空格拼接和固定长度协议；超过1023字节在打开任一FIFO前明确失败，不发送截断命令。记录整体清零，终止符及剩余字节均为零。
 

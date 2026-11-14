@@ -1,5 +1,24 @@
 # 操作反馈与页面生命周期
 
+<a id="cli-output-bytes"></a>
+## CLI 输出跨读取边界保真（0137）
+
+原客户端每次read后无条件把缓冲区第510字节设成换行、第511字节设成NUL，然后printf。510字节输出多出换行；511字节内容尾字节被替换；512及以上还会丢失字符。read失败被视为正常EOF，输出FIFO打开失败泄漏输入fd。
+
+[0137补丁](../dtsrc/O1_asic_dual/patches/0137-cli-output-byte-count.patch)按实际read字节数调用fwrite，不改数据；EINTR继续，其他读取错误失败；fwrite短写与fflush失败传回失败。输出打开失败关闭已打开的输入fd。没有更改命令执行或FIFO握手策略。
+
+新增`tests/cli_fifo_join_test.py`复用原监听夹具，直接执行原CLI main与完整监听源，私有真实FIFO/进程/open/read/write/stdio/select/executor工作。普通/多参数/1023上限、busy/unsupported/shutdown拒绝及509/510/511/512/513/1024/2049字节输出共13项通过，stdout逐字节及哈希相等；旧客户端六个510及以上输出场景失败。ORS执行体产生确定内容，设置/console/分区是替身，没有执行真实命令。
+
+原客户端I/O模式另注入read EIO/EINTR、输出open失败、fwrite/fflush失败，含空输出和嵌入NUL控制，共七项通过、旧六项失败。命令组装12项回归通过。既有监听16项报告的所有来源哈希不变，复用未重跑。有限输出修正收尾；完整ORS执行/返回码协议、ARM64运行、FIFO断连/等待时限、真实GUI/USB和进程级收尾仍未验收。
+
+```bash
+python3 tests/cli_fifo_join_test.py --report logs/cli-output-joined-current.json
+python3 tests/cli_command_test.py --output --report logs/cli-output-io-current.json
+python3 scripts/audit_cli_command.py --output
+```
+
+本地证据`logs/cli-output-{joined-current,joined-old,io-current,io-old,assembly}.json`及`logs/cli-output-delivery-audit.json`；当前镜像见[交付报告](../simulation-report.md)。
+
 <a id="cli-command-bounds"></a>
 ## CLI 命令组装越界（0136）
 

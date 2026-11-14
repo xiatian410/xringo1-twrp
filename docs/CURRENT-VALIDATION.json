@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-cli-command.img",
-  "image_sha256": "79c8a5ea4b5a881cc8b6bbfa7a035558588a6c3027c88421c8c7073fe43e80cb",
-  "production_sources": 874,
+  "image_name": "recovery-dijun-unified-cli-output.img",
+  "image_sha256": "e6b2bc79a68fd6fdcbbbdd34e9475e322d483487b854cd03a5daafed497c4dba",
+  "production_sources": 875,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2669,6 +2669,46 @@
       "failures": 5,
       "local_report_sha256": "a6da45fa998ac7d60397726a172a2be1cc6f2750262e8c4d8f8afe17ef75697f",
       "scope": "Patch0136 replaces overlapping unbounded sprintf in CLI argv assembly with checked append, rejects above1023 bytes before either FIFO opens and zero-initializes fixed1024-byte record. Host original main ASan/UBSan12 pass, old5/12 fail with stack-buffer-overflow. FIFO/help/capability services are fixtures. Unchanged listener16 reused after all source hashes matched; no rerun. No client/server/ORS joined run, ARM64 runtime, FIFO liveness or full shutdown proof. Existing full OTA reused."
+    },
+    {
+      "name": "cli-output-joined-current",
+      "status": "PASS",
+      "cases": 13,
+      "failures": 0,
+      "local_report_sha256": "c747426c16c40803cab319cedc9f6778e1fca71d61c03a4ba1c1aca18cc8b61e",
+      "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused."
+    },
+    {
+      "name": "cli-output-joined-old",
+      "status": "FAIL",
+      "cases": 13,
+      "failures": 6,
+      "local_report_sha256": "7dbccbe495e93ffc1782097bde99d4991fb13fda80abbc0d0482c028ad6684af",
+      "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused."
+    },
+    {
+      "name": "cli-output-io-current",
+      "status": "PASS",
+      "cases": 7,
+      "failures": 0,
+      "local_report_sha256": "02085aba2ea7d7bb2fb61172b038e5c1d4a920f4876483c0796f6403a2854c5c",
+      "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused."
+    },
+    {
+      "name": "cli-output-io-old",
+      "status": "FAIL",
+      "cases": 7,
+      "failures": 6,
+      "local_report_sha256": "8a5b2761b51b70da173da5b6390f28da71ea83783220adea4406599fc49b2ddf",
+      "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused."
+    },
+    {
+      "name": "cli-output-assembly",
+      "status": "PASS",
+      "cases": 12,
+      "failures": 0,
+      "local_report_sha256": "3d7a90c8ed5726754ec095895a947fc7f3bc95f04f08c1140f384fea96abdcc8",
+      "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused."
     }
   ],
   "refresh_stuck_investigation": {
@@ -2985,5 +3025,12 @@
       "sha256": "9832a130415adc82d0001fc6a6b490f1589e0fbd2b0960bea50de0e5523f35ee",
       "count": 16
     }
+  },
+  "cli_output_bytes": {
+    "patch": "0137",
+    "scope": "Patch0137 preserves actual CLI output byte count instead of overwriting bytes510/511, retries read EINTR, propagates read/fwrite/flush errors and closes input fd after output-open failure. Original host CLI main joined to original FIFO listener via private processes/real FIFO/stdio/executor:13 pass, old6/13 output corruption. ORS body/settings/console/partition are fixtures. I/O fault suite7 pass/old6 fail with embedded NUL/control, command assembly12 pass. Existing unchanged listener16 reused with all source hashes matching. No full ORS command/exit status, ARM64 runtime, FIFO liveness bound, physical device or process-wide stop proof; historical OTA reused.",
+    "document": "docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-output-bytes",
+    "production_changes": true,
+    "new_build": true
   }
 }

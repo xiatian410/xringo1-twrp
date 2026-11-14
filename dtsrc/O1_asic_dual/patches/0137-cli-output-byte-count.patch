@@ -1,0 +1,36 @@
+--- a/orscmd/orscmd.cpp
++++ b/orscmd/orscmd.cpp
+@@ -160,16 +160,26 @@
+ 	read_fd = open(ORS_OUTPUT_FILE, O_RDONLY);
+ 	if (read_fd < 0) {
+ 		printf("Unable to open %s for read.\n", ORS_OUTPUT_FILE);
++		close(write_fd);
+ 		return -1;
+ 	}
+-	memset(&result, 0, sizeof(result));
+-	while (read(read_fd, &result, sizeof(result)) > 0) {
+-		result[510] = '\n';
+-		result[511] = '\0';
+-		printf("%s", result);
+-		memset(&result, 0, sizeof(result));
++	int status = 0;
++	while (true) {
++		const ssize_t count = read(read_fd, result, sizeof(result));
++		if (count < 0 && errno == EINTR) continue;
++		if (count < 0) {
++			fprintf(stderr, "Error reading command output: %s\n", strerror(errno));
++			status = 1;
++			break;
++		}
++		if (count == 0) break;
++		if (fwrite(result, 1, static_cast<size_t>(count), stdout) != static_cast<size_t>(count)) {
++			status = 1;
++			break;
++		}
+ 	}
++	if (fflush(stdout) != 0) status = 1;
+ 	close(write_fd);
+ 	close(read_fd);
+-	return 0;
++	return status;
+ }
