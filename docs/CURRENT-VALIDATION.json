@@ -1,8 +1,8 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-aux-wipe.img",
-  "image_sha256": "bccc98a0ade7b6f3913e48c4bb4432a91599786e682d1bb47fcaece68b87d438",
-  "production_sources": 868,
+  "image_name": "recovery-dijun-unified-ors-arguments.img",
+  "image_sha256": "05cbd17df3d56991ad507c380f86395f7f9a20ad08856c2741247eca274a5113",
+  "production_sources": 869,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
@@ -2525,6 +2525,38 @@
       "failures": 7,
       "local_report_sha256": "998bae2591ee35d20e7532c19ce4f1830c519d95148eb79ae2df1abee4018425",
       "scope": "Patch0132 checks battery-stat unlink errors (ENOENT remains success) and stops Android Secure at first failure. Original manager/partition/RemoveDir/backend run with private chroot files and actual uid65534 permission errors:15 current pass, old7/15 fail (five false success, two continue after failure). Mount/settings/console/executor/other routes are fixtures. No full GUI/start/thread, actual mounts/fscrypt, concurrency/physical I/O or rollback; existing full OTA reused."
+    },
+    {
+      "name": "ors-arguments-current",
+      "status": "PASS",
+      "cases": 20,
+      "failures": 0,
+      "local_report_sha256": "b7f72ce113d21fb36f134be4868660193a792009eee601bdf686a45384a80ec4",
+      "scope": "Patch0133 rejects missing/whitespace-only backup options or setting names before null strcpy, stops subsequent commands and startup automatic reboot. Full original parser/action with private files and ASan/UBSan:20 pass; old12/20 fail (8 null crashes,4 false success); command58/startup sequence9 pass. Backup/manager/settings/console/sleep/reboot fixtures. No actual backup, full GUI/FIFO status, ORS shutdown admission or device operations; existing full OTA reused."
+    },
+    {
+      "name": "ors-arguments-old",
+      "status": "FAIL",
+      "cases": 20,
+      "failures": 12,
+      "local_report_sha256": "7d3abc5d81d5ea2bf856c90a5a19d1059f28e794dd7da4908eb11bc85cfb85d7",
+      "scope": "Patch0133 rejects missing/whitespace-only backup options or setting names before null strcpy, stops subsequent commands and startup automatic reboot. Full original parser/action with private files and ASan/UBSan:20 pass; old12/20 fail (8 null crashes,4 false success); command58/startup sequence9 pass. Backup/manager/settings/console/sleep/reboot fixtures. No actual backup, full GUI/FIFO status, ORS shutdown admission or device operations; existing full OTA reused."
+    },
+    {
+      "name": "ors-arguments-commands",
+      "status": "PASS",
+      "cases": 58,
+      "failures": 0,
+      "local_report_sha256": "22ba15f635b1affffd15490a73d6291c07d14c50a97f6bbe0a374ca7bccd6721",
+      "scope": "Patch0133 rejects missing/whitespace-only backup options or setting names before null strcpy, stops subsequent commands and startup automatic reboot. Full original parser/action with private files and ASan/UBSan:20 pass; old12/20 fail (8 null crashes,4 false success); command58/startup sequence9 pass. Backup/manager/settings/console/sleep/reboot fixtures. No actual backup, full GUI/FIFO status, ORS shutdown admission or device operations; existing full OTA reused."
+    },
+    {
+      "name": "ors-arguments-sequence",
+      "status": "PASS",
+      "cases": 9,
+      "failures": 0,
+      "local_report_sha256": "ff954a53e5a397546fde2e7f5df7f4a9b0c69d1c41c94ee06b161a7c2b967d2c",
+      "scope": "Patch0133 rejects missing/whitespace-only backup options or setting names before null strcpy, stops subsequent commands and startup automatic reboot. Full original parser/action with private files and ASan/UBSan:20 pass; old12/20 fail (8 null crashes,4 false success); command58/startup sequence9 pass. Backup/manager/settings/console/sleep/reboot fixtures. No actual backup, full GUI/FIFO status, ORS shutdown admission or device operations; existing full OTA reused."
     }
   ],
   "refresh_stuck_investigation": {

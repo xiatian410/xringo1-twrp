@@ -21,6 +21,7 @@ def main():
     modes = ap.add_mutually_exclusive_group()
     modes.add_argument('--sequence', action='store_true', help='Test temporary/cache script ordering and failure aggregation')
     modes.add_argument('--staging', action='store_true', help='Test source preservation and failure propagation during script staging')
+    modes.add_argument('--arguments', action='store_true', help='Test missing backup options and setting names without crashing')
     args = ap.parse_args()
     text = args.source.read_text()
     production = '\n'.join(method(text, s) for s in ['int OpenRecoveryScript::run_script_file(', 'int OpenRecoveryScript::Run_OpenRecoveryScript_Action('])
@@ -197,6 +198,31 @@ int main(int argc,char** argv){
  puts("ors_staging_source_preserved=1");
 }
 '''
+    if args.arguments:
+        fixture = fixture.replace('#include <cassert>', '#include <type_traits>\n#include <cassert>')
+        fixture = fixture.replace('static bool succeeds=false;', 'static string observed_setting, backup_options; static int backup_calls=0; static bool succeeds=false;')
+        fixture = fixture.replace('template<class T>static void SetValue(const string& key,const T&){if(key=="sentinel")++tail;if(key=="tw_page_done")++done;}', '''template<class T>static void SetValue(const string& key,const T& value){
+ if(key=="sentinel")++tail;if(key=="tw_page_done")++done;
+ if constexpr(is_convertible_v<const T&,string>){if(key=="option")observed_setting=string(value);}
+}''')
+        fixture = fixture.replace('static int Backup_Command(const string&){return 0;}', 'static int Backup_Command(const string& options){++backup_calls;backup_options=options;return 0;}')
+        fixture = fixture[:fixture.index('int main(int argc,char** argv)')] + r'''
+int main(int argc,char** argv){
+ assert(argc==4);string command=argv[1];bool valid=string(argv[2])=="valid",startup=string(argv[3])=="startup";
+ {ofstream script(SCRIPT_FILE_TMP);script<<command<<"\nset sentinel reached\n";}
+ observed_setting="unchanged";
+ int rc=startup?OpenRecoveryScript::Run_OpenRecoveryScript_Action():OpenRecoveryScript::run_script_file();
+ printf("result=%d tail=%d reboots=%d done=%d backups=%d\n",rc,tail,reboots,done,backup_calls);fflush(stdout);
+ assert(rc==(valid?0:1));assert(tail==(valid?1:0));assert(reboots==(valid&&startup?1:0));assert(disabled==reboots);
+ assert(done==(!valid&&startup?1:0));assert(calls==0);assert(!filesystem::exists(SCRIPT_FILE_TMP));
+ bool backup=valid&&command.starts_with("backup ");
+ assert(backup_calls==(backup?1:0));if(backup)assert(backup_options=="S");
+ if(command=="set option value")assert(observed_setting=="value");
+ else if(command=="set option")assert(observed_setting.empty());
+ else assert(observed_setting=="unchanged");
+ puts("ors_missing_argument_rejected_without_crash=1");
+}
+'''
     rows = []
     commands = [('wipe cache','wipe:/cache'),('wipe /cache','wipe:/cache'),
                 ('wipe system','wipe:/system'),('wipe /system_root','wipe:/system'),
@@ -210,12 +236,19 @@ int main(int argc,char** argv){
         compile_command = ['g++','-std=c++23','-O1','-g','-fsanitize=address,undefined','-fno-pie','-no-pie',str(p/'test.cpp'),'-o',str(p/'test')]
         subprocess.run(compile_command, check=True)
         for command, operation in commands:
-            if args.sequence or args.staging:
+            if args.sequence or args.staging or args.arguments:
                 break
             for outcome in ['success','failure'] if command!='cmd' else ['failure']:
                 for entry in ['direct','startup']:
                     run = subprocess.run([str(p/'test'),command,operation,outcome,entry],cwd=p,capture_output=True,text=True,timeout=5)
                     row = dict(case=f'{command}-{outcome}-{entry}',status='PASS' if run.returncode==0 else 'FAIL',returncode=run.returncode,output=run.stdout+run.stderr)
+                    rows.append(row);print(row['status'],row['case'],flush=True)
+        if args.arguments:
+            for command in ['backup', 'backup ', 'backup    ', 'set', 'set ', 'set    ', 'backup S', 'backup S label', 'set option', 'set option value']:
+                valid = command in ['backup S', 'backup S label', 'set option', 'set option value']
+                for entry in ['direct', 'startup']:
+                    run = subprocess.run([str(p/'test'), command, 'valid' if valid else 'invalid', entry], cwd=p, capture_output=True, text=True, timeout=5)
+                    row = dict(case=f'{command!r}-{entry}', status='PASS' if run.returncode==0 else 'FAIL', returncode=run.returncode, output=run.stdout+run.stderr)
                     rows.append(row);print(row['status'],row['case'],flush=True)
         if args.staging:
             for entry in ['copy','check','action','action-prior']:
@@ -238,6 +271,7 @@ int main(int argc,char** argv){
     if args.staging:sources.append(SRC/'twrp_functions.cpp')
     scope = __doc__ + (' Temporary/cache scripts: absent/success/failure combinations; first failure leaves cache unconsumed, second failure blocks automatic reboot after first success.' if args.sequence else '')
     if args.staging:scope += ' Original check/copy/parser/action and TWFunc::CopyFile with private files; mount/chmod/unlink faults injected; checks source bytes and partial temporary cleanup. No mount, crash durability, concurrent pathname replacement or actual shell/reboot.'
+    if args.arguments:scope += ' Missing/space-only backup options and setting names: reject before null strcpy, stop tail and startup automatic reboot; valid backup options and set empty/value controls preserved. Full original parser/action under ASan/UBSan; backup operation is an explicit fixture.'
     report = dict(status='PASS' if all(r['status']=='PASS' for r in rows) else 'FAIL',scope=scope,cases=rows,
                   sources={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},compile_command=compile_command)
     args.report.write_text(json.dumps(report,indent=2)+'\n')

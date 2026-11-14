@@ -1,5 +1,23 @@
 # 分区界面修正：镜像目标与 NV 操作
 
+<a id="ors-missing-arguments"></a>
+## ORS 缺少参数时停止解析（0133）
+
+原解析器遇到没有选项的`backup`或没有名称的`set`时，把`strtok`的空结果交给`strcpy`，会使Recovery进程崩溃。仅含多个空格的参数还可能把残留换行识别成选项/名称，继续执行后续命令，并在启动入口自动重启。
+
+[0133补丁](../dtsrc/O1_asic_dual/patches/0133-ors-missing-arguments.patch)在这两处复制前检查参数，并把空格、制表符和换行作为分隔符。缺少参数返回失败，复用原循环结束、关闭并删除临时脚本；启动action不会自动重启。正常备份选项、显式备份名、设置空值及设置普通值保留。
+
+复用原ORS检查器新增`--arguments`模式，执行完整原解析器/action和私有脚本，直接/启动入口共20项通过。相同夹具旧版12项失败：8项被ASan/UBSan捕获为空指针崩溃，4项空白参数继续执行，其中启动入口自动重启。原命令58项和启动顺序9项因解析器变更复查通过，此批到此收尾。
+
+分区操作、备份执行、配置、console、sleep及最终重启为替身；不代表真实备份、完整GUI/FIFO退出码、直接ORS关机准入或设备重启验收。未改准入架构，未重跑完整OTA及震动。
+
+```bash
+python3 tests/ors_results_test.py --arguments --report logs/ors-arguments-current.json
+python3 scripts/audit_ors_results.py --arguments
+```
+
+本地报告为`logs/ors-arguments-{current,old,commands,sequence}.json`与`logs/ors-arguments-delivery-audit.json`。当前镜像见[交付报告](../simulation-report.md)。
+
 <a id="aux-wipe-results"></a>
 ## 电池统计与 Android Secure 清除结果（0132）
 

@@ -8,14 +8,20 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 文件 | `recovery-dijun-unified-aux-wipe.img` |
-| SHA-256 | `bccc98a0ade7b6f3913e48c4bb4432a91599786e682d1bb47fcaece68b87d438` |
-| 生产来源绑定 | 868 份 |
+| 文件 | `recovery-dijun-unified-ors-arguments.img` |
+| SHA-256 | `05cbd17df3d56991ad507c380f86395f7f9a20ad08856c2741247eca274a5113` |
+| 生产来源绑定 | 869 份 |
 | 固件档案 | 六份 OS2 / OS3 / OS4 profile |
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：电池统计与 Android Secure 清除错误传播
+## 本批生产修正：ORS 缺少参数不再崩溃
+
+0133在`backup`选项、`set`名称复制前检查空参数，并识别空白分隔。缺少参数返回失败，停止后续命令及启动自动重启；正常备份/命名/设置空值与普通值保留。20项原解析器/action检查通过；旧版12项失败（8次空指针崩溃，4项误判成功）。因解析器变更，原命令58项和启动顺序9项回归通过。
+
+清理构建绑定869份来源及六profile，核对入口`python3 scripts/audit_ors_results.py --arguments`，见[参数解析范围](docs/PARTITION-ACTIONS.md#ors-missing-arguments)。备份/manager、配置、console、sleep和最终重启为替身；未完成实际备份、完整GUI/FIFO退出码或直接ORS关机准入。完整OTA沿用历史结果，震动不例行检查。
+
+## 沿用的电池统计与 Android Secure 清除错误传播
 
 0132直接检查电池统计文件删除结果（不存在仍算成功），Android Secure 多目标清除在首个失败处停止，失败传回原后台FAILED状态。私有chroot文件及实际权限错误15项通过，同夹具旧版7项失败：5项误报成功、2项失败后仍继续下一目标。成功/缺失/链接控制路径保留，已删除内容不回滚。
 

@@ -1,0 +1,30 @@
+--- a/openrecoveryscript.cpp
++++ b/openrecoveryscript.cpp
+@@ -188,7 +188,12 @@
+ 			} else if (strcmp(command, "backup") == 0) {
+ 				// Backup
+ 				DataManager::SetValue("tw_action_text2", gui2_console::text("backing"));
+-				tok = strtok(value, " ");
++				tok = strtok(value, " \t\r\n");
++				if (tok == NULL) {
++					LOGERR("Missing backup options\n");
++					ret_val = 1;
++					continue;
++				}
+ 				strcpy(value1, tok);
+ 				tok = strtok(NULL, " ");
+ 				if (tok != NULL) {
+@@ -351,7 +356,12 @@
+ 			} else if (strcmp(command, "set") == 0) {
+ 				// Set value
+ 				size_t len = strlen(value);
+-				tok = strtok(value, " ");
++				tok = strtok(value, " \t\r\n");
++				if (tok == NULL) {
++					LOGERR("Missing setting name\n");
++					ret_val = 1;
++					continue;
++				}
+ 				strcpy(value1, tok);
+ 				if (len > strlen(value1) + 1) {
+ 					char *val2 = value + strlen(value1) + 1;

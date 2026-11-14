@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-aux-wipe.img",
-  "image_sha256": "bccc98a0ade7b6f3913e48c4bb4432a91599786e682d1bb47fcaece68b87d438",
-  "image_status": "Clean-built patch0132 battery/Android Secure wipe error propagation candidate; hardware-unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-ors-arguments.img",
+  "image_sha256": "05cbd17df3d56991ad507c380f86395f7f9a20ad08856c2741247eca274a5113",
+  "image_status": "Clean-built patch0133 ORS missing-argument handling candidate; hardware-unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -1942,7 +1942,7 @@
     "OTG full manager/USB integration and removal during active writes; original discovery hotplug/resync/coldboot12 host cases including UFS exclusion, actual-path LVGL6 and selection15 are covered with explicit filesystem/block mode/mount boundaries. Real USB devices and write removal remain pending.",
     "full ramdisk merge/init/LP boot simulation",
     "CPU temperature physical sensor accuracy and Android thermal registration; six stock merged DTs identify cpu-crg, dynamic lookup12 cases and GUI provider/controller/LVGL11 groups now covered; host fonts/settings/tick fixtures do not prove target display or measurement.",
-    "0130 preserves source and rejects execution/reboot after ORS copy/unlink staging failure;23 pass/old11 fail, sequence9/commands58 pass. Finite fix closed; no durability/race or full shutdown-admission proof. 0129 stops startup action after either script fails and leaves unconsumed cache intact; sequence9 pass/old4 fail, commands58 pass. No rollback or full ORS shutdown admission. 0128 propagates ORS partition/shell operation errors, stops subsequent commands and prevents startup automatic reboot on failure;58 pass/old30 fail with manager/shell/reboot fixtures. This finite fix is closed; complete ORS shutdown admission, rollback and full GUI/manager lifecycle are not proven. 0127 gates terminal start/write after shutdown reservation and joins owned direct-shell reaper at final exit; owner5/engine5/reap7 pass, old4/5 fail. Descendants/direct ORS/full USB/process-wide stop remain unverified. Patch0124: GUI worker/FIFO CLI shutdown admission implemented; original launch29/CLI16/reboot21/sideload23/lifecycle33/decrypt12/drain4 pass, old launch wiring18/29 fail. 0120 preserves sideload reboot retry/cancellation until successful GUI acceptance (handoff23/lifecycle33 pass, old4/4 fail); Patch0124 now reserves GUI worker/FIFO CLI admission through GUI reboot publication; terminal descendants/direct ORS and full MTP/USB shutdown are outside this gate. One original OS4.0.4 full ZIP file-model run now joins real controller preparation/SnapshotManager initialization10 COWs, original writer4933 ops/payload hash/42 hashes, stock Recovery script, real Unverified publication, modeled slot/unmap and scoped Cleanup; engine0/wait0/parent INSTALL_SUCCESS0.24checks/881sec; no seeded allocation. Model lifecycle fixed, no production change/build. Real source LP/kernel maps/readonly/mount/HAL/slot/scratch/daemon/boot/merge, full ARM64 Recovery/GUI and actual USB/FUSE sideload remain unverified. Do not repeat this full run without relevant changes. Earlier failed raw report was overwritten by fixed-path runner; previous digest and documented outcome retained, not raw bytes."
+    "0133 rejects missing backup/set arguments without null strcpy and stops tail/startup reboot;20 pass/old12 fail, command58/sequence9 pass. Finite parser fix closed; ORS shutdown admission still pending. 0130 preserves source and rejects execution/reboot after ORS copy/unlink staging failure;23 pass/old11 fail, sequence9/commands58 pass. Finite fix closed; no durability/race or full shutdown-admission proof. 0129 stops startup action after either script fails and leaves unconsumed cache intact; sequence9 pass/old4 fail, commands58 pass. No rollback or full ORS shutdown admission. 0128 propagates ORS partition/shell operation errors, stops subsequent commands and prevents startup automatic reboot on failure;58 pass/old30 fail with manager/shell/reboot fixtures. This finite fix is closed; complete ORS shutdown admission, rollback and full GUI/manager lifecycle are not proven. 0127 gates terminal start/write after shutdown reservation and joins owned direct-shell reaper at final exit; owner5/engine5/reap7 pass, old4/5 fail. Descendants/direct ORS/full USB/process-wide stop remain unverified. Patch0124: GUI worker/FIFO CLI shutdown admission implemented; original launch29/CLI16/reboot21/sideload23/lifecycle33/decrypt12/drain4 pass, old launch wiring18/29 fail. 0120 preserves sideload reboot retry/cancellation until successful GUI acceptance (handoff23/lifecycle33 pass, old4/4 fail); Patch0124 now reserves GUI worker/FIFO CLI admission through GUI reboot publication; terminal descendants/direct ORS and full MTP/USB shutdown are outside this gate. One original OS4.0.4 full ZIP file-model run now joins real controller preparation/SnapshotManager initialization10 COWs, original writer4933 ops/payload hash/42 hashes, stock Recovery script, real Unverified publication, modeled slot/unmap and scoped Cleanup; engine0/wait0/parent INSTALL_SUCCESS0.24checks/881sec; no seeded allocation. Model lifecycle fixed, no production change/build. Real source LP/kernel maps/readonly/mount/HAL/slot/scratch/daemon/boot/merge, full ARM64 Recovery/GUI and actual USB/FUSE sideload remain unverified. Do not repeat this full run without relevant changes. Earlier failed raw report was overwritten by fixed-path runner; previous digest and documented outcome retained, not raw bytes."
   ],
   "hardware_unverified": [
     "MiTEE/RPMB/wrapped-key actual decryption",
@@ -4836,6 +4836,38 @@
       "evidence": "logs/aux-wipe-old.json",
       "evidence_sha256": "998bae2591ee35d20e7532c19ce4f1830c519d95148eb79ae2df1abee4018425",
       "scope": "Patch0132 checks battery-stat unlink errors (ENOENT remains success) and stops Android Secure at first failure. Original manager/partition/RemoveDir/backend run with private chroot files and actual uid65534 permission errors:15 current pass, old7/15 fail (five false success, two continue after failure). Mount/settings/console/executor/other routes are fixtures. No full GUI/start/thread, actual mounts/fscrypt, concurrency/physical I/O or rollback; existing full OTA reused."
+    },
+    {
+      "name": "ors-arguments-current",
+      "status": "PASS",
+      "count": 20,
+      "evidence": "logs/ors-arguments-current.json",
+      "evidence_sha256": "b7f72ce113d21fb36f134be4868660193a792009eee601bdf686a45384a80ec4",
+      "scope": "Patch0133 rejects missing/whitespace-only backup options or setting names before null strcpy, stops subsequent commands and startup automatic reboot. Full original parser/action with private files and ASan/UBSan:20 pass; old12/20 fail (8 null crashes,4 false success); command58/startup sequence9 pass. Backup/manager/settings/console/sleep/reboot fixtures. No actual backup, full GUI/FIFO status, ORS shutdown admission or device operations; existing full OTA reused."
+    },
+    {
+      "name": "ors-arguments-old",
+      "status": "FAIL",
+      "count": 20,
+      "evidence": "logs/ors-arguments-old.json",
+      "evidence_sha256": "7d3abc5d81d5ea2bf856c90a5a19d1059f28e794dd7da4908eb11bc85cfb85d7",
+      "scope": "Patch0133 rejects missing/whitespace-only backup options or setting names before null strcpy, stops subsequent commands and startup automatic reboot. Full original parser/action with private files and ASan/UBSan:20 pass; old12/20 fail (8 null crashes,4 false success); command58/startup sequence9 pass. Backup/manager/settings/console/sleep/reboot fixtures. No actual backup, full GUI/FIFO status, ORS shutdown admission or device operations; existing full OTA reused."
+    },
+    {
+      "name": "ors-arguments-commands",
+      "status": "PASS",
+      "count": 58,
+      "evidence": "logs/ors-arguments-commands.json",
+      "evidence_sha256": "22ba15f635b1affffd15490a73d6291c07d14c50a97f6bbe0a374ca7bccd6721",
+      "scope": "Patch0133 rejects missing/whitespace-only backup options or setting names before null strcpy, stops subsequent commands and startup automatic reboot. Full original parser/action with private files and ASan/UBSan:20 pass; old12/20 fail (8 null crashes,4 false success); command58/startup sequence9 pass. Backup/manager/settings/console/sleep/reboot fixtures. No actual backup, full GUI/FIFO status, ORS shutdown admission or device operations; existing full OTA reused."
+    },
+    {
+      "name": "ors-arguments-sequence",
+      "status": "PASS",
+      "count": 9,
+      "evidence": "logs/ors-arguments-sequence.json",
+      "evidence_sha256": "ff954a53e5a397546fde2e7f5df7f4a9b0c69d1c41c94ee06b161a7c2b967d2c",
+      "scope": "Patch0133 rejects missing/whitespace-only backup options or setting names before null strcpy, stops subsequent commands and startup automatic reboot. Full original parser/action with private files and ASan/UBSan:20 pass; old12/20 fail (8 null crashes,4 false success); command58/startup sequence9 pass. Backup/manager/settings/console/sleep/reboot fixtures. No actual backup, full GUI/FIFO status, ORS shutdown admission or device operations; existing full OTA reused."
     }
   ],
   "source_review_followups": [
@@ -6470,5 +6502,13 @@
     "current_cases": 15,
     "old_failures": 7,
     "scope": "Patch0132 checks battery-stat unlink errors (ENOENT remains success) and stops Android Secure at first failure. Original manager/partition/RemoveDir/backend run with private chroot files and actual uid65534 permission errors:15 current pass, old7/15 fail (five false success, two continue after failure). Mount/settings/console/executor/other routes are fixtures. No full GUI/start/thread, actual mounts/fscrypt, concurrency/physical I/O or rollback; existing full OTA reused."
+  },
+  "ors_missing_arguments": {
+    "patch": "0133-ors-missing-arguments.patch",
+    "document": "docs/PARTITION-ACTIONS.md#ors-missing-arguments",
+    "audit": "scripts/audit_ors_results.py --arguments",
+    "current_cases": 20,
+    "old_failures": 12,
+    "scope": "Patch0133 rejects missing/whitespace-only backup options or setting names before null strcpy, stops subsequent commands and startup automatic reboot. Full original parser/action with private files and ASan/UBSan:20 pass; old12/20 fail (8 null crashes,4 false success); command58/startup sequence9 pass. Backup/manager/settings/console/sleep/reboot fixtures. No actual backup, full GUI/FIFO status, ORS shutdown admission or device operations; existing full OTA reused."
   }
 }
