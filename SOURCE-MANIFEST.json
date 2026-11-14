@@ -16,7 +16,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "6ea2d7e0fdfae9adb6752d11b919b047a4fd7272b7998b8b7d3b050057aa9754",
+    "sha256": "e5a118bf904543bc212b9e785c55f612d5b4bb7c484681c79b1b56ea248b0b61",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -32,7 +32,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "2b265f71c8626e51d310cd44abc3a7fe14c7ab32fc995ce86202104685341a9e",
+    "sha256": "4c658d7fbb10f7e77afff1e90317fc055f368a0f85ffc49afdfcb17240ed0ad7",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -44,7 +44,7 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "3f330c543238407285d9da5b03f750fac785e896abfee1864778d59759ac2af3",
+    "sha256": "17c2c86ba73b23b586ed39ef69b7ba06c58641843bda3ffa1cf5abc700d5314a",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "d43529d43d789da38da88c4538c82ae251428e4505bae15b2616af3c15f04c37",
+    "sha256": "e3eeb6752a7ad7515f01119f0c65747c542432cc343d390e15864ddadba0dc96",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -116,7 +116,7 @@
     "mode": "0o644"
   },
   "docs/OS4-TOUCH-FAILURE.md": {
-    "sha256": "33fcb12577a2afd9d6ce150bc56448c15bec33516294977a2510b75130c3828c",
+    "sha256": "7707937e17b2c6fc69ae8dedf3257065c1d42e61dd6601069d7d2018d4ae6114",
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "445c25e54fac0ce6d831ca6ec123ae866ed0364c0c724e864434b5379113a401",
+    "sha256": "6f6bd0690dd1896a4e1ae5cd9508b459f88007e9d3e7996700e63269ddc300bf",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1060,7 +1060,7 @@
     "mode": "0o755"
   },
   "dtsrc/O1_asic_dual/profiles/runtime/dijun-touch-reports.sh": {
-    "sha256": "e44694605e377cc0d469e1a2db17f8109ffd2684a78a40e5366541af1586a898",
+    "sha256": "34184d59730f18b7cecdc7132d1df9d0a37fa006efbf32adf6b763cabb689f24",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/runtime/usb_config.cpp": {
@@ -1783,6 +1783,10 @@
     "sha256": "692c2b5b7ce892a8138b9d474a55cd5f288eb4a072bf7a558be37e17d0e44b31",
     "mode": "0o644"
   },
+  "scripts/audit_touch_policy_rollback_delivery.py": {
+    "sha256": "1f74795028e8e68521fd6c640e95f3cd4523d66721b5da7e12621654060df234",
+    "mode": "0o644"
+  },
   "scripts/audit_touch_raw_off_observation.py": {
     "sha256": "de89bb11770edd849ce8d6a72fd12cf721ccac78a3463bf12d3c510ed577c17d",
     "mode": "0o644"
@@ -2068,11 +2072,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "9ca7386b9f39361036c2cde72885599ac56c44a6333ee730b9e3107fdd1c9d78",
+    "sha256": "a2b65014133585246445a1c2af6bcadeadeddb5a721253c4d2d09d726489525f",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "785e410f39ce24d06ffe02185d9a4eee2f7686eb9f203083b5c0f7da5377aec1",
+    "sha256": "41e363c617074200afa3dbd75eda9d384675cec64906ff955b767664ed0e5801",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -3168,7 +3172,7 @@
     "mode": "0o644"
   },
   "tests/touch_report_policy_test.py": {
-    "sha256": "1325fccdf22b3d4b62f50abe03b34d54abeebb8ff29351ab94d8029b5cc7190e",
+    "sha256": "0f985ba772290fcdb04a552b7d955e3d8edcddd7eef80ec0a48e85be7596d254",
     "mode": "0o644"
   },
   "tests/touch_spi_emulation.py": {

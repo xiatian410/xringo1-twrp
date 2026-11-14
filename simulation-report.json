@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/recovery-dijun-unified-refresh-return.img",
-  "image_sha256": "4623448c6b0a986ca3cb056383eeb7b9ad91a54181b40e920622e863104880bd",
-  "image_status": "Clean-built patch0139 preserves backup refresh return ACTION payload; targeted route regression passed, hardware-unverified.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/yarp-dijun-1.0.1-rc1.img",
+  "image_sha256": "13644f3443b5baef012920d73838c7e980608235e2478ddbea6334a646f1a082",
+  "image_status": "Clean-built touch timing rollback candidate; user-reported field touch failure remains open. No proven causal fix.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -5271,12 +5271,9 @@
   "touch_outstanding": {
     "priority": "P0",
     "user_report": "OS4 stable: user confirms touch generates no input report on the latest installed image; OS4.0.4 recovery bundle indexed",
-    "status": "User raw0 intervention restores real coordinates (215 events/7 press-release pairs); maintained boot policy built, automatic cold boot/GUI/resume unverified.",
+    "status": "New user-reported touch failure in v1.0.0. Exact rollback of the unverified two-second delay built as v1.0.1-rc1; causal fault and physical recovery unconfirmed.",
     "next": [
-      "Verify automatic ordinary-report request and GUI/resume behavior; mode1004 delayed worker can enable raw, but real trigger unknown. Wrapper raw cache starts at1 and is not controller truth.",
-      "original Synaptics DT/panel/connect/background now calls original Xiaomi panel/input registration through separate ARM64 spaces with explicit pointer/callback bridge. Input allocation/registration null causes original worker write to 0x2c0 before null check in both OS4; actual input core, complete callback sharing/kernel linking, IRQ scheduling and physical root cause remain unverified. Full firmware command generation is covered under synthetic controller acknowledgements",
-      "controller report/IC-mode acceptance, actual IRQ/completion and kernel concurrency remain unmodeled; original pending work is now executed at notification flush with saved/restored CPU context. Sequential pending flush does not lose transitions in tested healthy cases, but failed resume followed by duplicate on remains configurationless; physical root cause unknown",
-      "actual profile/cache publication and bootloader ramdisk merge remain unexecuted; static supplied inputs show no early touch module source"
+      "Only new discriminating touch evidence reopens implementation work. Current seven policy cases and packaging audit complete; no equivalent suites or unrelated checks."
     ],
     "host_validation": "96 same-image phase calls; 6 dependency plans; initial/late input to GUI; 88 stock OS4 ARM64 connect/mode/reflash/ISR/parser cases; no physical device; 62 stock config/probe cases and 2 original dijun overlay/firmware checks; 58 stock SPI probe/DT-child/GPIO/power/reset and joined probe-to-ISR cases; new image 24 module-state phase calls with bounded coming/live/going races and six cache profiles; 86 stock SPI transport/allocation/completion/detect-selector cases; 22 original Xiaomi panel-setup cases including persistent zero-lockdown loop bounded by emulator budget; 50 stock Xiaomi wrapper panel/input/raw-mode cases; callback failure hidden by successful sysfs byte-count path; 90 original message/event/ISR cases: v1 byte fragments, v2 command response fixture; empty-report stale output replay and hidden report-allocation failure reproduced for both OS4 modules; two stock vendor_boot/current recovery static load-order checks; no physical boot/init execution; 78 original v2 command/framing/CRC/retry and config-app-ISR cases; physical transport bytes remain synthetic; 44 joined original v2 detect/connect/app-info/configuration/mode/background/ISR cases; firmware request/update, panel and kernel services remain fixtures; 32 joined v2 startup/panel/DT/report-mode/ISR cases, six executing original flash-area/identify/boot-info/boot-config-read and mode return; physical responses remain synthetic; 26 original stock-firmware container/CRC/build-config comparison and joined background cases; matching image executes no-write path and restores synthetic configuration; differing image stops at original flash-access identify timeout; 32 original reflash block-check/erase/write/reset and joined background failure cases; exact erase geometry and first two stock-byte programming chunks checked, injected failures throughout; missing config remains eventless after input registration even with application reset response; 26 complete stock programming/reset/background cases: 625 programming requests and 2 erase requests independently checked, config-only 25 requests; reset-bootloader returns update0 yet input/config0/no events, post-update config timeout/empty also input/no events; retry after last configuration write error executes 1250 checked requests; updated same-image 9-test profile runtime includes three haptics-input states; 6 dependency plans assert touch closure before haptics-specific closure; refreshed same-image 9-test profile runtime covers missing/immediate/delayed haptics input registration; six plans check touch dependency closure before haptics-specific closure; user-provided OS4.0.4 runtime bundle parsed for event3 touch registration and absent live ABS_MT trace; no live input attempt correlated to GUI delivery"
   },
@@ -5438,12 +5435,12 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/refresh-return-delivery.json",
-    "evidence_sha256": "d214183f128acf2b8fd148716389778ec7db4f8dbe3f85dd5baf79f714a671b5",
-    "image_sha256": "4623448c6b0a986ca3cb056383eeb7b9ad91a54181b40e920622e863104880bd",
-    "production_patch": "0139",
-    "scope": "Original selected route/callback/worker and LVGL progress/page-host paths; backup/storage bodies, scan, settings, fonts and display are fixtures. No hardware reproduction, actual mount/backup or DRM diagnosis.",
-    "hardware": "unverified"
+    "evidence": "logs/touch-policy-rollback-delivery.json",
+    "evidence_sha256": "ca889768c822c9b89786505b8ac4db4c85644aee4051c86642f35604dc6905f1",
+    "image_sha256": "13644f3443b5baef012920d73838c7e980608235e2478ddbea6334a646f1a082",
+    "production_patch": "0139 retained; native device-tree touch script restored to 022963b^",
+    "scope": "Private filesystem fixtures verify readiness polling, immediate single raw0 request and errors. They do not execute sysfs callbacks, the controller or physical input. The two-second delay is not a proven fault cause.",
+    "hardware": "unverified; user-reported-failure-open"
   },
   "delivery_evidence_refresh": {
     "date": "2026-11-12",
@@ -6795,11 +6792,20 @@
     "production_changes": false,
     "new_build": false
   },
-  "execution_status": "maintenance-with-explicit-unverified-boundaries",
+  "execution_status": "touch-regression-open-rollback-candidate-delivered",
   "execution_queue": {
-    "scope": "Prior finite closeout plus new user-reported backup-refresh return defect; patch0139 targeted fix complete, remaining hardware/function limits retained.",
+    "scope": "New user-reported release touch failure; exact timing rollback candidate delivered, physical fault remains open.",
     "authority": "docs/WORK-QUEUE.md",
-    "active": [],
+    "active": [
+      {
+        "id": "touch-release-regression",
+        "outcome": "timing-rollback-candidate-delivered-field-failure-open",
+        "production_change": true,
+        "hardware_testing": false,
+        "document": "docs/OS4-TOUCH-FAILURE.md",
+        "next": "Continue only on new discriminating touch evidence; do not rerun equivalent fixtures or unrelated resolved features."
+      }
+    ],
     "closed": [
       {
         "id": "touch-startup",
@@ -6913,5 +6919,40 @@
     "production_patch": "0138",
     "scope": "Current clean-built CLI-results candidate; historical production audit and subsequent original CLI/FIFO/ORS same-server retry evidence. Closeout preserves image and all876 source bindings. Current full-functional/hardware validation unproven. See offline_closeout for new documentation/source inspection, not a new production delivery.",
     "hardware": "unverified"
+  },
+  "historical_delivery_before_touch_rollback": {
+    "evidence": "logs/refresh-return-delivery.json",
+    "evidence_sha256": "d214183f128acf2b8fd148716389778ec7db4f8dbe3f85dd5baf79f714a671b5",
+    "image_sha256": "4623448c6b0a986ca3cb056383eeb7b9ad91a54181b40e920622e863104880bd",
+    "production_patch": "0139",
+    "scope": "Original selected route/callback/worker and LVGL progress/page-host paths; backup/storage bodies, scan, settings, fonts and display are fixtures. No hardware reproduction, actual mount/backup or DRM diagnosis.",
+    "hardware": "unverified"
+  },
+  "touch_policy_rollback": {
+    "evidence": "logs/touch-policy-rollback-delivery.json",
+    "evidence_sha256": "ca889768c822c9b89786505b8ac4db4c85644aee4051c86642f35604dc6905f1",
+    "status": "PASS",
+    "image": "imgs/built/yarp-dijun-1.0.1-rc1.img",
+    "image_sha256": "13644f3443b5baef012920d73838c7e980608235e2478ddbea6334a646f1a082",
+    "previous_image_sha256": "4623448c6b0a986ca3cb056383eeb7b9ad91a54181b40e920622e863104880bd",
+    "image_size": 104857600,
+    "ramdisk_size": 76679130,
+    "production_sources": 877,
+    "production_change": "Exact rollback of the nine-line touch settle-window addition in 022963b; native maintained device-tree script. Platform patch sequence remains at 0139.",
+    "touch_script_sha256": "34184d59730f18b7cecdc7132d1df9d0a37fa006efbf32adf6b763cabb689f24",
+    "jobs": 30,
+    "policy_cases": 7,
+    "policy_report_sha256": "c04a0aba77fe5fa0d98cdc0e39a105e572e13770ceb1e355090f022c297553cf",
+    "payload_changes": [
+      "prop.default",
+      "ramdisk-files.sha256sum",
+      "system/bin/dijun-touch-reports.sh"
+    ],
+    "baseline_commit": "022963b94e10f6e885778f63b54c809f28ee2783^",
+    "hardware_testing": false,
+    "field_touch_status": "user-reported-failure; rollback-candidate-not-device-validated",
+    "scope": "Bind the exact touch timing rollback to its clean candidate, without hardware claims.",
+    "limits": "Private filesystem fixtures verify readiness polling, immediate single raw0 request and errors. They do not execute sysfs callbacks, the controller or physical input. The two-second delay is not a proven fault cause.",
+    "audit_source_sha256": "1f74795028e8e68521fd6c640e95f3cd4523d66721b5da7e12621654060df234"
   }
 }

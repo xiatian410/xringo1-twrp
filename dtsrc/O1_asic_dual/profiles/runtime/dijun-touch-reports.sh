@@ -17,15 +17,6 @@ while :; do
     sleep 0.1
     tries=$((tries + 1))
 done
-# synaptics_tcm2 queues a 50-jiffy worker during connect. On the stable OS4
-# driver it can switch back to raw reports, so let that probe work settle before
-# making the final Recovery-mode request. This is deliberately bounded.
-sleep 2
-state=$(cat "$root/sys/module/synaptics_tcm2/initstate" 2>/dev/null) || state=
-if [ "$state" != live ] || ! grep -Fq 'Name="Xiaomi_Touch_Input_0"' "$root/proc/bus/input/devices" 2>/dev/null; then
-    echo 'touch reports: panel/input disappeared during settle window'
-    exit 1
-fi
 # Always issue the request: the wrapper cache is not a controller query.
 # Do not reset/reflash the controller or change calibration here.
 printf '0\n' > "$node" || { echo 'touch reports: ordinary-report request failed'; exit 1; }

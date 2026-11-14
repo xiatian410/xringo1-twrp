@@ -6,7 +6,7 @@ TWRP / YARP recovery adaptation for Xiaomi 15S Pro (`dijun`, XRING O1). The proj
 
 ## Status
 
-The bounded offline adaptation work has entered maintenance with explicit unverified boundaries. One candidate contains six exact firmware profiles; this establishes the documented packaging and software selection scope, not complete device compatibility. See the [compatibility matrix](compatibility-matrix.md) for version-specific dependencies and remaining limits.
+Touch failure has been reported in release 1.0.0. Candidate **1.0.1-rc1** rolls back an earlier, unverified two-second touch startup delay; physical touch recovery and the fault cause remain unconfirmed. See the [touch investigation](docs/OS4-TOUCH-FAILURE.md). Other completed work remains in maintenance. One candidate contains six exact firmware profiles; see the [compatibility matrix](compatibility-matrix.md) for the supported software scope and remaining limits.
 
 | | Current scope |
 | --- | --- |

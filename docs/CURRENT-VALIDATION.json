@@ -1,15 +1,16 @@
 {
   "scope": "Public summary of local offline results; raw device logs and complete local reports intentionally omitted.",
-  "image_name": "recovery-dijun-unified-refresh-return.img",
-  "image_sha256": "4623448c6b0a986ca3cb056383eeb7b9ad91a54181b40e920622e863104880bd",
+  "image_name": "yarp-dijun-1.0.1-rc1.img",
+  "image_sha256": "13644f3443b5baef012920d73838c7e980608235e2478ddbea6334a646f1a082",
   "production_sources": 877,
   "hardware_testing": "No agent device tests; current candidate hardware-unverified.",
   "os4_haptics": "Resolved: user confirms OS4 vibration fixed and normal; excluded from routine checks.",
   "touch_startup_policy": {
-    "status": "candidate-built-hardware-unverified",
-    "policy_cases": 9,
+    "status": "user-reported-failure-open-rollback-candidate-built",
+    "policy_cases": 7,
     "image_delivery_audit": "PASS",
-    "scope": "After Synaptics is live and Xiaomi input is registered, wait 2 seconds, request ordinary touch reports, and check the software cache. This does not prove controller acknowledgement or event delivery. Prior manual raw0 user capture observed 215 Linux input events; this automatic-startup candidate has no corresponding hardware observation."
+    "scope": "Private filesystem fixtures verify readiness polling, immediate single raw0 request and errors. They do not execute sysfs callbacks, the controller or physical input. The two-second delay is not a proven fault cause.",
+    "rollback_commit": "022963b^"
   },
   "checks": [
     {
@@ -2789,7 +2790,7 @@
   },
   "current_batch_groups": [],
   "current_batch_document": "docs/WORK-QUEUE.md",
-  "current_batch_groups_scope": "New specific user-reported backup refresh return sequence; patch0139 only. Historical numbered groups do not generate tasks.",
+  "current_batch_groups_scope": "User-reported touch regression only. Restore native touch policy before 022963b; platform patch0139 retained. No unrelated functional reruns.",
   "stock_os4_zip_entry": {
     "document": "docs/INSTALL-CHAIN-VALIDATION.md#stock-os4-zip",
     "report": "logs/zip-stock-os4-fixed.json",
@@ -3111,11 +3112,20 @@
     "production_changes": false,
     "new_build": false
   },
-  "execution_status": "maintenance-with-explicit-unverified-boundaries",
+  "execution_status": "touch-regression-open-rollback-candidate-delivered",
   "execution_queue": {
-    "scope": "Prior finite closeout plus new user-reported backup-refresh return defect; patch0139 targeted fix complete, remaining hardware/function limits retained.",
+    "scope": "New user-reported release touch failure; exact timing rollback candidate delivered, physical fault remains open.",
     "authority": "docs/WORK-QUEUE.md",
-    "active": [],
+    "active": [
+      {
+        "id": "touch-release-regression",
+        "outcome": "timing-rollback-candidate-delivered-field-failure-open",
+        "production_change": true,
+        "hardware_testing": false,
+        "document": "docs/OS4-TOUCH-FAILURE.md",
+        "next": "Continue only on new discriminating touch evidence; do not rerun equivalent fixtures or unrelated resolved features."
+      }
+    ],
     "closed": [
       {
         "id": "touch-startup",
@@ -3223,5 +3233,38 @@
     "hardware_testing": false,
     "hardware_fix_verified": false,
     "scope": "Original selected route/callback/worker and LVGL progress/page-host paths; backup/storage bodies, scan, settings, fonts and display are fixtures. No hardware reproduction, actual mount/backup or DRM diagnosis."
+  },
+  "historical_touch_startup_policy_with_settle_window": {
+    "status": "candidate-built-hardware-unverified",
+    "policy_cases": 9,
+    "image_delivery_audit": "PASS",
+    "scope": "After Synaptics is live and Xiaomi input is registered, wait 2 seconds, request ordinary touch reports, and check the software cache. This does not prove controller acknowledgement or event delivery. Prior manual raw0 user capture observed 215 Linux input events; this automatic-startup candidate has no corresponding hardware observation."
+  },
+  "touch_policy_rollback": {
+    "evidence": "logs/touch-policy-rollback-delivery.json",
+    "evidence_sha256": "ca889768c822c9b89786505b8ac4db4c85644aee4051c86642f35604dc6905f1",
+    "status": "PASS",
+    "image": "imgs/built/yarp-dijun-1.0.1-rc1.img",
+    "image_sha256": "13644f3443b5baef012920d73838c7e980608235e2478ddbea6334a646f1a082",
+    "previous_image_sha256": "4623448c6b0a986ca3cb056383eeb7b9ad91a54181b40e920622e863104880bd",
+    "image_size": 104857600,
+    "ramdisk_size": 76679130,
+    "production_sources": 877,
+    "production_change": "Exact rollback of the nine-line touch settle-window addition in 022963b; native maintained device-tree script. Platform patch sequence remains at 0139.",
+    "touch_script_sha256": "34184d59730f18b7cecdc7132d1df9d0a37fa006efbf32adf6b763cabb689f24",
+    "jobs": 30,
+    "policy_cases": 7,
+    "policy_report_sha256": "c04a0aba77fe5fa0d98cdc0e39a105e572e13770ceb1e355090f022c297553cf",
+    "payload_changes": [
+      "prop.default",
+      "ramdisk-files.sha256sum",
+      "system/bin/dijun-touch-reports.sh"
+    ],
+    "baseline_commit": "022963b94e10f6e885778f63b54c809f28ee2783^",
+    "hardware_testing": false,
+    "field_touch_status": "user-reported-failure; rollback-candidate-not-device-validated",
+    "scope": "Bind the exact touch timing rollback to its clean candidate, without hardware claims.",
+    "limits": "Private filesystem fixtures verify readiness polling, immediate single raw0 request and errors. They do not execute sysfs callbacks, the controller or physical input. The two-second delay is not a proven fault cause.",
+    "audit_source_sha256": "1f74795028e8e68521fd6c640e95f3cd4523d66721b5da7e12621654060df234"
   }
 }
