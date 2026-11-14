@@ -168,6 +168,7 @@ class Selection(unittest.TestCase):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--allow-partial', action='store_true')
+    parser.add_argument('--output', type=Path)
     args = parser.parse_args()
     if not SAMPLES or (set(SAMPLES) != set(sources()) and not args.allow_partial):
         raise SystemExit('Generate selection manifests for the complete source catalog first (or explicitly --allow-partial).')
@@ -178,5 +179,5 @@ if __name__ == '__main__':
                   selector_sha256=hashlib.sha256(SCRIPT.read_bytes()).hexdigest(),
                   test_sources={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__).resolve(),ROOT/'scripts/acquire_firmware.py']},
                   tests_run=result.testsRun, skipped=len(result.skipped), cases=RESULTS)
-    (ROOT / 'logs/profile-selection-test.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
+    (args.output or ROOT / 'logs/profile-selection-test.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
     raise SystemExit(not result.wasSuccessful())

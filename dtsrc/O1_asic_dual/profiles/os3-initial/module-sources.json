@@ -693,20 +693,20 @@
   ],
   "unavailable_optional_softdeps": [
     {
-      "owner": "pinctrl_xr",
-      "optional_softdep": "xsp1"
-    },
-    {
       "owner": "xring_drm",
       "optional_softdep": "perf_monitor"
     },
     {
-      "owner": "xr_regulator",
-      "optional_softdep": "trace_hook"
+      "owner": "pinctrl_xr",
+      "optional_softdep": "xsp1"
     },
     {
       "owner": "xr_regulator",
       "optional_softdep": "xsp1"
+    },
+    {
+      "owner": "xr_regulator",
+      "optional_softdep": "trace_hook"
     }
   ],
   "ignored_vendor_syntax": [

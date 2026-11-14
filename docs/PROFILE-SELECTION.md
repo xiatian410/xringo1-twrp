@@ -6,6 +6,8 @@ vendor/ODM 的 Android 15 身份单独保留，不能替代 OS3 的 Android 16 �
 
 ## 输入与判断
 
+完整解密身份选择继续执行下述严格检查。2026-11-15 新增独立触摸范围：完整身份无匹配时，可以仅按精确内核、活动槽位、触摸硬依赖的全部文件哈希，以及当前 ODM 两份触摸固件/配置与内置资源的一致性选择触摸路径。system/vendor/ODM 的 build.prop 和 fstab 身份不作为此路径的 ABI 证明，也不授予解密资格。触摸范围只发布固件和模块，`twrp.crypto.ready=0`，不启动 HAL 或覆盖安全补丁身份。未知模块、固件、内核和异常槽位仍拒绝。详见[当前触摸修正](OS4-TOUCH-FAILURE.md)。以下完整身份协议与历史报告保留其原范围。
+
 `dijun-select-profile.sh` 是只读预检。recovery 先挂载当前槽位的 system、vendor、ODM、vendor_dlkm。
 脚本读取 `/proc/bootconfig` 中唯一的 `androidboot.slot_suffix`，只接受 `_a`、`_b`。
 四个挂载的 dm 名称必须分别匹配当前槽位；缺失、重复、另一槽位或未知映射名称返回错误。

@@ -16,7 +16,7 @@
     "mode": "0o644"
   },
   "ADAPTATION-GOALS.md": {
-    "sha256": "e5a118bf904543bc212b9e785c55f612d5b4bb7c484681c79b1b56ea248b0b61",
+    "sha256": "f1ca0a68e5657d51e69513af9f2cd76fff31a484e72b69494723c867ce54e976",
     "mode": "0o644"
   },
   "AGENTS.md": {
@@ -32,7 +32,7 @@
     "mode": "0o644"
   },
   "MAINTENANCE.md": {
-    "sha256": "4c658d7fbb10f7e77afff1e90317fc055f368a0f85ffc49afdfcb17240ed0ad7",
+    "sha256": "f775ec9a83f82c5eb5de165bf5748fb684cee99c88dabde000ac50c35cddf5eb",
     "mode": "0o644"
   },
   "NOTICE": {
@@ -44,11 +44,11 @@
     "mode": "0o644"
   },
   "README.md": {
-    "sha256": "17c2c86ba73b23b586ed39ef69b7ba06c58641843bda3ffa1cf5abc700d5314a",
+    "sha256": "e032dd4925aa14409c21da1a746c7b495d0829380f09353a32facdc9d763cd66",
     "mode": "0o644"
   },
   "compatibility-matrix.md": {
-    "sha256": "faeaa9a7602f1848d3fac986d2b7246195a02dc8f20c76b269e9aa1b4255a2f6",
+    "sha256": "f15399ed358839c254e155b3985d64439a1e410b3c5f540f18fdf0cb28c801f6",
     "mode": "0o644"
   },
   "docs/BACKUP-DATA-PATHS.md": {
@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "e3eeb6752a7ad7515f01119f0c65747c542432cc343d390e15864ddadba0dc96",
+    "sha256": "12c0759aef655bd59bc38e7d41efb99924c8387d0b5a9cb58b49056240bdd542",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -116,7 +116,7 @@
     "mode": "0o644"
   },
   "docs/OS4-TOUCH-FAILURE.md": {
-    "sha256": "7707937e17b2c6fc69ae8dedf3257065c1d42e61dd6601069d7d2018d4ae6114",
+    "sha256": "69feb93fc9776e113a8b8d7941f917b367c384a8affaf4dc4b30e0dbdf3d8828",
     "mode": "0o644"
   },
   "docs/OTA-OPERATION-COW.md": {
@@ -132,7 +132,7 @@
     "mode": "0o644"
   },
   "docs/PROFILE-SELECTION.md": {
-    "sha256": "c0f47438e99a02b6de82abb7066b554802e5c5dc89e8d5e1ae9b3559106ac92a",
+    "sha256": "0f8ed98fe7845de91fab6af1b34fe3377db6a9f270fb8c1e0f31d91f5b97fabd",
     "mode": "0o644"
   },
   "docs/README.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "6f6bd0690dd1896a4e1ae5cd9508b459f88007e9d3e7996700e63269ddc300bf",
+    "sha256": "94613ee42c3ece08fbf5d7e4413f8fac76b68b5309259ed1841bd3b0e8c9e66e",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -364,7 +364,7 @@
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/device.mk": {
-    "sha256": "5c7b4627d923c605a14c43dc1ad70a1e0137c48ff4ba3c2ea0b4280ba4137b32",
+    "sha256": "c6407e90545fd1410a0de3240dfcea4ba132d385fe2f3e22af25f623df2426ee",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/gen_loadrecovery.py": {
@@ -884,7 +884,7 @@
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/os2-final/module-sources.json": {
-    "sha256": "2460b3d80c66812486cb93bcee9719a1e306abec56a851860cc6853ecbcadfdf",
+    "sha256": "c7084e018a46e5cae4062b10f7343f0dcc8f054aa02a182323e8d5ad66ad8338",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/os2-final/modules.plan": {
@@ -907,12 +907,20 @@
     "sha256": "ec675bb621602da75d2065769616b5ad7bc7a2b57d889ee087a8cecea5d94aaf",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/profiles/os2-final/touch-files.list": {
+    "sha256": "7c4cee4ccc50152971fadea83c69464cc3a7e8befdfc6cb23d191ba7afdf0a5a",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-final/touch-modules.plan": {
+    "sha256": "99038d8d87b43af4848e2d8a1ef9771a0133db35fd4596699a7f0c278b12b411",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/profiles/os2-initial/crypto.prop": {
     "sha256": "bf825549e6ffd1ca7283a9ddd370e7607107bf71040af5b94de5c7bb897fc247",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/os2-initial/module-sources.json": {
-    "sha256": "a654e0c22efba5711ee3b7770674e5768551eb8899741edee0bb2afcbde4205c",
+    "sha256": "12fbabde3857959e6775d32606e7ead643d0155bf1f8595d6b1fe9e1d5e52e54",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/os2-initial/modules.plan": {
@@ -935,12 +943,20 @@
     "sha256": "7f4b04cb0f73848db4cda12d5b4099b5e297e5b694cc13a26dacdc6bca9476fe",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/profiles/os2-initial/touch-files.list": {
+    "sha256": "7c4cee4ccc50152971fadea83c69464cc3a7e8befdfc6cb23d191ba7afdf0a5a",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os2-initial/touch-modules.plan": {
+    "sha256": "892e367ce033471a67be83735624b4d6ff359ecabaa7affd2b3ed5df7b9c13a2",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/profiles/os3-final/crypto.prop": {
     "sha256": "b719ff45d5e85ac5dd9c63631fa8304d2b5763bbb6528870d0cc113b5ebfc0f9",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/os3-final/module-sources.json": {
-    "sha256": "bdf8c46de759e87844a5309461c687ca50b7a95527dc8d13a467b1fc38485666",
+    "sha256": "f8c548464287a8d907bf00f295d057bbed099182b01c6e92478d64676781811f",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/os3-final/modules.plan": {
@@ -963,12 +979,20 @@
     "sha256": "40c6956c16df44ffb09b977fdcfc06a07ef162e645e22f9a66e3c4041fa6f456",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/profiles/os3-final/touch-files.list": {
+    "sha256": "7c4cee4ccc50152971fadea83c69464cc3a7e8befdfc6cb23d191ba7afdf0a5a",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-final/touch-modules.plan": {
+    "sha256": "9da61a61fb3907f7a191aadb5b741d9438065fc19851e9d06f7be09419c88919",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/profiles/os3-initial/crypto.prop": {
     "sha256": "9d7acca1655d13a6c19f6ff8e1c39441d82830bf5b4cbaf07e4334f6c0d6cb09",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/os3-initial/module-sources.json": {
-    "sha256": "9253a7b56ae0c05ff6be7883ecf743ddc70be19f7523401855f8362d79275599",
+    "sha256": "95c48d2fbdf5e759ae98135e30f305b7c3a6247834e3963d7aba6260d99f9b17",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/os3-initial/modules.plan": {
@@ -991,12 +1015,20 @@
     "sha256": "23eda3869bc12ccd6a8115339eba615c1fb1e5b80259e4a078b536def7cf0237",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/profiles/os3-initial/touch-files.list": {
+    "sha256": "7c4cee4ccc50152971fadea83c69464cc3a7e8befdfc6cb23d191ba7afdf0a5a",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os3-initial/touch-modules.plan": {
+    "sha256": "6648722e94b622ef5080127e8f3391fa43e3ccb201ac7475c63f4e1ee34db363",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/profiles/os4-current/crypto.prop": {
     "sha256": "5400d2e239067eec5ad22d0b1291ee3b108db9678bf017ade67c78d3a570a54f",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/os4-current/module-sources.json": {
-    "sha256": "cd95ecefe61ce369a1a44f89ce4a4123f34c5e8a7242c88bc0ddaff0f24f3537",
+    "sha256": "116fdd6ee757c4c852fd9b48f470e5c5fdeacb609b1c6c4e6f1cb7abc9261dc7",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/os4-current/modules.plan": {
@@ -1019,12 +1051,20 @@
     "sha256": "824369c34a1a03e3060e888e20a09e37e0a37e7bdc0d8e852d1ac273677225b9",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/profiles/os4-current/touch-files.list": {
+    "sha256": "7c4cee4ccc50152971fadea83c69464cc3a7e8befdfc6cb23d191ba7afdf0a5a",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-current/touch-modules.plan": {
+    "sha256": "6ee92a24017c48b6413415d3a533d9d9be8707adabc3419649121a6788449ade",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/profiles/os4-stable/crypto.prop": {
     "sha256": "0c06093827623466d263ec3642a0cdb319b10a29a818a0ad457211b1a3fb4a8d",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/os4-stable/module-sources.json": {
-    "sha256": "5771e8ebebd34b844aae44c7c48b0334a2c162da106420f6b2d7f1f2fb97d7bb",
+    "sha256": "f618d2018d9272ec114e6e29603a1d9744ab8d3846274e226ef057ba99ea8c30",
     "mode": "0o644"
   },
   "dtsrc/O1_asic_dual/profiles/os4-stable/modules.plan": {
@@ -1047,16 +1087,24 @@
     "sha256": "afc5433468a56d84a78ecb4fc74bad995eaca066291652c83a847ac26192e800",
     "mode": "0o644"
   },
+  "dtsrc/O1_asic_dual/profiles/os4-stable/touch-files.list": {
+    "sha256": "7c4cee4ccc50152971fadea83c69464cc3a7e8befdfc6cb23d191ba7afdf0a5a",
+    "mode": "0o644"
+  },
+  "dtsrc/O1_asic_dual/profiles/os4-stable/touch-modules.plan": {
+    "sha256": "c57dd2feb0d22c5356c6389b74309691143a49b8cda7ece4950d2d60db5938c7",
+    "mode": "0o644"
+  },
   "dtsrc/O1_asic_dual/profiles/runtime/dijun-prepare-mitee.sh": {
     "sha256": "b8cc562f6ce66fb139aee9014804b3540775ec13af1d20b944fb2c2a97ef8d01",
     "mode": "0o755"
   },
   "dtsrc/O1_asic_dual/profiles/runtime/dijun-runtime.sh": {
-    "sha256": "09a2bbd828f8d58061c3859ff862eb2cb95a702bf20f7b373ccc26ee712e5209",
+    "sha256": "986ad3df74d16841481e87c5ef7a749085e8d78b50c0cbf715c9d1723be1574b",
     "mode": "0o755"
   },
   "dtsrc/O1_asic_dual/profiles/runtime/dijun-select-profile.sh": {
-    "sha256": "ced4dc8c78fc7994b89ad4c2ce99fe06ba261dfbf54597bb8cfca7af3dd0d8da",
+    "sha256": "e6083a172d815bebd245f2ef664b9cd12a702ffb16fb6fc865978928c1e3b1bd",
     "mode": "0o755"
   },
   "dtsrc/O1_asic_dual/profiles/runtime/dijun-touch-reports.sh": {
@@ -1791,6 +1839,10 @@
     "sha256": "de89bb11770edd849ce8d6a72fd12cf721ccac78a3463bf12d3c510ed577c17d",
     "mode": "0o644"
   },
+  "scripts/audit_touch_scope_delivery.py": {
+    "sha256": "5dcec328a13d4f142ea3988b6ea3006a2f3ff84acbf7da9f24fe9b91cef2225d",
+    "mode": "0o644"
+  },
   "scripts/audit_touch_v1_debug_observation.py": {
     "sha256": "b8cfa2bdd4f9a822442c9c81fc818ba9062136a6c8efbd677c8c92dbc9ab04a0",
     "mode": "0o644"
@@ -1932,7 +1984,7 @@
     "mode": "0o644"
   },
   "scripts/generate_profile_runtime.py": {
-    "sha256": "1f92be20343cbea3fd3ef096d8bf3820d2d1f8b209b3955fe135a455198b84c3",
+    "sha256": "3e8e805e6b19a30c0aa100128e92777b89029a9cfb3cf615514620e771926f13",
     "mode": "0o644"
   },
   "scripts/generate_profile_selection.py": {
@@ -2072,11 +2124,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "a2b65014133585246445a1c2af6bcadeadeddb5a721253c4d2d09d726489525f",
+    "sha256": "28b3ba980938e7e6eedef8cdb6fa494688261e45ddc77b808976dd662dd7da7e",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "41e363c617074200afa3dbd75eda9d384675cec64906ff955b767664ed0e5801",
+    "sha256": "132e65391780511f85ea5a4c050828a38ce5ed8176b90e3fd1de6bf5d8690737",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2868,11 +2920,11 @@
     "mode": "0o644"
   },
   "tests/profile_runtime_test.py": {
-    "sha256": "9de9cf8102f323f1bf53bd079e5b72897b01f725392777cd732b0a0bd7404d7f",
+    "sha256": "1078e586de0a924833bfe081ad029842d4309dc808c2b352ed08d92d0df81fe1",
     "mode": "0o644"
   },
   "tests/profile_selection_test.py": {
-    "sha256": "78e06a184cb86bf375f8ca964708f6e0c2307c9d22ab53dfb85caede3af79d04",
+    "sha256": "d59e995a8bb2d85f974f473eae253a05f6a24ce382a81c32ce377e6745994be3",
     "mode": "0o644"
   },
   "tests/profile_service_relocation_test.py": {

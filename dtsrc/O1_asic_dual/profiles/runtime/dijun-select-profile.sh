@@ -6,12 +6,14 @@ set -f
 root=
 profiles=/system/etc/dijun/profiles
 blobs=/system/etc/dijun/blobs
+purpose=full
 while [ "$#" -gt 0 ]; do
     [ "$#" -ge 2 ] || { echo 'missing argument' >&2; exit 2; }
     case "$1" in
         --root) root=$2 ;;
         --profiles) profiles=$2 ;;
         --blobs) blobs=$2 ;;
+        --purpose) purpose=$2 ;;
         *) echo 'unknown argument' >&2; exit 2 ;;
     esac
     shift 2
@@ -19,6 +21,7 @@ done
 [ "$root" != / ] || root=
 case "$root" in ''|/*) ;; *) echo 'root must be absolute' >&2; exit 2 ;; esac
 fail() { echo "profile preflight: $*" >&2; exit 2; }
+case "$purpose" in full|touch) ;; *) fail 'invalid purpose' ;; esac
 kernel=$(cat "$root/proc/sys/kernel/osrelease") || fail 'kernel release unavailable'
 [ -n "$kernel" ] || fail 'empty kernel release'
 # Read bootloader evidence, not the recovery build identity that KeyMint may
@@ -52,6 +55,50 @@ file_hash() {
     printf '%s' "$hash"
 }
 
+touch_matches() {
+    # This is not crypto identity selection. Every module in the generated
+    # hard closure, including already-loaded modules' source files, must match.
+    seen='|'
+    [ -f "$dir/touch-modules.plan" ] && [ -f "$dir/touch-files.list" ] || return 2
+    while read -r name sha path deps extra; do
+        [ -z "$extra" ] || return 2
+        case "$name" in ''|*[!a-zA-Z0-9_]*) return 2 ;; esac
+        case "$seen" in *"|$name|"*) return 2 ;; esac
+        [ "${#sha}" -eq 64 ] || return 2
+        case "$sha" in *[!0-9a-f]*) return 2 ;; esac
+        case "$path" in /lib/modules/*.ko|/vendor_dlkm/lib/modules/*.ko|/system_dlkm/lib/modules/*.ko) ;; *) return 2 ;; esac
+        case "$path" in *..*|*[!a-zA-Z0-9_./+-]*) return 2 ;; esac
+        case "$deps" in ''|*[!a-zA-Z0-9_,-]*) return 2 ;; esac
+        if [ "$deps" != - ]; then
+            oldifs=$IFS; IFS=,
+            for dep in $deps; do
+                case "$seen" in *"|$dep|"*) ;; *) IFS=$oldifs; return 2 ;; esac
+            done
+            IFS=$oldifs
+        fi
+        observed=$(file_hash "$root$path") || { echo "$id: touch dependency unavailable: $name" >&2; return 1; }
+        [ "$observed" = "$sha" ] || { echo "$id: touch dependency hash differs: $name" >&2; return 1; }
+        seen="$seen$name|"
+    done < "$dir/touch-modules.plan"
+    case "$seen" in *'|synaptics_tcm2|'*) ;; *) return 2 ;; esac
+    files='|'; firmware_count=0
+    while read -r sha mode path extra; do
+        [ -z "$extra" ] && [ "$mode" = 0644 ] && [ "${#sha}" -eq 64 ] || return 2
+        case "$sha" in *[!0-9a-f]*) return 2 ;; esac
+        case "$path" in /lib/firmware/synaptics_spi_dijun.img|/lib/firmware/dijun_syna_thp_config.ini) ;; *) return 2 ;; esac
+        case "$files" in *"|$path|"*) return 2 ;; esac
+        files="$files$path|"
+        # A system update may also update controller firmware. Never stage an
+        # older embedded copy without matching the currently installed bytes.
+        observed=$(file_hash "$root/odm/firmware/${path##*/}") || { echo "$id: installed touch firmware unavailable: $path" >&2; return 1; }
+        [ "$observed" = "$sha" ] || { echo "$id: installed touch firmware differs: $path" >&2; return 1; }
+        observed=$(file_hash "$blobs/$sha") || return 1
+        [ "$observed" = "$sha" ] || return 1
+        firmware_count=$((firmware_count + 1))
+    done < "$dir/touch-files.list"
+    [ "$firmware_count" -eq 2 ] || return 2
+}
+
 matches() {
     schema=0; kernel_seen=0; identities='|'; blob_count=0
     while read -r kind one two three extra; do
@@ -73,8 +120,10 @@ matches() {
                 esac
                 [ "${#two}" -eq 64 ] || return 2
                 case "$two" in *[!0-9a-f]*) return 2 ;; esac
-                observed=$(file_hash "$root$three") || { echo "$id: unavailable $one" >&2; return 1; }
-                [ "$observed" = "$two" ] || { echo "$id: $one hash differs" >&2; return 1; }
+                if [ "$purpose" = full ] || [ "$one" = touch ]; then
+                    observed=$(file_hash "$root$three") || { echo "$id: unavailable $one" >&2; return 1; }
+                    [ "$observed" = "$two" ] || { echo "$id: $one hash differs" >&2; return 1; }
+                fi
                 identities="$identities$one|" ;;
             blob)
                 [ "${#one}" -eq 64 ] && [ -z "$three" ] || return 2
@@ -92,6 +141,7 @@ matches() {
     for required in system vendor odm fstab touch haptics; do
         case "$identities" in *"|$required|"*) ;; *) return 2 ;; esac
     done
+    if [ "$purpose" = touch ]; then touch_matches; return $?; fi
     return 0
 }
 
@@ -113,4 +163,4 @@ for manifest in "$profiles"/*/selection.conf; do
 done
 [ "$count" -ne 0 ] || { echo 'profile preflight: no complete matching profile' >&2; exit 3; }
 [ "$count" -eq 1 ] || { echo 'profile preflight: ambiguous catalog' >&2; exit 4; }
-printf 'PROFILE=%s\nSLOT=%s\nKERNEL_RELEASE=%s\nSTATUS=matched-not-activated\n' "$chosen" "$slot" "$kernel"
+printf 'PROFILE=%s\nSLOT=%s\nKERNEL_RELEASE=%s\nSTATUS=matched-not-activated\nPURPOSE=%s\n' "$chosen" "$slot" "$kernel" "$purpose"

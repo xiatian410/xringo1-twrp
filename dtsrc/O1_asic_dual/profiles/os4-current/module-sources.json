@@ -767,12 +767,12 @@
       "optional_softdep": "xsp1"
     },
     {
-      "owner": "pinctrl_xr",
-      "optional_softdep": "xsp1"
-    },
-    {
       "owner": "xring_drm",
       "optional_softdep": "perf_monitor"
+    },
+    {
+      "owner": "pinctrl_xr",
+      "optional_softdep": "xsp1"
     },
     {
       "owner": "xring_i2c",
@@ -780,19 +780,19 @@
     },
     {
       "owner": "xring_audio_hw_third",
-      "optional_softdep": "irq_madera"
-    },
-    {
-      "owner": "xring_audio_hw_third",
       "optional_softdep": "pinctrl_madera"
     },
     {
       "owner": "xring_audio_hw_third",
-      "optional_softdep": "arizona_micsupp"
+      "optional_softdep": "irq_madera"
     },
     {
       "owner": "xring_audio_hw_third",
       "optional_softdep": "madera"
+    },
+    {
+      "owner": "xring_audio_hw_third",
+      "optional_softdep": "arizona_micsupp"
     }
   ],
   "ignored_vendor_syntax": [
@@ -810,10 +810,9 @@
       "owner": "perf_actuator",
       "after": "sched_walt",
       "cycle": [
-        "os_cpu_vip_sched",
         "sched_walt",
         "perf_actuator",
-        "os_cpu_vip_sched"
+        "sched_walt"
       ]
     }
   ]

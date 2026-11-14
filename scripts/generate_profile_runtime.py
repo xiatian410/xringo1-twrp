@@ -168,12 +168,20 @@ def main():
             assert re.fullmatch(r'[a-zA-Z0-9_./@+-]+', dest) and '..' not in dest.split('/')
             lines.append(f'{item["sha256"]} {int(item["mode"], 8):04o} /{dest}')
         (file.parent / 'runtime-files.list').write_text('\n'.join(lines) + '\n')
+        touch_files = [line for line in lines if line.split()[-1] in
+                       ['/lib/firmware/synaptics_spi_dijun.img',
+                        '/lib/firmware/dijun_syna_thp_config.ini']]
+        assert len(touch_files) == 2
+        (file.parent / 'touch-files.list').write_text('\n'.join(touch_files) + '\n')
         identity = profile['crypto_identity']
         assert set(identity) == {'ro.build.version.release', 'ro.build.version.security_patch',
                                  'ro.vendor.build.security_patch'}, identity
         (file.parent / 'crypto.prop').write_text(''.join(f'{k}={v}\n' for k, v in sorted(identity.items())))
         lines, report = module_plan(sample, facts)
         (file.parent / 'modules.plan').write_text('\n'.join(lines) + '\n')
+        touch_names = set(report['touch_priority_hard_closure'])
+        (file.parent / 'touch-modules.plan').write_text('\n'.join(
+            line for line in lines if line.split()[0] in touch_names) + '\n')
         (file.parent / 'module-sources.json').write_text(json.dumps(report, indent=2) + '\n')
         print(sample, len(lines), 'modules in ordered closure;', len(report['unavailable_optional_softdeps']), 'unavailable softdeps')
     for dest, sha in common.items():

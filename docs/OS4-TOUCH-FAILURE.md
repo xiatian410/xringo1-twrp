@@ -1,6 +1,18 @@
 # OS4 正式版无法触摸：反馈、离线排查与顺序修正候选
 
-## 当前：用户再次报告触摸故障，撤回额外启动等待（2026-11-15）
+## 当前：system 身份变化阻断触摸加载（2026-11-15）
+
+用户补充 `/tmp/dijun-runtime.log`：`os4-stable: system hash differs` → `no complete matching profile` → `runtime cache: no verified profile`；`/proc/sys/kernel/osrelease` 与原 OS4 正式版精确一致：`6.18.21-android17-5-g284297031c53-abogki553682993-4k`。用户提供的 `touch-now.zip`（本地 SHA-256 `b6ad8cebf52507497e184a9cdd57326bc22e47db7f945d64d3d6ce40867a80a4`）也显示没有触摸模块和输入设备。启动参数包含 `OS4.0.5.0.XODCN`，但完整 OS4.0.5 包及当前模块/固件哈希尚未取得。
+
+**已确认的软件问题是：触摸加载与整套解密身份强耦合。**严格选择器先比较 system/build.prop，失败便终止整个 cache/modules 流程，因此根本没有执行 raw0 脚本。上一候选的两秒回退不能解决这一前置失败；本次不再从 raw 模式或 GUI 命中推断原因。
+
+本批在原生设备树脚本中增加独立 `touch` 范围：完整身份不匹配时，只有正常的“无匹配”返回码 3 可以进入该路径；槽位/挂载证据错误、格式错误或歧义不会降级。独立路径检查精确内核、当前活动槽位、触摸模块及其全部硬依赖的文件哈希（含已加载依赖的源文件），并核对当前 ODM 的两个触摸固件/配置与镜像内原始资源完全相同。所有检查通过后才缓存两份触摸资源和缺失模块，随后通过现有 modules 路径加载并请求 raw0。不同模块、缺失依赖或不同固件仍明确拒绝，不能因此宣称 OS4.0.5 已完整适配。
+
+完整身份仍使用原来的六项校验；独立路径不复制 HAL/TA/私有库、不覆盖 SPL/版本身份、不启动安全服务，`twrp.crypto.ready` 始终为 0。诊断属性为 `twrp.profile.scope=touch`、`twrp.profile.touch_selected`；发布阶段状态为 `touch-only`。原生维护文件为 `dijun-select-profile.sh`、`dijun-runtime.sh`、`device.mk` 与生成的六套 `touch-modules.plan` / `touch-files.list`；平台补丁序列继续保留到 0139。
+
+有限验证复用现有 selector/runtime 测试：旧 rc1 在六个“内核不变、system 身份变化”场景中全部失败；新路径的 5 组、94 次阶段调用通过，覆盖六个精确 profile 的双槽位完整身份路径、身份变化后的触摸路径与解密拒绝，以及模块/固件/依赖、槽位、缓存与插入失败。原完整选择器的 8 组检查也通过。所有模块插入、sysfs/input、挂载、属性和 Binder 均为显式替身，没有实机加载或触摸证明。候选、构建与差异见[交付报告](../simulation-report.md)。本次软件门槛已修正；当前设备字节是否满足触摸匹配条件和真实事件交付仍待确认。
+
+## 上一候选：撤回额外启动等待（2026-11-15，未解决本次故障）
 
 用户报告发布版 `yarp-dijun-1.0.0.img` 触摸失效，因此重新打开这一具体故障。此前确实修改过触摸：提交 `022963b` 在模块 live、Xiaomi input 注册之后增加了固定 2 秒等待和一次状态复查。该等待没有现场时序验证，也不能从 50 jiffies 推导为设备所需等待时间。
 

@@ -39,7 +39,12 @@ elif name == 'resetprop':
 elif name == 'getprop':print(props.get(args[0],''))
 elif name == 'insmod':
     module=Path(args[0]).stem
-    assert (r/'lib/firmware/cs40l26.wmfw').is_file(), 'firmware must precede insmod'
+    if props.get('twrp.profile.scope')=='touch':
+        assert (r/'lib/firmware/synaptics_spi_dijun.img').is_file(), 'touch firmware must precede insmod'
+        assert not (r/'lib/firmware/cs40l26.wmfw').exists()
+        assert not (r/'system/lib64/mitee').exists()
+    else:
+        assert (r/'lib/firmware/cs40l26.wmfw').is_file(), 'firmware must precede insmod'
     assert not (r/f'sys/module/{module}').exists(), 'must not reinsert a loaded module'
     if module in ['xring_smartpa','xring_audio_hw_third']:
         # Prioritize the touch attempt, but a failed independent touch closure
@@ -48,6 +53,11 @@ elif name == 'insmod':
     if module == os.environ.get('FAIL_MODULE'):sys.exit(1)
     (r/f'sys/module/{module}').mkdir()
     (r/f'sys/module/{module}/initstate').write_text('live\n')
+    if module=='synaptics_tcm2' and os.environ.get('TOUCH_INPUT')=='immediate':
+        (r/'proc/bus/input/devices').write_text('N: Name="Xiaomi_Touch_Input_0"\n')
+        node=r/'sys/class/touch/touch_dev/enable_touch_raw'
+        node.parent.mkdir(parents=True)
+        node.write_text('1\n')
     if module in ['xring_smartpa','xring_audio_hw_third']:
         mode=os.environ.get('HAPTICS_INPUT','missing')
         target=r/'proc/bus/input/devices'
@@ -72,6 +82,11 @@ p.write_text(json.dumps(props))
 class Runtime(unittest.TestCase):
     def fixture(self, sample='os4-current', slot='_a', preloaded=True):
         root = Selection.fixture(self, sample, slot)
+        for line in (CATALOG/sample/'touch-files.list').read_text().splitlines():
+            sha, mode, path = line.split()
+            target = root/'odm/firmware'/Path(path).name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(BLOBS/sha, target)
         (root/'proc/bus/input').mkdir(parents=True)
         (root/'proc/bus/input/devices').write_text('')
         report = json.loads((CATALOG / sample / 'module-sources.json').read_text())
@@ -93,10 +108,15 @@ class Runtime(unittest.TestCase):
         catalog = root / 'system/etc/dijun/profiles'
         for sample_name in SAMPLES:
             (catalog / sample_name).mkdir(parents=True)
-            for name in ['selection.conf','runtime-files.list','modules.plan','crypto.prop']:
+            for name in ['selection.conf','runtime-files.list','modules.plan','crypto.prop',
+                         'touch-files.list','touch-modules.plan']:
                 shutil.copy2(CATALOG / sample_name / name, catalog / sample_name / name)
                 if IMAGE_ENTRIES:
-                    (catalog / sample_name / name).write_bytes(IMAGE_ENTRIES[f'system/etc/dijun/profiles/{sample_name}/{name}'][-1])
+                    key=f'system/etc/dijun/profiles/{sample_name}/{name}'
+                    if key in IMAGE_ENTRIES:
+                        (catalog / sample_name / name).write_bytes(IMAGE_ENTRIES[key][-1])
+                    else:
+                        (catalog / sample_name / name).unlink()
         # Read-only shared CAS; tests never mutate it. Source assets are hashed.
         (root / 'system/etc/dijun/blobs').symlink_to(IMAGE_CAS or BLOBS, target_is_directory=True)
         (root / 'mockbin').mkdir()
@@ -163,8 +183,7 @@ class Runtime(unittest.TestCase):
                 self.assertEqual(len([c for c in self.calls(root) if c[0]=='insmod']),before)
 
     def test_bad_profile_and_module_abort_before_effects(self):
-        for path in ['system_root/system/build.prop','vendor_dlkm/lib/modules/synaptics_tcm2.ko',
-                     'vendor_dlkm/lib/modules/xring_audio_hw_third.ko']:
+        for path in ['vendor_dlkm/lib/modules/synaptics_tcm2.ko']:
             root=self.fixture(); (root/path).write_bytes(b'wrong version')
             self.run_phase(root,'cache',1)
             self.assertFalse(any(c[0] in ['insmod','resetprop'] or c[:2]==['setprop','ctl.start'] for c in self.calls(root)))
@@ -175,6 +194,87 @@ class Runtime(unittest.TestCase):
         (root/source.lstrip('/')).unlink()
         self.run_phase(root,'cache',1)
         self.assertFalse(any(c[0]=='insmod' for c in self.calls(root)))
+
+    def test_touch_only_system_change(self):
+        for sample in SAMPLES:
+            with self.subTest(sample=sample):
+                root=self.fixture(sample, slot='_b')
+                (root/'system_root/system/build.prop').write_text('updated system identity\n')
+                self.run_phase(root,'cache')
+                self.assertEqual(self.props(root)['twrp.profile.scope'],'touch')
+                self.assertNotIn('twrp.profile.selected',self.props(root))
+                self.assertEqual(self.props(root)['twrp.profile.touch_selected'],sample)
+                self.run_phase(root,'modules',TOUCH_INPUT='immediate')
+                self.assertEqual(self.props(root)['twrp.profile.touch_reports'],'requested')
+                self.assertEqual((root/'sys/class/touch/touch_dev/enable_touch_raw').read_text(),'0\n')
+                self.assertFalse((root/'tmp/dijun-runtime/crypto.prop').exists())
+                self.assertFalse((root/'tmp/dijun-runtime/root/vendor').exists())
+                # Denial must hold even if publish is called while stock mounts remain.
+                self.run_phase(root,'publish')
+                self.assertEqual(self.props(root)['twrp.crypto.ready'],'0')
+                self.assertEqual(self.props(root)['twrp.profile.state'],'touch-only')
+                self.assertFalse(any(c[0]=='resetprop' or c[:2]==['setprop','ctl.start'] for c in self.calls(root)))
+                loaded=[Path(c[1]).stem for c in self.calls(root) if c[0]=='insmod']
+                expected=[l.split()[0] for l in (CATALOG/sample/'touch-modules.plan').read_text().splitlines()
+                          if not l.split()[2].startswith('/lib/modules/')]
+                self.assertEqual(loaded,expected)
+
+    def test_touch_only_rejects_changed_inputs(self):
+        cases=['kernel','module','preloaded-dependency','firmware','inactive-slot',
+               'blob','unknown-scope']
+        for case in cases:
+            with self.subTest(case=case):
+                root=self.fixture('os4-stable')
+                (root/'system_root/system/build.prop').write_text('updated system identity\n')
+                target={'kernel':'proc/sys/kernel/osrelease',
+                        'module':'vendor_dlkm/lib/modules/synaptics_tcm2.ko',
+                        'firmware':'odm/firmware/synaptics_spi_dijun.img',
+                        'inactive-slot':'sys/class/block/dm-3/dm/name'}.get(case)
+                if case=='preloaded-dependency':
+                    target=next(l.split()[2].lstrip('/') for l in
+                                (CATALOG/'os4-stable/touch-modules.plan').read_text().splitlines()
+                                if l.split()[2].startswith('/lib/modules/'))
+                if target:(root/target).write_bytes(b'wrong bytes\n')
+                if case=='blob':
+                    (root/'system/etc/dijun/blobs').unlink()
+                    (root/'system/etc/dijun/blobs').mkdir()
+                if case=='unknown-scope':
+                    self.run_phase(root,'cache')
+                    (root/'tmp/dijun-runtime/scope').write_text('unknown\n')
+                else:
+                    self.run_phase(root,'cache',1)
+                self.run_phase(root,'modules',1)
+                self.run_phase(root,'publish',1)
+                self.assertFalse(any(c[0] in ['insmod','resetprop'] or c[:2]==['setprop','ctl.start'] for c in self.calls(root)))
+
+    def test_touch_only_identity_changes_and_stage_integrity(self):
+        for case in ['vendor-identity','odm-identity','fstab-identity','staged-module',
+                     'missing-module','insmod-error']:
+            with self.subTest(case=case):
+                root=self.fixture('os4-stable')
+                (root/'system_root/system/build.prop').write_text('updated system identity\n')
+                target={'vendor-identity':'vendor/build.prop','odm-identity':'odm/etc/build.prop',
+                        'fstab-identity':'vendor/etc/fstab.O1_asic'}.get(case)
+                if target:(root/target).write_text('updated identity\n')
+                if case=='missing-module':
+                    (root/'vendor_dlkm/lib/modules/xr_spi_mmio.ko').unlink()
+                    self.run_phase(root,'cache',1)
+                    self.assertFalse(any(c[0]=='insmod' for c in self.calls(root)))
+                    continue
+                self.run_phase(root,'cache')
+                if case=='staged-module':
+                    (root/'tmp/dijun-runtime/modules/xr_spi_mmio.ko').write_bytes(b'tampered')
+                    self.run_phase(root,'modules',1)
+                    self.assertFalse((root/'sys/module/synaptics_tcm2').exists())
+                elif case=='insmod-error':
+                    self.run_phase(root,'modules',FAIL_MODULE='xr_spi_mmio')
+                    self.assertEqual(self.props(root)['twrp.profile.touch_modules'],'failed')
+                    self.assertEqual(self.props(root)['twrp.profile.modules'],'partial')
+                else:
+                    self.run_phase(root,'modules',TOUCH_INPUT='immediate')
+                self.run_phase(root,'publish')
+                self.assertEqual(self.props(root)['twrp.crypto.ready'],'0')
+                self.assertFalse(any(c[0]=='resetprop' or c[:2]==['setprop','ctl.start'] for c in self.calls(root)))
 
     def test_publish_mount_and_changed_cache_guards(self):
         root=self.fixture(); self.run_phase(root,'cache')
@@ -241,6 +341,7 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('--image',type=Path)
     parser.add_argument('--output',type=Path)
+    parser.add_argument('--tests',nargs='+',help='Run only named methods for a bounded change')
     args=parser.parse_args()
     if args.image:
         sys.path.insert(0,str(ROOT/'scripts'))
@@ -254,10 +355,14 @@ if __name__=='__main__':
                 sha=Path(path).name
                 assert hashlib.sha256(entry[-1]).hexdigest()==sha
                 (IMAGE_CAS/sha).write_bytes(entry[-1])
-    result=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(Runtime))
+    suite=(unittest.TestSuite(Runtime(name) for name in args.tests) if args.tests else
+           unittest.defaultTestLoader.loadTestsFromTestCase(Runtime))
+    result=unittest.TextTestRunner(verbosity=2).run(suite)
     report=dict(status='PASS' if result.wasSuccessful() else 'FAIL',tests_run=result.testsRun,
                 cases=RESULTS,scope='Production activation shell, original OTA assets, fixture nodes/mounts/properties/insmod/Binder. No physical or TEE validation.',
                 image_sha256=IMAGE_SHA,samples=SAMPLES,
+                selected_tests=args.tests, failures=[str(t) for t,_ in result.failures],
+                errors=[str(t) for t,_ in result.errors],
                 test_sources={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__).resolve(),ROOT/'tests/profile_selection_test.py']},
                 sources={str(p.relative_to(ROOT)):hashlib.sha256(IMAGE_ENTRIES['system/bin/'+p.name][-1] if IMAGE_ENTRIES and p.suffix=='.sh' else p.read_bytes()).hexdigest()
                          for p in (TREE/'profiles/runtime').glob('*') if p.is_file()})

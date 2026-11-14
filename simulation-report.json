@@ -1,9 +1,9 @@
 {
   "status": "in_progress",
   "hardware_testing": "Agent performed none. User supplied 11 screenshots showing bogus /storage/usbotg-sd* entries and valid internal storage673GB; user reports settings normal on backup-manifest baseline. Current candidate requests ordinary touch reports at startup but has no candidate-specific hardware test.",
-  "image": "/root/AAA/xringo1-twrp/imgs/built/yarp-dijun-1.0.1-rc1.img",
-  "image_sha256": "13644f3443b5baef012920d73838c7e980608235e2478ddbea6334a646f1a082",
-  "image_status": "Clean-built touch timing rollback candidate; user-reported field touch failure remains open. No proven causal fix.",
+  "image": "/root/AAA/xringo1-twrp/imgs/built/yarp-dijun-1.0.1-rc2.img",
+  "image_sha256": "d6d07213e0540b7862b50a90f57658e619e6be1108961f84e87fad335fd9545b",
+  "image_status": "Clean-built rc2 separates exact touch closure from full crypto identity. Current device input bytes and physical event delivery unverified.",
   "checks": [
     {
       "name": "stock-ARM64-OS4-haptics-service-tail-review",
@@ -5271,9 +5271,9 @@
   "touch_outstanding": {
     "priority": "P0",
     "user_report": "OS4 stable: user confirms touch generates no input report on the latest installed image; OS4.0.4 recovery bundle indexed",
-    "status": "New user-reported touch failure in v1.0.0. Exact rollback of the unverified two-second delay built as v1.0.1-rc1; causal fault and physical recovery unconfirmed.",
+    "status": "Field runtime confirms system identity mismatch rejects full profile before touch modules load. Exact touch-closure fallback built in rc2, crypto withheld. Current device module/firmware matches and actual events unverified.",
     "next": [
-      "Only new discriminating touch evidence reopens implementation work. Current seven policy cases and packaging audit complete; no equivalent suites or unrelated checks."
+      "Use only new runtime failure evidence for further work; no repeated raw-mode policy or equivalent tests. No full OS4.0.5 or decryption claim."
     ],
     "host_validation": "96 same-image phase calls; 6 dependency plans; initial/late input to GUI; 88 stock OS4 ARM64 connect/mode/reflash/ISR/parser cases; no physical device; 62 stock config/probe cases and 2 original dijun overlay/firmware checks; 58 stock SPI probe/DT-child/GPIO/power/reset and joined probe-to-ISR cases; new image 24 module-state phase calls with bounded coming/live/going races and six cache profiles; 86 stock SPI transport/allocation/completion/detect-selector cases; 22 original Xiaomi panel-setup cases including persistent zero-lockdown loop bounded by emulator budget; 50 stock Xiaomi wrapper panel/input/raw-mode cases; callback failure hidden by successful sysfs byte-count path; 90 original message/event/ISR cases: v1 byte fragments, v2 command response fixture; empty-report stale output replay and hidden report-allocation failure reproduced for both OS4 modules; two stock vendor_boot/current recovery static load-order checks; no physical boot/init execution; 78 original v2 command/framing/CRC/retry and config-app-ISR cases; physical transport bytes remain synthetic; 44 joined original v2 detect/connect/app-info/configuration/mode/background/ISR cases; firmware request/update, panel and kernel services remain fixtures; 32 joined v2 startup/panel/DT/report-mode/ISR cases, six executing original flash-area/identify/boot-info/boot-config-read and mode return; physical responses remain synthetic; 26 original stock-firmware container/CRC/build-config comparison and joined background cases; matching image executes no-write path and restores synthetic configuration; differing image stops at original flash-access identify timeout; 32 original reflash block-check/erase/write/reset and joined background failure cases; exact erase geometry and first two stock-byte programming chunks checked, injected failures throughout; missing config remains eventless after input registration even with application reset response; 26 complete stock programming/reset/background cases: 625 programming requests and 2 erase requests independently checked, config-only 25 requests; reset-bootloader returns update0 yet input/config0/no events, post-update config timeout/empty also input/no events; retry after last configuration write error executes 1250 checked requests; updated same-image 9-test profile runtime includes three haptics-input states; 6 dependency plans assert touch closure before haptics-specific closure; refreshed same-image 9-test profile runtime covers missing/immediate/delayed haptics input registration; six plans check touch dependency closure before haptics-specific closure; user-provided OS4.0.4 runtime bundle parsed for event3 touch registration and absent live ABS_MT trace; no live input attempt correlated to GUI delivery"
   },
@@ -5435,12 +5435,12 @@
     "limits": "Not proof of field signals or recovered motor. Persistent transient errors keep cached availability until a later probe/play determines state. No upload/play retries or effect/gain/calibration changes."
   },
   "current_delivery": {
-    "evidence": "logs/touch-policy-rollback-delivery.json",
-    "evidence_sha256": "ca889768c822c9b89786505b8ac4db4c85644aee4051c86642f35604dc6905f1",
-    "image_sha256": "13644f3443b5baef012920d73838c7e980608235e2478ddbea6334a646f1a082",
-    "production_patch": "0139 retained; native device-tree touch script restored to 022963b^",
-    "scope": "Private filesystem fixtures verify readiness polling, immediate single raw0 request and errors. They do not execute sysfs callbacks, the controller or physical input. The two-second delay is not a proven fault cause.",
-    "hardware": "unverified; user-reported-failure-open"
+    "evidence": "logs/touch-scope-delivery.json",
+    "evidence_sha256": "a5de275378655017a6182ff40b02546da528426a1442278e80f49c2c248382ac",
+    "image_sha256": "d6d07213e0540b7862b50a90f57658e619e6be1108961f84e87fad335fd9545b",
+    "production_patch": "0139 retained; native device-tree touch scope",
+    "scope": "Check the touch-only activation fix, its bounded regressions and clean image.\n\nNo sysfs/controller callback, physical module loading or OS4.0.5 package is\nexecuted. Changed build.prop bytes model the field-reported identity mismatch.\n",
+    "hardware": "unverified"
   },
   "delivery_evidence_refresh": {
     "date": "2026-11-12",
@@ -6792,18 +6792,18 @@
     "production_changes": false,
     "new_build": false
   },
-  "execution_status": "touch-regression-open-rollback-candidate-delivered",
+  "execution_status": "touch-profile-gate-fixed-device-events-awaiting-confirmation",
   "execution_queue": {
-    "scope": "New user-reported release touch failure; exact timing rollback candidate delivered, physical fault remains open.",
+    "scope": "Touch-only profile gate fixed; field module/firmware matching and events unverified. Other completed items stay closed.",
     "authority": "docs/WORK-QUEUE.md",
     "active": [
       {
         "id": "touch-release-regression",
-        "outcome": "timing-rollback-candidate-delivered-field-failure-open",
+        "outcome": "profile-gate-fixed-in-software-current-device-matching-and-events-unverified",
         "production_change": true,
         "hardware_testing": false,
         "document": "docs/OS4-TOUCH-FAILURE.md",
-        "next": "Continue only on new discriminating touch evidence; do not rerun equivalent fixtures or unrelated resolved features."
+        "next": "Stop repeated checks; continue only on new runtime failure evidence. OS4.0.5 full profile and crypto are not claimed."
       }
     ],
     "closed": [
@@ -6954,5 +6954,98 @@
     "scope": "Bind the exact touch timing rollback to its clean candidate, without hardware claims.",
     "limits": "Private filesystem fixtures verify readiness polling, immediate single raw0 request and errors. They do not execute sysfs callbacks, the controller or physical input. The two-second delay is not a proven fault cause.",
     "audit_source_sha256": "1f74795028e8e68521fd6c640e95f3cd4523d66721b5da7e12621654060df234"
+  },
+  "historical_delivery_before_touch_scope": {
+    "evidence": "logs/touch-policy-rollback-delivery.json",
+    "evidence_sha256": "ca889768c822c9b89786505b8ac4db4c85644aee4051c86642f35604dc6905f1",
+    "image_sha256": "13644f3443b5baef012920d73838c7e980608235e2478ddbea6334a646f1a082",
+    "production_patch": "0139 retained; native device-tree touch script restored to 022963b^",
+    "scope": "Private filesystem fixtures verify readiness polling, immediate single raw0 request and errors. They do not execute sysfs callbacks, the controller or physical input. The two-second delay is not a proven fault cause.",
+    "hardware": "unverified; user-reported-failure-open"
+  },
+  "touch_scope_delivery": {
+    "local_audit": "logs/touch-scope-delivery.json",
+    "local_audit_sha256": "a5de275378655017a6182ff40b02546da528426a1442278e80f49c2c248382ac",
+    "status": "PASS",
+    "image": "imgs/built/yarp-dijun-1.0.1-rc2.img",
+    "image_sha256": "d6d07213e0540b7862b50a90f57658e619e6be1108961f84e87fad335fd9545b",
+    "image_size": 104857600,
+    "ramdisk_size": 76679019,
+    "production_sources": 889,
+    "jobs": 30,
+    "production_change": "Separate exact touch module/firmware closure selection from full crypto identity; platform patches remain at 0139.",
+    "profiles": [
+      {
+        "profile": "os2-final",
+        "touch_hard_closure": 44,
+        "firmware_files": 2
+      },
+      {
+        "profile": "os2-initial",
+        "touch_hard_closure": 44,
+        "firmware_files": 2
+      },
+      {
+        "profile": "os3-final",
+        "touch_hard_closure": 44,
+        "firmware_files": 2
+      },
+      {
+        "profile": "os3-initial",
+        "touch_hard_closure": 44,
+        "firmware_files": 2
+      },
+      {
+        "profile": "os4-current",
+        "touch_hard_closure": 46,
+        "firmware_files": 2
+      },
+      {
+        "profile": "os4-stable",
+        "touch_hard_closure": 46,
+        "firmware_files": 2
+      }
+    ],
+    "payload_changes": [
+      "prop.default",
+      "ramdisk-files.sha256sum",
+      "ramdisk-files.txt",
+      "system/bin/dijun-runtime.sh",
+      "system/bin/dijun-select-profile.sh",
+      "system/etc/dijun/profiles/os2-final/touch-files.list",
+      "system/etc/dijun/profiles/os2-final/touch-modules.plan",
+      "system/etc/dijun/profiles/os2-initial/touch-files.list",
+      "system/etc/dijun/profiles/os2-initial/touch-modules.plan",
+      "system/etc/dijun/profiles/os3-final/touch-files.list",
+      "system/etc/dijun/profiles/os3-final/touch-modules.plan",
+      "system/etc/dijun/profiles/os3-initial/touch-files.list",
+      "system/etc/dijun/profiles/os3-initial/touch-modules.plan",
+      "system/etc/dijun/profiles/os4-current/touch-files.list",
+      "system/etc/dijun/profiles/os4-current/touch-modules.plan",
+      "system/etc/dijun/profiles/os4-stable/touch-files.list",
+      "system/etc/dijun/profiles/os4-stable/touch-modules.plan"
+    ],
+    "runtime_groups": 5,
+    "runtime_phase_calls": 94,
+    "old_system_mismatch_failures": 6,
+    "strict_selector_groups": 8,
+    "strict_selector_cases": 77,
+    "evidence": {
+      "logs/touch-scope-runtime.json": "0d4042cc6d79cdbbea95f9164bbceec721071e2422a139835843bbaa75f1fb0c",
+      "logs/touch-scope-before.json": "e20adef127e0c2a39b14c2ff8f69b257994ebb64002abb946edbd42b9343a9ee",
+      "logs/touch-scope-selection.json": "da4196aa807f15747596a6ed402b3f5fd1f9bb9c28fee11decf8efbff83c6a5c"
+    },
+    "scope": "Check the touch-only activation fix, its bounded regressions and clean image.\n\nNo sysfs/controller callback, physical module loading or OS4.0.5 package is\nexecuted. Changed build.prop bytes model the field-reported identity mismatch.\n",
+    "hardware_testing": false,
+    "field_touch_status": "profile gate fixed in software; current device module/firmware hashes and event delivery unverified",
+    "audit_source_sha256": "5dcec328a13d4f142ea3988b6ea3006a2f3ff84acbf7da9f24fe9b91cef2225d"
+  },
+  "touch_profile_field_observation": {
+    "source": "User-pasted /tmp/dijun-runtime.log and /proc/sys/kernel/osrelease; touch-now.zip",
+    "bundle_sha256": "b6ad8cebf52507497e184a9cdd57326bc22e47db7f945d64d3d6ce40867a80a4",
+    "kernel_release": "6.18.21-android17-5-g284297031c53-abogki553682993-4k",
+    "failure": "os4-stable: system hash differs; runtime cache: no verified profile",
+    "observation": "Touch modules and input device absent. Boot argument mentions OS4.0.5.0.XODCN; actual module/firmware byte identities unavailable.",
+    "installed_image_hash": "not independently verified"
   }
 }
