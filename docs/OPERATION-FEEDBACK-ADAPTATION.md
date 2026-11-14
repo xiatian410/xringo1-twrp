@@ -1,5 +1,23 @@
 # 操作反馈与页面生命周期
 
+<a id="cli-ors-joined"></a>
+## 原客户端、FIFO 与 ORS 同次接续
+
+在0138现有镜像对应源码上，复用现有CLI/ORS夹具和FIFO监听器，补齐此前分开验证的接续：原CLI main经真实私有FIFO进入完整监听器/twcmd、原Run_CLI_Command、真实ofstream追加及原ORS解析器，再由原回调关闭输出/重建监听器。同一个server继续执行第二个客户端的`print after`，验证失败不阻塞下一请求。本批只有测试和文档维护，无生产修正或新镜像。
+
+`tests/cli_fifo_join_test.py --ors`十项通过：print、清除成功/失败、未知命令、runscript成功/失败、解密失败、缺脚本参数、追加打开失败，以及客户端接受但超出ORS行上限的600字符命令。逐项核对后台完成结果、临时脚本清理、原回调收尾、第二次输出精确等于`after\n`；ASan/UBSan无错误。首次未知命令的预期输出遗漏了原解析器的一条诊断，修正测试预期后同一套通过；没有据此修改生产程序。
+
+真实执行host进程、FIFO/open/read/write/stdio/select、线程/executor、tokenizer/wrapper/append/parser；manager/解密/get/复制/缓存发现/console镜像/完成sink仍是替身。第二次命令真实走完整上述链。没有ARM64运行、完整GUI/TEE/实际分区操作、并发暂存或物理设备验收。远端失败的客户端返回0在本次实际观察到，文本协议无远端退出状态的限制仍存在；不将后台失败记录当作客户端失败退出码。
+
+已有镜像和876份生产来源哈希全部一致，直接复用其构建/封装证据，不重新构建。旧0138测试报告保留原字节与运行时哈希；测试脚本此次扩展后不再声称旧报告绑定当前测试字节，也不为刷新测试哈希重复旧场景。此命名接续缺口至此收尾，不例行再跑。
+
+```bash
+python3 tests/cli_fifo_join_test.py --ors --report logs/cli-ors-joined.json
+python3 scripts/audit_ors_results.py --cli-joined
+```
+
+本地结果`logs/cli-ors-joined.json`与`logs/cli-ors-joined-audit.json`；镜像继续使用[现有候选](../simulation-report.md)。
+
 <a id="cli-execution-results"></a>
 ## CLI 执行结果传到后台完成记录（0138）
 

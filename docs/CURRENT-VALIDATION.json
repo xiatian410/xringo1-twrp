@@ -2765,6 +2765,14 @@
       "failures": 0,
       "local_report_sha256": "76fde34dec4820932b01cd3463a4ad165d6f72b23c74e78e41d6d577368c7e5d",
       "scope": "Patch0138 returns actual CLI wrapper result through listener operation_end, propagates parser/copy/append/get/decrypt/cache-action failures, rejects empty token vector and shutdown admission, checks append stream close, guards absent callback and fixes cache recovery script path after decryption. Deferred parser reboot2 is normalized only at parser call sites, not decryption result2. Original wrapper/parser/action/append/tokenizer/twcmd and real executor24 pass/old18 fail (empty/spaces null vector; null callback crash; false success and skipped cache). Commands58/reboot16/input28/FIFO16/join13 pass. Private regular files/RLIMIT_FSIZE; manager/get/decrypt/copy/cache discovery/shell/completion sink fixtures. Separate FIFO join still substitutes ORS body. No full GUI or same-run client/FIFO/ORS, command exit-status protocol, privileged decryption, concurrent staging or physical device proof. Historical OTA reused."
+    },
+    {
+      "name": "cli-ors-joined",
+      "status": "PASS",
+      "cases": 10,
+      "failures": 0,
+      "local_report_sha256": "e1e45b8e07f6448d7889de2b1f1f1727436ab7c2e08b07f15d8a53ff9d54069d",
+      "scope": "Original CLI main -> private real FIFO -> original listener/twcmd -> original CLI wrapper/append/parser and callback/listener reset, then a second client command in same server. Host ASan/UBSan. Copy/cache discovery/get/decrypt/partition/shell/console mirror/completion sink fixtures. Tests ten first-command cases plus retry; failed remote command still yields client0 under unchanged text protocol. No ARM64/full GUI/device, real partition/decryption or concurrent staging proof."
     }
   ],
   "refresh_stuck_investigation": {
@@ -3095,5 +3103,11 @@
     "document": "docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-execution-results",
     "production_changes": true,
     "new_build": true
+  },
+  "cli_ors_joined": {
+    "scope": "Original CLI main -> private real FIFO -> original listener/twcmd -> original CLI wrapper/append/parser and callback/listener reset, then a second client command in same server. Host ASan/UBSan. Copy/cache discovery/get/decrypt/partition/shell/console mirror/completion sink fixtures. Tests ten first-command cases plus retry; failed remote command still yields client0 under unchanged text protocol. No ARM64/full GUI/device, real partition/decryption or concurrent staging proof.",
+    "document": "docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-ors-joined",
+    "production_changes": false,
+    "new_build": false
   }
 }

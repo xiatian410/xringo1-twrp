@@ -64,7 +64,7 @@
     "mode": "0o644"
   },
   "docs/CURRENT-VALIDATION.json": {
-    "sha256": "ed10181289e9e5515d78c2e290da52fdd53ba05e3359fbced0a991d34d04ec3b",
+    "sha256": "d4395957fcbb8160c5b766280b10128dac2602fe6e456911cca9d370eebf5dcf",
     "mode": "0o644"
   },
   "docs/FILESYSTEM-TOOLS-EXECUTION.md": {
@@ -112,7 +112,7 @@
     "mode": "0o644"
   },
   "docs/OPERATION-FEEDBACK-ADAPTATION.md": {
-    "sha256": "2678bb09271b72e45e35d8eba6a32279b8c29addbfabcb2a0ff45950a76517c3",
+    "sha256": "c5aac593e46b2ba0a8c71acb58cc94918a6417f54d9ee29af0cf328f4f4f2026",
     "mode": "0o644"
   },
   "docs/OS4-TOUCH-FAILURE.md": {
@@ -164,7 +164,7 @@
     "mode": "0o644"
   },
   "docs/WORK-QUEUE.md": {
-    "sha256": "25ed145844f1b7b2124fdbdc1b83be36f61375e558ca7f8398fc17ddd67ac352",
+    "sha256": "1ed47d7cc00b7ee9e61434b836ccefe2cd73cb1010bf2b89e0a4e3dc45dac06f",
     "mode": "0o644"
   },
   "docs/archive/BOUNDED-MAINTENANCE.md": {
@@ -1576,7 +1576,7 @@
     "mode": "0o644"
   },
   "scripts/audit_ors_results.py": {
-    "sha256": "4e8844e8da75d8abe5f4612362a1e728217de9d32913957d908ad5c1ecd5104d",
+    "sha256": "c4a6b612791d67bd3317ba63685ce30fd562ffc78aaec3286666fe4543a09bec",
     "mode": "0o644"
   },
   "scripts/audit_otg_discovery_delivery.py": {
@@ -2056,11 +2056,11 @@
     "mode": "0o644"
   },
   "simulation-report.json": {
-    "sha256": "e5723b933906ae72e13cce6c93fe3c176b2007e31d02df1f2ed18469d68c6d80",
+    "sha256": "6a54ba489d7f77c8a9df7044c851203f18d3614139919f45c5178ffbd6bef086",
     "mode": "0o644"
   },
   "simulation-report.md": {
-    "sha256": "5489defe85e94164efb169afb86d97732c36111ca5bb35f57064c3299325bb50",
+    "sha256": "1ac54c99c8b1fa07c3acb918ef3c1badb53bccb1fd28352f4580aeeadaba01e6",
     "mode": "0o644"
   },
   "tests/ab_command_chain_test.cpp": {
@@ -2140,7 +2140,7 @@
     "mode": "0o644"
   },
   "tests/cli_fifo_join_test.py": {
-    "sha256": "f8dcf15ddd9a9bccfb1f27b52fdcccbc53a38a769ef5d25087706ed2b6364f07",
+    "sha256": "635da94139641ad67df1041e0ae737051141aa11a4341c1ca2f5496e47b9873d",
     "mode": "0o644"
   },
   "tests/cli_fifo_test.cpp": {
@@ -2632,7 +2632,7 @@
     "mode": "0o644"
   },
   "tests/ors_results_test.py": {
-    "sha256": "8f1b9dfa9990a12c9c4ca2aaeda5ea8124ac40d97ee055f4c396a69de1a28a79",
+    "sha256": "3630796c034547cabf9f8a6469c543cfcacc6b3d565fd64437a2bc9afb9e9a3f",
     "mode": "0o644"
   },
   "tests/ota_allocated_exit_probe.cpp": {

@@ -15,7 +15,13 @@
 | 构建 | `installclean` 后 `make -j$(nproc)`，30 并发 |
 | 发布方式 | 仅本地保存镜像，GitHub 发布维护源码 |
 
-## 本批生产修正：CLI 执行结果传到后台完成记录
+## 本批验证补充：原客户端 / FIFO / ORS 同次接续
+
+现有0138候选上，原CLI main、真实私有FIFO、完整监听器/twcmd、原CLI wrapper/追加/解析器及原回调/监听重建在同一次server中接通。十种首次命令成功或失败后，第二个客户端均可执行print并精确收到`after`及换行；后台完成结果及临时脚本清理检查通过。复用原有测试夹具扩展，无生产修改，不重编镜像。
+
+manager/解密/get/复制/缓存发现/console镜像/完成sink仍是替身，未执行完整GUI/ARM64/TEE或真实分区。远端命令失败时客户端退出码仍为0，现有文本协议限制未解决。876份生产来源及镜像哈希一致，沿用现有构建/封装；旧报告按运行时来源保留，不因测试脚本扩展反复重跑。核对`python3 scripts/audit_ors_results.py --cli-joined`，见[同次接续范围](docs/OPERATION-FEEDBACK-ADAPTATION.md#cli-ors-joined)。此命名验证缺口收尾。
+
+## 沿用的 CLI 执行结果传到后台完成记录
 
 0138将Run_CLI_Command改为返回真实状态，监听线程传给operation_end，不再固定记录status=0。脚本/复制/追加/变量查询/解密及解密后缓存脚本失败传回失败；空命令及缺参明确拒绝，未设置回调不再崩溃。追加流关闭后检查失败，解密后查找正确的`cache/recovery/openrecoveryscript`路径；直接CLI持有准入票。仅解析器的延迟重启返回2视为成功，解密错误2仍为失败。
 

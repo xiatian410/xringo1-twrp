@@ -18,6 +18,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--source', type=Path, default=SRC/'openrecoveryscript.cpp')
     ap.add_argument('--report', type=Path, required=True)
+    ap.add_argument('--emit-fixture', type=Path, help='Emit the CLI fixture for a joined listener check, without running cases')
     modes = ap.add_mutually_exclusive_group()
     modes.add_argument('--sequence', action='store_true', help='Test temporary/cache script ordering and failure aggregation')
     modes.add_argument('--staging', action='store_true', help='Test source preservation and failure propagation during script staging')
@@ -432,6 +433,11 @@ int main(int argc,char**argv){
 }
 '''
         fixture = fixture.replace('// TWCMD',method(backend_source.read_text(),'void twcmd('))
+    if args.emit_fixture:
+        if not args.cli:
+            ap.error('--emit-fixture requires --cli')
+        args.emit_fixture.write_text(fixture)
+        return 0
     rows = []
     commands = [('wipe cache','wipe:/cache'),('wipe /cache','wipe:/cache'),
                 ('wipe system','wipe:/system'),('wipe /system_root','wipe:/system'),

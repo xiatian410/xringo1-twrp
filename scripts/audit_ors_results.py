@@ -16,6 +16,7 @@ def main():
     modes.add_argument('--input', action='store_true')
     modes.add_argument('--reboot', action='store_true')
     modes.add_argument('--cli', action='store_true')
+    modes.add_argument('--cli-joined', action='store_true')
     args = parser.parse_args()
     sequence, staging = args.sequence, args.staging
     arguments = args.arguments
@@ -24,6 +25,8 @@ def main():
         return audit_reboot()
     if args.cli:
         return audit_cli()
+    if args.cli_joined:
+        return audit_cli_joined()
     batch = 'ors-input' if input_mode else 'ors-arguments' if arguments else 'ors-staging' if staging else 'ors-sequence' if sequence else 'ors-results'
     number = '0134' if input_mode else '0133' if arguments else '0130' if staging else '0129' if sequence else '0128'
     index = read(ROOT/'simulation-report.json')
@@ -213,6 +216,40 @@ def audit_cli():
         limits='Host original CLI wrapper/parser/action/append/tokenizer/listener twcmd and real executor; private regular files, RLIMIT_FSIZE append failure. Copy/cache discovery/get/decrypt/partition/shell/completion sink are fixtures. Separate real FIFO/client regression retains ORS-body fixture. No same-run complete client/FIFO/ORS/GUI, command exit-status wire protocol, privileged services or physical device proof. Historical OTA reused.')
     (ROOT/'logs/cli-results-delivery-audit.json').write_text(json.dumps(result,indent=2)+'\n')
     print('PASS: patch0138; CLI24/old18 failures; command58/reboot16/input28/FIFO16/join13; clean image/six profiles')
+
+
+def audit_cli_joined():
+    """Check new host-chain evidence against the unchanged production delivery."""
+    index = read(ROOT/'simulation-report.json')
+    image = Path(index['image'])
+    provenance = read(image.with_name(image.stem+'-sources.json'))
+    assert image.name == 'recovery-dijun-unified-cli-results.img'
+    assert sha(image) == index['image_sha256'] == provenance['image_sha256']
+    for name, digest in provenance['files'].items():
+        assert sha(name) == digest, name
+    build = ROOT/provenance['build_log']
+    assert sha(build) == provenance['build_log_sha256']
+    assert manifest(TREE) == manifest(ANDROID/'device/xiaomi/O1_asic')
+    path = ROOT/'logs/cli-ors-joined.json'
+    report = read(path)
+    assert report['status']=='PASS' and len(report['cases'])==10
+    expected = {'print','wipe-success','wipe-failure','unknown','script-success','script-failure','decrypt-failure','missing-script','append-failure','long-command'}
+    assert {case['case'] for case in report['cases']} == expected
+    for name, digest in report['sources'].items():
+        assert sha(name) == digest, name
+    for case in report['cases']:
+        assert case['status']=='PASS' and case['listener_returncode']==0
+        assert case['client_returncodes']==[0,0] and case['retry_stdout']=='after\n'
+        assert 'original_client_fifo_wrapper_parser_retry=1' in case['output']
+        assert 'AddressSanitizer' not in case['output'] and 'runtime error:' not in case['output']
+    item = next(c for c in index['additional_checks'] if c['evidence']==str(path.relative_to(ROOT)))
+    assert item['evidence_sha256']==sha(path)
+    package = read(image.with_suffix('.json'))
+    assert package['sha256']==sha(image) and len(package['profiles'])==6
+    assert index['status']=='in_progress' and len(index['not_yet_completed'])==12
+    result = dict(status='PASS',image_sha256=sha(image),production_sources=len(provenance['files']),cases=10,report_sha256=sha(path),production_changed=False,new_build=False,scope=report['scope'])
+    (ROOT/'logs/cli-ors-joined-audit.json').write_text(json.dumps(result,indent=2)+'\n')
+    print('PASS: original CLI/FIFO/wrapper/parser and same-server retry10; unchanged image/sources; no new build')
 
 
 if __name__ == '__main__':
